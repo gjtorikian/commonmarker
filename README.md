@@ -9,11 +9,10 @@ progress.
 The wrapper assumes that you have installed the libcmark dynamic
 library.  It can be found [here](http://github.com/jgm/CommonMark/).
 
-This wrapper uses libcmark's parser, and then uses the node tree
-it returns to create a native ruby structure.  The node tree is then
+This wrapper uses the node tree created by libcmark's parser to
+build a native ruby structure. The node tree is then
 freed, so there are no further worries about memory management.
-
-libcmark's HTML renderer is not used.  Instead, a ruby renderer is
+Instead of using libcmark's HTML renderer, a ruby renderer is
 used.  This can easily be customized by creating a subclass.
 And new renderers for different output formats are equally easy
 to add.
