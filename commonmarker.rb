@@ -12,7 +12,7 @@ module CMark
   enum :node_type, [:document, :blockquote, :list, :list_item,
                     :code_block, :html, :paragraph,
                     :header, :hrule, :reference_def,
-                    :str, :softbreak, :linebreak, :code, :inline_html,
+                    :text, :softbreak, :linebreak, :code, :inline_html,
                     :emph, :strong, :link, :image]
   enum :list_type, [:no_list, :bullet_list, :ordered_list]
 
@@ -164,7 +164,7 @@ class Renderer
       if @stringwriter
         return @stream.string
       end
-    elsif self.in_plain && node.type != :str && node.type != :softbreak
+    elsif self.in_plain && node.type != :text && node.type != :softbreak
       # pass through looking for str, softbreak
       node.children.each do |child|
         render(child)
@@ -328,7 +328,7 @@ class HtmlRenderer < Renderer
     end
   end
 
-  def str(node)
+  def text(node)
     self.out(CGI.escapeHTML(node.string_content))
   end
 

@@ -13,7 +13,7 @@ end
 doc.walk do |node|
   if node.type == :header
     node.walk do |subnode|
-      if subnode.type == :str
+      if subnode.type == :text
         subnode.string_content = subnode.string_content.upcase
       end
     end
