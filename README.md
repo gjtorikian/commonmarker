@@ -42,7 +42,7 @@ doc.walk do |node|
   end
 end
 
-# Capitalize all strings in headers
+# Capitalize all regular text in headers
 doc.walk do |node|
   if node.type == :header
     node.walk do |subnode|
