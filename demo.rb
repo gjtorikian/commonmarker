@@ -1,40 +1,3 @@
-commonmarker
-============
-
-Ruby wrapper for libcmark (CommonMark parser)
-
-Eventually this will be made into a gem.  For now, it's a work in
-progress.
-
-The wrapper assumes that you have installed the libcmark dynamic
-library.  It can be found [here](http://github.com/jgm/CommonMark/).
-
-The parser returns a Node object that wraps pointers to the
-structures allocated by libcmark.  Access to libcmark's fast
-HTML renderer is provided (the HtmlNativeRenderer class). For
-more flexibility, a ruby HtmlRenderer class is also provided,
-which can be customized through subclassing.  New renderers for
-any output format can easily be added.
-
-Some rough benchmarks:
-
-```
-input size = 10031600 bytes
-
-commonmarker with HtmlNativeRenderer   0.188 s
-commonmarker with ruby HtmlRenderer    2.418 s
-redcarpet                              0.127 s
-kramdown                              14.700 s
-```
-
-The library also includes a `walk` function for
-manipulating the AST produced by the parser.  So, for example,
-you can easily change all the links to plain text, or demote
-level 5 headers to regular paragraphs, prior to rendering.
-
-Usage example:
-
-``` ruby
 require './commonmarker'
 
 # parse the files specified on the command line
@@ -69,6 +32,7 @@ end
 # Render the transformed document to STDOUT
 renderer = HtmlNativeRenderer.new
 html = renderer.render(doc)
+print(html)
 
 # Print any warnings to STDERR
 renderer.warnings.each do |w|
@@ -96,4 +60,3 @@ end
 myrenderer = MyHtmlRenderer.new(STDOUT)
 myrenderer.render(doc)
 doc.free
-```

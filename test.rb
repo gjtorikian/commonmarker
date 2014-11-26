@@ -1,59 +1,43 @@
 require './commonmarker'
+require 'minitest/autorun'
 
-doc = Node.parse_file(ARGF)
-
-# Walk tree and print URLs for links
-doc.walk do |node|
-  if node.type == :link
-    printf("URL = %s\n", node.url)
+class TestNode < Minitest::Unit::TestCase
+  def setup
+    @doc = Node.parse_string("Hi *there*")
   end
-end
 
-# Capitalize regular text in headers
-doc.walk do |node|
-  if node.type == :header
-    node.walk do |subnode|
-      if subnode.type == :text
-        subnode.string_content = subnode.string_content.upcase
+  def test_walk
+    nodes = []
+    @doc.walk do |node|
+      nodes << node.type
+    end
+    assert_equal [:document, :paragraph, :text, :emph, :text], nodes
+  end
+
+  def test_insert_illegal
+    assert_raises NodeError do
+      @doc.insert_before(@doc)
+    end
+  end
+
+  def test_render
+    renderer = HtmlRenderer.new
+    result = renderer.render(@doc)
+    assert_equal "<p>Hi <em>there</em></p>\n", result
+  end
+
+  def test_walk_and_set_string_content
+    @doc.walk do |node|
+      if node.type == :text && node.string_content == 'there'
+        node.string_content = 'world'
+        assert_equal 'world', node.string_content
       end
     end
   end
-end
 
-# Walk tree and transform links to regular text
-doc.transform do |node|
-  if node.type == :link
-    node.children
+  def test_free
+    @doc.free
   end
 end
 
-renderer = HtmlRenderer.new(STDOUT)
-renderer.render(doc)
 
-renderer.warnings.each do |w|
-  STDERR.write(w)
-  STDERR.write("\n")
-end
-
-class MyHtmlRenderer < HtmlRenderer
-  def initialize(stream)
-    super
-    @headerid = 1
-  end
-  def header(node)
-    block do
-      self.out("<h", node.header_level, " id=\"", @headerid, "\">",
-               node.children, "</h", node.header_level, ">")
-      @headerid += 1
-    end
-  end
-end
-
-myrenderer = MyHtmlRenderer.new(STDOUT)
-myrenderer.render(doc)
-
-# def markdown_to_html(s)
-#   len = s.bytes.length
-#   CMark::cmark_markdown_to_html(s, len)
-# end
-# print markdown_to_html(STDIN.read())

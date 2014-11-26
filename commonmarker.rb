@@ -7,6 +7,12 @@ require 'uri'
 
 module CMark
   extend FFI::Library
+  # override attach_function so ruby names don't start with cmark_
+  def self.attach_function(c_name, args, returns)
+    ruby_name = c_name.to_s.sub(/cmark_/, "")
+    super(ruby_name, c_name, args, returns)
+  end
+
   ffi_lib ['libcmark', 'cmark']
   typedef :pointer, :node
   enum :node_type, [:document, :blockquote, :list, :list_item,
@@ -16,113 +22,302 @@ module CMark
                     :emph, :strong, :link, :image]
   enum :list_type, [:no_list, :bullet_list, :ordered_list]
 
+  attach_function :cmark_node_new, [:node_type], :node
   attach_function :cmark_free_nodes, [:node], :void
   attach_function :cmark_node_unlink, [:node], :void
-
+  attach_function :cmark_node_insert_before, [:node, :node], :int
+  attach_function :cmark_node_insert_after, [:node, :node], :int
+  attach_function :cmark_node_prepend_child, [:node, :node], :int
+  attach_function :cmark_node_append_child, [:node, :node], :int
   attach_function :cmark_markdown_to_html, [:string, :int], :string
+  attach_function :cmark_render_html, [:node], :string
   attach_function :cmark_parse_document, [:string, :int], :node
   attach_function :cmark_node_first_child, [:node], :node
+  attach_function :cmark_node_last_child, [:node], :node
   attach_function :cmark_node_parent, [:node], :node
   attach_function :cmark_node_next, [:node], :node
   attach_function :cmark_node_previous, [:node], :node
   attach_function :cmark_node_get_type, [:node], :node_type
   attach_function :cmark_node_get_string_content, [:node], :string
+  attach_function :cmark_node_set_string_content, [:node, :string], :int
   attach_function :cmark_node_get_url, [:node], :string
+  attach_function :cmark_node_set_url, [:node, :string], :int
   attach_function :cmark_node_get_title, [:node], :string
+  attach_function :cmark_node_set_title, [:node, :string], :int
   attach_function :cmark_node_get_header_level, [:node], :int
+  attach_function :cmark_node_set_header_level, [:node, :int], :int
   attach_function :cmark_node_get_list_type, [:node], :list_type
+  attach_function :cmark_node_set_list_type, [:node, :list_type], :int
   attach_function :cmark_node_get_list_start, [:node], :int
+  attach_function :cmark_node_set_list_start, [:node, :int], :int
   attach_function :cmark_node_get_list_tight, [:node], :bool
+  attach_function :cmark_node_set_list_tight, [:node, :bool], :int
+end
+
+class NodeError < StandardError
 end
 
 class Node
-  attr_accessor :type, :children, :parent, :string_content, :header_level,
-                :list_type, :list_start, :list_tight, :url, :title
-  def initialize(pointer)
-    if pointer.null?
-      return nil
+  attr_reader :pointer
+
+  # Creates a Node.  Either +type+ or +pointer+ should be provided; the
+  # other should be nil.  If +type+ is provided, a new node with that
+  # type is created.  If +pointer+ is provided, a node is created from the
+  # C node at +pointer+.
+  # Params:
+  # +type+:: +node_type+ of the node to be created (nil if +pointer+ is used).
+  # +pointer+:: pointer to C node (nil if +type+ is used).
+  def initialize(type=nil, pointer=nil)
+    if pointer
+      @pointer = pointer
+    else
+      @pointer = CMark.node_new(type)
     end
-    @pointer = pointer
-    @type = CMark.cmark_node_get_type(pointer)
-    @children = []
-    @parent = nil
-    first_child = CMark.cmark_node_first_child(pointer)
-    b = first_child
-    while !b.null?
-      child = Node.new(b)
-      child.parent = self
-      @children << child
-      b = CMark.cmark_node_next(b)
-    end
-    @string_content = CMark.cmark_node_get_string_content(pointer)
-    if @type == :header
-      @header_level = CMark.cmark_node_get_header_level(pointer)
-    end
-    if @type == :list
-      @list_type = CMark.cmark_node_get_list_type(pointer)
-      @list_start = CMark.cmark_node_get_list_start(pointer)
-      @list_tight = CMark.cmark_node_get_list_tight(pointer)
-    end
-    if @type == :link || @type == :image
-      @url = CMark.cmark_node_get_url(pointer)
-      if !@url then @url = "" end
-      @title = CMark.cmark_node_get_title(pointer)
-      if !@title then @title = "" end
-    end
-    if @type == :document
-      self.free
+    if @pointer.null?
+      raise NodeError, "could not create node of type " + type.to_s
     end
   end
 
-  # An iterator that "walks the tree," returning each node
-  def walk(&blk)
-    yield self
-    self.children.each do |child|
-      child.walk(&blk)
-    end
-  end
-
-  # Walk the tree and transform it.  blk should take one argument,
-  # a node.  If its value is a node, that node replaces the node being
-  # visited. If its value is an array of nodes, those nodes are spliced
-  # in place of the node being visited (so, to delete a node, use an
-  # empty array).  Otherwise the node is left as it is.
-  def transform(&blk)
-    self.walk do |node|
-      skip = false
-      res = blk.call(node)
-      if res.kind_of?(Array)
-        splice = res
-      elsif res.kind_of?(Node)
-        splice = [res]
-      else
-        skip = true
-      end
-      unless skip
-        parent = node.parent
-        if parent
-          siblings = node.parent.children
-          index = siblings.index(node)
-          siblings.replace(siblings.slice(0,index) + splice +
-                           siblings.slice(index + 1, siblings.length))
-        else # at the document root, just skip
-        end
-      end
-    end
-  end
-
+  # Parses a string into a :document Node.  The
+  # +free+ method should be called to release the node's
+  # memory when it is no longer needed.
+  # Params:
+  # +s+::  +String+ to be parsed.
   def self.parse_string(s)
-    Node.new(CMark.cmark_parse_document(s, s.bytesize))
+    Node.new(nil, CMark.parse_document(s, s.bytesize))
   end
 
+  # Parses a file into a :document Node.  The
+  # +free+ method should be called to release the node's
+  # memory when it is no longer needed.
+
+  # Params:
+  # +f+::  +File+ to be parsed (caller must open and close).
   def self.parse_file(f)
     s = f.read()
     self.parse_string(s)
   end
 
-  protected
+  def first_child
+    Node.new(nil, CMark.node_first_child(@pointer))
+  end
+
+  def last_child
+    Node.new(nil, CMark.node_last_child(@pointer))
+  end
+
+  # Iterator over the children (if any) of this Node.
+  def each_child
+    childptr = CMark.node_first_child(@pointer)
+    while not childptr.null? do
+      yield Node.new(nil, childptr)
+      childptr = CMark.node_next(childptr)
+    end
+  end
+
+  # Deletes the node and unlinks it (fixing pointers in
+  # parents and siblings appropriately).  Note: this method
+  # does not free the node.
+  def delete
+    CMark.node_unlink(@pointer)
+  end
+
+  # Insert a node before this Node.
+  # Params:
+  # +sibling+::  Sibling node to insert.
+  def insert_before(sibling)
+    res = CMark.node_insert_before(@pointer, sibling.pointer)
+    if res == 0 then raise NodeError, "could not insert before" end
+  end
+
+  # Insert a node after this Node.
+  # Params:
+  # +sibling+::  Sibling Node to insert.
+  def insert_after(sibling)
+    CMark.node_insert_before(@pointer, sibling.pointer)
+    if res == 0 then raise NodeError, "could not insert after" end
+  end
+
+  # Prepend a child to this Node.
+  # Params:
+  # +child+::  Child Node to prepend.
+  def prepend_child(child)
+    CMark.node_prepend_child(@pointer, child.pointer)
+    if res == 0 then raise NodeError, "could not prepend child" end
+  end
+
+  # Append a child to this Node.
+  # Params:
+  # +child+::  Child Node to append.
+  def prepend_child(child)
+    CMark.node_append_child(@pointer, child.pointer)
+    if res == 0 then raise NodeError, "could not append child" end
+  end
+
+  # Returns string content of this Node.
+  def string_content
+    CMark.node_get_string_content(@pointer)
+  end
+
+  # Sets string content of this Node.
+  # Params:
+  # +s+:: +String+ containing new content.
+  def string_content=(s)
+    res = CMark.node_set_string_content(@pointer, s)
+    if res == 0 then raise NodeError, "could not set string content" end
+  end
+
+  # Returns header level of this Node (must be a :header).
+  def header_level
+    if self.type != :header
+      raise NodeError, "can't get header_level for non-header"
+    end
+    CMark.node_get_header_level(@pointer)
+  end
+
+  # Sets header level of this Node (must be a :header).
+  # Params:
+  # +level+:: New header level (+Integer+).
+  def header_level=(level)
+    if self.type != :header
+      raise NodeError, "can't set header_level for non-header"
+    end
+    if !level.kind_of?(Integer) || level < 0 || level > 6
+      raise NodeError, "level must be between 1-6"
+    end
+    res = CMark.node_set_header_level(@pointer, level)
+    if res == 0 then raise NodeError, "could not set header level" end
+  end
+
+  # Returns list type of this Node (must be a :list).
+  def list_type
+    if self.type != :list
+      raise NodeError, "can't get list_type for non-list"
+    end
+    CMark.node_get_list_type(@pointer)
+  end
+
+  # Sets list type of this Node (must be a :list).
+  # Params:
+  # +list_type+:: New list type (+:list_type+), either
+  # :ordered_list or :bullet_list.
+  def list_type=(list_type)
+    if self.type != :list
+      raise NodeError, "can't set list_type for non-list"
+    end
+    res = CMark.node_set_list_type(@pointer, list_type)
+    if res == 0 then raise NodeError, "could not set list_type" end
+  end
+
+  # Returns start number of this Node (must be a :list of
+  # list_type :ordered_list).
+  def list_start
+    if self.type != :list || self.list_type != :ordered_list
+      raise NodeError, "can't get list_start for non-ordered list"
+    end
+    CMark.node_get_list_start(@pointer)
+  end
+
+  # Sets start number of this Node (must be a :list of
+  # list_type :ordered_list).
+  # Params:
+  # +start+:: New start number (+Integer+).
+  def list_start=(start)
+    if self.type != :list || self.list_type != :ordered_list
+      raise NodeError, "can't set list_start for non-ordered list"
+    end
+    if !start.kind_of?(Integer)
+      raise NodeError, "start must be Integer"
+    end
+    res = CMark.node_set_list_start(@pointer, start)
+    if res == 0 then raise NodeError, "could not set list_start" end
+  end
+
+  # Returns tight status of this Node (must be a :list).
+  def list_tight
+    if self.type != :list
+      raise NodeError, "can't get list_tight for non-list"
+    end
+    CMark.node_get_list_tight(@pointer)
+  end
+
+  # Sets tight status of this Node (must be a :list).
+  # Params:
+  # +tight+:: New tight status (boolean).
+  def list_tight=(tight)
+    if self.type != :list
+      raise NodeError, "can't set list_tight for non-list"
+    end
+    res = CMark.node_set_list_tight(@pointer, tight)
+    if res == 0 then raise NodeError, "could not set list_tight" end
+  end
+
+  # Returns URL of this Node (must be a :link or :image).
+  def url
+    if not (self.type == :link || self.type == :image)
+      raise NodeError, "can't get URL for non-link or image"
+    end
+    CMark.node_get_url(@pointer)
+  end
+
+  # Sets URL of this Node (must be a :link or :image).
+  # Params:
+  # +level+:: New header level (+String+).
+  def url=(level)
+    if self.type != :header
+      raise NodeError, "can't set header_level for non-header"
+    end
+    if !url.kind_of?(String)
+      raise NodeError, "url must be a String"
+    end
+    # Make our own copy so ruby won't garbage-collect it:
+    c_url = FFI::MemoryPointer.from_string(url)
+    res = CMark.node_set_url(@pointer, c_url)
+    if res == 0 then raise NodeError, "could not set header level" end
+  end
+
+  # Returns title of this Node (must be a :link or :image).
+  def title
+    if not (self.type == :link || self.type == :image)
+      raise NodeError, "can't get title for non-link or image"
+    end
+    CMark.node_get_title(@pointer)
+  end
+
+  # Sets title of this Node (must be a :link or :image).
+  # Params:
+  # +level+:: New header level (+String+).
+  def title=(level)
+    if self.type != :header
+      raise NodeError, "can't set header_level for non-header"
+    end
+    if !title.kind_of?(String)
+      raise NodeError, "title must be a String"
+    end
+    # Make our own copy so ruby won't garbage-collect it:
+    c_title = FFI::MemoryPointer.from_string(title)
+    res = CMark.node_set_title(@pointer, c_title)
+    if res == 0 then raise NodeError, "could not set header level" end
+  end
+
+  # An iterator that "walks the tree," descending into children
+  # recursively.
+  def walk(&blk)
+    yield self
+    self.each_child do |child|
+      child.walk(&blk)
+    end
+  end
+
+  # Returns the type of this Node.
+  def type
+    CMark.node_get_type(@pointer)
+  end
+
+  # Unlinks and frees this Node.
   def free
-      CMark.cmark_free_nodes(@pointer)
+    CMark.node_unlink(@pointer)
+    CMark.free_nodes(@pointer)
   end
 end
 
@@ -144,12 +339,12 @@ class Renderer
 
   def out(*args)
     args.each do |arg|
-      if arg.kind_of?(String)
-        @stream.write(arg)
+      if arg == :children
+        @node.each_child do |child|
+          self.out(child)
+        end
       elsif arg.kind_of?(Node)
         self.render(arg)
-      elsif arg.kind_of?(Array)
-        arg.each { |x| self.out(x) }
       else
         @stream.write(arg)
       end
@@ -166,7 +361,7 @@ class Renderer
       end
     elsif self.in_plain && node.type != :text && node.type != :softbreak
       # pass through looking for str, softbreak
-      node.children.each do |child|
+      node.each_child do |child|
         render(child)
       end
     else
@@ -180,7 +375,7 @@ class Renderer
   end
 
   def document(node)
-    self.out(node.children)
+    self.out(:children)
   end
 
   def code_block(node)
@@ -228,7 +423,7 @@ end
 class HtmlRenderer < Renderer
   def header(node)
     block do
-      self.out("<h", node.header_level, ">", node.children,
+      self.out("<h", node.header_level, ">", :children,
              "</h", node.header_level, ">")
     end
   end
@@ -236,9 +431,9 @@ class HtmlRenderer < Renderer
   def paragraph(node)
     block do
       if self.in_tight
-        self.out(node.children)
+        self.out(:children)
       else
-        self.out("<p>", node.children, "</p>")
+        self.out("<p>", :children, "</p>")
       end
     end
   end
@@ -249,13 +444,13 @@ class HtmlRenderer < Renderer
     block do
       if node.list_type == :bullet_list
         container("<ul>", "</ul>") do
-          self.out(node.children)
+          self.out(:children)
         end
       else
         start = node.list_start == 1 ? '' :
                 (' start="' + node.list_start.to_s + '"')
         container(start, "</ol>") do
-          self.out(node.children)
+          self.out(:children)
         end
       end
     end
@@ -265,7 +460,7 @@ class HtmlRenderer < Renderer
   def list_item(node)
     block do
       container("<li>", "</li>") do
-        self.out(node.children)
+        self.out(:children)
       end
     end
   end
@@ -273,7 +468,7 @@ class HtmlRenderer < Renderer
   def blockquote(node)
     block do
       container("<blockquote>", "</blockquote>") do
-        self.out(node.children)
+        self.out(:children)
       end
     end
   end
@@ -303,11 +498,11 @@ class HtmlRenderer < Renderer
   end
 
   def emph(node)
-    self.out("<em>", node.children, "</em>")
+    self.out("<em>", :children, "</em>")
   end
 
   def strong(node)
-    self.out("<strong>", node.children, "</strong>")
+    self.out("<strong>", :children, "</strong>")
   end
 
   def link(node)
@@ -315,7 +510,7 @@ class HtmlRenderer < Renderer
     if node.title && node.title.length > 0
       self.out(' title="', CGI.escapeHTML(node.title), '"')
     end
-    self.out('>', node.children, '</a>')
+    self.out('>', :children, '</a>')
   end
 
   def image(node)
@@ -324,7 +519,7 @@ class HtmlRenderer < Renderer
       self.out(' title="', CGI.escapeHTML(node.title), '"')
     end
     plain do
-      self.out(' alt="', node.children, '" />')
+      self.out(' alt="', :children, '" />')
     end
   end
 
@@ -348,3 +543,8 @@ class HtmlRenderer < Renderer
   end
 end
 
+class HtmlNativeRenderer < Renderer
+  def document(node)
+    @stream.write(CMark.render_html(node.pointer))
+  end
+end
