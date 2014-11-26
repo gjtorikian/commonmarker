@@ -356,7 +356,6 @@ class Renderer
     @node = node
     if node.type == :document
       self.document(node)
-      self.out("\n")
       if @stringwriter
         return @stream.string
       end
@@ -422,6 +421,13 @@ class Renderer
 end
 
 class HtmlRenderer < Renderer
+  def render(node)
+    super(node)
+    if node.type == :document
+      self.out("\n")
+    end
+  end
+
   def header(node)
     block do
       self.out("<h", node.header_level, ">", :children,
