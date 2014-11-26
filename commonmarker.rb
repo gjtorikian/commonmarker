@@ -110,8 +110,9 @@ class Node
   def each_child
     childptr = CMark.node_first_child(@pointer)
     while not childptr.null? do
+      nextptr = CMark.node_next(childptr)
       yield Node.new(nil, childptr)
-      childptr = CMark.node_next(childptr)
+      childptr = nextptr
     end
   end
 

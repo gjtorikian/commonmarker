@@ -24,7 +24,9 @@ end
 # Transform links to regular text
 doc.walk do |node|
   if node.type == :link
-    node.insert_before(node.first_child)
+    node.each_child do |child|
+      node.insert_before(child)
+    end
     node.delete
   end
 end
