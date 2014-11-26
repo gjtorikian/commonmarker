@@ -43,30 +43,30 @@ class Node
       return nil
     end
     @pointer = pointer
-    @type = CMark::cmark_node_get_type(pointer)
+    @type = CMark.cmark_node_get_type(pointer)
     @children = []
     @parent = nil
-    first_child = CMark::cmark_node_first_child(pointer)
+    first_child = CMark.cmark_node_first_child(pointer)
     b = first_child
     while !b.null?
       child = Node.new(b)
       child.parent = self
       @children << child
-      b = CMark::cmark_node_next(b)
+      b = CMark.cmark_node_next(b)
     end
-    @string_content = CMark::cmark_node_get_string_content(pointer)
+    @string_content = CMark.cmark_node_get_string_content(pointer)
     if @type == :header
-      @header_level = CMark::cmark_node_get_header_level(pointer)
+      @header_level = CMark.cmark_node_get_header_level(pointer)
     end
     if @type == :list
-      @list_type = CMark::cmark_node_get_list_type(pointer)
-      @list_start = CMark::cmark_node_get_list_start(pointer)
-      @list_tight = CMark::cmark_node_get_list_tight(pointer)
+      @list_type = CMark.cmark_node_get_list_type(pointer)
+      @list_start = CMark.cmark_node_get_list_start(pointer)
+      @list_tight = CMark.cmark_node_get_list_tight(pointer)
     end
     if @type == :link || @type == :image
-      @url = CMark::cmark_node_get_url(pointer)
+      @url = CMark.cmark_node_get_url(pointer)
       if !@url then @url = "" end
-      @title = CMark::cmark_node_get_title(pointer)
+      @title = CMark.cmark_node_get_title(pointer)
       if !@title then @title = "" end
     end
     if @type == :document
@@ -112,7 +112,7 @@ class Node
   end
 
   def self.parse_string(s)
-    Node.new(CMark::cmark_parse_document(s, s.bytesize))
+    Node.new(CMark.cmark_parse_document(s, s.bytesize))
   end
 
   def self.parse_file(f)
@@ -122,7 +122,7 @@ class Node
 
   protected
   def free
-      CMark::cmark_free_nodes(@pointer)
+      CMark.cmark_free_nodes(@pointer)
   end
 end
 
