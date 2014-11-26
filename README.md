@@ -9,12 +9,22 @@ progress.
 The wrapper assumes that you have installed the libcmark dynamic
 library.  It can be found [here](http://github.com/jgm/CommonMark/).
 
-The parser returns a Node object that wraps pointers to the
+The parser returns a `Node` object that wraps pointers to the
 structures allocated by libcmark.  Access to libcmark's fast
-HTML renderer is provided (the HtmlNativeRenderer class). For
-more flexibility, a ruby HtmlRenderer class is also provided,
+HTML renderer is provided (the `HtmlNativeRenderer` class). For
+more flexibility, a ruby `HtmlRenderer` class is also provided,
 which can be customized through subclassing.  New renderers for
 any output format can easily be added.
+
+Simple usage example:
+
+``` ruby
+require './commonmarker'
+
+doc = Node.parse_string("*Hello* world")
+print(HtmlNativeRenderer.new.render(doc))
+doc.free
+```
 
 Some rough benchmarks:
 
@@ -27,12 +37,13 @@ redcarpet                              0.127 s
 kramdown                              14.700 s
 ```
 
-The library also includes a `walk` function for
-manipulating the AST produced by the parser.  So, for example,
-you can easily change all the links to plain text, or demote
-level 5 headers to regular paragraphs, prior to rendering.
+The library also includes a `walk` function for walking the
+AST produced by the parser, and either transforming it or
+extracting information.  So, for example, you can easily print out all
+the URLs linked to in a document, or change all the links to plain text,
+or demote level 5 headers to regular paragraphs.
 
-Usage example:
+More complex usage example:
 
 ``` ruby
 require './commonmarker'
@@ -66,17 +77,6 @@ doc.walk do |node|
   end
 end
 
-# Render the transformed document to a string
-renderer = HtmlNativeRenderer.new
-html = renderer.render(doc)
-print(html)
-
-# Print any warnings to STDERR
-renderer.warnings.each do |w|
-  STDERR.write(w)
-  STDERR.write("\n")
-end
-
 # Create a custom renderer.
 class MyHtmlRenderer < HtmlRenderer
   def initialize(stream)
@@ -96,6 +96,12 @@ end
 # of returning a string
 myrenderer = MyHtmlRenderer.new(STDOUT)
 myrenderer.render(doc)
+
+# Print any warnings to STDERR
+renderer.warnings.each do |w|
+  STDERR.write(w)
+  STDERR.write("\n")
+end
 
 # free allocated memory when you're done
 doc.free
