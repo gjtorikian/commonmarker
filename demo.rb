@@ -59,4 +59,6 @@ end
 # of returning a string
 myrenderer = MyHtmlRenderer.new(STDOUT)
 myrenderer.render(doc)
+
+# free allocated memory when you're done
 doc.free
