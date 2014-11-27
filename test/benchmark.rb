@@ -12,8 +12,8 @@ benchinput = File.open('../CommonMark/bench/benchinput.md', 'r').read()
 
 printf("input size = %d bytes\n\n", benchinput.bytesize)
 
-dobench("commonmarker with HtmlNativeRenderer") do
-  HtmlNativeRenderer.new.render(Node.parse_string(benchinput))
+dobench("commonmarker with to_html") do
+  Node.parse_string(benchinput).to_html
 end
 
 dobench("commonmarker with ruby HtmlRenderer") do

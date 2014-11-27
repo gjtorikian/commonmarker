@@ -8,12 +8,16 @@ library does not need to be installed independently.
 
 The parser returns a `Node` object that wraps pointers to the
 structures allocated by libcmark.  Access to libcmark's fast
-HTML renderer is provided (the `HtmlNativeRenderer` class). For
+HTML renderer is provided (the `to_html` method). For
 more flexibility, a ruby `HtmlRenderer` class is also provided,
 which can be customized through subclassing.  New renderers for
 any output format can easily be added.
 
 To install:
+
+    rake install
+
+or
 
     gem build commonmarker.gemspec
     gem install commonmark-VERSION.gem
@@ -24,7 +28,7 @@ Simple usage example:
 require './commonmarker'
 
 doc = Node.parse_string("*Hello* world")
-print(HtmlNativeRenderer.new.render(doc))
+print(doc.to_html)
 doc.free
 ```
 
@@ -33,10 +37,10 @@ Some rough benchmarks:
 ```
 input size = 10031600 bytes
 
-commonmarker with HtmlNativeRenderer   0.188 s
-commonmarker with ruby HtmlRenderer    2.418 s
-redcarpet                              0.127 s
-kramdown                              14.700 s
+redcarpet                              0.13 s
+commonmarker with to_html              0.17 s
+commonmarker with ruby HtmlRenderer    2.58 s
+kramdown                              14.21 s
 ```
 
 The library also includes a `walk` function for walking the

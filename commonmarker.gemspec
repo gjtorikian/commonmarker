@@ -19,8 +19,8 @@ Gem::Specification.new do |s|
     commonmarker.gemspec
     bin/commonmarker
     lib/commonmarker.rb
-    test/bench.rb
-    test/test.rb
+    test/benchmark.rb
+    test/basic_test.rb
     ext/commonmarker/CMakeLists.txt
     ext/commonmarker/commonmarker.h
     ext/commonmarker/commonmarker.c

@@ -316,6 +316,11 @@ class Node
     CMark.node_get_type(@pointer)
   end
 
+  # Convert to HTML using libcmark's fast (but uncustomizable) renderer.
+  def to_html
+    CMark.render_html(@pointer)
+  end
+
   # Unlinks and frees this Node.
   def free
     CMark.node_unlink(@pointer)
@@ -548,11 +553,5 @@ class HtmlRenderer < Renderer
 
   def softbreak(node)
     self.out("\n")
-  end
-end
-
-class HtmlNativeRenderer < Renderer
-  def document(node)
-    @stream.write(CMark.render_html(node.pointer))
   end
 end

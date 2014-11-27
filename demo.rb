@@ -32,9 +32,7 @@ doc.walk do |node|
 end
 
 # Render the transformed document to a string
-renderer = HtmlNativeRenderer.new
-html = renderer.render(doc)
-print(html)
+print(renderer.render(doc).to_html)
 
 # Print any warnings to STDERR
 renderer.warnings.each do |w|

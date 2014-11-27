@@ -9,7 +9,7 @@ task :default => [:test]
 gem_spec = Gem::Specification.load('commonmarker.gemspec')
 
 # Ruby Extension
-Rake::ExtensionTask.new('cmark', gem_spec)
+Rake::ExtensionTask.new('commonmarker', gem_spec)
 
 # Packaging
 require 'bundler/gem_tasks'
@@ -30,34 +30,8 @@ task 'test:unit' => :compile
 desc 'Run unit and conformance tests'
 task :test => %w[test:unit]
 
-# desc 'Run conformance tests (MARKDOWN_TEST_VER=1.0.3)'
-# task 'test:conformance' => :compile do |t|
-#   script  = "#{pwd}/bin/redcarpet"
-#   version = ENV['MARKDOWN_TEST_VER'] || '1.0.3'
-#   lib_dir = "#{pwd}/lib"
-# 
-#   chdir("test/MarkdownTest_#{version}") do
-#     sh "RUBYLIB=#{lib_dir} ./MarkdownTest.pl --script='#{script}' --tidy"
-#   end
-# end
-# 
-# desc 'Run version 1.0 conformance suite'
-# task 'test:conformance:1.0' => :compile do |t|
-#   ENV['MARKDOWN_TEST_VER'] = '1.0'
-#   Rake::Task['test:conformance'].invoke
-# end
-# 
-# desc 'Run 1.0.3 conformance suite'
-# task 'test:conformance:1.0.3' => :compile do |t|
-#   ENV['MARKDOWN_TEST_VER'] = '1.0.3'
-#   Rake::Task['test:conformance'].invoke
-# end
-# 
-# desc 'Run unit and conformance tests'
-# task :test => %w[test:unit test:conformance]
-# 
-# desc 'Run benchmarks'
-# task :benchmark => :compile do |t|
-#   $:.unshift 'lib'
-#   load 'test/benchmark.rb'
-# end
+desc 'Run benchmarks'
+task :benchmark => :compile do |t|
+  $:.unshift 'lib'
+  load 'test/benchmark.rb'
+end
