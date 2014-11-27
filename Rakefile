@@ -6,10 +6,10 @@ require 'digest/md5'
 task :default => [:test]
 
 # Gem Spec
-gem_spec = Gem::Specification.load('redcarpet.gemspec')
+gem_spec = Gem::Specification.load('commonmarker.gemspec')
 
 # Ruby Extension
-Rake::ExtensionTask.new('redcarpet', gem_spec)
+Rake::ExtensionTask.new('cmark', gem_spec)
 
 # Packaging
 require 'bundler/gem_tasks'
