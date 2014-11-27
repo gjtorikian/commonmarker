@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'cmark.so'
 require 'ffi'
 require 'stringio'
 require 'cgi'

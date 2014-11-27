@@ -1,4 +1,4 @@
-require './commonmarker'
+require 'commonmarker'
 require 'minitest/autorun'
 
 class TestNode < Minitest::Unit::TestCase

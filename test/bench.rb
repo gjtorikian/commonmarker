@@ -1,4 +1,4 @@
-require './commonmarker'
+require 'commonmarker'
 require 'redcarpet'
 require 'kramdown'
 require 'benchmark'
