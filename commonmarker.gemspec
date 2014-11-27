@@ -22,6 +22,8 @@ Gem::Specification.new do |s|
     test/bench.rb
     test/test.rb
     ext/commonmarker/CMakeLists.txt
+    ext/commonmarker/commonmarker.h
+    ext/commonmarker/commonmarker.c
     ext/commonmarker/bench.h
     ext/commonmarker/blocks.c
     ext/commonmarker/buffer.c
