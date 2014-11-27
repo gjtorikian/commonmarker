@@ -40,7 +40,7 @@ class TestNode < Minitest::Unit::TestCase
     end
   end
 
-  def test_free
+  def teardown
     @doc.free
   end
 end
