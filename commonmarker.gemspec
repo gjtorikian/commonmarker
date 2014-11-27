@@ -16,8 +16,11 @@ Gem::Specification.new do |s|
     Gemfile
     README.md
     Rakefile
-    bin/commonmarker
     commonmarker.gemspec
+    bin/commonmarker
+    lib/commonmarker.rb
+    test/bench.rb
+    test/test.rb
     ext/cmark/CMakeLists.txt
     ext/cmark/bench.h
     ext/cmark/blocks.c
@@ -54,8 +57,6 @@ Gem::Specification.new do |s|
     ext/cmark/html/html.c
     ext/cmark/html/html_unescape.gperf
     ext/cmark/html/html_unescape.h
-    test/bench.rb
-    test/test.rb
   ]
   # = MANIFEST =
   s.test_files = s.files.grep(%r{^test/})
