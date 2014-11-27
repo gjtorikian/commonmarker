@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
     bin/commonmarker
     lib/commonmarker.rb
     test/benchmark.rb
-    test/basic_test.rb
+    test/test_basics.rb
     ext/commonmarker/CMakeLists.txt
     ext/commonmarker/commonmarker.h
     ext/commonmarker/commonmarker.c
