@@ -56,7 +56,7 @@ module CMark
 end
 
 module CommonMarker
-  VERSION = Gem.loaded_specs['commonmarker'].version
+  VERSION = 0.1
 
   class NodeError < StandardError
   end

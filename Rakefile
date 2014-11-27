@@ -28,7 +28,13 @@ end
 task 'test:unit' => :compile
 
 desc 'Run unit and conformance tests'
-task :test => %w[test:unit]
+task :test => %w[test:unit test:spec]
+
+desc 'Run spec tests'
+task 'test:spec' => :compile do |t|
+  sh 'python test/spec_tests.py --spec test/spec.txt --prog bin/commonmarker'
+  sh 'python test/spec_tests.py --spec test/spec.txt --prog "bin/commonmarker --html-renderer"'
+end
 
 desc 'Run benchmarks'
 task :benchmark => :compile do |t|
@@ -40,5 +46,6 @@ desc 'Update cmark sources from git repository'
 task :gather do
   sh 'git clone https://github.com/jgm/CommonMark commonmark.tmp'
   sh 'cp -rv commonmark.tmp/src/* commonmark.tmp/src/*.* ext/commonmarker/'
+  sh 'cp -v commonmark.tmp/spec.txt commonmark.tmp/spec_tests.py test/'
   sh 'rm -rf commonmark.tmp'
 end
