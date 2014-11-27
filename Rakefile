@@ -35,3 +35,10 @@ task :benchmark => :compile do |t|
   $:.unshift 'lib'
   load 'test/benchmark.rb'
 end
+
+desc 'Update cmark sources from git repository'
+task :gather do
+  sh 'git clone https://github.com/jgm/CommonMark commonmark.tmp'
+  sh 'cp -rv commonmark.tmp/src/* commonmark.tmp/src/*.* ext/commonmarker/'
+  sh 'rm -rf commonmark.tmp'
+end
