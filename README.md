@@ -1,13 +1,10 @@
 commonmarker
 ============
 
-Ruby wrapper for libcmark (CommonMark parser)
-
-Eventually this will be made into a gem.  For now, it's a work in
-progress.
-
-The wrapper assumes that you have installed the libcmark dynamic
-library.  It can be found [here](http://github.com/jgm/CommonMark/).
+Ruby wrapper for [libcmark](https://github.com/jgm/CommonMark),
+the reference parser for CommonMark.  The gem includes sources
+for the C library (currently from commit 677a22519a), so the
+library does not need to be installed independently.
 
 The parser returns a `Node` object that wraps pointers to the
 structures allocated by libcmark.  Access to libcmark's fast
@@ -15,6 +12,11 @@ HTML renderer is provided (the `HtmlNativeRenderer` class). For
 more flexibility, a ruby `HtmlRenderer` class is also provided,
 which can be customized through subclassing.  New renderers for
 any output format can easily be added.
+
+To install:
+
+    gem build commonmarker.gemspec
+    gem install commonmark-VERSION.gem
 
 Simple usage example:
 
