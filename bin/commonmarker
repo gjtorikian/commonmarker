@@ -1,7 +1,41 @@
 #!/usr/bin/env ruby
+# Usage: commonmarker [--html-renderer] [FILE..]
+# Convert one or more CommonMark files to HTML and write to standard output.
+# If no FILE argument is provided, text will be read from STDIN.
+# With --html-renderer, use the HtmlRenderer renderer rather than the native C
+# renderer.
+if ARGV.include?('--help') or ARGV.include?('-h')
+  File.read(__FILE__).split("\n").grep(/^# /).each do |line|
+    puts line[2..-1]
+  end
+  exit 0
+end
+
 require 'commonmarker'
 
+if ARGV.include?('--version') or ARGV.include?('-v')
+  puts "commonmarker #{CommonMarker::VERSION}"
+  exit 0
+end
+
+root = File.expand_path('../../', __FILE__)
+$:.unshift File.expand_path('lib', root)
+
+renderer = nil
+ARGV.delete_if do |arg|
+  if arg =~ /^--html-renderer$/
+    renderer = CommonMarker::HtmlRenderer.new
+    true
+  else
+    false
+  end
+end
+
 doc = CommonMarker::Node.parse_file(ARGF)
-renderer = CommonMarker::HtmlRenderer.new
-STDOUT.write(renderer.render(doc))
+
+if renderer
+  STDOUT.write(renderer.render(doc))
+else
+  STDOUT.write(doc.to_html)
+end
 doc.free
