@@ -1,6 +1,6 @@
 [
   {
-    "markdown": "→foo→baz→→bim\n", 
+    "markdown": "\tfoo\tbaz\t\tbim\n", 
     "section": "Preprocessing", 
     "html": "<pre><code>foo baz     bim\n</code></pre>\n", 
     "end_line": 210, 
@@ -8,7 +8,7 @@
     "example": 1
   }, 
   {
-    "markdown": "    a→a\n    ὐ→a\n", 
+    "markdown": "    a\ta\n    ὐ\ta\n", 
     "section": "Preprocessing", 
     "html": "<pre><code>a   a\nὐ   a\n</code></pre>\n", 
     "end_line": 219, 
@@ -1760,7 +1760,7 @@
     "example": 220
   }, 
   {
-    "markdown": "\\→\\A\\a\\ \\3\\φ\\«\n", 
+    "markdown": "\\\t\\A\\a\\ \\3\\φ\\«\n", 
     "section": "Backslash escapes", 
     "html": "<p>\\   \\A\\a\\ \\3\\φ\\«</p>\n", 
     "end_line": 3936, 

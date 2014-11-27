@@ -28,12 +28,7 @@ end
 task 'test:unit' => :compile
 
 desc 'Run unit and conformance tests'
-task :test => %w[test:unit test:spec]
-
-desc 'Run spec tests'
-task 'test:spec' => :compile do |t|
-  # eventually do something with test/spec_tests.json
-end
+task :test => %w[test:unit]
 
 desc 'Run benchmarks'
 task :benchmark => :compile do |t|
