@@ -1,7 +1,7 @@
 require 'commonmarker'
 
 # parse the files specified on the command line
-doc = Node.parse_file(ARGF)
+doc = CommonMarker::Node.parse_file(ARGF)
 
 # Walk tree and print out URLs for links
 doc.walk do |node|
@@ -35,7 +35,7 @@ end
 print(doc.to_html)
 
 # Create a custom renderer.
-class MyHtmlRenderer < HtmlRenderer
+class MyHtmlRenderer < CommonMarker::HtmlRenderer
   def initialize(stream)
     super
     @headerid = 1

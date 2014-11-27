@@ -13,11 +13,11 @@ benchinput = File.open('../CommonMark/bench/benchinput.md', 'r').read()
 printf("input size = %d bytes\n\n", benchinput.bytesize)
 
 dobench("commonmarker with to_html") do
-  Node.parse_string(benchinput).to_html
+  CommonMarker::Node.parse_string(benchinput).to_html
 end
 
 dobench("commonmarker with ruby HtmlRenderer") do
-  HtmlRenderer.new.render(Node.parse_string(benchinput))
+  CommonMarker::HtmlRenderer.new.render(CommonMarker::Node.parse_string(benchinput))
 end
 
 dobench("redcarpet") do

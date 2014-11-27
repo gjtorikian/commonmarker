@@ -1,5 +1,6 @@
 require 'commonmarker'
 require 'minitest/autorun'
+include CommonMarker
 
 class TestNode < Minitest::Unit::TestCase
   def setup
