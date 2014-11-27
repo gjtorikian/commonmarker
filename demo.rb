@@ -36,7 +36,7 @@ print(doc.to_html)
 
 # Create a custom renderer.
 class MyHtmlRenderer < CommonMarker::HtmlRenderer
-  def initialize(stream)
+  def initialize
     super
     @headerid = 1
   end
@@ -51,8 +51,8 @@ end
 
 # this renderer prints directly to STDOUT, instead
 # of returning a string
-myrenderer = MyHtmlRenderer.new(STDOUT)
-myrenderer.render(doc)
+myrenderer = MyHtmlRenderer.new
+print(myrenderer.render(doc))
 
 # Print any warnings to STDERR
 myrenderer.warnings.each do |w|

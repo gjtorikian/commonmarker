@@ -332,14 +332,8 @@ module CommonMarker
 
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
-    def initialize(stream = nil)
-      if stream
-        @stream = stream
-        @stringwriter = false
-      else
-        @stringwriter = true
-        @stream = StringIO.new
-      end
+    def initialize
+      @stream = StringIO.new
       @need_blocksep = false
       @warnings = Set.new []
       @in_tight = false
@@ -352,9 +346,13 @@ module CommonMarker
           @node.each_child do |child|
             self.out(child)
           end
+        elsif arg.kind_of?(Array)
+          arg.each do |x|
+            self.render(x)
+          end
         elsif arg.kind_of?(Node)
           self.render(arg)
-        else
+        else 
           @stream.write(arg)
         end
       end
@@ -364,11 +362,8 @@ module CommonMarker
       @node = node
       if node.type == :document
         self.document(node)
-        if @stringwriter
-          return @stream.string
-        end
+        return @stream.string
       elsif self.in_plain && node.type != :text && node.type != :softbreak
-        # pass through looking for str, softbreak
         node.each_child do |child|
           render(child)
         end
@@ -430,9 +425,9 @@ module CommonMarker
 
   class HtmlRenderer < Renderer
     def render(node)
-      super(node)
+      result = super(node)
       if node.type == :document
-        self.out("\n")
+        result += "\n"
       end
     end
 

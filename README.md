@@ -85,7 +85,7 @@ end
 
 # Create a custom renderer.
 class MyHtmlRenderer < HtmlRenderer
-  def initialize(stream)
+  def initialize
     super
     @headerid = 1
   end
@@ -100,8 +100,8 @@ end
 
 # this renderer prints directly to STDOUT, instead
 # of returning a string
-myrenderer = MyHtmlRenderer.new(STDOUT)
-myrenderer.render(doc)
+myrenderer = MyHtmlRenderer.new
+print(myrenderer.render(doc))
 
 # Print any warnings to STDERR
 renderer.warnings.each do |w|

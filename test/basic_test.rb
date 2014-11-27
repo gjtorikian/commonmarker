@@ -21,7 +21,11 @@ class TestNode < Minitest::Unit::TestCase
     end
   end
 
-  def test_render
+  def test_to_html
+    assert_equal "<p>Hi <em>there</em></p>\n", @doc.to_html
+  end
+
+  def test_html_renderer
     renderer = HtmlRenderer.new
     result = renderer.render(@doc)
     assert_equal "<p>Hi <em>there</em></p>\n", result
