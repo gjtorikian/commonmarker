@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require 'cmark.so'
+require 'comonmarker.so'
 require 'ffi'
 require 'stringio'
 require 'cgi'

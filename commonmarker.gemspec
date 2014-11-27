@@ -21,47 +21,47 @@ Gem::Specification.new do |s|
     lib/commonmarker.rb
     test/bench.rb
     test/test.rb
-    ext/cmark/CMakeLists.txt
-    ext/cmark/bench.h
-    ext/cmark/blocks.c
-    ext/cmark/buffer.c
-    ext/cmark/buffer.h
-    ext/cmark/case_fold_switch.inc
-    ext/cmark/chunk.h
-    ext/cmark/cmark.c
-    ext/cmark/cmark.h
-    ext/cmark/config.h.in
-    ext/cmark/debug.h
-    ext/cmark/config.h
-    ext/cmark/cmark_export.h
-    ext/cmark/extconf.rb
-    ext/cmark/html
-    ext/cmark/inlines.c
-    ext/cmark/inlines.h
-    ext/cmark/main.c
-    ext/cmark/node.c
-    ext/cmark/node.h
-    ext/cmark/parser.h
-    ext/cmark/print.c
-    ext/cmark/references.c
-    ext/cmark/references.h
-    ext/cmark/scanners.c
-    ext/cmark/scanners.h
-    ext/cmark/scanners.re
-    ext/cmark/utf8.c
-    ext/cmark/utf8.h
-    ext/cmark/html/houdini.h
-    ext/cmark/html/houdini_href_e.c
-    ext/cmark/html/houdini_html_e.c
-    ext/cmark/html/houdini_html_u.c
-    ext/cmark/html/html.c
-    ext/cmark/html/html_unescape.gperf
-    ext/cmark/html/html_unescape.h
+    ext/commonmarker/CMakeLists.txt
+    ext/commonmarker/bench.h
+    ext/commonmarker/blocks.c
+    ext/commonmarker/buffer.c
+    ext/commonmarker/buffer.h
+    ext/commonmarker/case_fold_switch.inc
+    ext/commonmarker/chunk.h
+    ext/commonmarker/cmark.c
+    ext/commonmarker/cmark.h
+    ext/commonmarker/config.h.in
+    ext/commonmarker/debug.h
+    ext/commonmarker/config.h
+    ext/commonmarker/cmark_export.h
+    ext/commonmarker/extconf.rb
+    ext/commonmarker/html
+    ext/commonmarker/inlines.c
+    ext/commonmarker/inlines.h
+    ext/commonmarker/main.c
+    ext/commonmarker/node.c
+    ext/commonmarker/node.h
+    ext/commonmarker/parser.h
+    ext/commonmarker/print.c
+    ext/commonmarker/references.c
+    ext/commonmarker/references.h
+    ext/commonmarker/scanners.c
+    ext/commonmarker/scanners.h
+    ext/commonmarker/scanners.re
+    ext/commonmarker/utf8.c
+    ext/commonmarker/utf8.h
+    ext/commonmarker/html/houdini.h
+    ext/commonmarker/html/houdini_href_e.c
+    ext/commonmarker/html/houdini_html_e.c
+    ext/commonmarker/html/houdini_html_u.c
+    ext/commonmarker/html/html.c
+    ext/commonmarker/html/html_unescape.gperf
+    ext/commonmarker/html/html_unescape.h
   ]
   # = MANIFEST =
   s.test_files = s.files.grep(%r{^test/})
   s.extra_rdoc_files = ["LICENSE"]
-  s.extensions = ["ext/cmark/extconf.rb"]
+  s.extensions = ["ext/commonmarker/extconf.rb"]
   s.executables = ["commonmarker"]
   s.require_paths = ["lib"]
 
