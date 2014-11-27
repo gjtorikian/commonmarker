@@ -25,9 +25,9 @@ or
 Simple usage example:
 
 ``` ruby
-require './commonmarker'
+require 'commonmarker'
 
-doc = Node.parse_string("*Hello* world")
+doc = CommonMarker::Node.parse_string("*Hello* world")
 print(doc.to_html)
 doc.free
 ```
@@ -52,7 +52,8 @@ or demote level 5 headers to regular paragraphs.
 More complex usage example:
 
 ``` ruby
-require './commonmarker'
+require 'commonmarker'
+include CommonMarker
 
 # parse the files specified on the command line
 doc = Node.parse_file(ARGF)
