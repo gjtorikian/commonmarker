@@ -33,6 +33,12 @@ class PathologicalInputsTest < MiniTest::Unit::TestCase
     end
   end
 
+  def test_pathological_4
+    assert_performance_linear 0.5 do |n|
+      markdown("#{'[' * n}a#{']' * n}")
+    end
+  end
+
   def test_unbound_recursion
     assert_performance_linear 0.99 do |n|
       markdown(("[" * n) + "foo" + ("](bar)" * n ))
