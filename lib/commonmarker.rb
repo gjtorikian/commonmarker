@@ -321,7 +321,7 @@ module CommonMarker
 
     # Convert to HTML using libcmark's fast (but uncustomizable) renderer.
     def to_html
-      CMark.render_html(@pointer)
+      CMark.render_html(@pointer).force_encoding("utf-8")
     end
 
     # Unlinks and frees this Node.
