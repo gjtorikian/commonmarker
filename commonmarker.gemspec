@@ -67,5 +67,8 @@ Gem::Specification.new do |s|
   s.executables = ["commonmarker"]
   s.require_paths = ["lib"]
 
+  s.add_runtime_dependency "ffi", "~> 1.9.0"
+
   s.add_development_dependency "rake-compiler", "~> 0.8.3"
+  s.add_development_dependency "bundler", "~> 1.7.7"
 end
