@@ -1,4 +1,4 @@
-require './commonmarker'
+require 'commonmarker'
 
 # parse the files specified on the command line
 doc = Node.parse_file(ARGF)
@@ -32,13 +32,7 @@ doc.walk do |node|
 end
 
 # Render the transformed document to a string
-print(renderer.render(doc).to_html)
-
-# Print any warnings to STDERR
-renderer.warnings.each do |w|
-  STDERR.write(w)
-  STDERR.write("\n")
-end
+print(doc.to_html)
 
 # Create a custom renderer.
 class MyHtmlRenderer < HtmlRenderer
@@ -59,6 +53,12 @@ end
 # of returning a string
 myrenderer = MyHtmlRenderer.new(STDOUT)
 myrenderer.render(doc)
+
+# Print any warnings to STDERR
+myrenderer.warnings.each do |w|
+  STDERR.write(w)
+  STDERR.write("\n")
+end
 
 # free allocated memory when you're done
 doc.free
