@@ -1,6 +1,9 @@
 commonmarker
 ============
 
+**Don't try to use this.  It's very much work in progress and is
+currently in an unuseable state.**
+
 Ruby wrapper for [libcmark](https://github.com/jgm/CommonMark),
 the reference parser for CommonMark.  The gem includes sources
 for the C library (currently from commit 677a22519a), so the
