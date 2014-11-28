@@ -517,7 +517,7 @@ module CommonMarker
     end
 
     def link(node)
-      self.out('<a href="', URI.escape(node.url), '"')
+      self.out('<a href="', node.url.nil? ? '' : URI.escape(node.url), '"')
       if node.title && node.title.length > 0
         self.out(' title="', CGI.escapeHTML(node.title), '"')
       end
