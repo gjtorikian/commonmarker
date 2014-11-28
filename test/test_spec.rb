@@ -10,13 +10,13 @@ class TestSpec < Minitest::Unit::TestCase
       doc = Node.parse_string(testcase['markdown'])
       actual = doc.to_html
       doc.free
-      assert_equal actual, testcase['html']
+      assert_equal testcase['html'], actual, testcase['markdown']
     end
     define_method("test_html_renderer_example_#{testcase['example']}") do
       doc = Node.parse_string(testcase['markdown'])
       actual = HtmlRenderer.new.render(doc)
       doc.free
-      assert_equal actual, testcase['html']
+      assert_equal testcase['html'], actual, testcase['markdown']
     end
   end
 end
