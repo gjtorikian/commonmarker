@@ -1,13 +1,14 @@
 commonmarker
 ============
 
-**Don't try to use this.  It's very much work in progress and is
-currently in an unuseable state.**
-
 Ruby wrapper for [libcmark](https://github.com/jgm/CommonMark),
-the reference parser for CommonMark.  The gem includes sources
-for the C library (currently from commit 677a22519a), so the
-library does not need to be installed independently.
+the reference parser for CommonMark.  The gem assumes you have
+installed libcmark.  It would be nice to have the gem build the
+library as a ruby extension, but I leave that for someone with
+more knowledge of ruby extensions to implement.
+
+Note that the library currently does not pass all tests.  It's
+a work in progress, and you shouldn't use it for anything serious.
 
 The parser returns a `Node` object that wraps pointers to the
 structures allocated by libcmark.  Access to libcmark's fast

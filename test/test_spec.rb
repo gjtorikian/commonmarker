@@ -16,7 +16,7 @@ class TestSpec < Minitest::Unit::TestCase
       doc = Node.parse_string(testcase['markdown'])
       actual = HtmlRenderer.new.render(doc)
       doc.free
-      # assert_equal testcase['html'], actual, testcase['markdown']
+      assert_equal testcase['html'], actual, testcase['markdown']
     end
   end
 end
