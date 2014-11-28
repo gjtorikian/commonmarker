@@ -52,6 +52,8 @@ module CMark
   attach_function :cmark_node_set_list_start, [:node, :int], :int
   attach_function :cmark_node_get_list_tight, [:node], :bool
   attach_function :cmark_node_set_list_tight, [:node, :bool], :int
+  attach_function :cmark_node_get_fence_info, [:node], :string
+  attach_function :cmark_node_set_fence_info, [:node, :string], :int
 end
 
 module CommonMarker
@@ -266,10 +268,10 @@ module CommonMarker
 
     # Sets URL of this Node (must be a :link or :image).
     # Params:
-    # +level+:: New header level (+String+).
-    def url=(level)
-      if self.type != :header
-        raise NodeError, "can't set header_level for non-header"
+    # +URL+:: New URL (+String+).
+    def url=(url)
+      if not (self.type == :link || self.type == :image)
+        raise NodeError, "can't set URL for non-link or image"
       end
       if !url.kind_of?(String)
         raise NodeError, "url must be a String"
@@ -290,10 +292,10 @@ module CommonMarker
 
     # Sets title of this Node (must be a :link or :image).
     # Params:
-    # +level+:: New header level (+String+).
-    def title=(level)
-      if self.type != :header
-        raise NodeError, "can't set header_level for non-header"
+    # +title+:: New title (+String+).
+    def title=(title)
+      if not (self.type == :link || self.type == :image)
+        raise NodeError, "can't set title for non-link or image"
       end
       if !title.kind_of?(String)
         raise NodeError, "title must be a String"
@@ -302,6 +304,30 @@ module CommonMarker
       c_title = FFI::MemoryPointer.from_string(title)
       res = CMark.node_set_title(@pointer, c_title)
       if res == 0 then raise NodeError, "could not set header level" end
+    end
+
+    # Returns fence info of this Node (must be a :code_block).
+    def fence_info
+      if not (self.type == :code_block)
+        raise NodeError, "can't get fence_info for non code_block"
+      end
+      CMark.node_get_fence_info(@pointer)
+    end
+
+    # Sets fence_info of this Node (must be a :code_block).
+    # Params:
+    # +info+:: New info (+String+).
+    def fence_info=(info)
+      if self.type != :code_block
+        raise NodeError, "can't set fence_info for non code_block"
+      end
+      if !info.kind_of?(String)
+        raise NodeError, "info must be a String"
+      end
+      # Make our own copy so ruby won't garbage-collect it:
+      c_info = FFI::MemoryPointer.from_string(info)
+      res = CMark.node_set_fence_info(@pointer, c_info)
+      if res == 0 then raise NodeError, "could not set info" end
     end
 
     # An iterator that "walks the tree," descending into children
@@ -491,7 +517,12 @@ module CommonMarker
 
     def code_block(node)
       block do
-        self.out("<pre><code>")
+        self.out("<pre><code")
+        if node.fence_info && node.fence_info.length > 0
+          self.out(" class=\"language-", node.fence_info.split(/\s+/)[0], "\">")
+        else
+          self.out(">")
+        end
         self.out(CGI.escapeHTML(node.string_content))
         self.out("</code></pre>")
       end
