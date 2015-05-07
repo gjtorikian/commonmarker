@@ -1,60 +1,44 @@
 #!/usr/bin/env ruby
-require 'ffi'
 require 'stringio'
 require 'cgi'
 require 'set'
 require 'uri'
 
-module CMark
-  extend FFI::Library
-  # override attach_function so ruby names don't start with cmark_
-  def self.attach_function(c_name, args, returns)
-    ruby_name = c_name.to_s.sub(/cmark_/, "")
-    super(ruby_name, c_name, args, returns)
-  end
+# module CMark
 
-  ffi_lib ['libcmark', 'cmark']
-  typedef :pointer, :node
-  enum :node_type, [:document, :blockquote, :list, :list_item,
-                    :code_block, :html, :paragraph,
-                    :header, :hrule, :reference_def,
-                    :text, :softbreak, :linebreak, :code, :inline_html,
-                    :emph, :strong, :link, :image]
-  enum :list_type, [:no_list, :bullet_list, :ordered_list]
-
-  attach_function :cmark_node_new, [:node_type], :node
-  attach_function :cmark_free_nodes, [:node], :void
-  attach_function :cmark_node_unlink, [:node], :void
-  attach_function :cmark_node_insert_before, [:node, :node], :int
-  attach_function :cmark_node_insert_after, [:node, :node], :int
-  attach_function :cmark_node_prepend_child, [:node, :node], :int
-  attach_function :cmark_node_append_child, [:node, :node], :int
-  attach_function :cmark_markdown_to_html, [:string, :int], :string
-  attach_function :cmark_render_html, [:node], :string
-  attach_function :cmark_parse_document, [:string, :int], :node
-  attach_function :cmark_node_first_child, [:node], :node
-  attach_function :cmark_node_last_child, [:node], :node
-  attach_function :cmark_node_parent, [:node], :node
-  attach_function :cmark_node_next, [:node], :node
-  attach_function :cmark_node_previous, [:node], :node
-  attach_function :cmark_node_get_type, [:node], :node_type
-  attach_function :cmark_node_get_string_content, [:node], :string
-  attach_function :cmark_node_set_string_content, [:node, :string], :int
-  attach_function :cmark_node_get_url, [:node], :string
-  attach_function :cmark_node_set_url, [:node, :string], :int
-  attach_function :cmark_node_get_title, [:node], :string
-  attach_function :cmark_node_set_title, [:node, :string], :int
-  attach_function :cmark_node_get_header_level, [:node], :int
-  attach_function :cmark_node_set_header_level, [:node, :int], :int
-  attach_function :cmark_node_get_list_type, [:node], :list_type
-  attach_function :cmark_node_set_list_type, [:node, :list_type], :int
-  attach_function :cmark_node_get_list_start, [:node], :int
-  attach_function :cmark_node_set_list_start, [:node, :int], :int
-  attach_function :cmark_node_get_list_tight, [:node], :bool
-  attach_function :cmark_node_set_list_tight, [:node, :bool], :int
-  attach_function :cmark_node_get_fence_info, [:node], :string
-  attach_function :cmark_node_set_fence_info, [:node, :string], :int
-end
+  # attach_function :cmark_node_new, [:node_type], :node
+  # attach_function :cmark_node_free, [:node], :void
+  # attach_function :cmark_node_unlink, [:node], :void
+  # attach_function :cmark_node_insert_before, [:node, :node], :int
+  # attach_function :cmark_node_insert_after, [:node, :node], :int
+  # attach_function :cmark_node_prepend_child, [:node, :node], :int
+  # attach_function :cmark_node_append_child, [:node, :node], :int
+  # attach_function :cmark_markdown_to_html, [:string, :int], :string
+  # attach_function :cmark_render_html, [:node], :string
+  # attach_function :cmark_parse_document, [:string, :int], :node
+  # attach_function :cmark_node_first_child, [:node], :node
+  # attach_function :cmark_node_last_child, [:node], :node
+  # attach_function :cmark_node_parent, [:node], :node
+  # attach_function :cmark_node_next, [:node], :node
+  # attach_function :cmark_node_previous, [:node], :node
+  # attach_function :cmark_node_get_type, [:node], :node_type
+  # attach_function :cmark_node_get_literal, [:node], :string
+  # attach_function :cmark_node_set_literal, [:node, :string], :int
+  # attach_function :cmark_node_get_url, [:node], :string
+  # attach_function :cmark_node_set_url, [:node, :string], :int
+  # attach_function :cmark_node_get_title, [:node], :string
+  # attach_function :cmark_node_set_title, [:node, :string], :int
+  # attach_function :cmark_node_get_header_level, [:node], :int
+  # attach_function :cmark_node_set_header_level, [:node, :int], :int
+  # attach_function :cmark_node_get_list_type, [:node], :list_type
+  # attach_function :cmark_node_set_list_type, [:node, :list_type], :int
+  # attach_function :cmark_node_get_list_start, [:node], :int
+  # attach_function :cmark_node_set_list_start, [:node, :int], :int
+  # attach_function :cmark_node_get_list_tight, [:node], :bool
+  # attach_function :cmark_node_set_list_tight, [:node, :bool], :int
+  # attach_function :cmark_node_get_fence_info, [:node], :string
+  # attach_function :cmark_node_set_fence_info, [:node, :string], :int
+# end
 
 module CommonMarker
   VERSION = 0.1

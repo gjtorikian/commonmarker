@@ -9,7 +9,9 @@ task :default => [:test]
 gem_spec = Gem::Specification.load('commonmarker.gemspec')
 
 # Ruby Extension
-Rake::ExtensionTask.new('commonmarker', gem_spec)
+Rake::ExtensionTask.new('commonmarker', gem_spec) do |ext|
+  ext.lib_dir = File.join('lib', 'commonmarker')
+end
 
 # Packaging
 require 'bundler/gem_tasks'
