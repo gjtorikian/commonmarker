@@ -1,7 +1,5 @@
-require 'commonmarker'
-require 'minitest/autorun'
+require 'test_helper'
 require 'json'
-include CommonMarker
 
 class TestSpec < Minitest::Unit::TestCase
   cases = JSON.parse(open("test/spec_tests.json", 'r').read)
@@ -20,5 +18,3 @@ class TestSpec < Minitest::Unit::TestCase
     end
   end
 end
-
-

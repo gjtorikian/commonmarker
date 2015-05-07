@@ -1,7 +1,6 @@
 # coding: UTF-8
-require 'commonmarker'
+require 'test_helper'
 require 'minitest/benchmark'
-include CommonMarker
 
 def markdown(s)
   Node.parse_string(s).to_html

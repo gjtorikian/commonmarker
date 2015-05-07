@@ -1,6 +1,4 @@
-require 'commonmarker'
-require 'minitest/autorun'
-include CommonMarker
+require 'test_helper'
 
 class TestNode < Minitest::Unit::TestCase
   def setup
@@ -44,5 +42,3 @@ class TestNode < Minitest::Unit::TestCase
     @doc.free
   end
 end
-
-
