@@ -1,7 +1,10 @@
 # encoding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'commonmarker/version'
 Gem::Specification.new do |s|
   s.name = 'commonmarker'
-  s.version = '0.1'
+  s.version = CommonMarker::VERSION
   s.summary = "CommonMark parser and renderer"
   s.description = "A fast, safe, extensible parser for CommonMark"
   s.date = '2014-11-25'
@@ -11,12 +14,11 @@ Gem::Specification.new do |s|
   s.license = 'BSD3'
   s.required_ruby_version = '>= 1.9.2'
   # = MANIFEST =
-  spec.files         = %w(LICENSE README.md Rakefile commonmarker.gemspec Gemfile bin/commonmarker)
-  spec.files        += Dir.glob('lib/**/*.rb')
-  spec.test_files    = Dir.glob('test/**/*')
-  spec.files        += Dir.glob('ext/**/*')
-
-  spec.extensions    = ['ext/commonmarker/extconf.rb']
+  s.files         = %w(LICENSE README.md Rakefile commonmarker.gemspec Gemfile bin/commonmarker)
+  s.files        += Dir.glob('lib/**/*.rb')
+  s.files        += Dir.glob('ext/**/*')
+  s.test_files    = Dir.glob('test/**/*')
+  s.extensions    = ['ext/commonmarker/extconf.rb']
   # = MANIFEST =
   s.test_files = s.files.grep(%r{^test/})
   s.extra_rdoc_files = ["LICENSE"]

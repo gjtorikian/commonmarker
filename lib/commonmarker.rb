@@ -378,7 +378,7 @@ module CommonMarker
           end
         elsif arg.kind_of?(Node)
           self.render(arg)
-        else 
+        else
           @stream.write(arg)
         end
       end
