@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     test/test_basics.rb
     test/test_pathological_inputs.rb
   ]
+  spec.extensions    = ['ext/commonmarker/extconf.rb']
   # = MANIFEST =
   s.test_files = s.files.grep(%r{^test/})
   s.extra_rdoc_files = ["LICENSE"]
