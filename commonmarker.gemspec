@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency "ffi", "~> 1.9.0"
 
-  s.add_development_dependency "rake-compiler", "~> 0.8.3"
-  s.add_development_dependency "bundler", "~> 1.7.7"
+  s.add_development_dependency "rake-compiler", "~> 0.9"
+  s.add_development_dependency "bundler", "~> 1.9"
   s.add_development_dependency "json", "~> 1.8.1"
 end
