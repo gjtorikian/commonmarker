@@ -1,8 +1,17 @@
 #!/usr/bin/env ruby
+require 'commonmarker/commonmarker'
+require 'commonmarker/config'
 require 'stringio'
 require 'cgi'
 require 'set'
 require 'uri'
+
+NODE_TYPES = [:document, :blockquote, :list, :list_item,
+              :code_block, :html, :paragraph,
+              :header, :hrule, :reference_def,
+              :text, :softbreak, :linebreak, :code, :inline_html,
+              :emph, :strong, :link, :image]
+LIST_TYPES = [:no_list, :bullet_list, :ordered_list]
 
 # module CMark
 
@@ -41,8 +50,6 @@ require 'uri'
 # end
 
 module CommonMarker
-  VERSION = 0.1
-
   class NodeError < StandardError
   end
 
@@ -60,10 +67,13 @@ module CommonMarker
       if pointer
         @pointer = pointer
       else
+        unless NODE_TYPES.include?(type)
+          raise NodeError, "node type does not exist #{type}"
+        end
         @pointer = CMark.node_new(type)
       end
-      if @pointer.null?
-        raise NodeError, "could not create node of type " + type.to_s
+      if @pointer.nil?
+        raise NodeError, "could not create node of type #{type}"
       end
     end
 
@@ -72,8 +82,11 @@ module CommonMarker
     # memory when it is no longer needed.
     # Params:
     # +s+::  +String+ to be parsed.
-    def self.parse_string(s)
-      Node.new(nil, CMark.parse_document(s, s.bytesize))
+    def self.parse_string(s, option=:default)
+      unless Config.keys.include?(option)
+        raise StandardError, "option type does not exist #{option}"
+      end
+      Node.new(nil, CMark.parse_document(s, s.bytesize, Config.to_h[option]))
     end
 
     # Parses a file into a :document Node.  The

@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.executables = ["commonmarker"]
   s.require_paths = %w(lib ext)
 
-
+  s.add_dependency   'ruby-enum', '~> 0.4'
   s.add_development_dependency "rake-compiler", "~> 0.9"
   s.add_development_dependency "bundler", "~> 1.9"
   s.add_development_dependency "json", "~> 1.8.1"
