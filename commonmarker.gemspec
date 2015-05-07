@@ -11,24 +11,17 @@ Gem::Specification.new do |s|
   s.license = 'BSD3'
   s.required_ruby_version = '>= 1.9.2'
   # = MANIFEST =
-  s.files = %w[
-    LICENSE
-    Gemfile
-    README.md
-    Rakefile
-    commonmarker.gemspec
-    bin/commonmarker
-    lib/commonmarker.rb
-    test/benchmark.rb
-    test/test_basics.rb
-    test/test_pathological_inputs.rb
-  ]
+  spec.files         = %w(LICENSE README.md Rakefile commonmarker.gemspec Gemfile bin/commonmarker)
+  spec.files        += Dir.glob('lib/**/*.rb')
+  spec.test_files    = Dir.glob('test/**/*')
+  spec.files        += Dir.glob('ext/**/*')
+
   spec.extensions    = ['ext/commonmarker/extconf.rb']
   # = MANIFEST =
   s.test_files = s.files.grep(%r{^test/})
   s.extra_rdoc_files = ["LICENSE"]
   s.executables = ["commonmarker"]
-  s.require_paths = ["lib"]
+  s.require_paths = %w(lib ext)
 
   s.add_runtime_dependency "ffi", "~> 1.9.0"
 
