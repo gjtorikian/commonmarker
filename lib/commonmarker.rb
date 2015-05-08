@@ -8,8 +8,8 @@ require 'uri'
 
 NODE_TYPES = [:document, :blockquote, :list, :list_item,
               :code_block, :html, :paragraph,
-              :header, :hrule, :reference_def,
-              :text, :softbreak, :linebreak, :code, :inline_html,
+              :header, :hrule, :text, :softbreak,
+              :linebreak, :code, :inline_html,
               :emph, :strong, :link, :image]
 LIST_TYPES = [:no_list, :bullet_list, :ordered_list]
 
@@ -338,7 +338,7 @@ module CommonMarker
 
     # Returns the type of this Node.
     def type
-      CMark.node_get_type(@pointer)
+      NODE_TYPES[CMark.node_get_type(@pointer)]
     end
 
     # Convert to HTML using libcmark's fast (but uncustomizable) renderer.
