@@ -6,7 +6,7 @@ require 'cgi'
 require 'set'
 require 'uri'
 
-NODE_TYPES = [:document, :blockquote, :list, :list_item,
+NODE_TYPES = [:none, :document, :blockquote, :list, :list_item,
               :code_block, :html, :paragraph,
               :header, :hrule, :text, :softbreak,
               :linebreak, :code, :inline_html,
@@ -111,7 +111,7 @@ module CommonMarker
     # Iterator over the children (if any) of this Node.
     def each_child
       childptr = CMark.node_first_child(@pointer)
-      while not childptr.null? do
+      until CMark.node_get_type_string(childptr) == "NONE" do
         nextptr = CMark.node_next(childptr)
         yield Node.new(nil, childptr)
         childptr = nextptr
@@ -340,6 +340,11 @@ module CommonMarker
     def type
       NODE_TYPES[CMark.node_get_type(@pointer)]
     end
+
+    def type_string
+      CMark.node_get_type_string(@pointer)
+    end
+
 
     # Convert to HTML using libcmark's fast (but uncustomizable) renderer.
     def to_html
