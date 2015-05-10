@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
   s.required_ruby_version = '>= 2.0.0'
   # = MANIFEST =
-  s.files         = %w(LICENSE README.md Rakefile commonmarker.gemspec Gemfile bin/commonmarker)
+  s.files         = %w(LICENSE.txt README.md Rakefile commonmarker.gemspec Gemfile bin/commonmarker)
   s.files        += Dir.glob('lib/**/*.rb')
   s.files        += Dir.glob('ext/**/*')
   s.test_files    = Dir.glob('test/**/*')
