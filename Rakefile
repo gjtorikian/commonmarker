@@ -37,10 +37,3 @@ task :benchmark => :compile do |t|
   $:.unshift 'lib'
   load 'test/benchmark.rb'
 end
-
-desc 'Update tests from git repository'
-task :gather do
-  sh 'git clone https://github.com/jgm/CommonMark commonmark.tmp'
-  sh 'python commonmark.tmp/spec_tests.py --spec commonmark.tmp/spec.txt --dump-tests > test/spec_tests.json'
-  sh 'rm -rf commonmark.tmp'
-end

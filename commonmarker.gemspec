@@ -5,14 +5,13 @@ require 'commonmarker/version'
 Gem::Specification.new do |s|
   s.name = 'commonmarker'
   s.version = CommonMarker::VERSION
-  s.summary = "CommonMark parser and renderer"
+  s.summary = "CommonMark parser and renderer. Written in C, wrapped in Ruby"
   s.description = "A fast, safe, extensible parser for CommonMark"
-  s.date = '2014-11-25'
-  s.email = 'jgm@berkeley.edu'
-  s.homepage = 'http://github.com/jgm/commonmarker'
-  s.authors = ["John MacFarlane"]
-  s.license = 'BSD3'
-  s.required_ruby_version = '>= 1.9.2'
+  s.authors       = ['Garen Torikian']
+  s.email         = ['gjtorikian@gmail.com']
+  s.homepage = 'http://github.com/gjtorikian/commonmarker'
+  s.license = 'MIT'
+  s.required_ruby_version = '>= 2.0.0'
   # = MANIFEST =
   s.files         = %w(LICENSE README.md Rakefile commonmarker.gemspec Gemfile bin/commonmarker)
   s.files        += Dir.glob('lib/**/*.rb')
