@@ -1,3 +1,6 @@
+require 'set'
+require 'stringio'
+
 module CommonMarker
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain

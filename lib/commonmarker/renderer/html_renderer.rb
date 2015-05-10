@@ -1,3 +1,6 @@
+require 'cgi'
+require 'uri'
+
 module CommonMarker
   class HtmlRenderer < Renderer
     def render(node)
