@@ -11,12 +11,8 @@ git:
 before_install:
   - gem install bundler
   # we need a more recent cmake than travis/linux provides (at least 2.8.9):
-  - |
-     if [ ${TRAVIS_OS_NAME:-'linux'} = 'linux' ]
-     then
-         echo 'yes' | sudo add-apt-repository ppa:kalakris/cmake
-         sudo apt-get update -qq
-         sudo apt-get install -qq cmake
-     elif [ ${TRAVIS_OS_NAME:-'linux'} = 'osx' ]
-     fi
+  - echo 'yes' | sudo add-apt-repository ppa:kalakris/cmake
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq cmake
+
 before_script: bundle update
