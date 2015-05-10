@@ -1,0 +1,12 @@
+language: ruby
+sudo: false
+cache: bundler
+rvm:
+  - 2.2
+  - 2.1
+  - 2.0
+git:
+  depth: 10
+
+before_script: bundle update
+script: script/cibuild
