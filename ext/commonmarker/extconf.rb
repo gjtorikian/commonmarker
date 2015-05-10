@@ -12,7 +12,7 @@ Dir.chdir(CMARK_BUILD_DIR) do
   system 'make'
 end
 
-$CFLAGS << " -I#{CMARK_DIR}/src -I#{CMARK_BUILD_DIR}/src"
+$CFLAGS << " -fPIC -I#{CMARK_DIR}/src -I#{CMARK_BUILD_DIR}/src"
 $LOCAL_LIBS << "#{CMARK_BUILD_DIR}/src/libcmark.a"
 
 create_makefile('commonmarker/commonmarker')
