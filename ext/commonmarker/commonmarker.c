@@ -41,7 +41,19 @@ rb_node_get_string_content(VALUE self, VALUE n)
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
-	return Data_Wrap_Struct(self, NULL, cmark_strbuf_free, &node->string_content);
+	return rb_str_new2(cmark_node_get_literal(node));
+}
+
+static VALUE
+rb_node_set_string_content(VALUE self, VALUE n, VALUE s)
+{
+	Check_Type(s, T_STRING);
+
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	char *text = (char *)RSTRING_PTR(s);
+
+	return INT2NUM(cmark_node_set_literal(node, text));
 }
 
 static VALUE
@@ -72,7 +84,7 @@ rb_node_unlink(VALUE self, VALUE n)
 }
 
 void
-rb_free_nodes(VALUE self, VALUE n)
+rb_node_free(VALUE self, VALUE n)
 {
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
@@ -108,6 +120,31 @@ rb_node_next(VALUE self, VALUE n)
 	return Data_Wrap_Struct(self, NULL, NULL, next);
 }
 
+static VALUE
+rb_node_insert_before(VALUE self, VALUE n1, VALUE n2)
+{
+	cmark_node *node1;
+	Data_Get_Struct(n1, cmark_node, node1);
+
+	cmark_node *node2;
+	Data_Get_Struct(n2, cmark_node, node2);
+
+	return INT2NUM(cmark_node_insert_before(node1, node2));
+}
+
+static VALUE
+rb_render_html(VALUE self, VALUE n, VALUE rb_options)
+{
+	Check_Type(rb_options, T_FIXNUM);
+
+	int options = FIX2INT(rb_options);
+
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	return rb_str_new2(cmark_render_html(node, options));
+}
+
 __attribute__((visibility("default")))
 void Init_commonmarker()
 {
@@ -116,10 +153,13 @@ void Init_commonmarker()
 	rb_define_singleton_method(rb_mCommonMark, "node_new", rb_node_new, 1);
 	rb_define_singleton_method(rb_mCommonMark, "parse_document", rb_parse_document, 3);
 	rb_define_singleton_method(rb_mCommonMark, "node_get_string_content", rb_node_get_string_content, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_set_string_content", rb_node_set_string_content, 2);
 	rb_define_singleton_method(rb_mCommonMark, "node_get_type", rb_node_get_type, 1);
 	rb_define_singleton_method(rb_mCommonMark, "node_get_type_string", rb_node_get_type_string, 1);
 	rb_define_singleton_method(rb_mCommonMark, "node_unlink", rb_node_unlink, 1);
-	rb_define_singleton_method(rb_mCommonMark, "free_nodes", rb_free_nodes, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_free", rb_node_free, 1);
 	rb_define_singleton_method(rb_mCommonMark, "node_first_child", rb_node_first_child, 1);
 	rb_define_singleton_method(rb_mCommonMark, "node_next", rb_node_next, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_insert_before", rb_node_insert_before, 2);
+	rb_define_singleton_method(rb_mCommonMark, "render_html", rb_render_html, 2);
 }

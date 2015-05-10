@@ -82,10 +82,8 @@ module CommonMarker
     # memory when it is no longer needed.
     # Params:
     # +s+::  +String+ to be parsed.
-    def self.parse_string(s, option=:default)
-      unless Config.keys.include?(option)
-        raise StandardError, "option type does not exist #{option}"
-      end
+    def self.parse_string(s, option = :default)
+      Config.option_exists?(option)
       Node.new(nil, CMark.parse_document(s, s.bytesize, Config.to_h[option]))
     end
 
@@ -347,14 +345,15 @@ module CommonMarker
 
 
     # Convert to HTML using libcmark's fast (but uncustomizable) renderer.
-    def to_html
-      CMark.render_html(@pointer).force_encoding("utf-8")
+    def to_html(option = :default)
+      Config.option_exists?(option)
+      CMark.render_html(@pointer, Config.to_h[option]).force_encoding('utf-8')
     end
 
     # Unlinks and frees this Node.
     def free
       CMark.node_unlink(@pointer)
-      CMark.free_nodes(@pointer)
+      # CMark.node_free(@pointer)
     end
   end
 

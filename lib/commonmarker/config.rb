@@ -1,6 +1,7 @@
 require 'ruby-enum'
 
 module CommonMarker
+  # For Ruby::Enum, this must be a class, not a module
   class Config
     include Ruby::Enum
 
@@ -10,5 +11,10 @@ module CommonMarker
     define :normalize, 4
     define :smart, 8
 
+    def self.option_exists?(option)
+      unless Config.keys.include?(option)
+        raise StandardError, "option type does not exist #{option}"
+      end
+    end
   end
 end
