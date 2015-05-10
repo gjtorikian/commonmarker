@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
   s.extensions    = ['ext/commonmarker/extconf.rb']
   # = MANIFEST =
   s.test_files = s.files.grep(%r{^test/})
-  s.extra_rdoc_files = ["LICENSE"]
   s.executables = ["commonmarker"]
   s.require_paths = %w(lib ext)
 
