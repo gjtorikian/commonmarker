@@ -8,5 +8,7 @@ rvm:
 git:
   depth: 10
 
+before_install:
+  - gem install bundler
 before_script: bundle update
 script: script/cibuild
