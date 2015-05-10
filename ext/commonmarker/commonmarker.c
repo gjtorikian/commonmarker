@@ -145,6 +145,242 @@ rb_render_html(VALUE self, VALUE n, VALUE rb_options)
 	return rb_str_new2(cmark_render_html(node, options));
 }
 
+static VALUE
+rb_node_insert_after(VALUE self, VALUE n1, VALUE n2)
+{
+	cmark_node *node1;
+	Data_Get_Struct(n1, cmark_node, node1);
+
+	cmark_node *node2;
+	Data_Get_Struct(n2, cmark_node, node2);
+
+	return INT2NUM(cmark_node_insert_after(node1, node2));
+}
+
+
+static VALUE
+rb_node_prepend_child(VALUE self, VALUE n1, VALUE n2)
+{
+	cmark_node *node1;
+	Data_Get_Struct(n1, cmark_node, node1);
+
+	cmark_node *node2;
+	Data_Get_Struct(n2, cmark_node, node2);
+
+	return INT2NUM(cmark_node_prepend_child(node1, node2));
+}
+
+
+static VALUE
+rb_node_append_child(VALUE self, VALUE n1, VALUE n2)
+{
+	cmark_node *node1;
+	Data_Get_Struct(n1, cmark_node, node1);
+
+	cmark_node *node2;
+	Data_Get_Struct(n2, cmark_node, node2);
+
+	return INT2NUM(cmark_node_append_child(node1, node2));
+}
+
+
+static VALUE
+rb_node_last_child(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	if (node == NULL)
+		return Qnil;
+
+	cmark_node *child = cmark_node_last_child(node);
+
+	return Data_Wrap_Struct(self, NULL, NULL, child);
+}
+
+
+static VALUE
+rb_node_parent(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	if (node == NULL)
+		return Qnil;
+
+	cmark_node *parent = cmark_node_parent(node);
+
+	return Data_Wrap_Struct(self, NULL, NULL, parent);
+}
+
+
+static VALUE
+rb_node_previous(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	if (node == NULL)
+		return Qnil;
+
+	cmark_node *previous = cmark_node_previous(node);
+
+	return Data_Wrap_Struct(self, NULL, NULL, previous);
+}
+
+
+static VALUE
+rb_node_get_url(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	return rb_str_new2(cmark_node_get_url(node));
+}
+
+static VALUE
+rb_node_set_url(VALUE self, VALUE n, VALUE s)
+{
+	Check_Type(s, T_STRING);
+
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	char *text = (char *)RSTRING_PTR(s);
+
+	return INT2NUM(cmark_node_set_url(node, text));
+}
+
+
+static VALUE
+rb_node_get_title(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	return rb_str_new2(cmark_node_get_title(node));
+}
+
+static VALUE
+rb_node_set_title(VALUE self, VALUE n, VALUE s)
+{
+	Check_Type(s, T_STRING);
+
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	char *text = (char *)RSTRING_PTR(s);
+
+	return INT2NUM(cmark_node_set_title(node, text));
+}
+
+
+static VALUE
+rb_node_get_header_level(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	return INT2NUM(cmark_node_get_header_level(node));
+}
+
+static VALUE
+rb_node_set_header_level(VALUE self, VALUE n, VALUE l)
+{
+	Check_Type(l, T_FIXNUM);
+
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	int level = FIX2INT(l);
+
+	return INT2NUM(cmark_node_set_header_level(node, level));
+}
+
+
+static VALUE
+rb_node_get_list_type(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	return INT2NUM(cmark_node_get_list_type(node));
+}
+
+static VALUE
+rb_node_set_list_type(VALUE self, VALUE n, VALUE t)
+{
+	Check_Type(t, T_FIXNUM);
+
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	int type = FIX2INT(t);
+
+	return INT2NUM(cmark_node_set_list_type(node, type));
+}
+
+
+static VALUE
+rb_node_get_list_start(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	return INT2NUM(cmark_node_get_list_start(node));
+}
+
+static VALUE
+rb_node_set_list_start(VALUE self, VALUE n, VALUE s)
+{
+	Check_Type(s, T_FIXNUM);
+
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	int start = FIX2INT(s);
+
+	return INT2NUM(cmark_node_set_list_start(node, start));
+}
+
+
+static VALUE
+rb_node_get_list_tight(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	int flag = cmark_node_get_list_tight(node);
+
+	return flag ? Qtrue : Qfalse;
+}
+
+static VALUE
+rb_node_set_list_tight(VALUE self, VALUE n, VALUE t)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	int tight = RTEST(t);
+
+	return INT2NUM(cmark_node_set_list_tight(node, tight));
+}
+
+
+static VALUE
+rb_node_get_fence_info(VALUE self, VALUE n)
+{
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+
+	return rb_str_new2(cmark_node_get_fence_info(node));
+}
+
+static VALUE
+rb_node_set_fence_info(VALUE self, VALUE n, VALUE s)
+{
+	Check_Type(s, T_STRING);
+
+	cmark_node *node;
+	Data_Get_Struct(n, cmark_node, node);
+	char *text = (char *)RSTRING_PTR(s);
+
+	return INT2NUM(cmark_node_set_fence_info(node, text));
+}
+
 __attribute__((visibility("default")))
 void Init_commonmarker()
 {
@@ -162,4 +398,24 @@ void Init_commonmarker()
 	rb_define_singleton_method(rb_mCommonMark, "node_next", rb_node_next, 1);
 	rb_define_singleton_method(rb_mCommonMark, "node_insert_before", rb_node_insert_before, 2);
 	rb_define_singleton_method(rb_mCommonMark, "render_html", rb_render_html, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_insert_after", rb_node_insert_after, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_prepend_child", rb_node_prepend_child, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_append_child", rb_node_append_child, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_last_child", rb_node_last_child, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_parent", rb_node_parent, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_previous", rb_node_previous, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_get_url", rb_node_get_url, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_set_url", rb_node_set_url, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_get_title", rb_node_get_title, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_set_title", rb_node_set_title, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_get_header_level", rb_node_get_header_level, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_set_header_level", rb_node_set_header_level, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_get_list_type", rb_node_get_list_type, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_set_list_type", rb_node_set_list_type, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_get_list_start", rb_node_get_list_start, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_set_list_start", rb_node_set_list_start, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_get_list_tight", rb_node_get_list_tight, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_set_list_tight", rb_node_set_list_tight, 2);
+	rb_define_singleton_method(rb_mCommonMark, "node_get_fence_info", rb_node_get_fence_info, 1);
+	rb_define_singleton_method(rb_mCommonMark, "node_set_fence_info", rb_node_set_fence_info, 2);
 }

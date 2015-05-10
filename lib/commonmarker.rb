@@ -70,7 +70,7 @@ module CommonMarker
     # Iterator over the children (if any) of this Node.
     def each_child
       childptr = CMark.node_first_child(@pointer)
-      until CMark.node_get_type_string(childptr) == 'NONE' do
+      until CMark.node_get_type_string(childptr) == 'NONE'
         nextptr = CMark.node_next(childptr)
         yield Node.new(nil, childptr)
         childptr = nextptr
@@ -156,7 +156,7 @@ module CommonMarker
       if self.type != :list
         fail NodeError, 'can\'t get list_type for non-list'
       end
-      CMark.node_get_list_type(@pointer)
+      LIST_TYPES[CMark.node_get_list_type(@pointer)]
     end
 
     # Sets list type of this Node (must be a :list).

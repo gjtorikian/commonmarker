@@ -5,9 +5,7 @@ module CommonMarker
   class HtmlRenderer < Renderer
     def render(node)
       result = super(node)
-      if node.type == :document
-        result += "\n"
-      end
+      result += "\n" if node.type == :document
     end
 
     def header(node)
@@ -19,7 +17,7 @@ module CommonMarker
 
     def paragraph(node)
       block do
-        if self.in_tight
+        if @in_tight
           self.out(:children)
         else
           self.out("<p>", :children, "</p>")
@@ -28,8 +26,8 @@ module CommonMarker
     end
 
     def list(node)
-      old_in_tight = self.in_tight
-      self.in_tight = node.list_tight
+      old_in_tight = @in_tight
+      @in_tight = node.list_tight
       block do
         if node.list_type == :bullet_list
           container("<ul>", "</ul>") do
@@ -43,7 +41,7 @@ module CommonMarker
           end
         end
       end
-      self.in_tight = old_in_tight
+      @in_tight = old_in_tight
     end
 
     def list_item(node)

@@ -35,7 +35,7 @@ module CommonMarker
       if node.type == :document
         self.document(node)
         return @stream.string
-      elsif self.in_plain && node.type != :text && node.type != :softbreak
+      elsif @in_plain && node.type != :text && node.type != :softbreak
         node.each_child do |child|
           render(child)
         end
@@ -43,7 +43,7 @@ module CommonMarker
         begin
           self.send(node.type, node)
         rescue NoMethodError => e
-          @warnings.add("WARNING:  " + node.type.to_s + " not implemented.")
+          @warnings.add('WARNING:  ' + node.type.to_s + ' not implemented.')
           raise e
         end
       end
@@ -65,7 +65,7 @@ module CommonMarker
     end
 
     def containersep
-      if !self.in_tight
+      unless @in_tight
         self.out("\n")
       end
     end
