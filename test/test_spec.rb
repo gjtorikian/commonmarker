@@ -4,6 +4,7 @@ require 'json'
 class TestSpec < Minitest::Test
   cases = JSON.parse(open('test/spec_tests.json', 'r').read)
   cases.each do |testcase|
+    # next unless testcase['example'] == 307
     define_method("test_to_html_example_#{testcase['example']}") do
       doc = Node.parse_string(testcase['markdown'])
       actual = doc.to_html
@@ -14,6 +15,8 @@ class TestSpec < Minitest::Test
       doc = Node.parse_string(testcase['markdown'])
       actual = HtmlRenderer.new.render(doc)
       doc.free
+      File.write('test.txt', testcase['html'])
+      File.write('actual.txt', actual)
       assert_equal testcase['html'], actual, testcase['markdown']
     end
   end
