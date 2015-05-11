@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TestNode < Minitest::Unit::TestCase
+class TestNode < Minitest::Test
   def setup
     @doc = Node.parse_string("Hi *there*")
   end

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CommonMarker::TestMaliciousness < Minitest::Unit::TestCase
+class CommonMarker::TestMaliciousness < Minitest::Test
 
   def test_init_with_false_type
     assert_raises NodeError do
