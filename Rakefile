@@ -39,6 +39,6 @@ task :benchmark => :compile do |t|
 end
 
 desc 'Update tests from git repository'
-task :gather do
+task :generate_test do
   sh 'python3 ext/commonmarker/cmark/test/spec_tests.py --spec ext/commonmarker/cmark/test/spec.txt --dump-tests > test/spec_tests.json'
 end
