@@ -4,6 +4,10 @@ require 'commonmarker/config'
 require 'commonmarker/renderer'
 require 'commonmarker/renderer/html_renderer'
 
+begin
+  require 'awesome_print'
+rescue LoadError; end
+
 NODE_TYPES = [:none, :document, :blockquote, :list, :list_item,
               :code_block, :html, :paragraph,
               :header, :hrule, :text, :softbreak,
