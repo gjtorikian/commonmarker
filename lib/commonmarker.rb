@@ -112,14 +112,6 @@ module CommonMarker
       fail NodeError, 'could not prepend child' if res == 0
     end
 
-    # Append a child to this Node.
-    # Params:
-    # +child+::  Child Node to append.
-    def prepend_child(child)
-      res = CMark.node_append_child(@pointer, child.pointer)
-      fail NodeError, 'could not append child' if res == 0
-    end
-
     # Returns string content of this Node.
     def string_content
       CMark.node_get_string_content(@pointer)
@@ -148,7 +140,7 @@ module CommonMarker
       if self.type != :header
         fail NodeError, 'can\'t set header_level for non-header'
       end
-      if !level.is_a?a?(Integer) || level < 0 || level > 6
+      if !level.is_a?(Integer) || level < 0 || level > 6
         fail NodeError, 'level must be between 1-6'
       end
       res = CMark.node_set_header_level(@pointer, level)
@@ -157,9 +149,7 @@ module CommonMarker
 
     # Returns list type of this Node (must be a :list).
     def list_type
-      if self.type != :list
-        fail NodeError, 'can\'t get list_type for non-list'
-      end
+      fail NodeError, 'can\'t get list_type for non-list' unless self.type == :list
       LIST_TYPES[CMark.node_get_list_type(@pointer)]
     end
 
@@ -168,9 +158,7 @@ module CommonMarker
     # +list_type+:: New list type (+:list_type+), either
     # :ordered_list or :bullet_list.
     def list_type=(list_type)
-      if self.type != :list
-        fail NodeError, 'can\'t set list_type for non-list'
-      end
+      fail NodeError, 'can\'t set list_type for non-list' unless self.type == :list
       res = CMark.node_set_list_type(@pointer, list_type)
       fail NodeError, 'could not set list_type' if res == 0
     end
@@ -199,9 +187,7 @@ module CommonMarker
 
     # Returns tight status of this Node (must be a :list).
     def list_tight
-      if self.type != :list
-        fail NodeError, 'can\'t get list_tight for non-list'
-      end
+      fail NodeError, 'can\'t get list_tight for non-list' unless self.type == :list
       CMark.node_get_list_tight(@pointer)
     end
 
@@ -209,18 +195,14 @@ module CommonMarker
     # Params:
     # +tight+:: New tight status (boolean).
     def list_tight=(tight)
-      if self.type != :list
-        fail NodeError, 'can\'t set list_tight for non-list'
-      end
+      fail NodeError, 'can\'t set list_tight for non-list' unless self.type == :list
       res = CMark.node_set_list_tight(@pointer, tight)
       fail NodeError, 'could not set list_tight' if res == 0
     end
 
     # Returns URL of this Node (must be a :link or :image).
     def url
-      if not (self.type == :link || self.type == :image)
-        fail NodeError, 'can\'t get URL for non-link or image'
-      end
+      fail NodeError, 'can\'t get URL for non-link or image' if !(self.type == :link || self.type == :image)
       CMark.node_get_url(@pointer)
     end
 
@@ -228,9 +210,7 @@ module CommonMarker
     # Params:
     # +URL+:: New URL (+String+).
     def url=(url)
-      if not (self.type == :link || self.type == :image)
-        fail NodeError, 'can\'t set URL for non-link or image'
-      end
+      fail NodeError, 'can\'t set URL for non-link or image' if !(self.type == :link || self.type == :image)
       fail NodeError, 'url must be a String' unless url.is_a?(String)
       # Make our own copy so ruby won't garbage-collect it:
       c_url = FFI::MemoryPointer.from_string(url)
@@ -240,9 +220,7 @@ module CommonMarker
 
     # Returns title of this Node (must be a :link or :image).
     def title
-      if not (self.type == :link || self.type == :image)
-        fail NodeError, 'can\'t get title for non-link or image'
-      end
+      fail NodeError, 'can\'t get title for non-link or image' if !(self.type == :link || self.type == :image)
       CMark.node_get_title(@pointer)
     end
 
@@ -250,9 +228,7 @@ module CommonMarker
     # Params:
     # +title+:: New title (+String+).
     def title=(title)
-      if not (self.type == :link || self.type == :image)
-        fail NodeError, 'can\'t set title for non-link or image'
-      end
+      fail NodeError, 'can\'t set title for non-link or image' if !(self.type == :link || self.type == :image)
       fail NodeError, 'title must be a String' unless title.is_a?(String)
       # Make our own copy so ruby won't garbage-collect it:
       c_title = FFI::MemoryPointer.from_string(title)
@@ -262,9 +238,7 @@ module CommonMarker
 
     # Returns fence info of this Node (must be a :code_block).
     def fence_info
-      if not (self.type == :code_block)
-        fail NodeError, "can\'t get fence_info for non code_block"
-      end
+      fail NodeError, 'can\'t get fence_info for non code_block' unless self.type == :code_block
       CMark.node_get_fence_info(@pointer)
     end
 
@@ -272,9 +246,7 @@ module CommonMarker
     # Params:
     # +info+:: New info (+String+).
     def fence_info=(info)
-      if self.type != :code_block
-        fail NodeError, 'can\'t set fence_info for non code_block'
-      end
+      fail NodeError, 'can\'t set fence_info for non code_block' unless self.type == :code_block
       fail NodeError, 'info must be a String' unless info.is_a?(String)
       # Make our own copy so ruby won't garbage-collect it:
       c_info = FFI::MemoryPointer.from_string(info)
