@@ -34,6 +34,14 @@ task :test => %w[test:unit]
 
 desc 'Run benchmarks'
 task :benchmark => :compile do |t|
+  if ENV['FETCH_PROGIT']
+    `rm -rf test/progit`
+    `git clone https://github.com/progit/progit.git test/progit`
+    langs = %w(ar az be ca cs de en eo es es-ni fa fi fr hi hu id it ja ko mk nl no-nb pl pt-br ro ru sr th tr uk vi zh zh-tw)
+    langs.each do |lang|
+      `cat test/progit/#{lang}/*/*.markdown >> test/benchinput.md`
+    end
+  end
   $:.unshift 'lib'
   load 'test/benchmark.rb'
 end

@@ -37,3 +37,5 @@ build/
 
 actual.txt
 test.txt
+test/progit
+test/benchinput.md
