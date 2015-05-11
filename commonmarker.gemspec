@@ -5,8 +5,8 @@ require 'commonmarker/version'
 Gem::Specification.new do |s|
   s.name = 'commonmarker'
   s.version = CommonMarker::VERSION
-  s.summary = "CommonMark parser and renderer. Written in C, wrapped in Ruby"
-  s.description = "A fast, safe, extensible parser for CommonMark"
+  s.summary = 'CommonMark parser and renderer. Written in C, wrapped in Ruby.'
+  s.description = 'A fast, safe, extensible parser for CommonMark.'
   s.authors       = ['Garen Torikian']
   s.email         = ['gjtorikian@gmail.com']
   s.homepage = 'http://github.com/gjtorikian/commonmarker'
@@ -20,11 +20,13 @@ Gem::Specification.new do |s|
   s.extensions    = ['ext/commonmarker/extconf.rb']
   # = MANIFEST =
   s.test_files = s.files.grep(%r{^test/})
-  s.executables = ["commonmarker"]
+  s.executables = ['commonmarker']
   s.require_paths = %w(lib ext)
 
   s.add_dependency   'ruby-enum', '~> 0.4'
-  s.add_development_dependency "rake-compiler", "~> 0.9"
-  s.add_development_dependency "bundler", "~> 1.9"
-  s.add_development_dependency "json", "~> 1.8.1"
+
+  s.add_development_dependency 'minitest', '~> 5.6'
+  s.add_development_dependency "rake-compiler", '~> 0.9'
+  s.add_development_dependency "bundler", '~> 1.9'
+  s.add_development_dependency "json", '~> 1.8.1'
 end
