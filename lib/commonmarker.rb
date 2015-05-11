@@ -15,6 +15,8 @@ NODE_TYPES = [:none, :document, :blockquote, :list, :list_item,
               :emph, :strong, :link, :image]
 LIST_TYPES = [:no_list, :bullet_list, :ordered_list]
 
+NONE_TYPE = 'NONE'
+
 module CommonMarker
   class NodeError < StandardError
   end
@@ -74,7 +76,7 @@ module CommonMarker
     # Iterator over the children (if any) of this Node.
     def each_child
       childptr = CMark.node_first_child(@pointer)
-      until CMark.node_get_type_string(childptr) == 'NONE'
+      until CMark.node_get_type_string(childptr) == NONE_TYPE
         nextptr = CMark.node_next(childptr)
         yield Node.new(nil, childptr)
         childptr = nextptr
