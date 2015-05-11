@@ -5,9 +5,14 @@
 VALUE rb_mCommonMark;
 
 static VALUE
-rb_markdown_to_html(VALUE text)
+rb_markdown_to_html(VALUE self, VALUE rb_text)
 {
-	return rb_str_new2((char *)cmark_markdown_to_html((char *)RSTRING_PTR(text), RSTRING_LEN(text), 0));
+	Check_Type(rb_text, T_STRING);
+
+	char *str = (char *)RSTRING_PTR(rb_text);
+	int len = RSTRING_LEN(rb_text);
+
+	return rb_str_new2(cmark_markdown_to_html(str, len, 0));
 }
 
 static VALUE
