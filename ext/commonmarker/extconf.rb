@@ -18,6 +18,7 @@ Dir.chdir(CMARK_BUILD_DIR) do
   system 'make'
 end
 
+`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:#{CMARK_BUILD_DIR}/src`
 $LDFLAGS << " #{CMARK_BUILD_DIR}/src/libcmark.#{ext}"
 $CFLAGS << " -I#{CMARK_DIR}/src -I#{CMARK_BUILD_DIR}/src"
 $LOCAL_LIBS << "#{CMARK_BUILD_DIR}/src/libcmark.#{ext}"
