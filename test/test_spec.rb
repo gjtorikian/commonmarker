@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'json'
 
-class TestSpec < Minitest::Unit::TestCase
+class TestSpec < Minitest::Test
   cases = JSON.parse(open('test/spec_tests.json', 'r').read)
   cases.each do |testcase|
     define_method("test_to_html_example_#{testcase['example']}") do
