@@ -240,7 +240,11 @@ rb_node_get_url(VALUE self, VALUE n)
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
-	return rb_str_new2(cmark_node_get_url(node));
+	char *text = (char *) cmark_node_get_url(node);
+	if (text == NULL)
+		return Qnil;
+
+	return rb_str_new2(text);
 }
 
 static VALUE
@@ -262,7 +266,11 @@ rb_node_get_title(VALUE self, VALUE n)
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
-	return rb_str_new2(cmark_node_get_title(node));
+	char *text = (char *) cmark_node_get_title(node);
+	if (text == NULL)
+		return Qnil;
+
+	return rb_str_new2(text);
 }
 
 static VALUE
