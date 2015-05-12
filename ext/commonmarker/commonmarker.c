@@ -46,7 +46,11 @@ rb_node_get_string_content(VALUE self, VALUE n)
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
-	return rb_str_new2(cmark_node_get_literal(node));
+	char *text = (char *) cmark_node_get_literal(node);
+	if (text == NULL)
+		return Qnil;
+
+	return rb_str_new2(text);
 }
 
 static VALUE

@@ -73,6 +73,10 @@ module CommonMarker
       Node.new(nil, CMark.node_last_child(@pointer))
     end
 
+    def parent
+      Node.new(nil, CMark.node_parent(@pointer))
+    end
+
     # Iterator over the children (if any) of this Node.
     def each_child
       childptr = CMark.node_first_child(@pointer)
@@ -129,9 +133,7 @@ module CommonMarker
 
     # Returns header level of this Node (must be a :header).
     def header_level
-      if self.type != :header
-        fail NodeError, 'can\'t get header_level for non-header'
-      end
+      fail NodeError, 'can\'t get header_level for non-header' unless self.type == :header
       CMark.node_get_header_level(@pointer)
     end
 
@@ -139,9 +141,7 @@ module CommonMarker
     # Params:
     # +level+:: New header level (+Integer+).
     def header_level=(level)
-      if self.type != :header
-        fail NodeError, 'can\'t set header_level for non-header'
-      end
+      fail NodeError, 'can\'t set header_level for non-header' unless self.type == :header
       if !level.is_a?(Integer) || level < 0 || level > 6
         fail NodeError, 'level must be between 1-6'
       end
