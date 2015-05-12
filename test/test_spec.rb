@@ -11,13 +11,13 @@ class TestSpec < Minitest::Test
       doc.free
       assert_equal testcase['html'], actual, testcase['markdown']
     end
-    # define_method("test_html_renderer_example_#{testcase['example']}") do
-    #   doc = Node.parse_string(testcase['markdown'])
-    #   actual = HtmlRenderer.new.render(doc)
-    #   doc.free
-    #   File.write('test.txt', testcase['html'])
-    #   File.write('actual.txt', actual)
-    #   assert_equal testcase['html'], actual, testcase['markdown']
-    # end
+    define_method("test_html_renderer_example_#{testcase['example']}") do
+      doc = Node.parse_string(testcase['markdown'])
+      actual = HtmlRenderer.new.render(doc)
+      doc.free
+      File.write('test.txt', testcase['html'])
+      File.write('actual.txt', actual)
+      assert_equal testcase['html'], actual, testcase['markdown']
+    end
   end
 end
