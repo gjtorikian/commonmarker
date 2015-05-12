@@ -10,8 +10,8 @@ module CommonMarker
 
     def header(node)
       block do
-        self.out("<h", node.header_level, ">", :children,
-               "</h", node.header_level, ">")
+        self.out('<h', node.header_level, '>', :children,
+               '</h', node.header_level, '>')
       end
     end
 
@@ -20,7 +20,7 @@ module CommonMarker
         if @in_tight
           self.out(:children)
         else
-          self.out("<p>", :children, "</p>")
+          self.out('<p>', :children, '</p>')
         end
       end
     end
@@ -30,13 +30,13 @@ module CommonMarker
       @in_tight = node.list_tight
       block do
         if node.list_type == :bullet_list
-          container("<ul>", "</ul>") do
+          container('<ul>', '</ul>') do
             self.out(:children)
           end
         else
           start = node.list_start == 1 ? '' :
                   (' start="' + node.list_start.to_s + '"')
-          container(start, "</ol>") do
+          container(start, '</ol>') do
             self.out(:children)
           end
         end
@@ -46,7 +46,7 @@ module CommonMarker
 
     def list_item(node)
       block do
-        container("<li>", "</li>") do
+        container('<li>', '</li>') do
           self.out(:children)
         end
       end
@@ -54,7 +54,7 @@ module CommonMarker
 
     def blockquote(node)
       block do
-        container("<blockquote>", "</blockquote>") do
+        container('<blockquote>', '</blockquote>') do
           self.out(:children)
         end
       end
@@ -62,20 +62,20 @@ module CommonMarker
 
     def hrule(node)
       block do
-        self.out("<hr />")
+        self.out('<hr />')
       end
     end
 
     def code_block(node)
       block do
-        self.out("<pre><code")
+        self.out('<pre><code')
         if node.fence_info && node.fence_info.length > 0
-          self.out(" class=\"language-", node.fence_info.split(/\s+/)[0], "\">")
+          self.out(' class='language-', node.fence_info.split(/\s+/)[0], ''>')
         else
-          self.out(">")
+          self.out('>')
         end
         self.out(CGI.escapeHTML(node.string_content))
-        self.out("</code></pre>")
+        self.out('</code></pre>')
       end
     end
 
@@ -90,11 +90,11 @@ module CommonMarker
     end
 
     def emph(node)
-      self.out("<em>", :children, "</em>")
+      self.out('<em>', :children, '</em>')
     end
 
     def strong(node)
-      self.out("<strong>", :children, "</strong>")
+      self.out('<strong>', :children, '</strong>')
     end
 
     def link(node)
@@ -120,13 +120,13 @@ module CommonMarker
     end
 
     def code(node)
-      self.out("<code>")
+      self.out('<code>')
       self.out(CGI.escapeHTML(node.string_content))
-      self.out("</code>")
+      self.out('</code>')
     end
 
     def linebreak(node)
-      self.out("<br/>")
+      self.out('<br />')
       self.softbreak(node)
     end
 
