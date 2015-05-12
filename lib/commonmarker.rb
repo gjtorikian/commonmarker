@@ -8,12 +8,13 @@ begin
   require 'awesome_print'
 rescue LoadError; end
 
-NODE_TYPES = [:none, :document, :blockquote, :list, :list_item,
-              :code_block, :html, :paragraph,
-              :header, :hrule, :text, :softbreak,
-              :linebreak, :code, :inline_html,
-              :emph, :strong, :link, :image]
-LIST_TYPES = [:no_list, :bullet_list, :ordered_list]
+NODE_TYPES = %i(none document blockquote list list_item
+                code_block html paragraph
+                header hrule text softbreak
+                linebreak code inline_html
+                emph strong link image)
+
+LIST_TYPES = %i(no_list bullet_list ordered_list)
 
 NONE_TYPE = 'NONE'
 
