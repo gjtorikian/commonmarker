@@ -1,4 +1,5 @@
 require 'commonmarker'
+require 'github/markdown'
 require 'redcarpet'
 require 'kramdown'
 require 'benchmark'
@@ -12,16 +13,20 @@ benchinput = File.open('test/benchinput.md', 'r').read()
 
 printf("input size = %d bytes\n\n", benchinput.bytesize)
 
+dobench('redcarpet') do
+  Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
+end
+
+dobench('github-markdown') do
+  GitHub::Markdown.render(benchinput)
+end
+
 dobench('commonmarker with to_html') do
   CommonMarker::Node.parse_string(benchinput).to_html
 end
 
-# dobench('commonmarker with ruby HtmlRenderer') do
-#   CommonMarker::HtmlRenderer.new.render(CommonMarker::Node.parse_string(benchinput))
-# end
-
-dobench('redcarpet') do
-  Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
+dobench('commonmarker with ruby HtmlRenderer') do
+  CommonMarker::HtmlRenderer.new.render(CommonMarker::Node.parse_string(benchinput))
 end
 
 dobench('kramdown') do
