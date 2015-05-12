@@ -15,14 +15,10 @@ module CommonMarker
     def out(*args)
       args.each do |arg|
         if arg == :children
-          @node.each_child do |child|
-            self.out(child)
-          end
-        elsif arg.kind_of?(Array)
-          arg.each do |x|
-            self.render(x)
-          end
-        elsif arg.kind_of?(Node)
+          @node.each_child { |child| self.out(child) }
+        elsif arg.is_a?(Array)
+          arg.each { |x| self.render(x) }
+        elsif arg.is_a?(Node)
           self.render(arg)
         else
           @stream.write(arg)
