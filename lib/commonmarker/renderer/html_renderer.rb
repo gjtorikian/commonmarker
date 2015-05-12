@@ -70,7 +70,7 @@ module CommonMarker
       block do
         self.out('<pre><code')
         if node.fence_info && node.fence_info.length > 0
-          self.out(' class='language-', node.fence_info.split(/\s+/)[0], ''>')
+          self.out(' class="language-"', node.fence_info.split(/\s+/)[0], '">')
         else
           self.out('>')
         end
@@ -106,13 +106,14 @@ module CommonMarker
     end
 
     def image(node)
-      self.out('<img src="', URI.escape(node.url), '"')
+      self.out('<img src="', node.url, '"')
+      plain do
+        self.out(' alt="', :children, '"')
+      end
       if node.title && node.title.length > 0
         self.out(' title="', CGI.escapeHTML(node.title), '"')
       end
-      plain do
-        self.out(' alt="', :children, '" />')
-      end
+      self.out(' />')
     end
 
     def text(node)
