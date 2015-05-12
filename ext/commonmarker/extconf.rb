@@ -10,6 +10,8 @@ FileUtils.mkdir_p(CMARK_BUILD_DIR)
 Dir.chdir(CMARK_BUILD_DIR) do
   system 'cmake ..'
   system 'make'
+  # rake-compiler seems to complain about this line, not sure why it's messing with it
+  FileUtils.rm_rf(File.join(CMARK_BUILD_DIR, 'Testing', 'Temporary'))
 end
 
 $LDFLAGS << " -Wl,-rpath,#{CMARK_BUILD_DIR}/src -L#{CMARK_BUILD_DIR}/src -lcmark"
