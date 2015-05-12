@@ -77,6 +77,10 @@ module CommonMarker
       Node.new(nil, CMark.node_parent(@pointer))
     end
 
+    def previous
+      Node.new(nil, CMark.node_previous(@pointer))
+    end
+
     # Iterator over the children (if any) of this Node.
     def each_child
       childptr = CMark.node_first_child(@pointer)
