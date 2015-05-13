@@ -88,7 +88,7 @@ class MyHtmlRenderer < HtmlRenderer
   end
   def header(node)
     block do
-      self.out("<h", node.header_level, " id=\"", @headerid, "\">",
+      out("<h", node.header_level, " id=\"", @headerid, "\">",
                :children, "</h", node.header_level, ">")
       @headerid += 1
     end
