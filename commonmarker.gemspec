@@ -12,13 +12,13 @@ Gem::Specification.new do |s|
   s.homepage = 'http://github.com/gjtorikian/commonmarker'
   s.license = 'MIT'
   s.required_ruby_version = '>= 2.0.0'
-  # = MANIFEST =
+
   s.files         = %w(LICENSE.txt README.md Rakefile commonmarker.gemspec Gemfile bin/commonmarker)
   s.files        += Dir.glob('lib/**/*.rb')
   s.files        += Dir.glob('ext/**/*')
   s.test_files    = Dir.glob('test/**/*')
   s.extensions    = ['ext/commonmarker/extconf.rb']
-  # = MANIFEST =
+
   s.test_files = s.files.grep(%r{^test/})
   s.executables = ['commonmarker']
   s.require_paths = %w(lib ext)

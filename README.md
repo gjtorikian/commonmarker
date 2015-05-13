@@ -1,66 +1,51 @@
-commonmarker
+# commonmarker
 ============
 
+[![Build Status](https://travis-ci.org/gjtorikian/commonmarker.svg)](https://travis-ci.org/gjtorikian/commonmarker) [![Gem Version](https://badge.fury.io/rb/commonmarker.svg)](http://badge.fury.io/rb/commonmarker)
+
 Ruby wrapper for [libcmark](https://github.com/jgm/CommonMark),
-the reference parser for CommonMark.  The gem assumes you have
-installed libcmark.  It would be nice to have the gem build the
-library as a ruby extension, but I leave that for someone with
-more knowledge of ruby extensions to implement.
+the reference parser for CommonMark. It passes all of the C tests, and is therefore spec-complete.
 
-Note that the library currently does not pass all tests.  It's
-a work in progress, and you shouldn't use it for anything serious.
+## Installation
 
-The parser returns a `Node` object that wraps pointers to the
-structures allocated by libcmark.  Access to libcmark's fast
-HTML renderer is provided (the `to_html` method). For
-more flexibility, a ruby `HtmlRenderer` class is also provided,
-which can be customized through subclassing.  New renderers for
-any output format can easily be added.
+Add this line to your application's Gemfile:
 
-To install:
+    gem 'commonmarker'
 
-    rake install
+And then execute:
 
-or
+    $ bundle
 
-    gem build commonmarker.gemspec
-    gem install commonmark-VERSION.gem
+Or install it yourself as:
 
-Simple usage example:
+    $ gem install commonmarker
+
+## Usage
+
+### Printing to HTML
+
+Simply put, you'll first need to parse a string to receive a `Document` node. You can than print that node to HTML. **Make sure to always call `free` when you're done.** For example:
 
 ``` ruby
 require 'commonmarker'
 
-doc = CommonMarker::Node.parse_string("*Hello* world")
-print(doc.to_html)
+doc = CommonMarker::Node.parse_string('*Hello* world')
+puts(doc.to_html)
+
+doc.walk do |node|
+  puts node.type
+end
+
 doc.free
 ```
 
-Some rough benchmarks:
-
-```
-input size = 10031600 bytes
-
-redcarpet                              0.13 s
-commonmarker with to_html              0.17 s
-commonmarker with ruby HtmlRenderer    2.58 s
-kramdown                              14.21 s
-```
-
-The library also includes a `walk` function for walking the
-AST produced by the parser, and either transforming it or
-extracting information.  So, for example, you can easily print out all
-the URLs linked to in a document, or change all the links to plain text,
-or demote level 5 headers to regular paragraphs.
-
-More complex usage example:
+### Walking the AST
 
 ``` ruby
 require 'commonmarker'
-include CommonMarker
 
 # parse the files specified on the command line
-doc = Node.parse_file(ARGF)
+doc = CommonMarker::Node.parse_string("# The site\n\n [GitHub](https://www.github.com)")
 
 # Walk tree and print out URLs for links
 doc.walk do |node|
@@ -88,7 +73,14 @@ doc.walk do |node|
   end
 end
 
-# Create a custom renderer.
+doc.free
+```
+
+### Creating a custom renderer
+
+You can also derive a class from CommonMarker's `HtmlRenderer` class. This produces slower output, but is far more customizable. For example:
+
+``` ruby
 class MyHtmlRenderer < HtmlRenderer
   def initialize
     super
@@ -117,3 +109,36 @@ end
 # free allocated memory when you're done
 doc.free
 ```
+
+## Benchmarks
+
+Some rough benchmarks:
+
+```
+$ bundle exec rake benchmark
+
+input size = 11063727 bytes
+
+redcarpet
+  0.070000   0.020000   0.090000 (  0.079641)
+github-markdown
+  0.070000   0.010000   0.080000 (  0.083535)
+commonmarker with to_html
+  0.100000   0.010000   0.110000 (  0.111947)
+commonmarker with ruby HtmlRenderer
+  1.830000   0.030000   1.860000 (  1.866203)
+kramdown
+  4.610000   0.070000   4.680000 (  4.678398)
+
+```
+
+## Hacking
+
+After cloning the repo:
+
+```
+script/bootstrap
+bundle exec rake compile
+```
+
+If there were no errors, you're done! Otherwise, make sure to follow the CMark dependency instructions.

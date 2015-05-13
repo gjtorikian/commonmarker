@@ -37,10 +37,10 @@ end
 task 'test:unit' => :compile
 
 desc 'Run unit and conformance tests'
-task :test => %w[test:unit]
+task :test => %w(test:unit)
 
 desc 'Run benchmarks'
-task :benchmark => :compile do |t|
+task :benchmark do |t|
   if ENV['FETCH_PROGIT']
     `rm -rf test/progit`
     `git clone https://github.com/progit/progit.git test/progit`

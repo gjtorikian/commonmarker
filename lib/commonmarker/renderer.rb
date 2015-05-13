@@ -22,7 +22,7 @@ module CommonMarker
         elsif arg.is_a?(Node)
           render(arg)
         else
-          @buffer << arg
+          @buffer << arg.to_s.force_encoding('utf-8')
           @stream.write(arg)
         end
       end

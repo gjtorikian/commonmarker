@@ -1,10 +1,6 @@
-require 'cgi'
-require 'uri'
 require 'escape_utils'
 
 module CommonMarker
-  html_secure = false
-
   class HtmlRenderer < Renderer
     def render(node)
       result = super(node)
