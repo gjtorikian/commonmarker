@@ -10,6 +10,7 @@ module CommonMarker
       @warnings = Set.new []
       @in_tight = false
       @in_plain = false
+      @buffer = ""
     end
 
     def out(*args)
@@ -22,6 +23,7 @@ module CommonMarker
         elsif arg.is_a?(Node)
           self.render(arg)
         else
+          @buffer << arg
           @stream.write(arg)
         end
       end
