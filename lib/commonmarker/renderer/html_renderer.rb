@@ -1,88 +1,101 @@
 require 'cgi'
 require 'uri'
+require 'escape_utils'
 
 module CommonMarker
+  html_secure = false
+
   class HtmlRenderer < Renderer
     def render(node)
       result = super(node)
-      # result += "\n" if node.type == :document
     end
 
     def header(node)
-      block do
-        self.out('<h', node.header_level, '>', :children,
+      cr
+      self.out('<h', node.header_level, '>', :children,
                '</h', node.header_level, ">\n")
-      end
+      cr
     end
 
     def paragraph(node)
-      block do
-        if @in_tight
+      # block do
+        if @in_tight && node.parent.type != :blockquote
           self.out(:children)
         else
-          self.out('<p>', :children, "</p>\n")
+          cr
+          container('<p>', "</p>\n") do
+            self.out(:children)
+          end
+          cr
         end
-      end
+      # end
     end
 
     def list(node)
+      cr
       old_in_tight = @in_tight
       @in_tight = node.list_tight
-      block do
+      # block do
         if node.list_type == :bullet_list
           container("<ul>\n", "</ul>\n") do
             self.out(:children)
           end
         else
-          start = node.list_start == 1 ? '<ol>' :
+          start = node.list_start == 1 ? "<ol>\n" :
                   ('<ol start="' + node.list_start.to_s + "\">\n")
           container(start, "</ol>\n") do
             self.out(:children)
           end
         end
-      end
+      # end
       @in_tight = old_in_tight
+      cr
     end
 
     def list_item(node)
-      block do
-        container('<li>', "</li>\n") do
-          self.out(:children)
-        end
+      container('<li>', "</li>\n") do
+        self.out(:children)
+      end
+      unless @in_tight
+        cr
       end
     end
 
     def blockquote(node)
-      block do
+      cr
+      # block do
         container("<blockquote>\n", "</blockquote>\n") do
           self.out(:children)
         end
-      end
+        cr
+
+      # end
     end
 
     def hrule(node)
-      block do
-        self.out("<hr />\n")
-      end
+      cr
+      self.out("<hr />\n")
     end
 
     def code_block(node)
-      block do
+      cr
+      # block do
         self.out('<pre><code')
         if node.fence_info && node.fence_info.length > 0
           self.out(' class="language-', node.fence_info.split(/\s+/)[0], '">')
         else
           self.out(">")
         end
-        self.out(CGI.escapeHTML(node.string_content))
+        self.out(escape_html(node.string_content))
         self.out("</code></pre>\n")
-      end
+      # end
     end
 
     def html(node)
-      block do
+      cr
+      # block do
         self.out(node.string_content)
-      end
+      # end
     end
 
     def inline_html(node)
@@ -98,41 +111,50 @@ module CommonMarker
     end
 
     def link(node)
-      self.out('<a href="', node.url.nil? ? '' : URI.escape(node.url), '"')
+      self.out('<a href="', node.url.nil? ? '' : escape_uri(node.url), '"')
       if node.title && node.title.length > 0
-        self.out(' title="', CGI.escapeHTML(node.title), '"')
+        self.out(' title="', escape_html(node.title), '"')
       end
       self.out('>', :children, '</a>')
     end
 
     def image(node)
-      self.out('<img src="', URI.escape(node.url), '"')
+      self.out('<img src="', escape_uri(node.url), '"')
       plain do
         self.out(' alt="', :children, '"')
       end
       if node.title && node.title.length > 0
-        self.out(' title="', CGI.escapeHTML(node.title), '"')
+        self.out(' title="', escape_html(node.title), '"')
       end
       self.out(' />')
     end
 
     def text(node)
-      self.out(CGI.escapeHTML(node.string_content))
+      self.out(escape_html(node.string_content))
     end
 
     def code(node)
       self.out('<code>')
-      self.out(CGI.escapeHTML(node.string_content))
+      self.out(escape_html(node.string_content))
       self.out('</code>')
     end
 
     def linebreak(node)
-      self.out("<br/>")
+      self.out('<br />')
       self.softbreak(node)
     end
 
     def softbreak(node)
       self.out("\n")
+    end
+
+    # these next two methods are horrendous BS
+    def escape_uri(str)
+      EscapeUtils.escape_uri(str.gsub('%20', ' ')).gsub(']', '%5D').gsub('&', '&amp;').gsub('[','%5B')
+    end
+
+    def escape_html(str)
+      EscapeUtils.escape_html(str).gsub('&#39;', "'").gsub('&#47;', '/')
     end
   end
 end

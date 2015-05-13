@@ -15,7 +15,6 @@ module CommonMarker
 
     def out(*args)
       args.each do |arg|
-        ap arg
         if arg == :children
           @node.each_child { |child| self.out(child) }
         elsif arg.is_a?(Array)
@@ -59,13 +58,20 @@ module CommonMarker
     def reference_def(node)
     end
 
+    def cr
+      return if @buffer.empty?
+      unless @buffer[-1] == "\n"
+        self.out("\n")
+      end
+    end
+
     def blocksep
       self.out("\n")
     end
 
     def containersep
       unless @in_tight
-        self.out("\n")
+        cr
       end
     end
 
@@ -79,10 +85,10 @@ module CommonMarker
 
     def container(starter, ender, &blk)
       self.out(starter)
-      self.containersep
-      @need_blocksep = false
+      # self.containersep
+      # @need_blocksep = false
       blk.call
-      self.containersep
+      # self.containersep
       self.out(ender)
     end
 
