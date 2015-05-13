@@ -13,7 +13,7 @@ module CommonMarker
 
     def self.option_exists?(option)
       unless Config.keys.include?(option)
-        raise StandardError, "option type does not exist #{option}"
+        fail StandardError, "option type does not exist #{option}"
       end
     end
   end

@@ -10,17 +10,17 @@ module CommonMarker
       @warnings = Set.new []
       @in_tight = false
       @in_plain = false
-      @buffer = ""
+      @buffer = ''
     end
 
     def out(*args)
       args.each do |arg|
         if arg == :children
-          @node.each_child { |child| self.out(child) }
+          @node.each_child { |child| out(child) }
         elsif arg.is_a?(Array)
-          arg.each { |x| self.render(x) }
+          arg.each { |x| render(x) }
         elsif arg.is_a?(Node)
-          self.render(arg)
+          render(arg)
         else
           @buffer << arg
           @stream.write(arg)
@@ -31,15 +31,13 @@ module CommonMarker
     def render(node)
       @node = node
       if node.type == :document
-        self.document(node)
+        document(node)
         return @stream.string
       elsif @in_plain && node.type != :text && node.type != :softbreak
-        node.each_child do |child|
-          render(child)
-        end
+        node.each_child { |child| render(child) }
       else
         begin
-          self.send(node.type, node)
+          send(node.type, node)
         rescue NoMethodError => e
           @warnings.add('WARNING:  ' + node.type.to_s + ' not implemented.')
           raise e
@@ -47,49 +45,40 @@ module CommonMarker
       end
     end
 
-    def document(node)
-      self.out(:children)
+    def document(_node)
+      out(:children)
     end
 
     def code_block(node)
-      self.code_block(node)
+      code_block(node)
     end
 
-    def reference_def(node)
+    def reference_def(_node)
     end
 
     def cr
-      return if @buffer.empty?
-      unless @buffer[-1] == "\n"
-        self.out("\n")
-      end
+      return if @buffer.empty? || @buffer[-1] == "\n"
+      out("\n")
     end
 
     def blocksep
-      self.out("\n")
+      out("\n")
     end
 
     def containersep
-      unless @in_tight
-        cr
-      end
+      cr unless @in_tight
     end
 
     def block(&blk)
-      if @need_blocksep
-        self.blocksep
-      end
+      cr
       blk.call
-      @need_blocksep = true
+      cr
     end
 
     def container(starter, ender, &blk)
-      self.out(starter)
-      # self.containersep
-      # @need_blocksep = false
+      out(starter)
       blk.call
-      # self.containersep
-      self.out(ender)
+      out(ender)
     end
 
     def plain(&blk)
