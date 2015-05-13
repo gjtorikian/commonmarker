@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+echo "==> Initing Git submodules"
+
+git submodule update --init --recursive
+
+echo "==> Installing gem dependencies…"
+
+bundle install --path vendor/gems --local --standalone --clean "$@"

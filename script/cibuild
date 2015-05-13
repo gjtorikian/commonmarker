@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+BENCH=1 bundle exec rake test

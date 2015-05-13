@@ -1,4 +1,5 @@
 require 'commonmarker'
+require 'github/markdown'
 require 'redcarpet'
 require 'kramdown'
 require 'benchmark'
@@ -8,23 +9,26 @@ def dobench(name, &blk)
   puts Benchmark.measure(&blk)
 end
 
-benchinput = File.open('../CommonMark/bench/benchinput.md', 'r').read()
+benchinput = File.open('test/benchinput.md', 'r').read()
 
 printf("input size = %d bytes\n\n", benchinput.bytesize)
 
-dobench("commonmarker with to_html") do
-  CommonMarker::Node.parse_string(benchinput).to_html
-end
-
-dobench("commonmarker with ruby HtmlRenderer") do
-  CommonMarker::HtmlRenderer.new.render(CommonMarker::Node.parse_string(benchinput))
-end
-
-dobench("redcarpet") do
+dobench('redcarpet') do
   Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
 end
 
-dobench("kramdown") do
-  Kramdown::Document.new(benchinput).to_html(benchinput)
+dobench('github-markdown') do
+  GitHub::Markdown.render(benchinput)
 end
 
+dobench('commonmarker with to_html') do
+  CommonMarker::Node.parse_string(benchinput).to_html
+end
+
+dobench('commonmarker with ruby HtmlRenderer') do
+  CommonMarker::HtmlRenderer.new.render(CommonMarker::Node.parse_string(benchinput))
+end
+
+dobench('kramdown') do
+  Kramdown::Document.new(benchinput).to_html(benchinput)
+end

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$1" ]; then
+  BRANCH="master"
+else
+  BRANCH=$1
+fi
+
+echo "Using $BRANCH..."
+
+echo "Checking out cmark"
+echo "---------------------"
+cd ext/commonmarker/cmark
+git fetch origin
+git checkout $BRANCH && git pull
+sha=`git rev-parse HEAD`
+cd ../../..
+git add ext/commonmarker/cmark
+git commit -m "Update cmark to ${sha}"

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+
+bundle exec rake compile
+ruby -I"lib:test" test/$1
