@@ -20,7 +20,6 @@ module CommonMarker
         elsif arg.is_a?(Array)
           arg.each { |x| self.render(x) }
         elsif arg.is_a?(Node)
-          ap arg.type
           self.render(arg)
         else
           @stream.write(arg)
@@ -78,14 +77,10 @@ module CommonMarker
 
     def container(starter, ender, &blk)
       self.out(starter)
-      old_in_tight = @in_tight
-      @in_tight = true if starter =~ /<blockquote/ || starter =~ /<ul/
       self.containersep
       @need_blocksep = false
       blk.call
-      @in_tight = true if starter =~ /<blockquote/ || starter =~ /<ul/
-      # self.containersep
-      @in_tight = old_in_tight
+      self.containersep
       self.out(ender)
     end
 

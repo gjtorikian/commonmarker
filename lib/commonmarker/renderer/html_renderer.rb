@@ -9,7 +9,6 @@ module CommonMarker
     end
 
     def header(node)
-      @need_blocksep = false
       block do
         self.out('<h', node.header_level, '>', :children,
                '</h', node.header_level, ">\n")
@@ -17,15 +16,6 @@ module CommonMarker
     end
 
     def paragraph(node)
-      @need_blocksep = false
-      ap "Prev"
-      ap node.previous.type
-      ap "Parent"
-      ap node.parent.type
-      @in_tight = (node.previous.type == :blockquote || node.parent.type == :list_item) && node.parent.type != :document && node.next.type == :none
-      ap 'next is'
-      ap node.next.type
-      ap node.parent.string_content
       block do
         if @in_tight
           self.out(:children)
@@ -38,7 +28,7 @@ module CommonMarker
     def list(node)
       old_in_tight = @in_tight
       @in_tight = node.list_tight
-      # block do
+      block do
         if node.list_type == :bullet_list
           container("<ul>\n", "</ul>\n") do
             self.out(:children)
@@ -50,36 +40,33 @@ module CommonMarker
             self.out(:children)
           end
         end
-      # end
+      end
       @in_tight = old_in_tight
     end
 
     def list_item(node)
-      # block do
+      block do
         container('<li>', "</li>\n") do
           self.out(:children)
         end
-      # end
+      end
     end
 
     def blockquote(node)
-      @need_blocksep = false
-      # block do
+      block do
         container("<blockquote>\n", "</blockquote>\n") do
           self.out(:children)
         end
-      # end
+      end
     end
 
     def hrule(node)
-      @need_blocksep = node.parent.type == :list_item
       block do
         self.out("<hr />\n")
       end
     end
 
     def code_block(node)
-      @need_blocksep = false
       block do
         self.out('<pre><code')
         if node.fence_info && node.fence_info.length > 0
@@ -93,9 +80,9 @@ module CommonMarker
     end
 
     def html(node)
-      # block do
+      block do
         self.out(node.string_content)
-      # end
+      end
     end
 
     def inline_html(node)
@@ -111,7 +98,7 @@ module CommonMarker
     end
 
     def link(node)
-      self.out('<a href="', node.url.nil? ? '' : URI.escape(node.url).gsub('[', '%5B'), '"')
+      self.out('<a href="', node.url.nil? ? '' : URI.escape(node.url), '"')
       if node.title && node.title.length > 0
         self.out(' title="', CGI.escapeHTML(node.title), '"')
       end
@@ -119,7 +106,7 @@ module CommonMarker
     end
 
     def image(node)
-      self.out('<img src="', node.url, '"')
+      self.out('<img src="', URI.escape(node.url), '"')
       plain do
         self.out(' alt="', :children, '"')
       end
@@ -130,7 +117,7 @@ module CommonMarker
     end
 
     def text(node)
-      self.out(CGI.escapeHTML(node.string_content).gsub('&#39;', "'"))
+      self.out(CGI.escapeHTML(node.string_content))
     end
 
     def code(node)
@@ -140,7 +127,8 @@ module CommonMarker
     end
 
     def linebreak(node)
-      self.out("<br />\n")
+      self.out("<br/>")
+      self.softbreak(node)
     end
 
     def softbreak(node)
