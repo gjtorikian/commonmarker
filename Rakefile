@@ -22,6 +22,7 @@ end
 
 # Packaging
 require 'bundler/gem_tasks'
+task :build => [:clean, :compile]
 
 # Testing
 require 'rake/testtask'
