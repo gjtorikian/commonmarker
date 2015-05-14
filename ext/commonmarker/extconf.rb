@@ -3,6 +3,11 @@ require 'fileutils'
 require 'rbconfig'
 host_os = RbConfig::CONFIG['host_os']
 
+unless find_executable('cmake')
+  $stderr.puts "\n\n\n[ERROR]: cmake is required and not installed. Get it here: http://www.cmake.org/\n\n"
+  exit 1
+end
+
 CMARK_DIR = File.expand_path(File.join(File.dirname(__FILE__), 'cmark'))
 CMARK_BUILD_DIR = File.join(CMARK_DIR, 'build')
 FileUtils.mkdir_p(CMARK_BUILD_DIR)
