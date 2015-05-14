@@ -10,6 +10,12 @@ end
 
 CMARK_DIR = File.expand_path(File.join(File.dirname(__FILE__), 'cmark'))
 CMARK_BUILD_DIR = File.join(CMARK_DIR, 'build')
+
+# TODO: we need to clear out the build dir that's erroneously getting packaged
+# this causes problems, as Linux installation is expecting OS X output
+if File.directory?(CMARK_BUILD_DIR) && !File.exist?(ROOT_TMP)
+  FileUtils.rm_rf(CMARK_BUILD_DIR)
+end
 FileUtils.mkdir_p(CMARK_BUILD_DIR)
 
 Dir.chdir(CMARK_BUILD_DIR) do
