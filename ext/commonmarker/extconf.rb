@@ -8,6 +8,7 @@ unless find_executable('cmake')
   exit 1
 end
 
+ROOT_TMP = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'tmp'))
 CMARK_DIR = File.expand_path(File.join(File.dirname(__FILE__), 'cmark'))
 CMARK_BUILD_DIR = File.join(CMARK_DIR, 'build')
 
