@@ -223,9 +223,7 @@ module CommonMarker
     def url=(url)
       fail NodeError, 'can\'t set URL for non-link or image' if !(type == :link || type == :image)
       fail NodeError, 'url must be a String' unless url.is_a?(String)
-      # Make our own copy so ruby won't garbage-collect it:
-      c_url = FFI::MemoryPointer.from_string(url)
-      res = CMark.node_set_url(@pointer, c_url)
+      res = CMark.node_set_url(@pointer, url)
       fail NodeError, 'could not set header level' if res == 0
     end
 
@@ -241,9 +239,7 @@ module CommonMarker
     def title=(title)
       fail NodeError, 'can\'t set title for non-link or image' if !(type == :link || type == :image)
       fail NodeError, 'title must be a String' unless title.is_a?(String)
-      # Make our own copy so ruby won't garbage-collect it:
-      c_title = FFI::MemoryPointer.from_string(title)
-      res = CMark.node_set_title(@pointer, c_title)
+      res = CMark.node_set_title(@pointer, title)
       fail NodeError, 'could not set header level' if res == 0
     end
 
@@ -259,9 +255,7 @@ module CommonMarker
     def fence_info=(info)
       fail NodeError, 'can\'t set fence_info for non code_block' unless type == :code_block
       fail NodeError, 'info must be a String' unless info.is_a?(String)
-      # Make our own copy so ruby won't garbage-collect it:
-      c_info = FFI::MemoryPointer.from_string(info)
-      res = CMark.node_set_fence_info(@pointer, c_info)
+      res = CMark.node_set_fence_info(@pointer, info)
       fail NodeError, 'could not set info' if res == 0
     end
 
