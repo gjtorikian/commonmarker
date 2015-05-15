@@ -289,10 +289,5 @@ module CommonMarker
       CMark.render_html(@pointer, Config.to_h[option]).force_encoding('utf-8')
     end
 
-    # Unlinks and frees this Node.
-    def free
-      CMark.node_unlink(@pointer)
-      # CMark.node_free(@pointer)
-    end
   end
 end

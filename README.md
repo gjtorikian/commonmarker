@@ -23,7 +23,7 @@ Or install it yourself as:
 
 ### Printing to HTML
 
-Simply put, you'll first need to parse a string to receive a `Document` node. You can than print that node to HTML. **Make sure to always call `free` when you're done.** For example:
+Simply put, you'll first need to parse a string to receive a `Document` node. You can than print that node to HTML. For example:
 
 ``` ruby
 require 'commonmarker'
@@ -34,8 +34,6 @@ puts(doc.to_html)
 doc.walk do |node|
   puts node.type
 end
-
-doc.free
 ```
 
 ### Walking the AST
@@ -71,8 +69,6 @@ doc.walk do |node|
     node.delete
   end
 end
-
-doc.free
 ```
 
 ### Creating a custom renderer
@@ -104,9 +100,6 @@ renderer.warnings.each do |w|
   STDERR.write(w)
   STDERR.write("\n")
 end
-
-# free allocated memory when you're done
-doc.free
 ```
 
 ## Benchmarks

@@ -112,7 +112,7 @@ rb_node_first_child(VALUE self, VALUE n)
 
 	cmark_node *child = cmark_node_first_child(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, child);
+	return Data_Wrap_Struct(self, NULL, cmark_node_free, child);
 }
 
 static VALUE
@@ -126,7 +126,7 @@ rb_node_next(VALUE self, VALUE n)
 
 	cmark_node *next = cmark_node_next(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, next);
+	return Data_Wrap_Struct(self, NULL, cmark_node_free, next);
 }
 
 static VALUE
@@ -204,7 +204,7 @@ rb_node_last_child(VALUE self, VALUE n)
 
 	cmark_node *child = cmark_node_last_child(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, child);
+	return Data_Wrap_Struct(self, NULL, cmark_node_free, child);
 }
 
 
@@ -219,7 +219,7 @@ rb_node_parent(VALUE self, VALUE n)
 
 	cmark_node *parent = cmark_node_parent(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, parent);
+	return Data_Wrap_Struct(self, NULL, cmark_node_free, parent);
 }
 
 
@@ -234,7 +234,7 @@ rb_node_previous(VALUE self, VALUE n)
 
 	cmark_node *previous = cmark_node_previous(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, previous);
+	return Data_Wrap_Struct(self, NULL, cmark_node_free, previous);
 }
 
 
