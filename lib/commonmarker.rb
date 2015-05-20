@@ -36,9 +36,8 @@ module CommonMarker
       if pointer
         @pointer = pointer
       else
-        unless NODE_TYPES.include?(type)
-          fail NodeError, "node type does not exist #{type}"
-        end
+        idx = NODE_TYPES.index(type)
+        fail NodeError, "node type does not exist #{type}" unless idx
         @pointer = CMark.node_new(type)
       end
 
