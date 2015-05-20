@@ -4,7 +4,8 @@
 
 VALUE rb_mCommonMark;
 
-void rb_free_c_struct(void* n) {
+void rb_free_c_struct(void* n)
+{
 	if (n != NULL && strcmp(cmark_node_get_type_string(n), "document") == 0) {
 		cmark_node_free(n);
 	}
