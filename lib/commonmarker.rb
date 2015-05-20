@@ -45,9 +45,7 @@ module CommonMarker
       fail NodeError, "could not create node of type #{type}" if @pointer.nil?
     end
 
-    # Parses a string into a :document Node.  The
-    # +free+ method should be called to release the node's
-    # memory when it is no longer needed.
+    # Parses a string into a :document Node.
     # Params:
     # +s+::  +String+ to be parsed.
     def self.parse_string(s, option = :default)
@@ -55,10 +53,7 @@ module CommonMarker
       Node.new(nil, CMark.parse_document(s, s.bytesize, Config.to_h[option]))
     end
 
-    # Parses a file into a :document Node.  The
-    # +free+ method should be called to release the node's
-    # memory when it is no longer needed.
-
+    # Parses a file into a :document Node.
     # Params:
     # +f+::  +File+ to be parsed (caller must open and close).
     def self.parse_file(f)
