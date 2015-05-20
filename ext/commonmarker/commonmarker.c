@@ -4,6 +4,10 @@
 
 VALUE rb_mCommonMark;
 
+void rb_free_c_struct(void* n) {
+	cmark_node_free(n);
+}
+
 static VALUE
 rb_markdown_to_html(VALUE self, VALUE rb_text)
 {
@@ -37,7 +41,7 @@ rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 
 	cmark_node *doc = cmark_parse_document(text, len, options);
 
-	return Data_Wrap_Struct(self, NULL, cmark_node_free, doc);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, doc);
 }
 
 static VALUE
@@ -98,7 +102,7 @@ rb_node_free(VALUE self, VALUE n)
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
-	cmark_node_free(node);
+	rb_free_c_struct(node);
 }
 
 static VALUE
@@ -112,7 +116,7 @@ rb_node_first_child(VALUE self, VALUE n)
 
 	cmark_node *child = cmark_node_first_child(node);
 
-	return Data_Wrap_Struct(self, NULL, cmark_node_free, child);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, child);
 }
 
 static VALUE
@@ -126,7 +130,7 @@ rb_node_next(VALUE self, VALUE n)
 
 	cmark_node *next = cmark_node_next(node);
 
-	return Data_Wrap_Struct(self, NULL, cmark_node_free, next);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, next);
 }
 
 static VALUE
@@ -204,7 +208,7 @@ rb_node_last_child(VALUE self, VALUE n)
 
 	cmark_node *child = cmark_node_last_child(node);
 
-	return Data_Wrap_Struct(self, NULL, cmark_node_free, child);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, child);
 }
 
 
@@ -219,7 +223,7 @@ rb_node_parent(VALUE self, VALUE n)
 
 	cmark_node *parent = cmark_node_parent(node);
 
-	return Data_Wrap_Struct(self, NULL, cmark_node_free, parent);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, parent);
 }
 
 
@@ -234,7 +238,7 @@ rb_node_previous(VALUE self, VALUE n)
 
 	cmark_node *previous = cmark_node_previous(node);
 
-	return Data_Wrap_Struct(self, NULL, cmark_node_free, previous);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, previous);
 }
 
 
