@@ -19,3 +19,4 @@ sha=`git rev-parse HEAD`
 cd ../../..
 git add ext/commonmarker/cmark
 git commit -m "Update cmark to ${sha}"
+rake generate_test
