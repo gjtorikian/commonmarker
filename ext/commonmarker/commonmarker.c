@@ -411,12 +411,12 @@ rb_html_escape_href(VALUE self, VALUE rb_text)
 {
 	Check_Type(rb_text, T_STRING);
 
-	cmark_strbuf *buf = GH_BUF_INIT;
+	cmark_strbuf buf = GH_BUF_INIT;
 	char *text = (char *)RSTRING_PTR(rb_text);
 	int len = RSTRING_LEN(rb_text);
 
-	houdini_escape_href(buf, text, len);
-	char *result =(char *)cmark_strbuf_detach(buf);
+	houdini_escape_href(&buf, text, len);
+	char *result =(char *)cmark_strbuf_detach(&buf);
 
 	return rb_str_new2(result);
 }
@@ -426,12 +426,12 @@ rb_html_escape_html(VALUE self, VALUE rb_text)
 {
 	Check_Type(rb_text, T_STRING);
 
-	cmark_strbuf *buf = GH_BUF_INIT;
+	cmark_strbuf buf = GH_BUF_INIT;
 	char *text = (char *)RSTRING_PTR(rb_text);
 	int len = RSTRING_LEN(rb_text);
 
-	houdini_escape_html0(buf, text, len, 0);
-	char *result =(char *)cmark_strbuf_detach(buf);
+	houdini_escape_html0(&buf, text, len, 0);
+	char *result =(char *)cmark_strbuf_detach(&buf);
 
 	return rb_str_new2(result);
 }
