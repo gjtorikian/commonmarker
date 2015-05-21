@@ -1,6 +1,7 @@
 #include "commonmarker.h"
 #include "cmark.h"
 #include "node.h"
+#include "houdini.h"
 
 VALUE rb_mCommonMark;
 
@@ -405,6 +406,20 @@ rb_node_set_fence_info(VALUE self, VALUE n, VALUE s)
 	return INT2NUM(cmark_node_set_fence_info(node, text));
 }
 
+static VALUE
+rb_html_escape_href(VALUE self, VALUE rb_text)
+{
+	Check_Type(rb_text, T_STRING);
+
+	char *dest = (char *)malloc(sizeof(char));
+	char *text = (char *)RSTRING_PTR(rb_text);
+	int len = RSTRING_LEN(rb_text);
+
+	houdini_escape_href(dest, text, len);
+
+	return rb_str_new2(dest);
+}
+
 __attribute__((visibility("default")))
 void Init_commonmarker()
 {
@@ -442,4 +457,6 @@ void Init_commonmarker()
 	rb_define_singleton_method(rb_mCommonMark, "node_set_list_tight", rb_node_set_list_tight, 2);
 	rb_define_singleton_method(rb_mCommonMark, "node_get_fence_info", rb_node_get_fence_info, 1);
 	rb_define_singleton_method(rb_mCommonMark, "node_set_fence_info", rb_node_set_fence_info, 2);
+
+	rb_define_singleton_method(rb_mCommonMark, "html_escape_href", rb_html_escape_href, 1);
 }
