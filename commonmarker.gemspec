@@ -24,7 +24,6 @@ Gem::Specification.new do |s|
   s.require_paths = %w(lib ext)
 
   s.add_dependency 'ruby-enum', '~> 0.4'
-  s.add_dependency 'escape_utils', '~> 1.1'
 
   s.add_development_dependency 'minitest', '~> 5.6'
   s.add_development_dependency 'rake-compiler', '~> 0.9'

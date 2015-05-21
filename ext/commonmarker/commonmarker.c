@@ -411,13 +411,29 @@ rb_html_escape_href(VALUE self, VALUE rb_text)
 {
 	Check_Type(rb_text, T_STRING);
 
-	char *dest = (char *)malloc(sizeof(char));
+	cmark_strbuf *buf = GH_BUF_INIT;
 	char *text = (char *)RSTRING_PTR(rb_text);
 	int len = RSTRING_LEN(rb_text);
 
-	houdini_escape_href(dest, text, len);
+	houdini_escape_href(buf, text, len);
+	char *result =(char *)cmark_strbuf_detach(buf);
 
-	return rb_str_new2(dest);
+	return rb_str_new2(result);
+}
+
+static VALUE
+rb_html_escape_html(VALUE self, VALUE rb_text)
+{
+	Check_Type(rb_text, T_STRING);
+
+	cmark_strbuf *buf = GH_BUF_INIT;
+	char *text = (char *)RSTRING_PTR(rb_text);
+	int len = RSTRING_LEN(rb_text);
+
+	houdini_escape_html0(buf, text, len, 0);
+	char *result =(char *)cmark_strbuf_detach(buf);
+
+	return rb_str_new2(result);
 }
 
 __attribute__((visibility("default")))
@@ -459,4 +475,5 @@ void Init_commonmarker()
 	rb_define_singleton_method(rb_mCommonMark, "node_set_fence_info", rb_node_set_fence_info, 2);
 
 	rb_define_singleton_method(rb_mCommonMark, "html_escape_href", rb_html_escape_href, 1);
+	rb_define_singleton_method(rb_mCommonMark, "html_escape_html", rb_html_escape_html, 1);
 }
