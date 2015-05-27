@@ -23,7 +23,7 @@ end
 FileUtils.mkdir_p(CMARK_BUILD_DIR)
 
 Dir.chdir(CMARK_BUILD_DIR) do
-  system 'cmake ..'
+  system 'cmake .. -DCMAKE_C_FLAGS=-fPIC'
   system 'make libcmark_static'
   # rake-compiler seems to complain about this line, not sure why it's messing with it
   FileUtils.rm_rf(File.join(CMARK_BUILD_DIR, 'Testing', 'Temporary'))
