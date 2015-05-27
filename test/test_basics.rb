@@ -37,8 +37,4 @@ class TestNode < Minitest::Test
       end
     end
   end
-
-  def teardown
-    @doc.free
-  end
 end

@@ -36,18 +36,15 @@ module CommonMarker
       if pointer
         @pointer = pointer
       else
-        unless NODE_TYPES.include?(type)
-          fail NodeError, "node type does not exist #{type}"
-        end
+        idx = NODE_TYPES.index(type)
+        fail NodeError, "node type does not exist #{type}" unless idx
         @pointer = CMark.node_new(type)
       end
 
       fail NodeError, "could not create node of type #{type}" if @pointer.nil?
     end
 
-    # Parses a string into a :document Node.  The
-    # +free+ method should be called to release the node's
-    # memory when it is no longer needed.
+    # Parses a string into a :document Node.
     # Params:
     # +s+::  +String+ to be parsed.
     def self.parse_string(s, option = :default)
@@ -55,10 +52,7 @@ module CommonMarker
       Node.new(nil, CMark.parse_document(s, s.bytesize, Config.to_h[option]))
     end
 
-    # Parses a file into a :document Node.  The
-    # +free+ method should be called to release the node's
-    # memory when it is no longer needed.
-
+    # Parses a file into a :document Node.
     # Params:
     # +f+::  +File+ to be parsed (caller must open and close).
     def self.parse_file(f)
@@ -223,9 +217,7 @@ module CommonMarker
     def url=(url)
       fail NodeError, 'can\'t set URL for non-link or image' if !(type == :link || type == :image)
       fail NodeError, 'url must be a String' unless url.is_a?(String)
-      # Make our own copy so ruby won't garbage-collect it:
-      c_url = FFI::MemoryPointer.from_string(url)
-      res = CMark.node_set_url(@pointer, c_url)
+      res = CMark.node_set_url(@pointer, url)
       fail NodeError, 'could not set header level' if res == 0
     end
 
@@ -241,9 +233,7 @@ module CommonMarker
     def title=(title)
       fail NodeError, 'can\'t set title for non-link or image' if !(type == :link || type == :image)
       fail NodeError, 'title must be a String' unless title.is_a?(String)
-      # Make our own copy so ruby won't garbage-collect it:
-      c_title = FFI::MemoryPointer.from_string(title)
-      res = CMark.node_set_title(@pointer, c_title)
+      res = CMark.node_set_title(@pointer, title)
       fail NodeError, 'could not set header level' if res == 0
     end
 
@@ -259,9 +249,7 @@ module CommonMarker
     def fence_info=(info)
       fail NodeError, 'can\'t set fence_info for non code_block' unless type == :code_block
       fail NodeError, 'info must be a String' unless info.is_a?(String)
-      # Make our own copy so ruby won't garbage-collect it:
-      c_info = FFI::MemoryPointer.from_string(info)
-      res = CMark.node_set_fence_info(@pointer, c_info)
+      res = CMark.node_set_fence_info(@pointer, info)
       fail NodeError, 'could not set info' if res == 0
     end
 
@@ -289,10 +277,5 @@ module CommonMarker
       CMark.render_html(@pointer, Config.to_h[option]).force_encoding('utf-8')
     end
 
-    # Unlinks and frees this Node.
-    def free
-      CMark.node_unlink(@pointer)
-      # CMark.node_free(@pointer)
-    end
   end
 end

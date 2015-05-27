@@ -1,8 +1,16 @@
 #include "commonmarker.h"
 #include "cmark.h"
 #include "node.h"
+#include "houdini.h"
 
 VALUE rb_mCommonMark;
+
+void rb_free_c_struct(void* n)
+{
+	if (n != NULL && cmark_node_get_type(n) == CMARK_NODE_DOCUMENT) {
+		cmark_node_free(n);
+	}
+}
 
 static VALUE
 rb_markdown_to_html(VALUE self, VALUE rb_text)
@@ -37,7 +45,7 @@ rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 
 	cmark_node *doc = cmark_parse_document(text, len, options);
 
-	return Data_Wrap_Struct(self, NULL, cmark_node_free, doc);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, doc);
 }
 
 static VALUE
@@ -98,7 +106,7 @@ rb_node_free(VALUE self, VALUE n)
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
-	cmark_node_free(node);
+	rb_free_c_struct(node);
 }
 
 static VALUE
@@ -112,7 +120,7 @@ rb_node_first_child(VALUE self, VALUE n)
 
 	cmark_node *child = cmark_node_first_child(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, child);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, child);
 }
 
 static VALUE
@@ -126,7 +134,7 @@ rb_node_next(VALUE self, VALUE n)
 
 	cmark_node *next = cmark_node_next(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, next);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, next);
 }
 
 static VALUE
@@ -204,7 +212,7 @@ rb_node_last_child(VALUE self, VALUE n)
 
 	cmark_node *child = cmark_node_last_child(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, child);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, child);
 }
 
 
@@ -219,7 +227,7 @@ rb_node_parent(VALUE self, VALUE n)
 
 	cmark_node *parent = cmark_node_parent(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, parent);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, parent);
 }
 
 
@@ -234,7 +242,7 @@ rb_node_previous(VALUE self, VALUE n)
 
 	cmark_node *previous = cmark_node_previous(node);
 
-	return Data_Wrap_Struct(self, NULL, NULL, previous);
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, previous);
 }
 
 
@@ -398,6 +406,36 @@ rb_node_set_fence_info(VALUE self, VALUE n, VALUE s)
 	return INT2NUM(cmark_node_set_fence_info(node, text));
 }
 
+static VALUE
+rb_html_escape_href(VALUE self, VALUE rb_text)
+{
+	Check_Type(rb_text, T_STRING);
+
+	cmark_strbuf buf = GH_BUF_INIT;
+	char *text = (char *)RSTRING_PTR(rb_text);
+	int len = RSTRING_LEN(rb_text);
+
+	houdini_escape_href(&buf, text, len);
+	char *result =(char *)cmark_strbuf_detach(&buf);
+
+	return rb_str_new2(result);
+}
+
+static VALUE
+rb_html_escape_html(VALUE self, VALUE rb_text)
+{
+	Check_Type(rb_text, T_STRING);
+
+	cmark_strbuf buf = GH_BUF_INIT;
+	char *text = (char *)RSTRING_PTR(rb_text);
+	int len = RSTRING_LEN(rb_text);
+
+	houdini_escape_html0(&buf, text, len, 0);
+	char *result =(char *)cmark_strbuf_detach(&buf);
+
+	return rb_str_new2(result);
+}
+
 __attribute__((visibility("default")))
 void Init_commonmarker()
 {
@@ -435,4 +473,7 @@ void Init_commonmarker()
 	rb_define_singleton_method(rb_mCommonMark, "node_set_list_tight", rb_node_set_list_tight, 2);
 	rb_define_singleton_method(rb_mCommonMark, "node_get_fence_info", rb_node_get_fence_info, 1);
 	rb_define_singleton_method(rb_mCommonMark, "node_set_fence_info", rb_node_set_fence_info, 2);
+
+	rb_define_singleton_method(rb_mCommonMark, "html_escape_href", rb_html_escape_href, 1);
+	rb_define_singleton_method(rb_mCommonMark, "html_escape_html", rb_html_escape_html, 1);
 }

@@ -38,4 +38,3 @@ if renderer
 else
   STDOUT.write(doc.to_html)
 end
-doc.free

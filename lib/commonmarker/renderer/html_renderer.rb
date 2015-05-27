@@ -1,5 +1,3 @@
-require 'escape_utils'
-
 module CommonMarker
   class HtmlRenderer < Renderer
     def render(node)
@@ -100,7 +98,7 @@ module CommonMarker
     end
 
     def link(node)
-      out('<a href="', node.url.nil? ? '' : escape_uri(node.url), '"')
+      out('<a href="', node.url.nil? ? '' : escape_href(node.url), '"')
       if node.title && node.title.length > 0
         out(' title="', escape_html(node.title), '"')
       end
@@ -108,7 +106,7 @@ module CommonMarker
     end
 
     def image(node)
-      out('<img src="', escape_uri(node.url), '"')
+      out('<img src="', escape_href(node.url), '"')
       plain do
         out(' alt="', :children, '"')
       end
@@ -133,17 +131,16 @@ module CommonMarker
       softbreak(node)
     end
 
-    def softbreak(node)
+    def softbreak(_)
       out("\n")
     end
 
-    # these next two methods are horrendous BS
-    def escape_uri(str)
-      EscapeUtils.escape_uri(str.gsub('%20', ' ')).gsub(']', '%5D').gsub('&', '&amp;').gsub('[', '%5B')
+    def escape_href(str)
+      CMark.html_escape_href(str)
     end
 
     def escape_html(str)
-      EscapeUtils.escape_html(str).gsub('&#39;', "'").gsub('&#47;', '/')
+      CMark.html_escape_html(str)
     end
   end
 end
