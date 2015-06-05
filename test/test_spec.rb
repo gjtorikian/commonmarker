@@ -2,7 +2,7 @@ require 'test_helper'
 require 'json'
 
 class TestSpec < Minitest::Test
-  cases = JSON.parse(open('test/spec_tests.json', 'r').read)
+  cases = JSON.parse(open(File.join('test', 'spec_tests.json'), 'r').read)
   cases.each do |testcase|
     # next unless testcase['example'] == 420
     doc = Node.parse_string(testcase['markdown'])
