@@ -13,14 +13,16 @@ void rb_free_c_struct(void* n)
 }
 
 static VALUE
-rb_markdown_to_html(VALUE self, VALUE rb_text)
+rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options)
 {
 	Check_Type(rb_text, T_STRING);
+	Check_Type(rb_options, T_FIXNUM);
 
 	char *str = (char *)RSTRING_PTR(rb_text);
 	int len = RSTRING_LEN(rb_text);
+	int options = FIX2INT(rb_options);
 
-	return rb_str_new2(cmark_markdown_to_html(str, len, 0));
+	return rb_str_new2(cmark_markdown_to_html(str, len, options));
 }
 
 static VALUE
@@ -440,7 +442,7 @@ __attribute__((visibility("default")))
 void Init_commonmarker()
 {
 	rb_mCommonMark = rb_define_class("CMark", rb_cObject);
-	rb_define_singleton_method(rb_mCommonMark, "markdown_to_html", rb_markdown_to_html, 1);
+	rb_define_singleton_method(rb_mCommonMark, "markdown_to_html", rb_markdown_to_html, 2);
 	rb_define_singleton_method(rb_mCommonMark, "node_new", rb_node_new, 1);
 	rb_define_singleton_method(rb_mCommonMark, "parse_document", rb_parse_document, 3);
 	rb_define_singleton_method(rb_mCommonMark, "node_get_string_content", rb_node_get_string_content, 1);

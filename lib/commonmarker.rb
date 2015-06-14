@@ -22,6 +22,11 @@ module CommonMarker
   class NodeError < StandardError
   end
 
+  def self.markdown_to_html(text, option = :default)
+    Config.option_exists?(option)
+    CMark.markdown_to_html(text, Config.to_h[option])
+  end
+
   class Node
     attr_reader :pointer
 
@@ -276,6 +281,5 @@ module CommonMarker
       Config.option_exists?(option)
       CMark.render_html(@pointer, Config.to_h[option]).force_encoding('utf-8')
     end
-
   end
 end

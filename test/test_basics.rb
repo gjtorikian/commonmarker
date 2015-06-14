@@ -37,4 +37,9 @@ class TestNode < Minitest::Test
       end
     end
   end
+
+  def test_markdown_to_html
+    html = CommonMarker.markdown_to_html("Hi *there*")
+    assert_equal "<p>Hi <em>there</em></p>\n", html
+  end
 end
