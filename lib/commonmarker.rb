@@ -55,9 +55,9 @@ module CommonMarker
     # Parses a file into a :document Node.
     # Params:
     # +f+::  +File+ to be parsed (caller must open and close).
-    def self.parse_file(f)
-      s = f.read()
-      self.parse_string(s)
+    def self.parse_file(f, option = :default)
+      s = f.read
+      parse_string(s, option)
     end
 
     def first_child
