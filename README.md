@@ -1,4 +1,4 @@
-# commonmarker
+# CommonMarker
 
 [![Build Status](https://travis-ci.org/gjtorikian/commonmarker.svg)](https://travis-ci.org/gjtorikian/commonmarker) [![Gem Version](https://badge.fury.io/rb/commonmarker.svg)](http://badge.fury.io/rb/commonmarker)
 
@@ -21,14 +21,26 @@ Or install it yourself as:
 
 ## Usage
 
-### Printing to HTML
+### Converting to HTML
 
-Simply put, you'll first need to parse a string to receive a `Document` node. You can than print that node to HTML. For example:
+Call `markdown_to_html` on a string to convert it to HTML:
+
+``` ruby
+require 'commonmarker'
+CommonMarker.markdown_to_html("Hi *there*", :default)
+# <p>Hi <em>there</em></p>\n
+```
+
+The second argument is optional--[see below](#options) for more information.
+
+### Generating a document
+
+You can also parse a string to receive a `Document` node. You can than print that node to HTML, iterate over the children, and other fun Node stuff. For example:
 
 ``` ruby
 require 'commonmarker'
 
-doc = CommonMarker::Node.parse_string('*Hello* world')
+doc = CommonMarker::Node.parse_string('*Hello* world', :default)
 puts(doc.to_html)
 
 doc.walk do |node|
@@ -36,7 +48,9 @@ doc.walk do |node|
 end
 ```
 
-### Walking the AST
+The second argument is optional--[see below](#options) for more information.
+
+#### Walking the AST
 
 ``` ruby
 require 'commonmarker'
@@ -101,6 +115,34 @@ renderer.warnings.each do |w|
   STDERR.write("\n")
 end
 ```
+
+## Options
+
+CommonMarker accepts the same options that CMark does:
+
+* `:default` - The default rendering.
+* `:sourcepos` - Include source position in rendered HTML.
+* `:hardbreaks` - Try single `\n` as hardbreaks (by adding `<br/>`).
+* `:normalize` - Attempt to normalize the HTML.
+* `:smart` - Use smart punctuation (curly quotes, etc.).
+
+Pass these in as a single symbol argument:
+
+``` ruby
+require 'commonmarker'
+CommonMarker.markdown_to_html("\"Hello,\" said the spider.", :smart)
+# <p>“Hello,” said the spider.</p>\n
+```
+
+To have multiple options applied, pass in an array of options,:
+
+``` ruby
+require 'commonmarker'
+CommonMarker.markdown_to_html("\"Hello,\" said the spider.\n\"'Shelob' is my name.\"", [:hardbreaks, :smart])
+# <p>“Hello,” said the spider.</br>“‘Shelob’ is my name.”</p>
+```
+
+For more information on these options, see [the CMark documentation](http://git.io/vLIHE).
 
 ## Benchmarks
 
