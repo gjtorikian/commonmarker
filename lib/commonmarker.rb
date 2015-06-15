@@ -23,8 +23,8 @@ module CommonMarker
   end
 
   def self.markdown_to_html(text, option = :default)
-    Config.option_exists?(option)
-    CMark.markdown_to_html(text, Config.to_h[option])
+    option = Config.process_options(option)
+    CMark.markdown_to_html(text, option)
   end
 
   class Node
@@ -53,8 +53,8 @@ module CommonMarker
     # Params:
     # +s+::  +String+ to be parsed.
     def self.parse_string(s, option = :default)
-      Config.option_exists?(option)
-      Node.new(nil, CMark.parse_document(s, s.bytesize, Config.to_h[option]))
+      option = Config.process_options(option)
+      Node.new(nil, CMark.parse_document(s, s.bytesize, option))
     end
 
     # Parses a file into a :document Node.
@@ -278,8 +278,8 @@ module CommonMarker
 
     # Convert to HTML using libcmark's fast (but uncustomizable) renderer.
     def to_html(option = :default)
-      Config.option_exists?(option)
-      CMark.render_html(@pointer, Config.to_h[option]).force_encoding('utf-8')
+      option = Config.process_options(option)
+      CMark.render_html(@pointer, option).force_encoding('utf-8')
     end
   end
 end

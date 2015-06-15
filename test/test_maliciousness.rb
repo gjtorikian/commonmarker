@@ -14,5 +14,13 @@ class CommonMarker::TestMaliciousness < Minitest::Test
     assert_raises ArgumentError do
       Node.parse_string("foo \n baz", :lolnotreal)
     end
+
+    assert_raises ArgumentError do
+      Node.parse_string("foo \n baz", [])
+    end
+
+    assert_raises ArgumentError do
+      Node.parse_string("foo \n baz", [23])
+    end
   end
 end
