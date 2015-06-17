@@ -29,7 +29,9 @@ rb_node_new(VALUE self, VALUE rb_type)
 	Check_Type(rb_type, T_FIXNUM);
 	cmark_node_type node_type = (cmark_node_type) FIX2INT(rb_type);
 
-	return cmark_node_new(node_type);
+	cmark_node *node = cmark_node_new(node_type);
+
+	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, node);
 }
 
 static VALUE
@@ -91,22 +93,26 @@ rb_node_get_type_string(VALUE self, VALUE n)
 	return rb_str_new2(cmark_node_get_type_string(node));
 }
 
-void
+static VALUE
 rb_node_unlink(VALUE self, VALUE n)
 {
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
 	cmark_node_unlink(node);
+
+	return Qnil;
 }
 
-void
+static VALUE
 rb_node_free(VALUE self, VALUE n)
 {
 	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
 	rb_free_c_struct(node);
+
+	return Qnil;
 }
 
 static VALUE
