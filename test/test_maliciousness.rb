@@ -7,7 +7,7 @@ class CommonMarker::TestMaliciousness < Minitest::Test
       render = Node.new(99999)
     end
 
-    assert_raises NodeError do
+    assert_raises TypeError do
       render = Node.new(:totes_fake)
     end
   end
