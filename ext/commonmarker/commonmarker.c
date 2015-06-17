@@ -6,11 +6,80 @@
 static VALUE rb_mNodeError;
 static VALUE rb_mNode;
 
-void rb_free_c_struct(void* n)
+static void
+rb_mark_c_struct(void *data)
 {
-	if (n != NULL && cmark_node_get_type(n) == CMARK_NODE_DOCUMENT) {
-		cmark_node_free(n);
+	cmark_node *node   = data;
+
+	/* Mark the parent to make sure that the tree won't be freed as
+	   long as a child node is referenced. */
+	cmark_node *parent = cmark_node_parent(node);
+	if (parent) {
+		void *user_data = cmark_node_get_user_data(parent);
+		if (!user_data) {
+			/* This should never happen. Child can nodes can only
+			   be returned from parents that already are
+			   associated with a Ruby object. */
+			fprintf(stderr, "parent without user_data\n");
+			abort();
+		}
+		rb_gc_mark((VALUE)user_data);
 	}
+
+	/* Mark all children to make sure their cached Ruby objects won't
+	   be freed. */
+	cmark_node *child;
+	for (child = cmark_node_first_child(node);
+	     child != NULL;
+	     child = cmark_node_next(child)
+	) {
+		void *user_data = cmark_node_get_user_data(child);
+		if (user_data)
+			rb_gc_mark((VALUE)user_data);
+	}
+}
+
+static void
+rb_free_c_struct(void *data)
+{
+	/* It's important that the `free` function does not inspect the
+	   node data, as it may be part of a tree that was already freed. */
+	cmark_node_free(data);
+}
+
+static VALUE
+rb_node_to_value(cmark_node *node)
+{
+	if (node == NULL)
+		return Qnil;
+
+	void *user_data = cmark_node_get_user_data(node);
+	if (user_data)
+		return (VALUE)user_data;
+
+	/* Only free tree roots. */
+	RUBY_DATA_FUNC free_func = cmark_node_parent(node)
+				   ? NULL
+				   : rb_free_c_struct;
+	VALUE val = Data_Wrap_Struct(rb_mNode, rb_mark_c_struct, free_func,
+				     node);
+	cmark_node_set_user_data(node, (void *)val);
+
+	return val;
+}
+
+/* If the node structure is changed, the finalizers must be updated. */
+
+static void
+rb_parent_added(VALUE val)
+{
+	RDATA(val)->dfree = NULL;
+}
+
+static void
+rb_parent_removed(VALUE val)
+{
+	RDATA(val)->dfree = rb_free_c_struct;
 }
 
 static VALUE
@@ -47,7 +116,7 @@ rb_node_new(VALUE self, VALUE type)
 			 node_type);
 	}
 
-	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, node);
+	return rb_node_to_value(node);
 }
 
 static VALUE
@@ -66,7 +135,7 @@ rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 		rb_raise(rb_mNodeError, "error parsing document");
 	}
 
-	return Data_Wrap_Struct(self, NULL, rb_free_c_struct, doc);
+	return rb_node_to_value(doc);
 }
 
 /*
@@ -182,16 +251,7 @@ rb_node_unlink(VALUE self)
 
 	cmark_node_unlink(node);
 
-	return Qnil;
-}
-
-static VALUE
-rb_node_free(VALUE n)
-{
-	cmark_node *node;
-	Data_Get_Struct(n, cmark_node, node);
-
-	rb_free_c_struct(node);
+	rb_parent_removed(self);
 
 	return Qnil;
 }
@@ -204,10 +264,7 @@ rb_node_first_child(VALUE self)
 
 	cmark_node *child = cmark_node_first_child(node);
 
-	if (child == NULL)
-		return Qnil;
-
-	return Data_Wrap_Struct(rb_mNode, NULL, rb_free_c_struct, child);
+	return rb_node_to_value(child);
 }
 
 static VALUE
@@ -218,10 +275,7 @@ rb_node_next(VALUE self)
 
 	cmark_node *next = cmark_node_next(node);
 
-	if (next == NULL)
-		return Qnil;
-
-	return Data_Wrap_Struct(rb_mNode, NULL, rb_free_c_struct, next);
+	return rb_node_to_value(next);
 }
 
 /*
@@ -241,6 +295,8 @@ rb_node_insert_before(VALUE self, VALUE sibling)
 	if (!cmark_node_insert_before(node1, node2)) {
 		rb_raise(rb_mNodeError, "could not insert before");
 	}
+
+	rb_parent_added(sibling);
 
 	return Qnil;
 }
@@ -276,6 +332,8 @@ rb_node_insert_after(VALUE self, VALUE sibling)
 		rb_raise(rb_mNodeError, "could not insert after");
 	}
 
+	rb_parent_added(sibling);
+
 	return Qnil;
 }
 
@@ -297,6 +355,8 @@ rb_node_prepend_child(VALUE self, VALUE child)
 	if (!cmark_node_prepend_child(node1, node2)) {
 		rb_raise(rb_mNodeError, "could not prepend child");
 	}
+
+	rb_parent_added(child);
 
 	return Qnil;
 }
@@ -320,6 +380,8 @@ rb_node_append_child(VALUE self, VALUE child)
 		rb_raise(rb_mNodeError, "could not append child");
 	}
 
+	rb_parent_added(child);
+
 	return Qnil;
 }
 
@@ -332,10 +394,7 @@ rb_node_last_child(VALUE self)
 
 	cmark_node *child = cmark_node_last_child(node);
 
-	if (child == NULL)
-		return Qnil;
-
-	return Data_Wrap_Struct(rb_mNode, NULL, rb_free_c_struct, child);
+	return rb_node_to_value(child);
 }
 
 
@@ -347,10 +406,7 @@ rb_node_parent(VALUE self)
 
 	cmark_node *parent = cmark_node_parent(node);
 
-	if (parent == NULL)
-		return Qnil;
-
-	return Data_Wrap_Struct(rb_mNode, NULL, rb_free_c_struct, parent);
+	return rb_node_to_value(parent);
 }
 
 
@@ -362,10 +418,7 @@ rb_node_previous(VALUE self)
 
 	cmark_node *previous = cmark_node_previous(node);
 
-	if (previous == NULL)
-		return Qnil;
-
-	return Data_Wrap_Struct(rb_mNode, NULL, rb_free_c_struct, previous);
+	return rb_node_to_value(previous);
 }
 
 
@@ -694,7 +747,6 @@ void Init_commonmarker()
 	rb_define_method(rb_mNode, "type", rb_node_get_type, 0);
 	rb_define_method(rb_mNode, "type_string", rb_node_get_type_string, 0);
 	rb_define_method(rb_mNode, "delete", rb_node_unlink, 0);
-	rb_define_method(rb_mNode, "free", rb_node_free, 0);
 	rb_define_method(rb_mNode, "first_child", rb_node_first_child, 0);
 	rb_define_method(rb_mNode, "next", rb_node_next, 0);
 	rb_define_method(rb_mNode, "insert_before", rb_node_insert_before, 1);
