@@ -61,30 +61,30 @@ module CommonMarker
     end
 
     def first_child
-      Node.new(nil, CMark.node_first_child(@pointer))
+      Node.new(nil, @pointer.first_child)
     end
 
     def last_child
-      Node.new(nil, CMark.node_last_child(@pointer))
+      Node.new(nil, @pointer.last_child)
     end
 
     def parent
-      Node.new(nil, CMark.node_parent(@pointer))
+      Node.new(nil, @pointer.parent)
     end
 
     def previous
-      Node.new(nil, CMark.node_previous(@pointer))
+      Node.new(nil, @pointer.previous)
     end
 
     def next
-      Node.new(nil, CMark.node_next(@pointer))
+      Node.new(nil, @pointer.next)
     end
 
     # Iterator over the children (if any) of this Node.
     def each_child
-      childptr = CMark.node_first_child(@pointer)
-      until CMark.node_get_type_string(childptr) == NONE_TYPE
-        nextptr = CMark.node_next(childptr)
+      childptr = @pointer.first_child
+      until childptr.get_type_string == NONE_TYPE
+        nextptr = childptr.next
         yield Node.new(nil, childptr)
         childptr = nextptr
       end
@@ -94,14 +94,14 @@ module CommonMarker
     # parents and siblings appropriately).  Note: this method
     # does not free the node.
     def delete
-      CMark.node_unlink(@pointer)
+      @pointer.node_unlink
     end
 
     # Insert a node before this Node.
     # Params:
     # +sibling+::  Sibling node to insert.
     def insert_before(sibling)
-      res = CMark.node_insert_before(@pointer, sibling.pointer)
+      res = @pointer.insert_before(sibling.pointer)
       fail NodeError, 'could not insert before' if res == 0
     end
 
@@ -109,7 +109,7 @@ module CommonMarker
     # Params:
     # +sibling+::  Sibling Node to insert.
     def insert_after(sibling)
-      res = CMark.node_insert_before(@pointer, sibling.pointer)
+      res = @pointer.insert_after(sibling.pointer)
       fail NodeError, 'could not insert after' if res == 0
     end
 
@@ -117,27 +117,35 @@ module CommonMarker
     # Params:
     # +child+::  Child Node to prepend.
     def prepend_child(child)
-      res = CMark.node_prepend_child(@pointer, child.pointer)
+      res = @pointer.prepend_child(child.pointer)
       fail NodeError, 'could not prepend child' if res == 0
+    end
+
+    # Append a child to this Node.
+    # Params:
+    # +child+::  Child Node to prepend.
+    def append_child(child)
+      res = @pointer.append_child(child.pointer)
+      fail NodeError, 'could not append child' if res == 0
     end
 
     # Returns string content of this Node.
     def string_content
-      CMark.node_get_string_content(@pointer)
+      @pointer.get_string_content
     end
 
     # Sets string content of this Node.
     # Params:
     # +s+:: +String+ containing new content.
     def string_content=(s)
-      res = CMark.node_set_string_content(@pointer, s)
+      res = @pointer.set_string_content(s)
       fail NodeError, 'could not set string content' if res == 0
     end
 
     # Returns header level of this Node (must be a :header).
     def header_level
       fail NodeError, 'can\'t get header_level for non-header' unless type == :header
-      CMark.node_get_header_level(@pointer)
+      @pointer.get_header_level
     end
 
     # Sets header level of this Node (must be a :header).
@@ -148,14 +156,14 @@ module CommonMarker
       if !level.is_a?(Integer) || level < 0 || level > 6
         fail NodeError, 'level must be between 1-6'
       end
-      res = CMark.node_set_header_level(@pointer, level)
+      res = @pointer.set_header_level(level)
       fail NodeError, 'could not set header level' if res == 0
     end
 
     # Returns list type of this Node (must be a :list).
     def list_type
       fail NodeError, 'can\'t get list_type for non-list' unless type == :list
-      LIST_TYPES[CMark.node_get_list_type(@pointer)]
+      LIST_TYPES[@pointer.get_list_type]
     end
 
     # Sets list type of this Node (must be a :list).
@@ -164,7 +172,7 @@ module CommonMarker
     # :ordered_list or :bullet_list.
     def list_type=(list_type)
       fail NodeError, 'can\'t set list_type for non-list' unless type == :list
-      res = CMark.node_set_list_type(@pointer, list_type)
+      res = @pointer.set_list_type(list_type)
       fail NodeError, 'could not set list_type' if res == 0
     end
 
@@ -174,7 +182,7 @@ module CommonMarker
       if type != :list || list_type != :ordered_list
         fail NodeError, 'can\'t get list_start for non-ordered list'
       end
-      CMark.node_get_list_start(@pointer)
+      @pointer.get_list_start
     end
 
     # Sets start number of this Node (must be a :list of
@@ -186,14 +194,14 @@ module CommonMarker
         fail NodeError, 'can\'t set list_start for non-ordered list'
       end
       fail NodeError, 'start must be Integer' unless start.is_a?(Integer)
-      res = CMark.node_set_list_start(@pointer, start)
+      res = @pointer.set_list_start(start)
       fail NodeError, 'could not set list_start' if res == 0
     end
 
     # Returns tight status of this Node (must be a :list).
     def list_tight
       fail NodeError, 'can\'t get list_tight for non-list' unless type == :list
-      CMark.node_get_list_tight(@pointer)
+      @pointer.get_list_tight
     end
 
     # Sets tight status of this Node (must be a :list).
@@ -201,14 +209,14 @@ module CommonMarker
     # +tight+:: New tight status (boolean).
     def list_tight=(tight)
       fail NodeError, 'can\'t set list_tight for non-list' unless type == :list
-      res = CMark.node_set_list_tight(@pointer, tight)
+      res = @pointer.set_list_tight(tight)
       fail NodeError, 'could not set list_tight' if res == 0
     end
 
     # Returns URL of this Node (must be a :link or :image).
     def url
       fail NodeError, 'can\'t get URL for non-link or image' if !(type == :link || type == :image)
-      CMark.node_get_url(@pointer)
+      @pointer.get_url
     end
 
     # Sets URL of this Node (must be a :link or :image).
@@ -217,14 +225,14 @@ module CommonMarker
     def url=(url)
       fail NodeError, 'can\'t set URL for non-link or image' if !(type == :link || type == :image)
       fail NodeError, 'url must be a String' unless url.is_a?(String)
-      res = CMark.node_set_url(@pointer, url)
+      res = @pointer.set_url(url)
       fail NodeError, 'could not set header level' if res == 0
     end
 
     # Returns title of this Node (must be a :link or :image).
     def title
       fail NodeError, 'can\'t get title for non-link or image' if !(type == :link || type == :image)
-      CMark.node_get_title(@pointer)
+      @pointer.get_title
     end
 
     # Sets title of this Node (must be a :link or :image).
@@ -233,14 +241,14 @@ module CommonMarker
     def title=(title)
       fail NodeError, 'can\'t set title for non-link or image' if !(type == :link || type == :image)
       fail NodeError, 'title must be a String' unless title.is_a?(String)
-      res = CMark.node_set_title(@pointer, title)
+      res = @pointer.set_title(title)
       fail NodeError, 'could not set header level' if res == 0
     end
 
     # Returns fence info of this Node (must be a :code_block).
     def fence_info
       fail NodeError, 'can\'t get fence_info for non code_block' unless type == :code_block
-      CMark.node_get_fence_info(@pointer)
+      @pointer.get_fence_info
     end
 
     # Sets fence_info of this Node (must be a :code_block).
@@ -249,7 +257,7 @@ module CommonMarker
     def fence_info=(info)
       fail NodeError, 'can\'t set fence_info for non code_block' unless type == :code_block
       fail NodeError, 'info must be a String' unless info.is_a?(String)
-      res = CMark.node_set_fence_info(@pointer, info)
+      res = @pointer.set_fence_info(info)
       fail NodeError, 'could not set info' if res == 0
     end
 
@@ -264,17 +272,17 @@ module CommonMarker
 
     # Returns the type of this Node.
     def type
-      NODE_TYPES[CMark.node_get_type(@pointer)]
+      NODE_TYPES[@pointer.get_type]
     end
 
     def type_string
-      CMark.node_get_type_string(@pointer)
+        @pointer.get_type_string
     end
 
     # Convert to HTML using libcmark's fast (but uncustomizable) renderer.
     def to_html(option = :default)
       Config.option_exists?(option)
-      CMark.render_html(@pointer, Config.to_h[option]).force_encoding('utf-8')
+      @pointer.render_html(Config.to_h[option]).force_encoding('utf-8')
     end
 
   end
