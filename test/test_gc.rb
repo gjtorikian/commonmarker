@@ -34,8 +34,8 @@ class TestNode < Minitest::Test
   end
 
   def test_add_parent
-    doc = Node.new(1)    # :document
-    hrule = Node.new(9)  # :hrule
+    doc = Node.new(:document)
+    hrule = Node.new(:hrule)
     doc.append_child(hrule)
     # If the hrule node was erroneously freed, this would result in a double
     # free.

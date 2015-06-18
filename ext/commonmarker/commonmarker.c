@@ -6,6 +6,28 @@
 static VALUE rb_mNodeError;
 static VALUE rb_mNode;
 
+static VALUE sym_document;
+static VALUE sym_blockquote;
+static VALUE sym_list;
+static VALUE sym_list_item;
+static VALUE sym_code_block;
+static VALUE sym_html;
+static VALUE sym_paragraph;
+static VALUE sym_header;
+static VALUE sym_hrule;
+static VALUE sym_text;
+static VALUE sym_softbreak;
+static VALUE sym_linebreak;
+static VALUE sym_code;
+static VALUE sym_inline_html;
+static VALUE sym_emph;
+static VALUE sym_strong;
+static VALUE sym_link;
+static VALUE sym_image;
+
+static VALUE sym_bullet_list;
+static VALUE sym_ordered_list;
+
 static void
 rb_mark_c_struct(void *data)
 {
@@ -96,19 +118,70 @@ rb_markdown_to_html(VALUE self, VALUE rb_text)
 /*
  * Creates a Node.
  * Params:
- * +type+:: +node_type+ of the node to be created.
+ * +type+:: +node_type+ of the node to be created. Either
+ * :document,
+ * :blockquote,
+ * :list,
+ * :list_item,
+ * :code_block,
+ * :html,
+ * :paragraph,
+ * :header,
+ * :hrule,
+ * :text,
+ * :softbreak,
+ * :linebreak,
+ * :code,
+ * :inline_html,
+ * :emph,
+ * :strong,
+ * :link, or
+ * :image.
  */
 static VALUE
 rb_node_new(VALUE self, VALUE type)
 {
-	Check_Type(type, T_FIXNUM);
-	cmark_node_type node_type = (cmark_node_type) FIX2INT(type);
+	Check_Type(type, T_SYMBOL);
+	cmark_node_type node_type = 0;
 
-	if (node_type < CMARK_NODE_FIRST_BLOCK
-	    || node_type > CMARK_NODE_LAST_INLINE
-	) {
-		rb_raise(rb_mNodeError, "invalid node type %d", node_type);
-	}
+	if (type == sym_document)
+		node_type = CMARK_NODE_DOCUMENT;
+	else if (type == sym_blockquote)
+		node_type = CMARK_NODE_BLOCK_QUOTE;
+	else if (type == sym_list)
+		node_type = CMARK_NODE_LIST;
+	else if (type == sym_list_item)
+		node_type = CMARK_NODE_ITEM;
+	else if (type == sym_code_block)
+		node_type = CMARK_NODE_CODE_BLOCK;
+	else if (type == sym_html)
+		node_type = CMARK_NODE_HTML;
+	else if (type == sym_paragraph)
+		node_type = CMARK_NODE_PARAGRAPH;
+	else if (type == sym_header)
+		node_type = CMARK_NODE_HEADER;
+	else if (type == sym_hrule)
+		node_type = CMARK_NODE_HRULE;
+	else if (type == sym_text)
+		node_type = CMARK_NODE_TEXT;
+	else if (type == sym_softbreak)
+		node_type = CMARK_NODE_SOFTBREAK;
+	else if (type == sym_linebreak)
+		node_type = CMARK_NODE_LINEBREAK;
+	else if (type == sym_code)
+		node_type = CMARK_NODE_CODE;
+	else if (type == sym_inline_html)
+		node_type = CMARK_NODE_INLINE_HTML;
+	else if (type == sym_emph)
+		node_type = CMARK_NODE_EMPH;
+	else if (type == sym_strong)
+		node_type = CMARK_NODE_STRONG;
+	else if (type == sym_link)
+		node_type = CMARK_NODE_LINK;
+	else if (type == sym_image)
+		node_type = CMARK_NODE_IMAGE;
+	else
+		rb_raise(rb_mNodeError, "invalid node type");
 
 	cmark_node *node = cmark_node_new(node_type);
 	if (node == NULL) {
@@ -184,50 +257,50 @@ rb_node_get_type(VALUE self)
 	Data_Get_Struct(self, cmark_node, node);
 
 	int node_type = cmark_node_get_type(node);
-	const char *symbol_str = NULL;
+	VALUE symbol = Qnil;
 
 	switch (node_type) {
 	case CMARK_NODE_DOCUMENT:
-		symbol_str = "document"; break;
+		symbol = sym_document; break;
 	case CMARK_NODE_BLOCK_QUOTE:
-		symbol_str = "blockquote"; break;
+		symbol = sym_blockquote; break;
 	case CMARK_NODE_LIST:
-		symbol_str = "list"; break;
+		symbol = sym_list; break;
 	case CMARK_NODE_ITEM:
-		symbol_str = "list_item"; break;
+		symbol = sym_list_item; break;
 	case CMARK_NODE_CODE_BLOCK:
-		symbol_str = "code_block"; break;
+		symbol = sym_code_block; break;
 	case CMARK_NODE_HTML:
-		symbol_str = "html"; break;
+		symbol = sym_html; break;
 	case CMARK_NODE_PARAGRAPH:
-		symbol_str = "paragraph"; break;
+		symbol = sym_paragraph; break;
 	case CMARK_NODE_HEADER:
-		symbol_str = "header"; break;
+		symbol = sym_header; break;
 	case CMARK_NODE_HRULE:
-		symbol_str = "hrule"; break;
+		symbol = sym_hrule; break;
 	case CMARK_NODE_TEXT:
-		symbol_str = "text"; break;
+		symbol = sym_text; break;
 	case CMARK_NODE_SOFTBREAK:
-		symbol_str = "softbreak"; break;
+		symbol = sym_softbreak; break;
 	case CMARK_NODE_LINEBREAK:
-		symbol_str = "linebreak"; break;
+		symbol = sym_linebreak; break;
 	case CMARK_NODE_CODE:
-		symbol_str = "code"; break;
+		symbol = sym_code; break;
 	case CMARK_NODE_INLINE_HTML:
-		symbol_str = "inline_html"; break;
+		symbol = sym_inline_html; break;
 	case CMARK_NODE_EMPH:
-		symbol_str = "emph"; break;
+		symbol = sym_emph; break;
 	case CMARK_NODE_STRONG:
-		symbol_str = "strong"; break;
+		symbol = sym_strong; break;
 	case CMARK_NODE_LINK:
-		symbol_str = "link"; break;
+		symbol = sym_link; break;
 	case CMARK_NODE_IMAGE:
-		symbol_str = "image"; break;
+		symbol = sym_image; break;
 	default:
 		rb_raise(rb_mNodeError, "invalid node type %d", node_type);
 	}
 
-	return ID2SYM(rb_intern(symbol_str));
+	return symbol;
 }
 
 static VALUE
@@ -546,19 +619,19 @@ rb_node_get_list_type(VALUE self)
 	Data_Get_Struct(self, cmark_node, node);
 
 	int list_type = cmark_node_get_list_type(node);
-	const char *symbol_str = NULL;
+	VALUE symbol;
 
 	if (list_type == CMARK_BULLET_LIST) {
-		symbol_str = "bullet_list";
+		symbol = sym_bullet_list;
 	}
 	else if (list_type == CMARK_ORDERED_LIST) {
-		symbol_str = "ordered_list";
+		symbol = sym_ordered_list;
 	}
 	else {
 		rb_raise(rb_mNodeError, "could not get list_type");
 	}
 
-	return ID2SYM(rb_intern(symbol_str));
+	return symbol;
 }
 
 /*
@@ -570,11 +643,21 @@ rb_node_get_list_type(VALUE self)
 static VALUE
 rb_node_set_list_type(VALUE self, VALUE list_type)
 {
-	Check_Type(list_type, T_FIXNUM);
+	Check_Type(list_type, T_SYMBOL);
 
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	int type = FIX2INT(list_type);
+	int type = 0;
+
+	if (list_type == sym_bullet_list) {
+		type = CMARK_BULLET_LIST;
+	}
+	else if (list_type == sym_ordered_list) {
+		type = CMARK_ORDERED_LIST;
+	}
+	else {
+		rb_raise(rb_mNodeError, "invalid list_type");
+	}
 
 	if (!cmark_node_set_list_type(node, type)) {
 		rb_raise(rb_mNodeError, "could not set list_type");
@@ -736,6 +819,28 @@ rb_html_escape_html(VALUE self, VALUE rb_text)
 __attribute__((visibility("default")))
 void Init_commonmarker()
 {
+	sym_document    = ID2SYM(rb_intern("document"));
+	sym_blockquote  = ID2SYM(rb_intern("blockquote"));
+	sym_list	= ID2SYM(rb_intern("list"));
+	sym_list_item   = ID2SYM(rb_intern("list_item"));
+	sym_code_block  = ID2SYM(rb_intern("code_block"));
+	sym_html	= ID2SYM(rb_intern("html"));
+	sym_paragraph   = ID2SYM(rb_intern("paragraph"));
+	sym_header      = ID2SYM(rb_intern("header"));
+	sym_hrule       = ID2SYM(rb_intern("hrule"));
+	sym_text	= ID2SYM(rb_intern("text"));
+	sym_softbreak   = ID2SYM(rb_intern("softbreak"));
+	sym_linebreak   = ID2SYM(rb_intern("linebreak"));
+	sym_code	= ID2SYM(rb_intern("code"));
+	sym_inline_html = ID2SYM(rb_intern("inline_html"));
+	sym_emph	= ID2SYM(rb_intern("emph"));
+	sym_strong      = ID2SYM(rb_intern("strong"));
+	sym_link	= ID2SYM(rb_intern("link"));
+	sym_image       = ID2SYM(rb_intern("image"));
+
+	sym_bullet_list  = ID2SYM(rb_intern("bullet_list"));
+	sym_ordered_list = ID2SYM(rb_intern("ordered_list"));
+
 	VALUE module = rb_define_module("CommonMarker");
 	rb_mNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
 	rb_mNode = rb_define_class_under(module, "Node", rb_cObject);
