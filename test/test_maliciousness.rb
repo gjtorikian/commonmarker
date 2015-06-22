@@ -11,6 +11,14 @@ class CommonMarker::TestMaliciousness < Minitest::Test
       Node.new(:totes_fake)
     end
 
+    assert_raises NodeError do
+      Node.new(123, 456)
+    end
+
+    assert_raises NodeError do
+      Node.new(nil, nil)
+    end
+
     assert_raises ArgumentError do
       Node.parse_string("foo \n baz", :lolnotreal)
     end
