@@ -82,7 +82,7 @@ end
 desc "Generate and publish blog to gh-pages"
 task :publish => [:rdoc] do
   Dir.mktmpdir do |tmp|
-    system "mv doc/rdocs/* #{tmp}"
+    system "mv docs/* #{tmp}"
     system "git checkout gh-pages"
     system "rm -rf *"
     system "mv #{tmp}/* ."
