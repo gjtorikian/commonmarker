@@ -73,6 +73,7 @@ static VALUE
 rb_node_to_value(cmark_node *node)
 {
 	void *user_data;
+	RUBY_DATA_FUNC free_func;
 	if (node == NULL)
 		return Qnil;
 
@@ -81,7 +82,7 @@ rb_node_to_value(cmark_node *node)
 		return (VALUE)user_data;
 
 	/* Only free tree roots. */
-	RUBY_DATA_FUNC free_func = cmark_node_parent(node)
+	free_func = cmark_node_parent(node)
 	                           ? NULL
 	                           : rb_free_c_struct;
 	VALUE val = Data_Wrap_Struct(rb_mNode, rb_mark_c_struct, free_func,
@@ -212,6 +213,7 @@ rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 {
 	char *text;
 	int len, options;
+	cmark_node *doc;
 	Check_Type(rb_text, T_STRING);
 	Check_Type(rb_len, T_FIXNUM);
 	Check_Type(rb_options, T_FIXNUM);
@@ -220,7 +222,7 @@ rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 	len = FIX2INT(rb_len);
 	options = FIX2INT(rb_options);
 
-	cmark_node *doc = cmark_parse_document(text, len, options);
+	doc = cmark_parse_document(text, len, options);
 	if (doc == NULL) {
 		rb_raise(rb_mNodeError, "error parsing document");
 	}
@@ -259,9 +261,9 @@ static VALUE
 rb_node_set_string_content(VALUE self, VALUE s)
 {
 	char *text;
+	cmark_node *node;
 	Check_Type(s, T_STRING);
 
-	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 	text = StringValueCStr(s);
 
@@ -442,10 +444,11 @@ rb_node_insert_before(VALUE self, VALUE sibling)
 static VALUE
 rb_render_html(VALUE n, VALUE rb_options)
 {
+	int options;
 	cmark_node *node;
 	Check_Type(rb_options, T_FIXNUM);
 
-	int options = FIX2INT(rb_options);
+	options = FIX2INT(rb_options);
 
 	Data_Get_Struct(n, cmark_node, node);
 
@@ -549,10 +552,10 @@ rb_node_last_child(VALUE self)
 static VALUE
 rb_node_parent(VALUE self)
 {
-	cmark_node *node;
+	cmark_node *node, *parent;
 	Data_Get_Struct(self, cmark_node, node);
 
-	cmark_node *parent = cmark_node_parent(node);
+	parent = cmark_node_parent(node);
 
 	return rb_node_to_value(parent);
 }
@@ -564,10 +567,10 @@ rb_node_parent(VALUE self)
 static VALUE
 rb_node_previous(VALUE self)
 {
-	cmark_node *node;
+	cmark_node *node, *previous;
 	Data_Get_Struct(self, cmark_node, node);
 
-	cmark_node *previous = cmark_node_previous(node);
+	previous = cmark_node_previous(node);
 
 	return rb_node_to_value(previous);
 }
@@ -909,9 +912,9 @@ rb_html_escape_href(VALUE self, VALUE rb_text)
 {
 	char *text, *result;
 	int len;
+	cmark_strbuf buf = GH_BUF_INIT;
 	Check_Type(rb_text, T_STRING);
 
-	cmark_strbuf buf = GH_BUF_INIT;
 	text = (char *)RSTRING_PTR(rb_text);
 	len = RSTRING_LEN(rb_text);
 
@@ -927,9 +930,9 @@ rb_html_escape_html(VALUE self, VALUE rb_text)
 {
 	char *text, *result;
 	int len;
+	cmark_strbuf buf = GH_BUF_INIT;
 	Check_Type(rb_text, T_STRING);
 
-	cmark_strbuf buf = GH_BUF_INIT;
 	text = (char *)RSTRING_PTR(rb_text);
 	len = RSTRING_LEN(rb_text);
 
