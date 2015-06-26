@@ -2,7 +2,7 @@ require 'test_helper'
 require 'minitest/benchmark' if ENV["BENCH"]
 
 def markdown(s)
-  Node.parse_string(s).to_html
+  CommonMarker.render_doc(s).to_html
 end
 
 # Disabled by default
