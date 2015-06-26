@@ -35,16 +35,16 @@ The second argument is optional--[see below](#options) for more information.
 
 ### Generating a document
 
-You can also parse a string to receive a `Document` node. You can than print that node to HTML, iterate over the children, and other fun Node stuff. For example:
+You can also parse a string to receive a `Document` node. You can than print that node to HTML, iterate over the children, and other fun node stuff. For example:
 
 ``` ruby
 require 'commonmarker'
 
 doc = CommonMarker.render_doc('*Hello* world', :default)
-puts(doc.to_html)
+puts(doc.to_html) # <p>Hi <em>there</em></p>\n
 
 doc.walk do |node|
-  puts node.type
+  puts node.type # [:document, :paragraph, :text, :emph, :text]
 end
 ```
 
@@ -90,7 +90,7 @@ end
 You can also derive a class from CommonMarker's `HtmlRenderer` class. This produces slower output, but is far more customizable. For example:
 
 ``` ruby
-class MyHtmlRenderer < HtmlRenderer
+class MyHtmlRenderer < CommonMarker::HtmlRenderer
   def initialize
     super
     @headerid = 1
@@ -111,14 +111,13 @@ print(myrenderer.render(doc))
 
 # Print any warnings to STDERR
 renderer.warnings.each do |w|
-  STDERR.write(w)
-  STDERR.write("\n")
+  STDERR.write("#{w}\n")
 end
 ```
 
 ## Options
 
-CommonMarker accepts the same options that CMark does:
+CommonMarker accepts the same options that CMark does, as symbols:
 
 * `:default` - The default rendering.
 * `:sourcepos` - Include source position in rendered HTML.
@@ -134,7 +133,7 @@ CommonMarker.render_html("\"Hello,\" said the spider.", :smart)
 # <p>“Hello,” said the spider.</p>\n
 ```
 
-To have multiple options applied, pass in an array of options,:
+To have multiple options applied, pass in an array of options:
 
 ``` ruby
 require 'commonmarker'

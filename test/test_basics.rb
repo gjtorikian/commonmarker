@@ -38,6 +38,16 @@ class TestNode < Minitest::Test
     end
   end
 
+  def test_walk_and_delete_node
+    @doc.walk do |node|
+      if node.type == :emph
+        node.insert_before(node.first_child)
+        node.delete
+      end
+    end
+    assert_equal "<p>Hi there</p>\n", @doc.to_html
+  end
+
   def test_markdown_to_html
     html = CommonMarker.render_html('Hi *there*')
     assert_equal "<p>Hi <em>there</em></p>\n", html
