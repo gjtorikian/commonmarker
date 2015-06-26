@@ -17,8 +17,8 @@ module CommonMarker
         Config.to_h[option]
       elsif option.is_a?(Array)
         option = [nil] if option.empty?
-        option.each { |delim| Config.check_option(delim) }
-        return option.map { |delim| Config.to_h[delim] }.inject(0, :|)
+        # neckbearding around. the map will both check the opts and then bitwise-OR it
+        option.map { |o| Config.check_option(o); Config.to_h[o] }.inject(0, :|)
       else
         fail TypeError, 'delimiter type must be a valid symbol or array of symbols'
       end
@@ -26,7 +26,7 @@ module CommonMarker
 
     def self.check_option(option)
       unless Config.keys.include?(option)
-        fail TypeError, "option type does not exist #{option}"
+        fail TypeError, "option #{option} does not exist"
       end
     end
   end

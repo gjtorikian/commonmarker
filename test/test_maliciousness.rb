@@ -49,6 +49,10 @@ class CommonMarker::TestMaliciousness < Minitest::Test
     end
 
     assert_raises TypeError do
+      CommonMarker.render_html("foo \n baz", [:smart, 'totes_fake'])
+    end
+
+    assert_raises TypeError do
       CommonMarker.render_html(123)
     end
 
@@ -78,6 +82,10 @@ class CommonMarker::TestMaliciousness < Minitest::Test
 
     assert_raises TypeError do
       CommonMarker.render_doc("foo \n baz", nil)
+    end
+
+    assert_raises TypeError do
+      CommonMarker.render_doc("foo \n baz", [:smart, 'totes_fake'])
     end
 
     assert_raises TypeError do
