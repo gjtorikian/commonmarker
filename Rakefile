@@ -62,3 +62,19 @@ desc 'Match style of cmark'
 task :astyle do
  sh "astyle --style=linux -t -p ext/commonmarker/commonmarker.{c,h}"
 end
+
+# Documentation
+require 'rdoc/task'
+
+desc 'Generate API documentation'
+RDoc::Task.new do |rd|
+  rd.rdoc_dir = 'doc/rdocs'
+  rd.main = 'README.md'
+  rd.rdoc_files.include 'lib/**/*.rb', 'ext/commonmarker/commonmarker.c'
+
+  rd.options << '--markup tomdoc'
+  rd.options << '--inline-source'
+  rd.options << '--line-numbers'
+  rd.options << '--all'
+  rd.options << '--fileboxes'
+end
