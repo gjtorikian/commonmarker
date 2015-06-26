@@ -131,7 +131,7 @@ module CommonMarker
       softbreak(node)
     end
 
-    def softbreak(_)
+    def softbreak(node)
       out("\n")
     end
 
