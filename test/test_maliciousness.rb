@@ -3,8 +3,8 @@ require 'test_helper'
 class CommonMarker::TestMaliciousness < Minitest::Test
 
   def test_init_with_false_type
-    assert_raises NodeError do
-      Node.new(99999)
+    assert_raises TypeError do
+      render = Node.new(99999)
     end
 
     assert_raises NodeError do

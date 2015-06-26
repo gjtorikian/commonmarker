@@ -136,11 +136,11 @@ module CommonMarker
     end
 
     def escape_href(str)
-      CMark.html_escape_href(str)
+      CommonMarker::Node.html_escape_href(str)
     end
 
     def escape_html(str)
-      CMark.html_escape_html(str)
+      CommonMarker::Node.html_escape_html(str)
     end
   end
 end
