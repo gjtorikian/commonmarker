@@ -3,6 +3,7 @@ require 'commonmarker/commonmarker'
 require 'commonmarker/config'
 require 'commonmarker/renderer'
 require 'commonmarker/renderer/html_renderer'
+require 'commonmarker/version'
 
 begin
   require 'awesome_print'

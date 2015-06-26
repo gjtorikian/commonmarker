@@ -11,6 +11,7 @@ if ARGV.include?('--help') or ARGV.include?('-h')
   exit 0
 end
 
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), *%w( .. lib ))
 require 'commonmarker'
 
 if ARGV.include?('--version') or ARGV.include?('-v')
@@ -31,7 +32,7 @@ ARGV.delete_if do |arg|
   end
 end
 
-doc = CommonMarker::Node.parse_file(ARGF)
+doc = CommonMarker.render_doc(ARGF.read)
 
 if renderer
   STDOUT.write(renderer.render(doc))
