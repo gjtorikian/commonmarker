@@ -104,6 +104,10 @@ rb_parent_removed(VALUE val)
 	RDATA(val)->dfree = rb_free_c_struct;
 }
 
+/*
+ * Internal: Parses a Markdown string into an HTML string.
+ *
+ */
 static VALUE
 rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options)
 {
@@ -118,27 +122,27 @@ rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options)
 }
 
 /*
- * Creates a Node.
- * Params:
- * +type+:: +node_type+ of the node to be created. Either
- * :document,
- * :blockquote,
- * :list,
- * :list_item,
- * :code_block,
- * :html,
- * :paragraph,
- * :header,
- * :hrule,
- * :text,
- * :softbreak,
- * :linebreak,
- * :code,
- * :inline_html,
- * :emph,
- * :strong,
- * :link, or
- * :image.
+ * Internal: Creates a node based on a node type.
+ *
+ * type -  A {Symbol} representing the node to be created. Must be one of the following:
+ * - `:document`
+ * - `:blockquote`
+ * - `:list`
+ * - `:list_item`
+ * - `:code_block`
+ * - `:html`
+ * - `:paragraph`
+ * - `:header`
+ * - `:hrule`
+ * - `:text`
+ * - `:softbreak`
+ * - `:linebreak`
+ * - `:code`
+ * - `:inline_html`
+ * - `:emph`
+ * - `:strong`
+ * - `:link`
+ * - `:image`
  */
 static VALUE
 rb_node_new(VALUE self, VALUE type)
@@ -183,17 +187,20 @@ rb_node_new(VALUE self, VALUE type)
 	else if (type == sym_image)
 		node_type = CMARK_NODE_IMAGE;
 	else
-		rb_raise(rb_mNodeError, "invalid node type");
+		rb_raise(rb_mNodeError, "invalid node of type %d", node_type);
 
 	cmark_node *node = cmark_node_new(node_type);
 	if (node == NULL) {
-		rb_raise(rb_mNodeError, "could not create node of type %d",
-			 node_type);
+		rb_raise(rb_mNodeError, "could not create node of type %d", node_type);
 	}
 
 	return rb_node_to_value(node);
 }
 
+/*
+ * Internal: Parses a Markdown string into a document.
+ *
+ */
 static VALUE
 rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 {
@@ -214,7 +221,9 @@ rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 }
 
 /*
- * Returns string content of this Node.
+ * Public: Fetch the string contents of the node.
+ *
+ * Returns a {String}.
  */
 static VALUE
 rb_node_get_string_content(VALUE self)
@@ -231,13 +240,17 @@ rb_node_get_string_content(VALUE self)
 }
 
 /*
- * Sets string content of this Node.
- * Params:
- * +s+:: +String+ containing new content.
+ * Public: Sets the string content of the node.
+ *
+ * string - A {String} containing new content.
+ *
+ * Raises NodeError if the string content can't be set.
  */
 static VALUE
 rb_node_set_string_content(VALUE self, VALUE s)
 {
+	Check_Type(s, T_STRING);
+
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 	char *text = StringValueCStr(s);
@@ -245,12 +258,12 @@ rb_node_set_string_content(VALUE self, VALUE s)
 	if (!cmark_node_set_literal(node, text)) {
 		rb_raise(rb_mNodeError, "could not set string content");
 	}
-
-	return Qnil;
 }
 
 /*
- * Returns the type of this Node.
+ * Public: Fetches the list type of the node.
+ *
+ * Returns a {Symbol} representing the node's type.
  */
 static VALUE
 rb_node_get_type(VALUE self)
@@ -305,6 +318,11 @@ rb_node_get_type(VALUE self)
 	return symbol;
 }
 
+/*
+ * Public: Returns the type of the current pointer as a string.
+ *
+ * Returns a {String}.
+ */
 static VALUE
 rb_node_get_type_string(VALUE self)
 {
@@ -315,7 +333,7 @@ rb_node_get_type_string(VALUE self)
 }
 
 /*
- * Unlinks the node from the tree (fixing pointers in
+ * Internal: Unlinks the node from the tree (fixing pointers in
  * parents and siblings appropriately).
  */
 static VALUE
@@ -331,6 +349,10 @@ rb_node_unlink(VALUE self)
 	return Qnil;
 }
 
+/* Public: Fetches the first child of the node.
+ *
+ * Returns a {Node} if a child exists, `nil` otherise.
+ */
 static VALUE
 rb_node_first_child(VALUE self)
 {
@@ -342,6 +364,10 @@ rb_node_first_child(VALUE self)
 	return rb_node_to_value(child);
 }
 
+/* Public: Fetches the next sibling of the node.
+ *
+ * Returns a {Node} if a sibling exists, `nil` otherwise.
+ */
 static VALUE
 rb_node_next(VALUE self)
 {
@@ -354,9 +380,12 @@ rb_node_next(VALUE self)
 }
 
 /*
- * Insert a node before this Node.
- * Params:
- * +sibling+::  Sibling node to insert.
+ * Public: Inserts a node as a sibling before the current node.
+ *
+ * sibling - A sibling {Node} to insert.
+ *
+ * Returns `true` if successful.
+ * Raises NodeError if the node can't be inserted.
  */
 static VALUE
 rb_node_insert_before(VALUE self, VALUE sibling)
@@ -373,9 +402,13 @@ rb_node_insert_before(VALUE self, VALUE sibling)
 
 	rb_parent_added(sibling);
 
-	return Qnil;
+	return Qtrue;
 }
 
+/* Internal: Convert the node to an HTML string.
+ *
+ * Returns a {String}.
+ */
 static VALUE
 rb_render_html(VALUE n, VALUE rb_options)
 {
@@ -390,9 +423,12 @@ rb_render_html(VALUE n, VALUE rb_options)
 }
 
 /*
- * Insert a node after this Node.
- * Params:
- * +sibling+::  Sibling Node to insert.
+ * Public: Inserts a node as a sibling after the current node.
+ *
+ * sibling - A sibling {Node} to insert.
+ *
+ * Returns `true` if successful.
+ * Raises NodeError if the node can't be inserted.
  */
 static VALUE
 rb_node_insert_after(VALUE self, VALUE sibling)
@@ -409,14 +445,16 @@ rb_node_insert_after(VALUE self, VALUE sibling)
 
 	rb_parent_added(sibling);
 
-	return Qnil;
+	return Qtrue;
 }
 
-
 /*
- * Prepend a child to this Node.
- * Params:
- * +child+::  Child Node to prepend.
+ * Public: Inserts a node as the first child of the current node.
+ *
+ * child - A child {Node} to insert.
+ *
+ * Returns `true` if successful.
+ * Raises NodeError if the node can't be inserted.
  */
 static VALUE
 rb_node_prepend_child(VALUE self, VALUE child)
@@ -433,14 +471,16 @@ rb_node_prepend_child(VALUE self, VALUE child)
 
 	rb_parent_added(child);
 
-	return Qnil;
+	return Qtrue;
 }
 
-
 /*
- * Append a child to this Node.
- * Params:
- * +child+::  Child Node to append.
+ * Public: Inserts a node as the last child of the current node.
+ *
+ * child - A child {Node} to insert.
+ *
+ * Returns `true` if successful.
+ * Raises NodeError if the node can't be inserted.
  */
 static VALUE
 rb_node_append_child(VALUE self, VALUE child)
@@ -457,10 +497,13 @@ rb_node_append_child(VALUE self, VALUE child)
 
 	rb_parent_added(child);
 
-	return Qnil;
+	return Qtrue;
 }
 
-
+/* Public: Fetches the first child of the current node.
+ *
+ * Returns a {Node} if a child exists, `nil` otherise.
+ */
 static VALUE
 rb_node_last_child(VALUE self)
 {
@@ -472,7 +515,10 @@ rb_node_last_child(VALUE self)
 	return rb_node_to_value(child);
 }
 
-
+/* Public: Fetches the parent of the current node.
+ *
+ * Returns a {Node} if a parent exists, `nil` otherise.
+ */
 static VALUE
 rb_node_parent(VALUE self)
 {
@@ -484,7 +530,10 @@ rb_node_parent(VALUE self)
 	return rb_node_to_value(parent);
 }
 
-
+/* Public: Fetches the previous sibling of the current node.
+ *
+ * Returns a {Node} if a parent exists, `nil` otherise.
+ */
 static VALUE
 rb_node_previous(VALUE self)
 {
@@ -496,9 +545,11 @@ rb_node_previous(VALUE self)
 	return rb_node_to_value(previous);
 }
 
-
 /*
- * Returns URL of this Node (must be a :link or :image).
+ * Public: Gets the URL of the current node (must be a `:link` or `:image`).
+ *
+ * Returns a {String}.
+ * Raises a NodeError if the URL can't be retrieved.
  */
 static VALUE
 rb_node_get_url(VALUE self)
@@ -515,16 +566,20 @@ rb_node_get_url(VALUE self)
 }
 
 /*
- * Sets URL of this Node (must be a :link or :image).
- * Params:
- * +URL+:: New URL (+String+).
+ * Public: Sets the URL of the current node (must be a `:link` or `:image`).
+ *
+ * url - A {String} representing the new URL
+ *
+ * Raises a NodeError if the URL can't be set.
  */
 static VALUE
-rb_node_set_url(VALUE self, VALUE URL)
+rb_node_set_url(VALUE self, VALUE url)
 {
+	Check_Type(url, T_STRING);
+
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	char *text = StringValueCStr(URL);
+	char *text = StringValueCStr(url);
 
 	if (!cmark_node_set_url(node, text)) {
 		rb_raise(rb_mNodeError, "could not set url");
@@ -533,9 +588,11 @@ rb_node_set_url(VALUE self, VALUE URL)
 	return Qnil;
 }
 
-
 /*
- * Returns title of this Node (must be a :link or :image).
+ * Public: Gets the title of the current node (must be a `:link` or `:image`).
+ *
+ * Returns a {String}.
+ * Raises a NodeError if the title can't be retrieved.
  */
 static VALUE
 rb_node_get_title(VALUE self)
@@ -552,13 +609,17 @@ rb_node_get_title(VALUE self)
 }
 
 /*
- * Sets title of this Node (must be a :link or :image).
- * Params:
- * +title+:: New title (+String+).
+ * Public: Sets the title of the current node (must be a `:link` or `:image`).
+ *
+ * title - A {String} representing the new title
+ *
+ * Raises a NodeError if the title can't be set.
  */
 static VALUE
 rb_node_set_title(VALUE self, VALUE title)
 {
+	Check_Type(title, T_STRING);
+
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 	char *text = StringValueCStr(title);
@@ -570,9 +631,11 @@ rb_node_set_title(VALUE self, VALUE title)
 	return Qnil;
 }
 
-
 /*
- * Returns header level of this Node (must be a :header).
+ * Public: Gets the header level of the current node (must be a `:header`).
+ *
+ * Returns a {Number} representing the header level.
+ * Raises a NodeError if the header level can't be retrieved.
  */
 static VALUE
 rb_node_get_header_level(VALUE self)
@@ -590,9 +653,11 @@ rb_node_get_header_level(VALUE self)
 }
 
 /*
- * Sets header level of this Node (must be a :header).
- * Params:
- * +level+:: New header level (+Integer+).
+ * Public: Sets the header level of the current node (must be a `:header`).
+ *
+ * level - A {Number} representing the new header level
+ *
+ * Raises a NodeError if the header level can't be set.
  */
 static VALUE
 rb_node_set_header_level(VALUE self, VALUE level)
@@ -610,9 +675,11 @@ rb_node_set_header_level(VALUE self, VALUE level)
 	return Qnil;
 }
 
-
 /*
- * Returns list type of this Node (must be a :list).
+ * Public: Gets the list type of the current node (must be a `:list`).
+ *
+ * Returns a {Symbol}.
+ * Raises a NodeError if the title can't be retrieved.
  */
 static VALUE
 rb_node_get_list_type(VALUE self)
@@ -637,10 +704,11 @@ rb_node_get_list_type(VALUE self)
 }
 
 /*
- * Sets list type of this Node (must be a :list).
- * Params:
- * +list_type+:: New list type (+:list_type+), either
- * :ordered_list or :bullet_list.
+ * Public: Sets the list type of the current node (must be a `:list`).
+ *
+ * level - A {Symbol} representing the new list type
+ *
+ * Raises a NodeError if the list type can't be set.
  */
 static VALUE
 rb_node_set_list_type(VALUE self, VALUE list_type)
@@ -668,10 +736,11 @@ rb_node_set_list_type(VALUE self, VALUE list_type)
 	return Qnil;
 }
 
-
 /*
- * Returns start number of this Node (must be a :list of
- * list_type :ordered_list).
+ * Public: Gets the starting number the current node (must be an `:ordered_list`).
+ *
+ * Returns a {Number} representing the starting number.
+ * Raises a NodeError if the starting number can't be retrieved.
  */
 static VALUE
 rb_node_get_list_start(VALUE self)
@@ -690,10 +759,11 @@ rb_node_get_list_start(VALUE self)
 }
 
 /*
- * Sets start number of this Node (must be a :list of
- * list_type :ordered_list).
- * Params:
- * +start+:: New start number (+Integer+).
+ * Public: Sets the starting number of the current node (must be an `:ordered_list`).
+ *
+ * level - A {Number} representing the new starting number
+ *
+ * Raises a NodeError if the starting number can't be set.
  */
 static VALUE
 rb_node_set_list_start(VALUE self, VALUE start)
@@ -711,9 +781,11 @@ rb_node_set_list_start(VALUE self, VALUE start)
 	return Qnil;
 }
 
-
 /*
- * Returns tight status of this Node (must be a :list).
+ * Public: Gets the tight status the current node (must be a `:list`).
+ *
+ * Returns a `true` if the list is tight, `false` otherwise.
+ * Raises a NodeError if the starting number can't be retrieved.
  */
 static VALUE
 rb_node_get_list_tight(VALUE self)
@@ -732,9 +804,11 @@ rb_node_get_list_tight(VALUE self)
 }
 
 /*
- * Sets tight status of this Node (must be a :list).
- * Params:
- * +tight+:: New tight status (boolean).
+ * Public: Sets the tight status of the current node (must be a `:list`).
+ *
+ * tight - A {Boolean} representing the new tightness
+ *
+ * Raises a NodeError if the tightness can't be set.
  */
 static VALUE
 rb_node_set_list_tight(VALUE self, VALUE tight)
@@ -750,9 +824,11 @@ rb_node_set_list_tight(VALUE self, VALUE tight)
 	return Qnil;
 }
 
-
 /*
- * Returns fence info of this Node (must be a :code_block).
+ * Public: Gets the fence info of the current node (must be a `:code_block`).
+ *
+ * Returns a {String} representing the fence info.
+ * Raises a NodeError if the fence info can't be retrieved.
  */
 static VALUE
 rb_node_get_fence_info(VALUE self)
@@ -770,13 +846,17 @@ rb_node_get_fence_info(VALUE self)
 }
 
 /*
- * Sets fence_info of this Node (must be a :code_block).
- * Params:
- * +info+:: New info (+String+).
+ * Public: Sets the fence info of the current node (must be a `:code_block`).
+ *
+ * info - A {String} representing the new fence info
+ *
+ * Raises a NodeError if the fence info can't be set.
  */
 static VALUE
 rb_node_set_fence_info(VALUE self, VALUE info)
 {
+	Check_Type(info, T_STRING);
+
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 	char *text = StringValueCStr(info);
@@ -788,6 +868,7 @@ rb_node_set_fence_info(VALUE self, VALUE info)
 	return Qnil;
 }
 
+/* Internal: Escapes href URLs safely. */
 static VALUE
 rb_html_escape_href(VALUE self, VALUE rb_text)
 {
@@ -803,6 +884,7 @@ rb_html_escape_href(VALUE self, VALUE rb_text)
 	return rb_str_new2(result);
 }
 
+/* Internal: Escapes HTML content safely. */
 static VALUE
 rb_html_escape_html(VALUE self, VALUE rb_text)
 {
@@ -823,21 +905,21 @@ void Init_commonmarker()
 {
 	sym_document    = ID2SYM(rb_intern("document"));
 	sym_blockquote  = ID2SYM(rb_intern("blockquote"));
-	sym_list	= ID2SYM(rb_intern("list"));
+	sym_list      	= ID2SYM(rb_intern("list"));
 	sym_list_item   = ID2SYM(rb_intern("list_item"));
 	sym_code_block  = ID2SYM(rb_intern("code_block"));
 	sym_html	= ID2SYM(rb_intern("html"));
 	sym_paragraph   = ID2SYM(rb_intern("paragraph"));
 	sym_header      = ID2SYM(rb_intern("header"));
 	sym_hrule       = ID2SYM(rb_intern("hrule"));
-	sym_text	= ID2SYM(rb_intern("text"));
+	sym_text      	= ID2SYM(rb_intern("text"));
 	sym_softbreak   = ID2SYM(rb_intern("softbreak"));
 	sym_linebreak   = ID2SYM(rb_intern("linebreak"));
-	sym_code	= ID2SYM(rb_intern("code"));
+	sym_code      	= ID2SYM(rb_intern("code"));
 	sym_inline_html = ID2SYM(rb_intern("inline_html"));
-	sym_emph	= ID2SYM(rb_intern("emph"));
+	sym_emph      	= ID2SYM(rb_intern("emph"));
 	sym_strong      = ID2SYM(rb_intern("strong"));
-	sym_link	= ID2SYM(rb_intern("link"));
+	sym_link      	= ID2SYM(rb_intern("link"));
 	sym_image       = ID2SYM(rb_intern("image"));
 
 	sym_bullet_list  = ID2SYM(rb_intern("bullet_list"));

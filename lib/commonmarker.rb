@@ -12,27 +12,29 @@ module CommonMarker
   # Public:  Parses a Markdown string into an HTML string.
   #
   # text - A {String} of text
-  # option - Either a {Symbol} or {Array of Symbol}s indicating the parse options.
+  # option - Either a {Symbol} or {Array of Symbol}s indicating the parse options
   #
   # Returns a {String} of converted HTML.
   def self.render_html(text, option = :default)
+    fail TypeError, 'text must be a string!' unless text.is_a?(String)
     Node.markdown_to_html(text, Config.process_options(option))
   end
 
   # Public: Parses a Markdown string into a `document` node.
   #
-  # string - {String} to be parsed.
-  # option - A {Symbol} or {Array of Symbol}s indicating the parse options.
+  # string - {String} to be parsed
+  # option - A {Symbol} or {Array of Symbol}s indicating the parse options
   #
   # Returns the `document` node.
-  def self.render_doc(s, option = :default)
-    Node.parse_document(s, s.bytesize, Config.process_options(option))
+  def self.render_doc(text, option = :default)
+    fail TypeError, 'text must be a string!' unless text.is_a?(String)
+    Node.parse_document(text, text.bytesize, Config.process_options(option))
   end
 
   class Node
     # Public: An iterator that "walks the tree," descending into children recursively.
     #
-    # blk - A {Proc} representing the action to take for each child.
+    # blk - A {Proc} representing the action to take for each child
     def walk(&blk)
       yield self
       each_child do |child|
@@ -40,7 +42,7 @@ module CommonMarker
       end
     end
 
-    # Public: Convert the current pointer to HTML.
+    # Public: Convert the node to an HTML string.
     #
     # Returns a {String}.
     def to_html(option = :default)
