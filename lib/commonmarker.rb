@@ -9,43 +9,23 @@ begin
 rescue LoadError; end
 
 module CommonMarker
-  # Public: Given a string of text, returns the HTML representation.
+  # Public:  Parses a Markdown string into an HTML string.
   #
   # text - A {String} of text
   # option - Either a {Symbol} or {Array of Symbol}s indicating the parse options.
   #
   # Returns a {String} of converted HTML.
-  def self.markdown_to_html(text, option = :default)
+  def self.render_html(text, option = :default)
     Node.markdown_to_html(text, Config.process_options(option))
   end
 
-  # Public: Parses a string into an HTML string.
-  #
-  # string - {String} to be parsed.
-  # option - A {Symbol} or {Array of Symbol}s indicating the parse options.
-  #
-  # Returns the HTML.
-  def self.parse_string(s, option = :default)
-    Node.parse_document(s, s.bytesize, Config.process_options(option))
-  end
-
-  # Public: Parses a file into an HTML string.
-  #
-  # fp - The {File} to be parsed. The caller must open and close this file pointer.
-  # option - A {Symbol} or {Array of Symbol}s indicating the parse options.
-  #
-  # Returns the HTML.
-  def self.parse_file(fp, option = :default)
-    parse_string(fp.read, option)
-  end
-
-  # Public: Parses a string into a `document` Node.
+  # Public: Parses a Markdown string into a `document` node.
   #
   # string - {String} to be parsed.
   # option - A {Symbol} or {Array of Symbol}s indicating the parse options.
   #
   # Returns the `document` node.
-  def self.to_doc(s, option = :default)
+  def self.render_doc(s, option = :default)
     Node.parse_document(s, s.bytesize, Config.process_options(option))
   end
 

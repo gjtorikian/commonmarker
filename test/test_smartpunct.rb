@@ -4,7 +4,7 @@ class SmartPunctTest < Minitest::Test
   smart_punct = open_spec_file('smart_punct.txt', normalize: true)
 
   smart_punct.each do |testcase|
-    doc = CommonMarker.parse_string(testcase[:markdown], [:smart])
+    doc = CommonMarker.render_doc(testcase[:markdown], [:smart])
 
     define_method("test_smart_punct_example_#{testcase[:example]}") do
       actual = doc.to_html.strip

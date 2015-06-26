@@ -24,25 +24,45 @@ class CommonMarker::TestMaliciousness < Minitest::Test
     end
   end
 
-  def test_parsing_with_bad_type
+  def test_rendering_with_bad_type
     assert_raises TypeError do
-      CommonMarker.parse_string("foo \n baz", 123)
+      CommonMarker.render_html("foo \n baz", 123)
     end
 
     assert_raises TypeError do
-      CommonMarker.parse_string("foo \n baz", :totes_fake)
+      CommonMarker.render_html("foo \n baz", :totes_fake)
     end
 
     assert_raises TypeError do
-      CommonMarker.parse_string("foo \n baz", [])
+      CommonMarker.render_html("foo \n baz", [])
     end
 
     assert_raises TypeError do
-      CommonMarker.parse_string("foo \n baz", [23])
+      CommonMarker.render_html("foo \n baz", [23])
     end
 
     assert_raises TypeError do
-      CommonMarker.parse_string("foo \n baz", nil)
+      CommonMarker.render_html("foo \n baz", nil)
+    end
+
+    assert_raises TypeError do
+      CommonMarker.render_doc("foo \n baz", 123)
+    end
+
+    assert_raises TypeError do
+      CommonMarker.render_doc("foo \n baz", :totes_fake)
+    end
+
+    assert_raises TypeError do
+      CommonMarker.render_doc("foo \n baz", [])
+    end
+
+    assert_raises TypeError do
+      CommonMarker.render_doc("foo \n baz", [23])
+    end
+
+    assert_raises TypeError do
+      CommonMarker.render_doc("foo \n baz", nil)
     end
   end
 end
