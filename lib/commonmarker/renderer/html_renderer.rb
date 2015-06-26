@@ -1,7 +1,7 @@
 module CommonMarker
   class HtmlRenderer < Renderer
     def render(node)
-      result = super(node)
+      super(node)
     end
 
     def header(node)

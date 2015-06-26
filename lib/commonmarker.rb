@@ -47,12 +47,12 @@ module CommonMarker
     #
     # Returns a {String}.
     def to_html(option = :default)
-      self._render_html(Config.process_options(option)).force_encoding('utf-8')
+      _render_html(Config.process_options(option)).force_encoding('utf-8')
     end
 
     # Internal: Iterate over the children (if any) of the current pointer.
     def each_child
-      child = self.first_child
+      child = first_child
       while child
         nextchild = child.next
         yield child
