@@ -32,6 +32,7 @@ static void
 rb_mark_c_struct(void *data)
 {
 	cmark_node *node   = data;
+	cmark_node *child;
 
 	/* Mark the parent to make sure that the tree won't be freed as
 	   long as a child node is referenced. */
@@ -50,7 +51,6 @@ rb_mark_c_struct(void *data)
 
 	/* Mark all children to make sure their cached Ruby objects won't
 	   be freed. */
-	cmark_node *child;
 	for (child = cmark_node_first_child(node);
 	     child != NULL;
 	     child = cmark_node_next(child)
@@ -72,10 +72,11 @@ rb_free_c_struct(void *data)
 static VALUE
 rb_node_to_value(cmark_node *node)
 {
+	void *user_data;
 	if (node == NULL)
 		return Qnil;
 
-	void *user_data = cmark_node_get_user_data(node);
+	user_data = cmark_node_get_user_data(node);
 	if (user_data)
 		return (VALUE)user_data;
 
@@ -111,12 +112,15 @@ rb_parent_removed(VALUE val)
 static VALUE
 rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options)
 {
+	char *str;
+	int len, options;
+
 	Check_Type(rb_text, T_STRING);
 	Check_Type(rb_options, T_FIXNUM);
 
-	char *str = (char *)RSTRING_PTR(rb_text);
-	int len = RSTRING_LEN(rb_text);
-	int options = FIX2INT(rb_options);
+	str = (char *)RSTRING_PTR(rb_text);
+	len = RSTRING_LEN(rb_text);
+	options = FIX2INT(rb_options);
 
 	return rb_str_new2(cmark_markdown_to_html(str, len, options));
 }
@@ -147,8 +151,10 @@ rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options)
 static VALUE
 rb_node_new(VALUE self, VALUE type)
 {
-	Check_Type(type, T_SYMBOL);
 	cmark_node_type node_type = 0;
+	cmark_node *node;
+
+	Check_Type(type, T_SYMBOL);
 
 	if (type == sym_document)
 		node_type = CMARK_NODE_DOCUMENT;
@@ -189,7 +195,7 @@ rb_node_new(VALUE self, VALUE type)
 	else
 		rb_raise(rb_mNodeError, "invalid node of type %d", node_type);
 
-	cmark_node *node = cmark_node_new(node_type);
+	node = cmark_node_new(node_type);
 	if (node == NULL) {
 		rb_raise(rb_mNodeError, "could not create node of type %d", node_type);
 	}
@@ -204,13 +210,15 @@ rb_node_new(VALUE self, VALUE type)
 static VALUE
 rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 {
+	char *text;
+	int len, options;
 	Check_Type(rb_text, T_STRING);
 	Check_Type(rb_len, T_FIXNUM);
 	Check_Type(rb_options, T_FIXNUM);
 
-	char *text = (char *)RSTRING_PTR(rb_text);
-	int len = FIX2INT(rb_len);
-	int options = FIX2INT(rb_options);
+	text = (char *)RSTRING_PTR(rb_text);
+	len = FIX2INT(rb_len);
+	options = FIX2INT(rb_options);
 
 	cmark_node *doc = cmark_parse_document(text, len, options);
 	if (doc == NULL) {
@@ -228,10 +236,11 @@ rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len, VALUE rb_options)
 static VALUE
 rb_node_get_string_content(VALUE self)
 {
+	const char *text;
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 
-	const char *text = cmark_node_get_literal(node);
+	text = cmark_node_get_literal(node);
 	if (text == NULL) {
 		rb_raise(rb_mNodeError, "could not get string content");
 	}
@@ -249,11 +258,12 @@ rb_node_get_string_content(VALUE self)
 static VALUE
 rb_node_set_string_content(VALUE self, VALUE s)
 {
+	char *text;
 	Check_Type(s, T_STRING);
 
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	char *text = StringValueCStr(s);
+	text = StringValueCStr(s);
 
 	if (!cmark_node_set_literal(node, text)) {
 		rb_raise(rb_mNodeError, "could not set string content");
@@ -268,11 +278,14 @@ rb_node_set_string_content(VALUE self, VALUE s)
 static VALUE
 rb_node_get_type(VALUE self)
 {
+	int node_type;
 	cmark_node *node;
+	VALUE symbol;
+
 	Data_Get_Struct(self, cmark_node, node);
 
-	int node_type = cmark_node_get_type(node);
-	VALUE symbol = Qnil;
+	node_type = cmark_node_get_type(node);
+	symbol = Qnil;
 
 	switch (node_type) {
 	case CMARK_NODE_DOCUMENT:
@@ -374,10 +387,10 @@ rb_node_unlink(VALUE self)
 static VALUE
 rb_node_first_child(VALUE self)
 {
-	cmark_node *node;
+	cmark_node *node, *child;
 	Data_Get_Struct(self, cmark_node, node);
 
-	cmark_node *child = cmark_node_first_child(node);
+	child = cmark_node_first_child(node);
 
 	return rb_node_to_value(child);
 }
@@ -389,10 +402,10 @@ rb_node_first_child(VALUE self)
 static VALUE
 rb_node_next(VALUE self)
 {
-	cmark_node *node;
+	cmark_node *node, *next;
 	Data_Get_Struct(self, cmark_node, node);
 
-	cmark_node *next = cmark_node_next(node);
+	next = cmark_node_next(node);
 
 	return rb_node_to_value(next);
 }
@@ -408,10 +421,9 @@ rb_node_next(VALUE self)
 static VALUE
 rb_node_insert_before(VALUE self, VALUE sibling)
 {
-	cmark_node *node1;
+	cmark_node *node1, *node2;
 	Data_Get_Struct(self, cmark_node, node1);
 
-	cmark_node *node2;
 	Data_Get_Struct(sibling, cmark_node, node2);
 
 	if (!cmark_node_insert_before(node1, node2)) {
@@ -430,11 +442,11 @@ rb_node_insert_before(VALUE self, VALUE sibling)
 static VALUE
 rb_render_html(VALUE n, VALUE rb_options)
 {
+	cmark_node *node;
 	Check_Type(rb_options, T_FIXNUM);
 
 	int options = FIX2INT(rb_options);
 
-	cmark_node *node;
 	Data_Get_Struct(n, cmark_node, node);
 
 	return rb_str_new2(cmark_render_html(node, options));
@@ -451,10 +463,9 @@ rb_render_html(VALUE n, VALUE rb_options)
 static VALUE
 rb_node_insert_after(VALUE self, VALUE sibling)
 {
-	cmark_node *node1;
+	cmark_node *node1, *node2;
 	Data_Get_Struct(self, cmark_node, node1);
 
-	cmark_node *node2;
 	Data_Get_Struct(sibling, cmark_node, node2);
 
 	if (!cmark_node_insert_after(node1, node2)) {
@@ -477,10 +488,9 @@ rb_node_insert_after(VALUE self, VALUE sibling)
 static VALUE
 rb_node_prepend_child(VALUE self, VALUE child)
 {
-	cmark_node *node1;
+	cmark_node *node1, *node2;
 	Data_Get_Struct(self, cmark_node, node1);
 
-	cmark_node *node2;
 	Data_Get_Struct(child, cmark_node, node2);
 
 	if (!cmark_node_prepend_child(node1, node2)) {
@@ -503,10 +513,9 @@ rb_node_prepend_child(VALUE self, VALUE child)
 static VALUE
 rb_node_append_child(VALUE self, VALUE child)
 {
-	cmark_node *node1;
+	cmark_node *node1, *node2;
 	Data_Get_Struct(self, cmark_node, node1);
 
-	cmark_node *node2;
 	Data_Get_Struct(child, cmark_node, node2);
 
 	if (!cmark_node_append_child(node1, node2)) {
@@ -525,10 +534,10 @@ rb_node_append_child(VALUE self, VALUE child)
 static VALUE
 rb_node_last_child(VALUE self)
 {
-	cmark_node *node;
+	cmark_node *node, *child;
 	Data_Get_Struct(self, cmark_node, node);
 
-	cmark_node *child = cmark_node_last_child(node);
+	child = cmark_node_last_child(node);
 
 	return rb_node_to_value(child);
 }
@@ -572,10 +581,11 @@ rb_node_previous(VALUE self)
 static VALUE
 rb_node_get_url(VALUE self)
 {
+	const char *text;
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 
-	const char *text = cmark_node_get_url(node);
+	text = cmark_node_get_url(node);
 	if (text == NULL) {
 		rb_raise(rb_mNodeError, "could not get url");
 	}
@@ -593,11 +603,12 @@ rb_node_get_url(VALUE self)
 static VALUE
 rb_node_set_url(VALUE self, VALUE url)
 {
+	cmark_node *node;
+	char *text;
 	Check_Type(url, T_STRING);
 
-	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	char *text = StringValueCStr(url);
+	text = StringValueCStr(url);
 
 	if (!cmark_node_set_url(node, text)) {
 		rb_raise(rb_mNodeError, "could not set url");
@@ -615,10 +626,11 @@ rb_node_set_url(VALUE self, VALUE url)
 static VALUE
 rb_node_get_title(VALUE self)
 {
+	const char *text;
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 
-	const char *text = cmark_node_get_title(node);
+	text = cmark_node_get_title(node);
 	if (text == NULL) {
 		rb_raise(rb_mNodeError, "could not get title");
 	}
@@ -636,11 +648,12 @@ rb_node_get_title(VALUE self)
 static VALUE
 rb_node_set_title(VALUE self, VALUE title)
 {
+	char *text;
+	cmark_node *node;
 	Check_Type(title, T_STRING);
 
-	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	char *text = StringValueCStr(title);
+	text = StringValueCStr(title);
 
 	if (!cmark_node_set_title(node, text)) {
 		rb_raise(rb_mNodeError, "could not set title");
@@ -658,10 +671,11 @@ rb_node_set_title(VALUE self, VALUE title)
 static VALUE
 rb_node_get_header_level(VALUE self)
 {
+	int header_level;
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 
-	int header_level = cmark_node_get_header_level(node);
+	header_level = cmark_node_get_header_level(node);
 
 	if (header_level == 0) {
 		rb_raise(rb_mNodeError, "could not get header_level");
@@ -680,11 +694,12 @@ rb_node_get_header_level(VALUE self)
 static VALUE
 rb_node_set_header_level(VALUE self, VALUE level)
 {
+	int l;
+	cmark_node *node;
 	Check_Type(level, T_FIXNUM);
 
-	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	int l = FIX2INT(level);
+	l = FIX2INT(level);
 
 	if (!cmark_node_set_header_level(node, l)) {
 		rb_raise(rb_mNodeError, "could not set header_level");
@@ -702,11 +717,12 @@ rb_node_set_header_level(VALUE self, VALUE level)
 static VALUE
 rb_node_get_list_type(VALUE self)
 {
+	int list_type;
 	cmark_node *node;
+	VALUE symbol;
 	Data_Get_Struct(self, cmark_node, node);
 
-	int list_type = cmark_node_get_list_type(node);
-	VALUE symbol;
+	list_type = cmark_node_get_list_type(node);
 
 	if (list_type == CMARK_BULLET_LIST) {
 		symbol = sym_bullet_list;
@@ -729,11 +745,11 @@ rb_node_get_list_type(VALUE self)
 static VALUE
 rb_node_set_list_type(VALUE self, VALUE list_type)
 {
+	int type = 0;
+	cmark_node *node;
 	Check_Type(list_type, T_SYMBOL);
 
-	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	int type = 0;
 
 	if (list_type == sym_bullet_list) {
 		type = CMARK_BULLET_LIST;
@@ -782,11 +798,12 @@ rb_node_get_list_start(VALUE self)
 static VALUE
 rb_node_set_list_start(VALUE self, VALUE start)
 {
+	int s;
+	cmark_node *node;
 	Check_Type(start, T_FIXNUM);
 
-	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	int s = FIX2INT(start);
+	s = FIX2INT(start);
 
 	if (!cmark_node_set_list_start(node, s)) {
 		rb_raise(rb_mNodeError, "could not set list_start");
@@ -804,6 +821,7 @@ rb_node_set_list_start(VALUE self, VALUE start)
 static VALUE
 rb_node_get_list_tight(VALUE self)
 {
+	int flag;
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 
@@ -812,7 +830,7 @@ rb_node_get_list_tight(VALUE self)
 		         "can't get list_tight for non-list");
 	}
 
-	int flag = cmark_node_get_list_tight(node);
+	flag = cmark_node_get_list_tight(node);
 
 	return flag ? Qtrue : Qfalse;
 }
@@ -827,9 +845,10 @@ rb_node_get_list_tight(VALUE self)
 static VALUE
 rb_node_set_list_tight(VALUE self, VALUE tight)
 {
+	int t;
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	int t = RTEST(tight);
+	t = RTEST(tight);
 
 	if (!cmark_node_set_list_tight(node, t)) {
 		rb_raise(rb_mNodeError, "could not set list_tight");
@@ -847,10 +866,11 @@ rb_node_set_list_tight(VALUE self, VALUE tight)
 static VALUE
 rb_node_get_fence_info(VALUE self)
 {
+	const char *fence_info;
 	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
 
-	const char *fence_info = cmark_node_get_fence_info(node);
+	fence_info = cmark_node_get_fence_info(node);
 
 	if (fence_info == NULL) {
 		rb_raise(rb_mNodeError, "could not get fence_info");
@@ -869,11 +889,12 @@ rb_node_get_fence_info(VALUE self)
 static VALUE
 rb_node_set_fence_info(VALUE self, VALUE info)
 {
+	char *text;
+	cmark_node *node;
 	Check_Type(info, T_STRING);
 
-	cmark_node *node;
 	Data_Get_Struct(self, cmark_node, node);
-	char *text = StringValueCStr(info);
+	text = StringValueCStr(info);
 
 	if (!cmark_node_set_fence_info(node, text)) {
 		rb_raise(rb_mNodeError, "could not set fence_info");
@@ -886,14 +907,16 @@ rb_node_set_fence_info(VALUE self, VALUE info)
 static VALUE
 rb_html_escape_href(VALUE self, VALUE rb_text)
 {
+	char *text, *result;
+	int len;
 	Check_Type(rb_text, T_STRING);
 
 	cmark_strbuf buf = GH_BUF_INIT;
-	char *text = (char *)RSTRING_PTR(rb_text);
-	int len = RSTRING_LEN(rb_text);
+	text = (char *)RSTRING_PTR(rb_text);
+	len = RSTRING_LEN(rb_text);
 
 	houdini_escape_href(&buf, text, len);
-	char *result = (char *)cmark_strbuf_detach(&buf);
+	result = (char *)cmark_strbuf_detach(&buf);
 
 	return rb_str_new2(result);
 }
@@ -902,14 +925,16 @@ rb_html_escape_href(VALUE self, VALUE rb_text)
 static VALUE
 rb_html_escape_html(VALUE self, VALUE rb_text)
 {
+	char *text, *result;
+	int len;
 	Check_Type(rb_text, T_STRING);
 
 	cmark_strbuf buf = GH_BUF_INIT;
-	char *text = (char *)RSTRING_PTR(rb_text);
-	int len = RSTRING_LEN(rb_text);
+	text = (char *)RSTRING_PTR(rb_text);
+	len = RSTRING_LEN(rb_text);
 
 	houdini_escape_html0(&buf, text, len, 0);
-	char *result = (char *)cmark_strbuf_detach(&buf);
+	result = (char *)cmark_strbuf_detach(&buf);
 
 	return rb_str_new2(result);
 }
