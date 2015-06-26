@@ -21,7 +21,7 @@ build/
 ## Documentation cache and generated files:
 /.yardoc/
 /_yardoc/
-/doc/
+/docs/
 /rdoc/
 
 ## Environment normalisation:
