@@ -23,11 +23,11 @@ Or install it yourself as:
 
 ### Converting to HTML
 
-Call `markdown_to_html` on a string to convert it to HTML:
+Call `render_html` on a string to convert it to HTML:
 
 ``` ruby
 require 'commonmarker'
-CommonMarker.markdown_to_html("Hi *there*", :default)
+CommonMarker.render_html('Hi *there*', :default)
 # <p>Hi <em>there</em></p>\n
 ```
 
@@ -40,7 +40,7 @@ You can also parse a string to receive a `Document` node. You can than print tha
 ``` ruby
 require 'commonmarker'
 
-doc = CommonMarker::Node.parse_string('*Hello* world', :default)
+doc = CommonMarker.render_doc('*Hello* world', :default)
 puts(doc.to_html)
 
 doc.walk do |node|
@@ -50,13 +50,13 @@ end
 
 The second argument is optional--[see below](#options) for more information.
 
-#### Walking the AST
+#### Example: walking the AST
 
 ``` ruby
 require 'commonmarker'
 
 # parse the files specified on the command line
-doc = CommonMarker::Node.parse_string("# The site\n\n [GitHub](https://www.github.com)")
+doc = CommonMarker.render_doc("# The site\n\n [GitHub](https://www.github.com)")
 
 # Walk tree and print out URLs for links
 doc.walk do |node|
@@ -122,7 +122,7 @@ CommonMarker accepts the same options that CMark does:
 
 * `:default` - The default rendering.
 * `:sourcepos` - Include source position in rendered HTML.
-* `:hardbreaks` - Try single `\n` as hardbreaks (by adding `<br/>`).
+* `:hardbreaks` - Treat `\n` as hardbreaks (by adding `<br/>`).
 * `:normalize` - Attempt to normalize the HTML.
 * `:smart` - Use smart punctuation (curly quotes, etc.).
 
@@ -130,7 +130,7 @@ Pass these in as a single symbol argument:
 
 ``` ruby
 require 'commonmarker'
-CommonMarker.markdown_to_html("\"Hello,\" said the spider.", :smart)
+CommonMarker.render_html("\"Hello,\" said the spider.", :smart)
 # <p>“Hello,” said the spider.</p>\n
 ```
 
@@ -138,11 +138,22 @@ To have multiple options applied, pass in an array of options,:
 
 ``` ruby
 require 'commonmarker'
-CommonMarker.markdown_to_html("\"Hello,\" said the spider.\n\"'Shelob' is my name.\"", [:hardbreaks, :smart])
+CommonMarker.render_html("\"Hello,\" said the spider.\n\"'Shelob' is my name.\"", [:hardbreaks, :smart])
 # <p>“Hello,” said the spider.</br>“‘Shelob’ is my name.”</p>
 ```
 
 For more information on these options, see [the CMark documentation](http://git.io/vLIHE).
+
+## Hacking
+
+After cloning the repo:
+
+```
+script/bootstrap
+bundle exec rake compile
+```
+
+If there were no errors, you're done! Otherwise, make sure to follow the CMark dependency instructions.
 
 ## Benchmarks
 
@@ -165,14 +176,3 @@ kramdown
   4.610000   0.070000   4.680000 (  4.678398)
 
 ```
-
-## Hacking
-
-After cloning the repo:
-
-```
-script/bootstrap
-bundle exec rake compile
-```
-
-If there were no errors, you're done! Otherwise, make sure to follow the CMark dependency instructions.

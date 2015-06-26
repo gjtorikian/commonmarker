@@ -2,11 +2,12 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'commonmarker/version'
+
 Gem::Specification.new do |s|
   s.name = 'commonmarker'
   s.version = CommonMarker::VERSION
   s.summary = 'CommonMark parser and renderer. Written in C, wrapped in Ruby.'
-  s.description = 'A fast, safe, extensible parser for CommonMark.'
+  s.description = 'A fast, safe, extensible parser for CommonMark. This wraps the official libcmark library.'
   s.authors       = ['Garen Torikian']
   s.email         = ['gjtorikian@gmail.com']
   s.homepage = 'http://github.com/gjtorikian/commonmarker'

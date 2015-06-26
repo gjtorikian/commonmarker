@@ -2,7 +2,7 @@ require 'test_helper'
 
 class CommonMarker::TestMaliciousness < Minitest::Test
   def setup
-    @doc = CommonMarker.render_doc("Hi *there*")
+    @doc = CommonMarker.render_doc('Hi *there*')
   end
 
   def test_init_with_bad_type

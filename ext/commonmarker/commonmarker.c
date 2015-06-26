@@ -54,7 +54,7 @@ rb_mark_c_struct(void *data)
 	for (child = cmark_node_first_child(node);
 	     child != NULL;
 	     child = cmark_node_next(child)
-	) {
+	    ) {
 		void *user_data = cmark_node_get_user_data(child);
 		if (user_data)
 			rb_gc_mark((VALUE)user_data);
@@ -81,10 +81,10 @@ rb_node_to_value(cmark_node *node)
 
 	/* Only free tree roots. */
 	RUBY_DATA_FUNC free_func = cmark_node_parent(node)
-				   ? NULL
-				   : rb_free_c_struct;
+	                           ? NULL
+	                           : rb_free_c_struct;
 	VALUE val = Data_Wrap_Struct(rb_mNode, rb_mark_c_struct, free_func,
-				     node);
+	                             node);
 	cmark_node_set_user_data(node, (void *)val);
 
 	return val;
@@ -276,41 +276,59 @@ rb_node_get_type(VALUE self)
 
 	switch (node_type) {
 	case CMARK_NODE_DOCUMENT:
-		symbol = sym_document; break;
+		symbol = sym_document;
+		break;
 	case CMARK_NODE_BLOCK_QUOTE:
-		symbol = sym_blockquote; break;
+		symbol = sym_blockquote;
+		break;
 	case CMARK_NODE_LIST:
-		symbol = sym_list; break;
+		symbol = sym_list;
+		break;
 	case CMARK_NODE_ITEM:
-		symbol = sym_list_item; break;
+		symbol = sym_list_item;
+		break;
 	case CMARK_NODE_CODE_BLOCK:
-		symbol = sym_code_block; break;
+		symbol = sym_code_block;
+		break;
 	case CMARK_NODE_HTML:
-		symbol = sym_html; break;
+		symbol = sym_html;
+		break;
 	case CMARK_NODE_PARAGRAPH:
-		symbol = sym_paragraph; break;
+		symbol = sym_paragraph;
+		break;
 	case CMARK_NODE_HEADER:
-		symbol = sym_header; break;
+		symbol = sym_header;
+		break;
 	case CMARK_NODE_HRULE:
-		symbol = sym_hrule; break;
+		symbol = sym_hrule;
+		break;
 	case CMARK_NODE_TEXT:
-		symbol = sym_text; break;
+		symbol = sym_text;
+		break;
 	case CMARK_NODE_SOFTBREAK:
-		symbol = sym_softbreak; break;
+		symbol = sym_softbreak;
+		break;
 	case CMARK_NODE_LINEBREAK:
-		symbol = sym_linebreak; break;
+		symbol = sym_linebreak;
+		break;
 	case CMARK_NODE_CODE:
-		symbol = sym_code; break;
+		symbol = sym_code;
+		break;
 	case CMARK_NODE_INLINE_HTML:
-		symbol = sym_inline_html; break;
+		symbol = sym_inline_html;
+		break;
 	case CMARK_NODE_EMPH:
-		symbol = sym_emph; break;
+		symbol = sym_emph;
+		break;
 	case CMARK_NODE_STRONG:
-		symbol = sym_strong; break;
+		symbol = sym_strong;
+		break;
 	case CMARK_NODE_LINK:
-		symbol = sym_link; break;
+		symbol = sym_link;
+		break;
 	case CMARK_NODE_IMAGE:
-		symbol = sym_image; break;
+		symbol = sym_image;
+		break;
 	default:
 		rb_raise(rb_mNodeError, "invalid node type %d", node_type);
 	}
@@ -692,11 +710,9 @@ rb_node_get_list_type(VALUE self)
 
 	if (list_type == CMARK_BULLET_LIST) {
 		symbol = sym_bullet_list;
-	}
-	else if (list_type == CMARK_ORDERED_LIST) {
+	} else if (list_type == CMARK_ORDERED_LIST) {
 		symbol = sym_ordered_list;
-	}
-	else {
+	} else {
 		rb_raise(rb_mNodeError, "could not get list_type");
 	}
 
@@ -721,11 +737,9 @@ rb_node_set_list_type(VALUE self, VALUE list_type)
 
 	if (list_type == sym_bullet_list) {
 		type = CMARK_BULLET_LIST;
-	}
-	else if (list_type == sym_ordered_list) {
+	} else if (list_type == sym_ordered_list) {
 		type = CMARK_ORDERED_LIST;
-	}
-	else {
+	} else {
 		rb_raise(rb_mNodeError, "invalid list_type");
 	}
 
@@ -751,8 +765,8 @@ rb_node_get_list_start(VALUE self)
 	if (cmark_node_get_type(node) != CMARK_NODE_LIST
 	    || cmark_node_get_list_type(node) != CMARK_ORDERED_LIST) {
 		rb_raise(rb_mNodeError,
-			 "can't get list_start for non-ordered list %d",
-			 cmark_node_get_list_type(node));
+		         "can't get list_start for non-ordered list %d",
+		         cmark_node_get_list_type(node));
 	}
 
 	return INT2NUM(cmark_node_get_list_start(node));
@@ -795,7 +809,7 @@ rb_node_get_list_tight(VALUE self)
 
 	if (cmark_node_get_type(node) != CMARK_NODE_LIST) {
 		rb_raise(rb_mNodeError,
-			 "can't get list_tight for non-list");
+		         "can't get list_tight for non-list");
 	}
 
 	int flag = cmark_node_get_list_tight(node);
@@ -879,7 +893,7 @@ rb_html_escape_href(VALUE self, VALUE rb_text)
 	int len = RSTRING_LEN(rb_text);
 
 	houdini_escape_href(&buf, text, len);
-	char *result =(char *)cmark_strbuf_detach(&buf);
+	char *result = (char *)cmark_strbuf_detach(&buf);
 
 	return rb_str_new2(result);
 }
@@ -895,7 +909,7 @@ rb_html_escape_html(VALUE self, VALUE rb_text)
 	int len = RSTRING_LEN(rb_text);
 
 	houdini_escape_html0(&buf, text, len, 0);
-	char *result =(char *)cmark_strbuf_detach(&buf);
+	char *result = (char *)cmark_strbuf_detach(&buf);
 
 	return rb_str_new2(result);
 }
