@@ -78,3 +78,19 @@ RDoc::Task.new do |rd|
   rd.options << '--all'
   rd.options << '--fileboxes'
 end
+
+desc "Generate and publish blog to gh-pages"
+task :publish => [:rdoc] do
+  Dir.mktmpdir do |tmp|
+    system "mv doc/rdocs/* #{tmp}"
+    system "git checkout gh-pages"
+    system "rm -rf *"
+    system "mv #{tmp}/* ."
+    message = "Site updated at #{Time.now.utc}"
+    system "git add ."
+    system "git commit -am #{message.shellescape}"
+    system "git push origin gh-pages --force"
+    system "git checkout master"
+    system "echo yolo"
+  end
+end
