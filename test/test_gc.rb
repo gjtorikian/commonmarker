@@ -6,7 +6,7 @@ class TestNode < Minitest::Test
   # isn't valid by accident.
 
   def test_drop_parent_reference
-    doc = Node.parse_string("Hi *there*")
+    doc = CommonMarker.render_doc('Hi *there*')
     text = doc.first_child.last_child.first_child
     doc = nil
     GC.start
@@ -15,7 +15,7 @@ class TestNode < Minitest::Test
   end
 
   def test_drop_child_reference
-    doc = Node.parse_string("Hi *there*")
+    doc = CommonMarker.render_doc('Hi *there*')
     text = doc.first_child.last_child.first_child
     text = nil
     GC.start
@@ -25,7 +25,7 @@ class TestNode < Minitest::Test
   end
 
   def test_remove_parent
-    doc = Node.parse_string("Hi *there*")
+    doc = CommonMarker.render_doc('Hi *there*')
     para = doc.first_child
     para.delete
     doc = nil

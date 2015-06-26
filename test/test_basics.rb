@@ -2,7 +2,7 @@ require 'test_helper'
 
 class TestNode < Minitest::Test
   def setup
-    @doc = Node.parse_string("Hi *there*")
+    @doc = CommonMarker.render_doc('Hi *there*')
   end
 
   def test_walk
@@ -36,5 +36,20 @@ class TestNode < Minitest::Test
         assert_equal 'world', node.string_content
       end
     end
+  end
+
+  def test_walk_and_delete_node
+    @doc.walk do |node|
+      if node.type == :emph
+        node.insert_before(node.first_child)
+        node.delete
+      end
+    end
+    assert_equal "<p>Hi there</p>\n", @doc.to_html
+  end
+
+  def test_markdown_to_html
+    html = CommonMarker.render_html('Hi *there*')
+    assert_equal "<p>Hi <em>there</em></p>\n", html
   end
 end

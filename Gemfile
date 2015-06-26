@@ -1,9 +1,9 @@
-source "https://rubygems.org/"
+source 'https://rubygems.org/'
 
 gemspec
 
 group :benchmark do
-  gem "redcarpet"
-  gem "kramdown"
-  gem "github-markdown"
+  gem 'redcarpet'
+  gem 'kramdown'
+  gem 'github-markdown'
 end

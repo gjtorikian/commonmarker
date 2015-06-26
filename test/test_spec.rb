@@ -2,10 +2,10 @@ require 'test_helper'
 require 'json'
 
 class TestSpec < Minitest::Test
-  cases = JSON.parse(open('test/spec_tests.json', 'r').read)
+  cases = JSON.parse(open(File.join('test', 'spec_tests.json'), 'r').read)
   cases.each do |testcase|
     # next unless testcase['example'] == 420
-    doc = Node.parse_string(testcase['markdown'])
+    doc = CommonMarker.render_doc(testcase['markdown'])
 
     define_method("test_to_html_example_#{testcase['example']}") do
       actual = doc.to_html

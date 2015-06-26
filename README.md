@@ -1,4 +1,4 @@
-# commonmarker
+# CommonMarker
 
 [![Build Status](https://travis-ci.org/gjtorikian/commonmarker.svg)](https://travis-ci.org/gjtorikian/commonmarker) [![Gem Version](https://badge.fury.io/rb/commonmarker.svg)](http://badge.fury.io/rb/commonmarker)
 
@@ -21,28 +21,42 @@ Or install it yourself as:
 
 ## Usage
 
-### Printing to HTML
+### Converting to HTML
 
-Simply put, you'll first need to parse a string to receive a `Document` node. You can than print that node to HTML. For example:
+Call `render_html` on a string to convert it to HTML:
+
+``` ruby
+require 'commonmarker'
+CommonMarker.render_html('Hi *there*', :default)
+# <p>Hi <em>there</em></p>\n
+```
+
+The second argument is optional--[see below](#options) for more information.
+
+### Generating a document
+
+You can also parse a string to receive a `Document` node. You can than print that node to HTML, iterate over the children, and other fun node stuff. For example:
 
 ``` ruby
 require 'commonmarker'
 
-doc = CommonMarker::Node.parse_string('*Hello* world')
-puts(doc.to_html)
+doc = CommonMarker.render_doc('*Hello* world', :default)
+puts(doc.to_html) # <p>Hi <em>there</em></p>\n
 
 doc.walk do |node|
-  puts node.type
+  puts node.type # [:document, :paragraph, :text, :emph, :text]
 end
 ```
 
-### Walking the AST
+The second argument is optional--[see below](#options) for more information.
+
+#### Example: walking the AST
 
 ``` ruby
 require 'commonmarker'
 
 # parse the files specified on the command line
-doc = CommonMarker::Node.parse_string("# The site\n\n [GitHub](https://www.github.com)")
+doc = CommonMarker.render_doc("# The site\n\n [GitHub](https://www.github.com)")
 
 # Walk tree and print out URLs for links
 doc.walk do |node|
@@ -76,7 +90,7 @@ end
 You can also derive a class from CommonMarker's `HtmlRenderer` class. This produces slower output, but is far more customizable. For example:
 
 ``` ruby
-class MyHtmlRenderer < HtmlRenderer
+class MyHtmlRenderer < CommonMarker::HtmlRenderer
   def initialize
     super
     @headerid = 1
@@ -97,10 +111,48 @@ print(myrenderer.render(doc))
 
 # Print any warnings to STDERR
 renderer.warnings.each do |w|
-  STDERR.write(w)
-  STDERR.write("\n")
+  STDERR.write("#{w}\n")
 end
 ```
+
+## Options
+
+CommonMarker accepts the same options that CMark does, as symbols:
+
+* `:default` - The default rendering.
+* `:sourcepos` - Include source position in rendered HTML.
+* `:hardbreaks` - Treat `\n` as hardbreaks (by adding `<br/>`).
+* `:normalize` - Attempt to normalize the HTML.
+* `:smart` - Use smart punctuation (curly quotes, etc.).
+
+Pass these in as a single symbol argument:
+
+``` ruby
+require 'commonmarker'
+CommonMarker.render_html("\"Hello,\" said the spider.", :smart)
+# <p>“Hello,” said the spider.</p>\n
+```
+
+To have multiple options applied, pass in an array of options:
+
+``` ruby
+require 'commonmarker'
+CommonMarker.render_html("\"Hello,\" said the spider.\n\"'Shelob' is my name.\"", [:hardbreaks, :smart])
+# <p>“Hello,” said the spider.</br>“‘Shelob’ is my name.”</p>
+```
+
+For more information on these options, see [the CMark documentation](http://git.io/vLIHE).
+
+## Hacking
+
+After cloning the repo:
+
+```
+script/bootstrap
+bundle exec rake compile
+```
+
+If there were no errors, you're done! Otherwise, make sure to follow the CMark dependency instructions.
 
 ## Benchmarks
 
@@ -123,14 +175,3 @@ kramdown
   4.610000   0.070000   4.680000 (  4.678398)
 
 ```
-
-## Hacking
-
-After cloning the repo:
-
-```
-script/bootstrap
-bundle exec rake compile
-```
-
-If there were no errors, you're done! Otherwise, make sure to follow the CMark dependency instructions.

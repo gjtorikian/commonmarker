@@ -9,24 +9,47 @@ begin
 rescue LoadError; end
 
 module CommonMarker
+  # Public:  Parses a Markdown string into an HTML string.
+  #
+  # text - A {String} of text
+  # option - Either a {Symbol} or {Array of Symbol}s indicating the parse options
+  #
+  # Returns a {String} of converted HTML.
+  def self.render_html(text, option = :default)
+    fail TypeError, 'text must be a string!' unless text.is_a?(String)
+    Node.markdown_to_html(text, Config.process_options(option))
+  end
+
+  # Public: Parses a Markdown string into a `document` node.
+  #
+  # string - {String} to be parsed
+  # option - A {Symbol} or {Array of Symbol}s indicating the parse options
+  #
+  # Returns the `document` node.
+  def self.render_doc(text, option = :default)
+    fail TypeError, 'text must be a string!' unless text.is_a?(String)
+    Node.parse_document(text, text.bytesize, Config.process_options(option))
+  end
+
   class Node
-    # Parses a string into a :document Node.
-    # Params:
-    # +s+::  +String+ to be parsed.
-    def self.parse_string(s, option = :default)
-      Config.option_exists?(option)
-      Node.parse_document(s, s.bytesize, Config.to_h[option])
+    # Public: An iterator that "walks the tree," descending into children recursively.
+    #
+    # blk - A {Proc} representing the action to take for each child
+    def walk(&blk)
+      yield self
+      each_child do |child|
+        child.walk(&blk)
+      end
     end
 
-    # Parses a file into a :document Node.
-    # Params:
-    # +f+::  +File+ to be parsed (caller must open and close).
-    def self.parse_file(f)
-      s = f.read()
-      self.parse_string(s)
+    # Public: Convert the node to an HTML string.
+    #
+    # Returns a {String}.
+    def to_html(option = :default)
+      self._render_html(Config.process_options(option)).force_encoding('utf-8')
     end
 
-    # Iterator over the children (if any) of this Node.
+    # Internal: Iterate over the children (if any) of the current pointer.
     def each_child
       child = self.first_child
       while child
@@ -35,21 +58,5 @@ module CommonMarker
         child = nextchild
       end
     end
-
-    # An iterator that "walks the tree," descending into children
-    # recursively.
-    def walk(&blk)
-      yield self
-      each_child do |child|
-        child.walk(&blk)
-      end
-    end
-
-    # Convert to HTML using libcmark's fast (but uncustomizable) renderer.
-    def to_html(option = :default)
-      Config.option_exists?(option)
-      self._render_html(Config.to_h[option]).force_encoding('utf-8')
-    end
-
   end
 end
