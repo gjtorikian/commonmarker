@@ -17,9 +17,7 @@ module CommonMarker
         Config.to_h[option]
       elsif option.is_a?(Array)
         option = [nil] if option.empty?
-        option.each do |delim|
-          Config.check_option(delim)
-        end
+        option.each { |delim| Config.check_option(delim) }
         return option.map { |delim| Config.to_h[delim] }.inject(0, :|)
       else
         fail(TypeError, 'delimiter type must be a valid symbol or array of symbols')

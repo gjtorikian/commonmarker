@@ -9,6 +9,16 @@ begin
 rescue LoadError; end
 
 module CommonMarker
+  # Public: Given a string of text, returns the HTML representation.
+  #
+  # text - A {String} of text
+  # option - Either a {Symbol} or {Array of Symbol}s indicating the parse options.
+  #
+  # Returns a {String} of converted HTML.
+  def self.markdown_to_html(text, option = :default)
+    Node.markdown_to_html(text, Config.process_options(option))
+  end
+
   class Node
     # Public: Parses a string into a `document` Node.
     #
@@ -17,8 +27,7 @@ module CommonMarker
     #
     # Returns the `document` node.
     def self.parse_string(s, option = :default)
-      Config.option_exists?(option)
-      Node.parse_document(s, s.bytesize, Config.to_h[option])
+      Node.parse_document(s, s.bytesize, Config.process_options(option))
     end
 
     # Public: Parses a file into a `documen` Node.
@@ -46,8 +55,7 @@ module CommonMarker
     #
     # Returns a {String}.
     def to_html(option = :default)
-      Config.option_exists?(option)
-      CMark.render_html(@pointer, Config.to_h[option]).force_encoding('utf-8')
+      self._render_html(Config.process_options(option)).force_encoding('utf-8')
     end
 
     # Internal: Iterate over the children (if any) of the current pointer.

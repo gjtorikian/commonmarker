@@ -11,12 +11,12 @@ class CommonMarker::TestMaliciousness < Minitest::Test
       Node.new(:totes_fake)
     end
 
-    assert_raises NodeError do
-      Node.new(123, 456)
+    assert_raises TypeError do
+      Node.new(123)
     end
 
-    assert_raises NodeError do
-      Node.new(nil, nil)
+    assert_raises TypeError do
+      Node.new(nil)
     end
 
     assert_raises ArgumentError do
