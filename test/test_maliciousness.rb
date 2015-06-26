@@ -2,9 +2,9 @@ require 'test_helper'
 
 class CommonMarker::TestMaliciousness < Minitest::Test
 
-  def test_init_with_false_type
+  def test_init_with_bad_type
     assert_raises TypeError do
-      render = Node.new(99999)
+      Node.new(123)
     end
 
     assert_raises NodeError do
@@ -12,23 +12,37 @@ class CommonMarker::TestMaliciousness < Minitest::Test
     end
 
     assert_raises TypeError do
-      Node.new(123)
+      Node.new([])
+    end
+
+    assert_raises TypeError do
+      Node.new([23])
     end
 
     assert_raises TypeError do
       Node.new(nil)
     end
+  end
 
-    assert_raises ArgumentError do
-      Node.parse_string("foo \n baz", :lolnotreal)
+  def test_parsing_with_bad_type
+    assert_raises TypeError do
+      CommonMarker.parse_string("foo \n baz", 123)
     end
 
-    assert_raises ArgumentError do
-      Node.parse_string("foo \n baz", [])
+    assert_raises TypeError do
+      CommonMarker.parse_string("foo \n baz", :totes_fake)
     end
 
-    assert_raises ArgumentError do
-      Node.parse_string("foo \n baz", [23])
+    assert_raises TypeError do
+      CommonMarker.parse_string("foo \n baz", [])
+    end
+
+    assert_raises TypeError do
+      CommonMarker.parse_string("foo \n baz", [23])
+    end
+
+    assert_raises TypeError do
+      CommonMarker.parse_string("foo \n baz", nil)
     end
   end
 end

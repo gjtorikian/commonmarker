@@ -2,7 +2,7 @@ require 'test_helper'
 
 class TestNode < Minitest::Test
   def setup
-    @doc = Node.parse_string("Hi *there*")
+    @doc = CommonMarker.to_doc("Hi *there*")
   end
 
   def test_walk
