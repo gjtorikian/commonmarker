@@ -22,11 +22,11 @@ dobench('github-markdown') do
 end
 
 dobench('commonmarker with to_html') do
-  CommonMarker::Node.parse_string(benchinput).to_html
+  CommonMarker.render_html(benchinput)
 end
 
 dobench('commonmarker with ruby HtmlRenderer') do
-  CommonMarker::HtmlRenderer.new.render(CommonMarker::Node.parse_string(benchinput))
+  CommonMarker::HtmlRenderer.new.render(CommonMarker.render_doc(benchinput))
 end
 
 dobench('kramdown') do
