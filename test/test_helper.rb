@@ -4,6 +4,8 @@ require 'minitest/pride'
 
 include CommonMarker
 
+FIXTURES_DIR = File.join(File.dirname(__FILE__), 'fixtures')
+
 def open_spec_file(filename, options = {})
   line_number = 0
   start_line = 0
