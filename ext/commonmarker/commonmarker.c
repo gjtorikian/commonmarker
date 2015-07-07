@@ -914,7 +914,7 @@ rb_node_set_fence_info(VALUE self, VALUE info)
 static VALUE
 rb_html_escape_href(VALUE self, VALUE rb_text)
 {
-	VALUE result;
+	char *result;
 	cmark_strbuf buf = GH_BUF_INIT;
 
 	Check_Type(rb_text, T_STRING);
@@ -932,7 +932,7 @@ rb_html_escape_href(VALUE self, VALUE rb_text)
 static VALUE
 rb_html_escape_html(VALUE self, VALUE rb_text)
 {
-	VALUE result;
+	char *result;
 	cmark_strbuf buf = GH_BUF_INIT;
 
 	Check_Type(rb_text, T_STRING);
