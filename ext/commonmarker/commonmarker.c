@@ -74,6 +74,8 @@ rb_node_to_value(cmark_node *node)
 {
 	void *user_data;
 	RUBY_DATA_FUNC free_func;
+	VALUE val;
+
 	if (node == NULL)
 		return Qnil;
 
@@ -83,10 +85,10 @@ rb_node_to_value(cmark_node *node)
 
 	/* Only free tree roots. */
 	free_func = cmark_node_parent(node)
-	                           ? NULL
-	                           : rb_free_c_struct;
-	VALUE val = Data_Wrap_Struct(rb_mNode, rb_mark_c_struct, free_func,
-	                             node);
+	            ? NULL
+	            : rb_free_c_struct;
+	val = Data_Wrap_Struct(rb_mNode, rb_mark_c_struct, free_func,
+	                       node);
 	cmark_node_set_user_data(node, (void *)val);
 
 	return val;
@@ -270,6 +272,8 @@ rb_node_set_string_content(VALUE self, VALUE s)
 	if (!cmark_node_set_literal(node, text)) {
 		rb_raise(rb_mNodeError, "could not set string content");
 	}
+
+	return Qnil;
 }
 
 /*
@@ -910,41 +914,41 @@ rb_node_set_fence_info(VALUE self, VALUE info)
 static VALUE
 rb_html_escape_href(VALUE self, VALUE rb_text)
 {
-	char *text, *result;
-	int len;
+	char *result;
 	cmark_strbuf buf = GH_BUF_INIT;
+
 	Check_Type(rb_text, T_STRING);
 
-	text = (char *)RSTRING_PTR(rb_text);
-	len = RSTRING_LEN(rb_text);
+	if (houdini_escape_href(&buf, (const uint8_t *)RSTRING_PTR(rb_text), RSTRING_LEN(rb_text))) {
+		result = (char *)cmark_strbuf_detach(&buf);
+		return rb_str_new2(result);
+	}
 
-	houdini_escape_href(&buf, text, len);
-	result = (char *)cmark_strbuf_detach(&buf);
+	return rb_text;
 
-	return rb_str_new2(result);
 }
 
 /* Internal: Escapes HTML content safely. */
 static VALUE
 rb_html_escape_html(VALUE self, VALUE rb_text)
 {
-	char *text, *result;
-	int len;
+	char *result;
 	cmark_strbuf buf = GH_BUF_INIT;
+
 	Check_Type(rb_text, T_STRING);
 
-	text = (char *)RSTRING_PTR(rb_text);
-	len = RSTRING_LEN(rb_text);
+	if (houdini_escape_html0(&buf, (const uint8_t *)RSTRING_PTR(rb_text), RSTRING_LEN(rb_text), 0)) {
+		result = (char *)cmark_strbuf_detach(&buf);
+		return rb_str_new2(result);
+	}
 
-	houdini_escape_html0(&buf, text, len, 0);
-	result = (char *)cmark_strbuf_detach(&buf);
-
-	return rb_str_new2(result);
+	return rb_text;
 }
 
 __attribute__((visibility("default")))
 void Init_commonmarker()
 {
+	VALUE module;
 	sym_document    = ID2SYM(rb_intern("document"));
 	sym_blockquote  = ID2SYM(rb_intern("blockquote"));
 	sym_list      	= ID2SYM(rb_intern("list"));
@@ -967,7 +971,7 @@ void Init_commonmarker()
 	sym_bullet_list  = ID2SYM(rb_intern("bullet_list"));
 	sym_ordered_list = ID2SYM(rb_intern("ordered_list"));
 
-	VALUE module = rb_define_module("CommonMarker");
+	module = rb_define_module("CommonMarker");
 	rb_mNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
 	rb_mNode = rb_define_class_under(module, "Node", rb_cObject);
 	rb_define_singleton_method(rb_mNode, "markdown_to_html", rb_markdown_to_html, 2);
