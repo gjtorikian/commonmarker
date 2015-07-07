@@ -910,36 +910,35 @@ rb_node_set_fence_info(VALUE self, VALUE info)
 static VALUE
 rb_html_escape_href(VALUE self, VALUE rb_text)
 {
-	char *text, *result;
-	int len;
+	VALUE result;
 	cmark_strbuf buf = GH_BUF_INIT;
+
 	Check_Type(rb_text, T_STRING);
 
-	text = (char *)RSTRING_PTR(rb_text);
-	len = RSTRING_LEN(rb_text);
+	if (houdini_escape_href(&buf, (const uint8_t *)RSTRING_PTR(rb_text), RSTRING_LEN(rb_text))) {
+		result = (char *)cmark_strbuf_detach(&buf);
+		return rb_str_new2(result);
+	}
 
-	houdini_escape_href(&buf, text, len);
-	result = (char *)cmark_strbuf_detach(&buf);
+	return rb_text;
 
-	return rb_str_new2(result);
 }
 
 /* Internal: Escapes HTML content safely. */
 static VALUE
 rb_html_escape_html(VALUE self, VALUE rb_text)
 {
-	char *text, *result;
-	int len;
+	VALUE result;
 	cmark_strbuf buf = GH_BUF_INIT;
+
 	Check_Type(rb_text, T_STRING);
 
-	text = (char *)RSTRING_PTR(rb_text);
-	len = RSTRING_LEN(rb_text);
+	if (houdini_escape_html0(&buf, (const uint8_t *)RSTRING_PTR(rb_text), RSTRING_LEN(rb_text), 0)) {
+		result = (char *)cmark_strbuf_detach(&buf);
+		return rb_str_new2(result);
+	}
 
-	houdini_escape_html0(&buf, text, len, 0);
-	result = (char *)cmark_strbuf_detach(&buf);
-
-	return rb_str_new2(result);
+	return rb_text;
 }
 
 __attribute__((visibility("default")))
