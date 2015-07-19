@@ -10,6 +10,8 @@ module CommonMarker
     define :hardbreaks, 2
     define :normalize, 4
     define :smart, 8
+    define :validate_utf8, 16
+    define :safe, 32
 
     def self.process_options(option)
       if option.is_a?(Symbol)
