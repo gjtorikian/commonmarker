@@ -33,7 +33,7 @@ def open_spec_file(filename, options = {})
         end_line = line_number
         tests << {
           :markdown => markdown_lines.join('').gsub('→', "\t"),
-          :html => html_lines.join('').rstrip,
+          :html => html_lines.join('').gsub('→', "\t").rstrip,
           :example => example_number,
           :start_line => start_line,
           :end_line => end_line,

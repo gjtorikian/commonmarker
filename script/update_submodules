@@ -18,6 +18,4 @@ git checkout $BRANCH && git pull
 sha=`git rev-parse HEAD`
 cd ../../..
 git add ext/commonmarker/cmark
-rake generate_test
-git add test/spec_tests.json
 git commit -m "Update cmark to ${sha}"
