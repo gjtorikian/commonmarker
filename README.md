@@ -124,8 +124,10 @@ CommonMarker accepts the same options that CMark does, as symbols:
 * `:hardbreaks` - Treat `\n` as hardbreaks (by adding `<br/>`).
 * `:normalize` - Attempt to normalize the HTML.
 * `:smart` - Use smart punctuation (curly quotes, etc.).
+* `:validate_utf8` - Replace illegal sequences with the replacement character `U+FFFD`.
+* `:safe` - Suppress raw HTML and unsafe links.
 
-Pass these in as a single symbol argument:
+For a single option, pass it in as a symbol argument:
 
 ``` ruby
 require 'commonmarker'
@@ -133,7 +135,7 @@ CommonMarker.render_html("\"Hello,\" said the spider.", :smart)
 # <p>“Hello,” said the spider.</p>\n
 ```
 
-To have multiple options applied, pass in an array of options:
+To have multiple options applied, pass in an array of symbols:
 
 ``` ruby
 require 'commonmarker'
