@@ -2,13 +2,13 @@ require 'mkmf'
 require 'fileutils'
 require 'rbconfig'
 host_os = RbConfig::CONFIG['host_os']
+sitearch = RbConfig::CONFIG['sitearch']
 
 LIBDIR      = RbConfig::CONFIG['libdir']
 INCLUDEDIR  = RbConfig::CONFIG['includedir']
 
 unless find_executable('cmake')
-  $stderr.puts "\n\n\n[ERROR]: cmake is required and not installed. Get it here: http://www.cmake.org/\n\n"
-  exit 1
+  abort "\n\n\n[ERROR]: cmake is required and not installed. Get it here: http://www.cmake.org/\n\n\n"
 end
 
 ROOT_TMP = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'tmp'))
@@ -34,8 +34,9 @@ LIB_DIRS = [LIBDIR, "#{CMARK_BUILD_DIR}/src"]
 
 dir_config('cmark', HEADER_DIRS, LIB_DIRS)
 
-unless find_library('cmark', 'cmark_parse_document')
-  abort 'libcmark is missing.'
+# don't even bother to do this check if using OS X's messed up system Ruby: http://git.io/vsxkn
+unless sitearch =~ /^universal-darwin/
+  abort 'libcmark is missing.' unless find_library('cmark', 'cmark_parse_document')
 end
 
 $LDFLAGS << " -L#{CMARK_BUILD_DIR}/src -lcmark"
