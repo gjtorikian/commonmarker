@@ -8,10 +8,94 @@ class TestAttributes < Minitest::Test
 
   def test_sourcepos
     sourcepos = []
+
     @doc.walk do |node|
-      ap node.sourcepos
       sourcepos << node.sourcepos
     end
-    # assert_equal [:document, :paragraph, :text, :emph, :text], sourcepos
+
+    sourcepos.delete_if { |h| h.values.all? { |v| v == 0 } }
+
+    result = [
+      {
+        :start_line => 1,
+        :start_column => 1,
+        :end_line => 10,
+        :end_column => 12
+      },
+      {
+        :start_line => 1,
+        :start_column => 4,
+        :end_line => 1,
+        :end_column => 17
+      },
+      {
+        :start_line => 3,
+        :start_column => 1,
+        :end_line => 5,
+        :end_column => 36
+      },
+      {
+        :start_line => 7,
+        :start_column => 1,
+        :end_line => 10,
+        :end_column => 12
+      },
+      {
+        :start_line => 7,
+        :start_column => 1,
+        :end_line => 7,
+        :end_column => 11
+      },
+      {
+        :start_line => 7,
+        :start_column => 4,
+        :end_line => 7,
+        :end_column => 11
+      },
+      {
+        :start_line => 8,
+        :start_column => 1,
+        :end_line => 10,
+        :end_column => 12
+      },
+      {
+        :start_line => 8,
+        :start_column => 4,
+        :end_line => 8,
+        :end_column => 11
+      },
+      {
+        :start_line => 9,
+        :start_column => 4,
+        :end_line => 10,
+        :end_column => 12
+      },
+      {
+        :start_line => 9,
+        :start_column => 4,
+        :end_line => 9,
+        :end_column => 12
+      },
+      {
+        :start_line => 9,
+        :start_column => 6,
+        :end_line => 9,
+        :end_column => 12
+      },
+      {
+        :start_line => 10,
+        :start_column => 4,
+        :end_line => 10,
+        :end_column => 12
+      },
+      {
+        :start_line => 10,
+        :start_column => 6,
+        :end_line => 10,
+        :end_column => 12
+      }
+    ]
+
+    assert_equal result, sourcepos
   end
 end
