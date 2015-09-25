@@ -356,6 +356,34 @@ rb_node_get_type(VALUE self)
 }
 
 /*
+ * Public: Fetches the sourcepos of the node.
+ *
+ * Returns a {Hash} containing {Symbol} keys of the positions.
+ */
+static VALUE
+rb_node_get_sourcepos(VALUE self)
+{
+	int start_line, start_column, end_line, end_column;
+	VALUE result;
+
+	cmark_node *node;
+	Data_Get_Struct(self, cmark_node, node);
+
+	start_line = cmark_node_get_start_line(node);
+	start_column = cmark_node_get_start_column(node);
+	end_line = cmark_node_get_end_line(node);
+	end_column = cmark_node_get_end_column(node);
+
+	result = rb_hash_new();
+	rb_hash_aset(result, CSTR2SYM("start_line"), INT2NUM(start_line));
+	rb_hash_aset(result, CSTR2SYM("start_column"), INT2NUM(start_column));
+	rb_hash_aset(result, CSTR2SYM("end_line"), INT2NUM(end_line));
+	rb_hash_aset(result, CSTR2SYM("end_column"), INT2NUM(end_column));
+
+	return result;
+}
+
+/*
  * Public: Returns the type of the current pointer as a string.
  *
  * Returns a {String}.
@@ -981,6 +1009,7 @@ void Init_commonmarker()
 	rb_define_method(rb_mNode, "string_content=", rb_node_set_string_content, 1);
 	rb_define_method(rb_mNode, "type", rb_node_get_type, 0);
 	rb_define_method(rb_mNode, "type_string", rb_node_get_type_string, 0);
+	rb_define_method(rb_mNode, "sourcepos", rb_node_get_sourcepos, 0);
 	rb_define_method(rb_mNode, "delete", rb_node_unlink, 0);
 	rb_define_method(rb_mNode, "first_child", rb_node_first_child, 0);
 	rb_define_method(rb_mNode, "next", rb_node_next, 0);
