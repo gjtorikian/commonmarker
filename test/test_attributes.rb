@@ -2,20 +2,8 @@ require 'test_helper'
 
 class TestAttributes < Minitest::Test
   def setup
-
-    text = '''
-## Try CommonMark
-
-You can try CommonMark here.  This dingus is powered by
-[commonmark.js](https://github.com/jgm/commonmark.js), the
-JavaScript reference implementation.
-
-1. item one
-2. item two
-   - sublist
-   - sublist
-'''
-    @doc = CommonMarker.render_doc(text)
+    contents = File.read(File.join(FIXTURES_DIR, 'dingus.md'))
+    @doc = CommonMarker.render_doc(contents.strip)
   end
 
   def test_sourcepos
