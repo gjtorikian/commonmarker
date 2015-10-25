@@ -13,15 +13,16 @@ class SmartPunctTest < Minitest::Test
     end
   end
 
-  def test_smart_hardbreak_no_spaces
+  def test_smart_hardbreak_no_spaces_render_html
     markdown = "\"foo\"\nbaz"
-
-    assert_equal "<p>“foo”<br />\nbaz</p>\n", CommonMarker.render_html(markdown, [:smart, :hardbreaks])
+    result = "<p>“foo”<br />\nbaz</p>\n"
+    assert_equal result, CommonMarker.render_html(markdown, [:smart, :hardbreaks])
   end
 
-  def test_smart_hardbreak_spaces
-    markdown = "\"foo\"  \nbaz"
-
-    assert_equal "<p>“foo”<br />\nbaz</p>\n", CommonMarker.render_html(markdown, [:smart, :hardbreaks])
+  def test_smart_hardbreak_no_spaces_render_doc
+    markdown = "\"foo\"\nbaz"
+    result = "<p>“foo”<br />\nbaz</p>\n"
+    doc = CommonMarker.render_doc(markdown, [:smart, :hardbreaks])
+    assert_equal result, doc.to_html
   end
 end
