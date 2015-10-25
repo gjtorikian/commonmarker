@@ -23,6 +23,6 @@ class SmartPunctTest < Minitest::Test
     markdown = "\"foo\"\nbaz"
     result = "<p>“foo”<br />\nbaz</p>\n"
     doc = CommonMarker.render_doc(markdown, [:smart, :hardbreaks])
-    assert_equal result, doc.to_html
+    assert_equal result, doc.to_html([:smart, :hardbreaks])
   end
 end
