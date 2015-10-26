@@ -5,7 +5,7 @@ class TestLinebreaks < Minitest::Test
     doc = CommonMarker.render_doc("foo\nbaz")
     assert_equal "<p>foo\nbaz</p>\n", doc.to_html
 
-    doc = CommonMarker.render_doc("foo\nbaz", :hardbreaks)
+    doc = CommonMarker.render_doc("foo\nbaz")
     assert_equal "<p>foo<br />\nbaz</p>\n", doc.to_html(:hardbreaks)
   end
 
