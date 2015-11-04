@@ -13,7 +13,7 @@ module CommonMarker
   # Public:  Parses a Markdown string into an HTML string.
   #
   # text - A {String} of text
-  # option - Either a {Symbol} or {Array of Symbol}s indicating the parse options
+  # option - Either a {Symbol} or {Array of Symbol}s indicating the render options
   #
   # Returns a {String} of converted HTML.
   def self.render_html(text, options = :default)
@@ -32,7 +32,7 @@ module CommonMarker
   # Returns the `document` node.
   def self.render_doc(text, options = :default)
     fail TypeError, 'text must be a string!' unless text.is_a?(String)
-    opts = Config.process_options(options, :render)
+    opts = Config.process_options(options, :parse)
     text = text.encode('UTF-8')
     Node.parse_document(text, text.bytesize, opts)
   end
@@ -49,6 +49,8 @@ module CommonMarker
     end
 
     # Public: Convert the node to an HTML string.
+    #
+    # options - A {Symbol} or {Array of Symbol}s indicating the render options
     #
     # Returns a {String}.
     def to_html(options = :default)

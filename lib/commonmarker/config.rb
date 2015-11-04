@@ -2,14 +2,13 @@ require 'ruby-enum'
 module CommonMarker
   # For Ruby::Enum, these must be classes, not modules
   module Config
-
     class Parse
       include Ruby::Enum
 
       define :default, 0
       define :normalize, 4
       define :validate_utf8, 16
-      define :safe, 32
+      define :smart, 8
     end
 
     class Render
@@ -18,7 +17,7 @@ module CommonMarker
       define :default, 0
       define :sourcepos, 1
       define :hardbreaks, 2
-      define :smart, 8
+      define :safe, 32
     end
 
     def self.process_options(option, type)

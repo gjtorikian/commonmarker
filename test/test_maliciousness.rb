@@ -65,7 +65,7 @@ class CommonMarker::TestMaliciousness < Minitest::Test
     end
 
     assert_raises TypeError do
-      CommonMarker.render_html("foo \n baz", [:safe])
+      CommonMarker.render_html("foo \n baz", [:smart])
     end
 
     assert_raises TypeError do
@@ -73,7 +73,7 @@ class CommonMarker::TestMaliciousness < Minitest::Test
     end
 
     assert_raises TypeError do
-      CommonMarker.render_doc("foo \n baz", :validate_utf8)
+      CommonMarker.render_doc("foo \n baz", :safe)
     end
 
     assert_raises TypeError do
