@@ -117,17 +117,19 @@ end
 
 ## Options
 
-CommonMarker accepts the same options that CMark does, as symbols:
+CommonMarker accepts the same options that CMark does, as symbols. Note that there is a distinction in CMark for "parse" options and "render" options, which are represented in the table below.
 
-* `:default` - The default rendering.
-* `:sourcepos` - Include source position in rendered HTML.
-* `:hardbreaks` - Treat `\n` as hardbreaks (by adding `<br/>`).
-* `:normalize` - Attempt to normalize the HTML.
-* `:smart` - Use smart punctuation (curly quotes, etc.).
-* `:validate_utf8` - Replace illegal sequences with the replacement character `U+FFFD`.
-* `:safe` - Suppress raw HTML and unsafe links.
+| Name  |  Description | Type  |
+|-------|--------------|-------|
+| `:default`  | The default rendering system.  | Both `parse` and `render`.
+| `:sourcepos` |  Include source position in rendered HTML. |  `render`
+| `:hardbreaks`  | Treat `\n` as hardbreaks (by adding `<br/>`).  |  `render`
+| `:normalize`  | Attempt to normalize the HTML. |  `parse`
+| `:smart`  | Use smart punctuation (curly quotes, etc.). |  `parse`
+| `:validate_utf8`  | Replace illegal sequences with the replacement character `U+FFFD`. |  `parse`
+| `:safe`  | Suppress raw HTML and unsafe links. |  `render`
 
-For a single option, pass it in as a symbol argument:
+To apply a single option, pass it in as a symbol argument:
 
 ``` ruby
 require 'commonmarker'
@@ -143,7 +145,7 @@ CommonMarker.render_html("\"Hello,\" said the spider.\n\"'Shelob' is my name.\""
 # <p>“Hello,” said the spider.</br>“‘Shelob’ is my name.”</p>
 ```
 
-For more information on these options, see [the CMark documentation](http://git.io/vLIHE).
+For more information on these options, see [the CMark documentation](http://git.io/vlQii).
 
 ## Hacking
 
