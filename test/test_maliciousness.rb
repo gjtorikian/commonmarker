@@ -64,17 +64,19 @@ class CommonMarker::TestMaliciousness < Minitest::Test
       CommonMarker.render_html(nil)
     end
 
-    assert_raises TypeError do
+    err = assert_raises TypeError do
       CommonMarker.render_html("foo \n baz", [:smart])
     end
+    assert_equal err.message, 'option \':smart\' does not exist for CommonMarker::Config::Render'
 
     assert_raises TypeError do
       CommonMarker.render_doc("foo \n baz", 123)
     end
 
-    assert_raises TypeError do
+    err = assert_raises TypeError do
       CommonMarker.render_doc("foo \n baz", :safe)
     end
+    assert_equal err.message, 'option \':safe\' does not exist for CommonMarker::Config::Parse'
 
     assert_raises TypeError do
       CommonMarker.render_doc("foo \n baz", :totes_fake)

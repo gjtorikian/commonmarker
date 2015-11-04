@@ -30,13 +30,13 @@ module CommonMarker
         # neckbearding around. the map will both check the opts and then bitwise-OR it
         option.map { |o| check_option(o, type); type.to_h[o] }.inject(0, :|)
       else
-        fail TypeError, 'delimiter type must be a valid symbol or array of symbols'
+        fail TypeError, 'option type must be a valid symbol or array of symbols'
       end
     end
 
     def self.check_option(option, type)
       unless type.keys.include?(option)
-        fail TypeError, "option #{option} does not exist"
+        fail TypeError, "option ':#{option}' does not exist for #{type}"
       end
     end
   end
