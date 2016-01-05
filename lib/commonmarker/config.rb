@@ -6,18 +6,18 @@ module CommonMarker
       include Ruby::Enum
 
       define :default, 0
-      define :normalize, 4
-      define :validate_utf8, 16
-      define :smart, 8
+      define :normalize, 256
+      define :validate_utf8, 512
+      define :smart, 1024
     end
 
     class Render
       include Ruby::Enum
 
       define :default, 0
-      define :sourcepos, 1
-      define :hardbreaks, 2
-      define :safe, 32
+      define :sourcepos, 2
+      define :hardbreaks, 4
+      define :safe, 8
     end
 
     def self.process_options(option, type)
