@@ -18,4 +18,4 @@ git checkout $BRANCH && git pull
 sha=`git rev-parse HEAD`
 cd ../../..
 git add ext/commonmarker/cmark
-git commit -m "Update cmark to ${sha}"
+git commit -m "Update cmark to https://github.com/jgm/cmark/commit/${sha}"
