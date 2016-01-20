@@ -6,7 +6,7 @@ include CommonMarker
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), 'fixtures')
 
-def open_spec_file(filename, options = {})
+def open_spec_file(filename)
   line_number = 0
   start_line = 0
   end_line = 0
@@ -31,8 +31,8 @@ def open_spec_file(filename, options = {})
       example_number += 1
       end_line = line_number
       tests << {
-        :markdown => markdown_lines.join('').gsub('→', "\t"),
-        :html => html_lines.join('').gsub('→', "\t").rstrip,
+        :markdown => markdown_lines.join('').tr('→', "\t"),
+        :html => html_lines.join('').tr('→', "\t").rstrip,
         :example => example_number,
         :start_line => start_line,
         :end_line => end_line,
@@ -48,7 +48,7 @@ def open_spec_file(filename, options = {})
       markdown_lines << "#{line}"
     elsif state == 2
       html_lines << "#{line}"
-    elsif state == 0&& header_re.match(line)
+    elsif state == 0 && header_re.match(line)
       headertext = line.sub(header_re, '').strip
     end
   end

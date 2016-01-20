@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class SmartPunctTest < Minitest::Test
-  smart_punct = open_spec_file('smart_punct.txt', normalize: true)
+  smart_punct = open_spec_file('smart_punct.txt')
 
   smart_punct.each do |testcase|
     doc = CommonMarker.render_doc(testcase[:markdown], :smart)

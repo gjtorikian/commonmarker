@@ -2,7 +2,7 @@ require 'test_helper'
 require 'json'
 
 class TestSpec < Minitest::Test
-  spec = open_spec_file('spec.txt', normalize: true)
+  spec = open_spec_file('spec.txt')
 
   spec.each do |testcase|
     # next unless testcase['example'] == 420
