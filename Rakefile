@@ -53,9 +53,9 @@ task :benchmark do |t|
   load 'test/benchmark.rb'
 end
 
-desc 'Match style of cmark'
-task :astyle do
-  sh 'astyle --style=linux -t -p ext/commonmarker/commonmarker.{c,h}'
+desc 'Match C style of cmark'
+task :format do
+  sh 'clang-format -style llvm -i ext/commonmarker/*.c ext/commonmarker/*.h'
 end
 
 # Documentation
