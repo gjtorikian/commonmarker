@@ -43,7 +43,7 @@ require 'commonmarker'
 doc = CommonMarker.render_doc('*Hello* world', :default)
 puts(doc.to_html) # <p>Hi <em>there</em></p>\n
 
-doc.walk do |node|
+doc.each do |node|
   puts node.type # [:document, :paragraph, :text, :emph, :text]
 end
 ```
@@ -59,16 +59,16 @@ require 'commonmarker'
 doc = CommonMarker.render_doc("# The site\n\n [GitHub](https://www.github.com)")
 
 # Walk tree and print out URLs for links
-doc.walk do |node|
+doc.each do |node|
   if node.type == :link
     printf("URL = %s\n", node.url)
   end
 end
 
 # Capitalize all regular text in headers
-doc.walk do |node|
+doc.each do |node|
   if node.type == :header
-    node.walk do |subnode|
+    node.each do |subnode|
       if subnode.type == :text
         subnode.string_content = subnode.string_content.upcase
       end
@@ -77,7 +77,7 @@ doc.walk do |node|
 end
 
 # Transform links to regular text
-doc.walk do |node|
+doc.each do |node|
   if node.type == :link
     node.insert_before(node.first_child)
     node.delete

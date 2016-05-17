@@ -38,13 +38,15 @@ module CommonMarker
   end
 
   class Node
+    include Enumerable
+
     # Public: An iterator that "walks the tree," descending into children recursively.
     #
     # blk - A {Proc} representing the action to take for each child
-    def walk(&blk)
+    def each(&blk)
       yield self
       each_child do |child|
-        child.walk(&blk)
+        child.each(&blk)
       end
     end
 

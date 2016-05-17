@@ -9,7 +9,7 @@ class TestAttributes < Minitest::Test
   def test_sourcepos
     sourcepos = []
 
-    @doc.walk do |node|
+    @doc.each do |node|
       sourcepos << node.sourcepos
     end
 
