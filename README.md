@@ -43,7 +43,7 @@ require 'commonmarker'
 doc = CommonMarker.render_doc('*Hello* world', :default)
 puts(doc.to_html) # <p>Hi <em>there</em></p>\n
 
-doc.each do |node|
+doc.walk do |node|
   puts node.type # [:document, :paragraph, :text, :emph, :text]
 end
 ```
