@@ -5,10 +5,10 @@ module CommonMarker
     # Public: An iterator that "walks the tree," descending into children recursively.
     #
     # blk - A {Proc} representing the action to take for each child
-    def each(&blk)
+    def walk(&block)
       yield self
-      each_child do |child|
-        child.each(&blk)
+      each do |child|
+        child.walk(&block)
       end
     end
 
@@ -23,13 +23,21 @@ module CommonMarker
     end
 
     # Internal: Iterate over the children (if any) of the current pointer.
-    def each_child
+    def each
+      return enum_for(:each) unless block_given?
+
       child = first_child
       while child
         nextchild = child.next
         yield child
         child = nextchild
       end
+    end
+
+    # Deprecated: Please use `each` instead
+    def each_child(&block)
+      warn '[DEPRECATION] `each_child` is deprecated.  Please use `each` instead.'
+      each(&block)
     end
   end
 end
