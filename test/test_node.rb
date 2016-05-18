@@ -2,7 +2,7 @@ require 'test_helper'
 
 class TestNode < Minitest::Test
   def setup
-    @doc = CommonMarker.render_doc('Hi *there*')
+    @doc = CommonMarker.render_doc('Hi *there*, I am mostly text!')
   end
 
   def test_walk
@@ -10,7 +10,34 @@ class TestNode < Minitest::Test
     @doc.walk do |node|
       nodes << node.type
     end
-    assert_equal [:document, :paragraph, :text, :emph, :text], nodes
+    assert_equal [:document, :paragraph, :text, :emph, :text, :text, :text], nodes
+  end
+
+  def test_each
+    nodes = []
+    @doc.first_child.each do |node|
+      nodes << node.type
+    end
+    assert_equal [:text, :emph, :text, :text], nodes
+  end
+
+  def test_deprecated_each_child
+    nodes = []
+    @doc.first_child.each_child do |node|
+      nodes << node.type
+    end
+    assert_equal [:text, :emph, :text, :text], nodes
+  end
+
+  def test_select
+    nodes = @doc.first_child.select { |node| node.type == :text }
+    assert_equal CommonMarker::Node, nodes.first.class
+    assert_equal [:text, :text, :text], nodes.map(&:type)
+  end
+
+  def test_map
+    nodes = @doc.first_child.map(&:type)
+    assert_equal [:text, :emph, :text, :text], nodes
   end
 
   def test_insert_illegal
@@ -20,22 +47,23 @@ class TestNode < Minitest::Test
   end
 
   def test_to_html
-    assert_equal "<p>Hi <em>there</em></p>\n", @doc.to_html
+    assert_equal "<p>Hi <em>there</em>, I am mostly text!</p>\n", @doc.to_html
   end
 
   def test_html_renderer
     renderer = HtmlRenderer.new
     result = renderer.render(@doc)
-    assert_equal "<p>Hi <em>there</em></p>\n", result
+    assert_equal "<p>Hi <em>there</em>, I am mostly text!</p>\n", result
   end
 
   def test_walk_and_set_string_content
     @doc.walk do |node|
       if node.type == :text && node.string_content == 'there'
         node.string_content = 'world'
-        assert_equal 'world', node.string_content
       end
     end
+    result = HtmlRenderer.new.render(@doc)
+    assert_equal "<p>Hi <em>world</em>, I am mostly text!</p>\n", result
   end
 
   def test_walk_and_delete_node
@@ -45,11 +73,6 @@ class TestNode < Minitest::Test
         node.delete
       end
     end
-    assert_equal "<p>Hi there</p>\n", @doc.to_html
-  end
-
-  def test_markdown_to_html
-    html = CommonMarker.render_html('Hi *there*')
-    assert_equal "<p>Hi <em>there</em></p>\n", html
+    assert_equal "<p>Hi there, I am mostly text!</p>\n", @doc.to_html
   end
 end

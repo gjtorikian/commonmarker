@@ -16,7 +16,7 @@ module CommonMarker
     def out(*args)
       args.each do |arg|
         if arg == :children
-          @node.each_child { |child| out(child) }
+          @node.each { |child| out(child) }
         elsif arg.is_a?(Array)
           arg.each { |x| render(x) }
         elsif arg.is_a?(Node)
@@ -34,7 +34,7 @@ module CommonMarker
         document(node)
         return @stream.string
       elsif @in_plain && node.type != :text && node.type != :softbreak
-        node.each_child { |child| render(child) }
+        node.each { |child| render(child) }
       else
         begin
           send(node.type, node)

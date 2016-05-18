@@ -52,6 +52,11 @@ The second argument is optional--[see below](#options) for more information.
 
 #### Example: walking the AST
 
+You can use `walk` or `each` to iterate over nodes:
+
+- `walk` will iterate on a node and recursively iterate on a node's children.
+- `each` will iterate on a node and its children, but no further.
+
 ``` ruby
 require 'commonmarker'
 
@@ -68,7 +73,7 @@ end
 # Capitalize all regular text in headers
 doc.walk do |node|
   if node.type == :header
-    node.walk do |subnode|
+    node.each do |subnode|
       if subnode.type == :text
         subnode.string_content = subnode.string_content.upcase
       end
