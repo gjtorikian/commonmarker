@@ -6,6 +6,8 @@ module CommonMarker
     #
     # blk - A {Proc} representing the action to take for each child
     def walk(&block)
+      return enum_for(:walk) unless block_given?
+
       yield self
       each do |child|
         child.walk(&block)
@@ -23,7 +25,7 @@ module CommonMarker
     end
 
     # Public: Iterate over the children (if any) of the current pointer.
-    def each
+    def each(&block)
       return enum_for(:each) unless block_given?
 
       child = first_child
