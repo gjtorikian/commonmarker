@@ -22,7 +22,7 @@ module CommonMarker
       _render_html(opts).force_encoding('utf-8')
     end
 
-    # Internal: Iterate over the children (if any) of the current pointer.
+    # Public: Iterate over the children (if any) of the current pointer.
     def each
       return enum_for(:each) unless block_given?
 
