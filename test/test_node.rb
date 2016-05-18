@@ -7,10 +7,16 @@ class TestNode < Minitest::Test
 
   def test_walk
     nodes = []
-    @doc.walk do |node|
+    @doc.each do |node|
       nodes << node.type
     end
     assert_equal [:document, :paragraph, :text, :emph, :text], nodes
+  end
+
+  def test_select
+    nodes = @doc.select { |node| node.type == :text }
+    assert_equal CommonMarker::Node, nodes.first.class
+    assert_equal [:text, :text], nodes.map(&:type)
   end
 
   def test_insert_illegal
@@ -30,7 +36,7 @@ class TestNode < Minitest::Test
   end
 
   def test_walk_and_set_string_content
-    @doc.walk do |node|
+    @doc.each do |node|
       if node.type == :text && node.string_content == 'there'
         node.string_content = 'world'
         assert_equal 'world', node.string_content
@@ -39,7 +45,7 @@ class TestNode < Minitest::Test
   end
 
   def test_walk_and_delete_node
-    @doc.walk do |node|
+    @doc.each do |node|
       if node.type == :emph
         node.insert_before(node.first_child)
         node.delete
