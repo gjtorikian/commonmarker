@@ -74,7 +74,7 @@ RDoc::Task.new do |rd|
   rd.options << '--fileboxes'
 end
 
-desc "Generate and publish blog to gh-pages"
+desc "Generate and publish docs to gh-pages"
 task :publish => [:rdoc] do
   Dir.mktmpdir do |tmp|
     system "mv docs/* #{tmp}"
