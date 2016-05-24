@@ -78,14 +78,14 @@ desc "Generate and publish docs to gh-pages"
 task :publish => [:rdoc] do
   Dir.mktmpdir do |tmp|
     system "mv docs/* #{tmp}"
-    system "git checkout gh-pages"
-    system "rm -rf *"
+    system 'git checkout gh-pages'
+    system 'rm -rf *'
     system "mv #{tmp}/* ."
     message = "Site updated at #{Time.now.utc}"
-    system "git add ."
+    system 'git add .'
     system "git commit -am #{message.shellescape}"
-    system "git push origin gh-pages --force"
-    system "git checkout master"
-    system "echo yolo"
+    system 'git push origin gh-pages --force'
+    system 'git checkout master'
+    system 'echo yolo'
   end
 end
