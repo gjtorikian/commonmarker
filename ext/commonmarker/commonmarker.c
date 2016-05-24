@@ -106,7 +106,12 @@ static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options) {
   len = RSTRING_LEN(rb_text);
   options = FIX2INT(rb_options);
 
-  return rb_str_new2(cmark_markdown_to_html(str, len, options));
+  char *html = cmark_markdown_to_html(str, len, options);
+  VALUE ruby_html = rb_str_new2(html);
+
+  free(html);
+
+  return ruby_html;
 }
 
 /*
@@ -443,7 +448,12 @@ static VALUE rb_render_html(VALUE n, VALUE rb_options) {
 
   Data_Get_Struct(n, cmark_node, node);
 
-  return rb_str_new2(cmark_render_html(node, options));
+  char *html = cmark_render_html(node, options);
+  VALUE ruby_html = rb_str_new2(html);
+
+  free(html);
+
+  return ruby_html;
 }
 
 /*
