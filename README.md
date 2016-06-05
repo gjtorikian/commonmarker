@@ -100,6 +100,7 @@ class MyHtmlRenderer < CommonMarker::HtmlRenderer
     super
     @headerid = 1
   end
+
   def header(node)
     block do
       out("<h", node.header_level, " id=\"", @headerid, "\">",
