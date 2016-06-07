@@ -87,5 +87,15 @@ module CommonMarker
       yield
       @in_plain = old_in_plain
     end
+
+    private
+
+    def escape_href(str)
+      @node.html_escape_href(str)
+    end
+
+    def escape_html(str)
+      @node.html_escape_html(str)
+    end
   end
 end

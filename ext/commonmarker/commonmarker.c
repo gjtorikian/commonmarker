@@ -870,9 +870,13 @@ static VALUE rb_node_set_fence_info(VALUE self, VALUE info) {
 /* Internal: Escapes href URLs safely. */
 static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   char *result;
-  cmark_strbuf buf = GH_BUF_INIT;
-
+  cmark_node *node;
   Check_Type(rb_text, T_STRING);
+
+  Data_Get_Struct(self, cmark_node, node);
+
+  cmark_mem *mem = cmark_node_mem(node);
+  cmark_strbuf buf = CMARK_BUF_INIT(mem);
 
   if (houdini_escape_href(&buf, (const uint8_t *)RSTRING_PTR(rb_text),
                           RSTRING_LEN(rb_text))) {
@@ -886,9 +890,13 @@ static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
 /* Internal: Escapes HTML content safely. */
 static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   char *result;
-  cmark_strbuf buf = GH_BUF_INIT;
-
+  cmark_node *node;
   Check_Type(rb_text, T_STRING);
+
+  Data_Get_Struct(self, cmark_node, node);
+
+  cmark_mem *mem = cmark_node_mem(node);
+  cmark_strbuf buf = CMARK_BUF_INIT(mem);
 
   if (houdini_escape_html0(&buf, (const uint8_t *)RSTRING_PTR(rb_text),
                            RSTRING_LEN(rb_text), 0)) {
@@ -961,8 +969,6 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "fence_info", rb_node_get_fence_info, 0);
   rb_define_method(rb_mNode, "fence_info=", rb_node_set_fence_info, 1);
 
-  rb_define_singleton_method(rb_mNode, "html_escape_href", rb_html_escape_href,
-                             1);
-  rb_define_singleton_method(rb_mNode, "html_escape_html", rb_html_escape_html,
-                             1);
+  rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
+  rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);
 }
