@@ -39,7 +39,7 @@ module CommonMarker
         begin
           send(node.type, node)
         rescue NoMethodError => e
-          @warnings.add("WARNING:  #{node.type} not implemented.")
+          @warnings.add("WARNING: #{node.type} not implemented.")
           raise e
         end
       end

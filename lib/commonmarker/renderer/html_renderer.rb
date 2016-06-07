@@ -23,7 +23,7 @@ module CommonMarker
       end
     end
 
-    def list
+    def list(node)
       old_in_tight = @in_tight
       @in_tight = node.list_tight
 
@@ -36,7 +36,7 @@ module CommonMarker
           start = if node.list_start == 1
                     "<ol>\n"
                   else
-                    '<ol start="' + node.list_start.to_s + "\">\n"
+                    "<ol start=\"#{node.list_start}\">\n"
                   end
           container(start, '</ol>') do
             out(:children)
@@ -47,7 +47,7 @@ module CommonMarker
       @in_tight = old_in_tight
     end
 
-    def list_item
+    def list_item(_)
       block do
         container('<li>', '</li>') do
           out(:children)
@@ -55,7 +55,7 @@ module CommonMarker
       end
     end
 
-    def blockquote
+    def blockquote(_)
       block do
         container("<blockquote>\n", '</blockquote>') do
           out(:children)
@@ -63,7 +63,7 @@ module CommonMarker
       end
     end
 
-    def hrule
+    def hrule(_)
       block do
         out('<hr />')
       end
@@ -92,11 +92,11 @@ module CommonMarker
       out(node.string_content)
     end
 
-    def emph
+    def emph(_)
       out('<em>', :children, '</em>')
     end
 
-    def strong
+    def strong(_)
       out('<strong>', :children, '</strong>')
     end
 
@@ -134,16 +134,8 @@ module CommonMarker
       softbreak(node)
     end
 
-    def softbreak
+    def softbreak(_)
       out("\n")
-    end
-
-    def escape_href(str)
-      CommonMarker::Node.html_escape_href(str)
-    end
-
-    def escape_html(str)
-      CommonMarker::Node.html_escape_html(str)
     end
   end
 end
