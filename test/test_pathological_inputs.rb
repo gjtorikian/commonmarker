@@ -1,5 +1,5 @@
 require 'test_helper'
-require 'minitest/benchmark' if ENV["BENCH"]
+require 'minitest/benchmark' if ENV['BENCH']
 
 def markdown(s)
   CommonMarker.render_doc(s).to_html
@@ -28,39 +28,39 @@ pathological = {
   'link openers and emph closers' =>
                [('[ a_' * 50_000),
                 Regexp.compile('(\[ a_){50000}')],
-  'hard link/emph case':
-               [('**x [a*b**c*](d)'),
+  'hard link/emph case' =>
+               ['**x [a*b**c*](d)',
                 Regexp.compile('\\*\\*x <a href=\'d\'>a<em>b</em><em>c</em></a>')],
-  'nested brackets':
+  'nested brackets' =>
                [('[' * 50_000) + 'a' + (']' * 50_000),
                 Regexp.compile('\[{50000}a\]{50000}')],
-  'nested block quotes':
+  'nested block quotes' =>
                [(('> ' * 50_000) + 'a'),
                 Regexp.compile('(<blockquote>\n){50000}')],
-  'U+0000 in input':
-               [('abc\u0000de\u0000'),
+  'U+0000 in input' =>
+               ['abc\u0000de\u0000',
                 Regexp.compile('abc\ufffd?de\ufffd?')]
 }
 
 pathological.each_pair do |name, description|
   define_method("test_#{name}") do
-    input, regex = description
+    input, = description
     assert markdown(input)
   end
 end
 
-if ENV["BENCH"] then
+if ENV['BENCH']
   class PathologicalInputsPerformanceTest < Minitest::Benchmark
     def bench_pathological_1
       assert_performance_linear 0.99 do |n|
-        star = '*'  * (n * 10)
+        star = '*' * (n * 10)
         markdown("#{star}#{star}hi#{star}#{star}")
       end
     end
 
     def bench_pathological_2
       assert_performance_linear 0.99 do |n|
-        c = "`t`t`t`t`t`t" * (n * 10)
+        c = '`t`t`t`t`t`t' * (n * 10)
         markdown(c)
       end
     end

@@ -39,7 +39,7 @@ module CommonMarker
         begin
           send(node.type, node)
         rescue NoMethodError => e
-          @warnings.add('WARNING:  ' + node.type.to_s + ' not implemented.')
+          @warnings.add("WARNING: #{node.type} not implemented.")
           raise e
         end
       end
@@ -69,23 +69,33 @@ module CommonMarker
       cr unless @in_tight
     end
 
-    def block(&blk)
+    def block
       cr
-      blk.call
+      yield
       cr
     end
 
-    def container(starter, ender, &blk)
+    def container(starter, ender)
       out(starter)
-      blk.call
+      yield
       out(ender)
     end
 
-    def plain(&blk)
+    def plain
       old_in_plain = @in_plain
       @in_plain = true
-      blk.call
+      yield
       @in_plain = old_in_plain
+    end
+
+    private
+
+    def escape_href(str)
+      @node.html_escape_href(str)
+    end
+
+    def escape_html(str)
+      @node.html_escape_html(str)
     end
   end
 end

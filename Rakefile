@@ -40,7 +40,7 @@ desc 'Run unit and conformance tests'
 task :test => %w(test:unit)
 
 desc 'Run benchmarks'
-task :benchmark do |t|
+task :benchmark do
   if ENV['FETCH_PROGIT']
     `rm -rf test/progit`
     `git clone https://github.com/progit/progit.git test/progit`
@@ -49,7 +49,7 @@ task :benchmark do |t|
       `cat test/progit/#{lang}/*/*.markdown >> test/benchinput.md`
     end
   end
-  $:.unshift 'lib'
+  $LOAD_PATH.unshift 'lib'
   load 'test/benchmark.rb'
 end
 
@@ -74,7 +74,7 @@ RDoc::Task.new do |rd|
   rd.options << '--fileboxes'
 end
 
-desc "Generate and publish docs to gh-pages"
+desc 'Generate and publish docs to gh-pages'
 task :publish => [:rdoc] do
   Dir.mktmpdir do |tmp|
     system "mv docs/* #{tmp}"

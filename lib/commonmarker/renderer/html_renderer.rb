@@ -7,7 +7,7 @@ module CommonMarker
     def header(node)
       block do
         out('<h', node.header_level, '>', :children,
-                 '</h', node.header_level, ">")
+            '</h', node.header_level, '>')
       end
     end
 
@@ -33,8 +33,11 @@ module CommonMarker
             out(:children)
           end
         else
-          start = node.list_start == 1 ? "<ol>\n" :
-                  ('<ol start="' + node.list_start.to_s + "\">\n")
+          start = if node.list_start == 1
+                    "<ol>\n"
+                  else
+                    "<ol start=\"#{node.list_start}\">\n"
+                  end
           container(start, '</ol>') do
             out(:children)
           end
@@ -44,7 +47,7 @@ module CommonMarker
       @in_tight = old_in_tight
     end
 
-    def list_item(node)
+    def list_item(_)
       block do
         container('<li>', '</li>') do
           out(:children)
@@ -52,7 +55,7 @@ module CommonMarker
       end
     end
 
-    def blockquote(node)
+    def blockquote(_)
       block do
         container("<blockquote>\n", '</blockquote>') do
           out(:children)
@@ -60,7 +63,7 @@ module CommonMarker
       end
     end
 
-    def hrule(node)
+    def hrule(_)
       block do
         out('<hr />')
       end
@@ -69,10 +72,10 @@ module CommonMarker
     def code_block(node)
       block do
         out('<pre><code')
-        if node.fence_info && node.fence_info.length > 0
+        if node.fence_info && !node.fence_info.empty?
           out(' class="language-', node.fence_info.split(/\s+/)[0], '">')
         else
-          out(">")
+          out('>')
         end
         out(escape_html(node.string_content))
         out('</code></pre>')
@@ -89,17 +92,17 @@ module CommonMarker
       out(node.string_content)
     end
 
-    def emph(node)
+    def emph(_)
       out('<em>', :children, '</em>')
     end
 
-    def strong(node)
+    def strong(_)
       out('<strong>', :children, '</strong>')
     end
 
     def link(node)
       out('<a href="', node.url.nil? ? '' : escape_href(node.url), '"')
-      if node.title && node.title.length > 0
+      if node.title && !node.title.empty?
         out(' title="', escape_html(node.title), '"')
       end
       out('>', :children, '</a>')
@@ -110,7 +113,7 @@ module CommonMarker
       plain do
         out(' alt="', :children, '"')
       end
-      if node.title && node.title.length > 0
+      if node.title && !node.title.empty?
         out(' title="', escape_html(node.title), '"')
       end
       out(' />')
@@ -131,16 +134,8 @@ module CommonMarker
       softbreak(node)
     end
 
-    def softbreak(node)
+    def softbreak(_)
       out("\n")
-    end
-
-    def escape_href(str)
-      CommonMarker::Node.html_escape_href(str)
-    end
-
-    def escape_html(str)
-      CommonMarker::Node.html_escape_html(str)
     end
   end
 end
