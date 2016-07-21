@@ -24,7 +24,7 @@ class TestAttributes < Minitest::Test
       },
       {
         :start_line => 1,
-        :start_column => 4,
+        :start_column => 1,
         :end_line => 1,
         :end_column => 17
       },
