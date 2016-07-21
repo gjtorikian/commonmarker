@@ -3,4 +3,4 @@
 set -e
 
 bundle exec rake compile
-ruby -I"lib:test" test/$1
+bundle exec rake test TEST=test/$1
