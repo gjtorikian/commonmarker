@@ -41,7 +41,7 @@ unless sitearch =~ /^universal-darwin/
   abort 'cmarkextensions is missing.' unless find_library('cmarkextensions', 'core_extensions_registration')
 end
 
-$LDFLAGS << " -L#{CMARK_BUILD_DIR}/src -lcmark -lcmarkextensions"
-$CFLAGS << " -O2 -I#{CMARK_DIR}/src -I#{CMARK_BUILD_DIR}/src -I#{CMARK_BUILD_DIR}/extensions"
+$LDFLAGS << " -L#{CMARK_BUILD_DIR}/src -L#{CMARK_BUILD_DIR}/extensions -lcmark -lcmarkextensions"
+$CFLAGS << " -O2 -I#{CMARK_DIR}/src -I#{CMARK_DIR}/extensions -I#{CMARK_BUILD_DIR}/src"
 
 create_makefile('commonmarker/commonmarker')

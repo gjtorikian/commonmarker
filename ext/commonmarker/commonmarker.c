@@ -2,6 +2,9 @@
 #include "cmark.h"
 #include "houdini.h"
 #include "node.h"
+#include "registry.h"
+#include "syntax_extension.h"
+#include "core-extensions.h"
 
 static VALUE rb_mNodeError;
 static VALUE rb_mNode;
@@ -907,6 +910,21 @@ static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   return rb_text;
 }
 
+VALUE rb_extensions(VALUE self) {
+  cmark_llist *exts, *it;
+  cmark_syntax_extension *ext;
+  VALUE ary = rb_ary_new();
+
+  exts = cmark_list_syntax_extensions();
+  for (it = exts; it; it = it->next) {
+    ext = it->data;
+    rb_ary_push(ary, rb_str_new2(ext->name));
+  }
+  cmark_llist_free(exts);
+
+  return ary;
+}
+
 __attribute__((visibility("default"))) void Init_commonmarker() {
   VALUE module;
   sym_document = ID2SYM(rb_intern("document"));
@@ -932,6 +950,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   sym_ordered_list = ID2SYM(rb_intern("ordered_list"));
 
   module = rb_define_module("CommonMarker");
+  rb_define_singleton_method(module, "extensions", rb_extensions, 0);
   rb_mNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
   rb_mNode = rb_define_class_under(module, "Node", rb_cObject);
   rb_define_singleton_method(rb_mNode, "markdown_to_html", rb_markdown_to_html,
@@ -971,4 +990,6 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
 
   rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);
+
+  cmark_register_plugin(core_extensions_registration);
 }
