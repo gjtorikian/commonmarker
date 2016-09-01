@@ -3,6 +3,7 @@
 #include "houdini.h"
 #include "node.h"
 #include "registry.h"
+#include "parser.h"
 #include "syntax_extension.h"
 #include "core-extensions.h"
 
@@ -94,24 +95,77 @@ static void rb_parent_removed(VALUE val) {
   RDATA(val)->dfree = rb_free_c_struct;
 }
 
+static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions) {
+  int options;
+  int extensions_len;
+  VALUE rb_ext_name;
+  int xt, i;
+
+  Check_Type(rb_options, T_FIXNUM);
+  Check_Type(rb_extensions, T_ARRAY);
+
+  options = FIX2INT(rb_options);
+  extensions_len = RARRAY_LEN(rb_extensions);
+
+  cmark_parser *parser = cmark_parser_new(options);
+  for (i = 0; i < extensions_len; ++i) {
+    rb_ext_name = RARRAY_PTR(rb_extensions)[i];
+    xt = TYPE(rb_ext_name);
+
+    if (xt != T_STRING) {
+      cmark_parser_free(parser);
+      Check_Type(rb_ext_name, T_STRING);
+      return NULL;
+    }
+
+    cmark_syntax_extension *syntax_extension =
+      cmark_find_syntax_extension(RSTRING_PTR(rb_ext_name));
+
+    if (!syntax_extension) {
+      // XXX raise properly
+      fprintf(stderr, "Unknown extension %s\n", RSTRING_PTR(rb_ext_name));
+      cmark_parser_free(parser);
+      return NULL;
+    }
+
+    cmark_parser_attach_syntax_extension(parser, syntax_extension);
+  }
+
+  return parser;
+}
+
 /*
  * Internal: Parses a Markdown string into an HTML string.
  *
  */
-static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options) {
-  char *str;
-  int len, options;
-
+static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VALUE rb_extensions) {
+  char *str, *html;
+  int len;
+  cmark_parser *parser;
+  cmark_node *doc;
   Check_Type(rb_text, T_STRING);
   Check_Type(rb_options, T_FIXNUM);
 
+  parser = prepare_parser(rb_options, rb_extensions);
+  if (!parser) {
+    // XXX failed; should raise instead
+    return Qnil;
+  }
+
   str = (char *)RSTRING_PTR(rb_text);
   len = RSTRING_LEN(rb_text);
-  options = FIX2INT(rb_options);
 
-  char *html = cmark_markdown_to_html(str, len, options);
+  cmark_parser_feed(parser, str, len);
+  doc = cmark_parser_finish(parser);
+  if (doc == NULL) {
+    rb_raise(rb_mNodeError, "error parsing document");
+  }
+
+  html = cmark_render_html(doc, FIX2INT(rb_options), parser->syntax_extensions);
+  cmark_parser_free(parser);
+  cmark_node_free(doc);
+
   VALUE ruby_html = rb_str_new2(html);
-
   free(html);
 
   return ruby_html;
@@ -199,22 +253,31 @@ static VALUE rb_node_new(VALUE self, VALUE type) {
  *
  */
 static VALUE rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len,
-                               VALUE rb_options) {
+                               VALUE rb_options, VALUE rb_extensions) {
   char *text;
   int len, options;
+  cmark_parser *parser;
   cmark_node *doc;
   Check_Type(rb_text, T_STRING);
   Check_Type(rb_len, T_FIXNUM);
   Check_Type(rb_options, T_FIXNUM);
 
+  parser = prepare_parser(rb_options, rb_extensions);
+  if (!parser) {
+    // XXX failed; should raise instead
+    return Qnil;
+  }
+
   text = (char *)RSTRING_PTR(rb_text);
   len = FIX2INT(rb_len);
   options = FIX2INT(rb_options);
 
-  doc = cmark_parse_document(text, len, options);
+  cmark_parser_feed(parser, text, len);
+  doc = cmark_parser_finish(parser);
   if (doc == NULL) {
     rb_raise(rb_mNodeError, "error parsing document");
   }
+  cmark_parser_free(parser);
 
   return rb_node_to_value(doc);
 }
@@ -954,9 +1017,9 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_mNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
   rb_mNode = rb_define_class_under(module, "Node", rb_cObject);
   rb_define_singleton_method(rb_mNode, "markdown_to_html", rb_markdown_to_html,
-                             2);
+                             3);
   rb_define_singleton_method(rb_mNode, "new", rb_node_new, 1);
-  rb_define_singleton_method(rb_mNode, "parse_document", rb_parse_document, 3);
+  rb_define_singleton_method(rb_mNode, "parse_document", rb_parse_document, 4);
   rb_define_method(rb_mNode, "string_content", rb_node_get_string_content, 0);
   rb_define_method(rb_mNode, "string_content=", rb_node_set_string_content, 1);
   rb_define_method(rb_mNode, "type", rb_node_get_type, 0);

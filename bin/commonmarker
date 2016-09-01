@@ -22,17 +22,28 @@ end
 root = File.expand_path('../../', __FILE__)
 $:.unshift File.expand_path('lib', root)
 
+extensions = CommonMarker.extensions
+active_extensions = []
+
 renderer = nil
 ARGV.delete_if do |arg|
   if arg =~ /^--html-renderer$/
     renderer = CommonMarker::HtmlRenderer.new
+    true
+  elsif arg =~ /^--extension=(.+)$/
+    if extensions.include?($1)
+      active_extensions << $1
+    else
+      STDERR.puts "extension #$1 not found"
+      exit 1
+    end
     true
   else
     false
   end
 end
 
-doc = CommonMarker.render_doc(ARGF.read)
+doc = CommonMarker.render_doc(ARGF.read, :default, active_extensions)
 
 if renderer
   STDOUT.write(renderer.render(doc))
