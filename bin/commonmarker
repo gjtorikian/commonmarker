@@ -48,5 +48,5 @@ doc = CommonMarker.render_doc(ARGF.read, :default, active_extensions)
 if renderer
   STDOUT.write(renderer.render(doc))
 else
-  STDOUT.write(doc.to_html)
+  STDOUT.write(doc.to_html(:default, active_extensions))
 end

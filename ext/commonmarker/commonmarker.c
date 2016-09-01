@@ -505,18 +505,47 @@ static VALUE rb_node_insert_before(VALUE self, VALUE sibling) {
  *
  * Returns a {String}.
  */
-static VALUE rb_render_html(VALUE n, VALUE rb_options) {
-  int options;
+static VALUE rb_render_html(VALUE n, VALUE rb_options, VALUE rb_extensions) {
+  int options, extensions_len;
+  VALUE rb_ext_name;
+  int xt, i;
   cmark_node *node;
+  cmark_llist *extensions = NULL;
   Check_Type(rb_options, T_FIXNUM);
+  Check_Type(rb_extensions, T_ARRAY);
 
   options = FIX2INT(rb_options);
+  extensions_len = RARRAY_LEN(rb_extensions);
 
   Data_Get_Struct(n, cmark_node, node);
 
-  char *html = cmark_render_html(node, options, NULL);
+  for (i = 0; i < extensions_len; ++i) {
+    rb_ext_name = RARRAY_PTR(rb_extensions)[i];
+    xt = TYPE(rb_ext_name);
+
+    if (xt != T_STRING) {
+      cmark_llist_free(extensions);
+      Check_Type(rb_ext_name, T_STRING);
+      return Qnil;
+    }
+
+    cmark_syntax_extension *syntax_extension =
+      cmark_find_syntax_extension(RSTRING_PTR(rb_ext_name));
+
+    if (!syntax_extension) {
+      // XXX raise properly
+      cmark_llist_free(extensions);
+      fprintf(stderr, "Unknown extension %s\n", RSTRING_PTR(rb_ext_name));
+      return Qnil;
+    }
+
+    extensions = cmark_llist_append(extensions, syntax_extension);
+  }
+
+  char *html = cmark_render_html(node, options, extensions);
   VALUE ruby_html = rb_str_new2(html);
 
+  cmark_llist_free(extensions);
   free(html);
 
   return ruby_html;
@@ -1029,7 +1058,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "first_child", rb_node_first_child, 0);
   rb_define_method(rb_mNode, "next", rb_node_next, 0);
   rb_define_method(rb_mNode, "insert_before", rb_node_insert_before, 1);
-  rb_define_method(rb_mNode, "_render_html", rb_render_html, 1);
+  rb_define_method(rb_mNode, "_render_html", rb_render_html, 2);
   rb_define_method(rb_mNode, "insert_after", rb_node_insert_after, 1);
   rb_define_method(rb_mNode, "prepend_child", rb_node_prepend_child, 1);
   rb_define_method(rb_mNode, "append_child", rb_node_append_child, 1);

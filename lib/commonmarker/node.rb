@@ -17,11 +17,12 @@ module CommonMarker
     # Public: Convert the node to an HTML string.
     #
     # options - A {Symbol} or {Array of Symbol}s indicating the render options
+    # extensions - An {Array of String}s indicating the extensions to use
     #
     # Returns a {String}.
-    def to_html(options = :default)
+    def to_html(options = :default, extensions = [])
       opts = Config.process_options(options, :render)
-      _render_html(opts).force_encoding('utf-8')
+      _render_html(opts, extensions).force_encoding('utf-8')
     end
 
     # Public: Iterate over the children (if any) of the current pointer.
