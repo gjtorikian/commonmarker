@@ -448,7 +448,7 @@ static VALUE rb_render_html(VALUE n, VALUE rb_options) {
 
   Data_Get_Struct(n, cmark_node, node);
 
-  char *html = cmark_render_html(node, options);
+  char *html = cmark_render_html(node, options, NULL);
   VALUE ruby_html = rb_str_new2(html);
 
   free(html);

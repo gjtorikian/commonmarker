@@ -1,4 +1,4 @@
 [submodule "ext/commonmarker/cmark"]
 	path = ext/commonmarker/cmark
-	url = https://github.com/jgm/cmark.git
+	url = https://github.com/kivikakk/cmark.git
 	ignore = dirty
