@@ -25,6 +25,16 @@ module CommonMarker
       _render_html(opts, extensions).force_encoding('utf-8')
     end
 
+    # Public: Convert the node to a CommonMark string.
+    #
+    # options - A {Symbol} or {Array of Symbol}s indicating the render options
+    #
+    # Returns a {String}.
+    def to_commonmark(options = :default)
+      opts = Config.process_options(options, :render)
+      _render_commonmark(opts).force_encoding('utf-8')
+    end
+
     # Public: Iterate over the children (if any) of the current pointer.
     def each(&block)
       return enum_for(:each) unless block_given?
