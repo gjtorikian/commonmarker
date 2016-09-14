@@ -99,7 +99,7 @@ static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions) {
   int options;
   int extensions_len;
   VALUE rb_ext_name;
-  int xt, i;
+  int i;
 
   Check_Type(rb_options, T_FIXNUM);
   Check_Type(rb_extensions, T_ARRAY);
@@ -110,22 +110,18 @@ static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions) {
   cmark_parser *parser = cmark_parser_new(options);
   for (i = 0; i < extensions_len; ++i) {
     rb_ext_name = RARRAY_PTR(rb_extensions)[i];
-    xt = TYPE(rb_ext_name);
 
-    if (xt != T_STRING) {
+    if (!SYMBOL_P(rb_ext_name)) {
       cmark_parser_free(parser);
-      Check_Type(rb_ext_name, T_STRING);
-      return NULL;
+      rb_raise(rb_eTypeError, "extension names should be Symbols; got a %"PRIsVALUE"", rb_obj_class(rb_ext_name));
     }
 
     cmark_syntax_extension *syntax_extension =
-      cmark_find_syntax_extension(RSTRING_PTR(rb_ext_name));
+      cmark_find_syntax_extension(rb_id2name(SYM2ID(rb_ext_name)));
 
     if (!syntax_extension) {
-      // XXX raise properly
-      fprintf(stderr, "Unknown extension %s\n", RSTRING_PTR(rb_ext_name));
       cmark_parser_free(parser);
-      return NULL;
+      rb_raise(rb_eArgError, "extension %s not found", rb_id2name(SYM2ID(rb_ext_name)));
     }
 
     cmark_parser_attach_syntax_extension(parser, syntax_extension);
@@ -147,10 +143,6 @@ static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VA
   Check_Type(rb_options, T_FIXNUM);
 
   parser = prepare_parser(rb_options, rb_extensions);
-  if (!parser) {
-    // XXX failed; should raise instead
-    return Qnil;
-  }
 
   str = (char *)RSTRING_PTR(rb_text);
   len = RSTRING_LEN(rb_text);
@@ -263,10 +255,6 @@ static VALUE rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len,
   Check_Type(rb_options, T_FIXNUM);
 
   parser = prepare_parser(rb_options, rb_extensions);
-  if (!parser) {
-    // XXX failed; should raise instead
-    return Qnil;
-  }
 
   text = (char *)RSTRING_PTR(rb_text);
   len = FIX2INT(rb_len);
@@ -508,7 +496,7 @@ static VALUE rb_node_insert_before(VALUE self, VALUE sibling) {
 static VALUE rb_render_html(VALUE n, VALUE rb_options, VALUE rb_extensions) {
   int options, extensions_len;
   VALUE rb_ext_name;
-  int xt, i;
+  int i;
   cmark_node *node;
   cmark_llist *extensions = NULL;
   Check_Type(rb_options, T_FIXNUM);
@@ -521,22 +509,18 @@ static VALUE rb_render_html(VALUE n, VALUE rb_options, VALUE rb_extensions) {
 
   for (i = 0; i < extensions_len; ++i) {
     rb_ext_name = RARRAY_PTR(rb_extensions)[i];
-    xt = TYPE(rb_ext_name);
 
-    if (xt != T_STRING) {
+    if (!SYMBOL_P(rb_ext_name)) {
       cmark_llist_free(extensions);
-      Check_Type(rb_ext_name, T_STRING);
-      return Qnil;
+      rb_raise(rb_eTypeError, "extension names should be Symbols; got a %"PRIsVALUE"", rb_obj_class(rb_ext_name));
     }
 
     cmark_syntax_extension *syntax_extension =
-      cmark_find_syntax_extension(RSTRING_PTR(rb_ext_name));
+      cmark_find_syntax_extension(rb_id2name(SYM2ID(rb_ext_name)));
 
     if (!syntax_extension) {
-      // XXX raise properly
       cmark_llist_free(extensions);
-      fprintf(stderr, "Unknown extension %s\n", RSTRING_PTR(rb_ext_name));
-      return Qnil;
+      rb_raise(rb_eArgError, "extension %s not found\n", rb_id2name(SYM2ID(rb_ext_name)));
     }
 
     extensions = cmark_llist_append(extensions, syntax_extension);

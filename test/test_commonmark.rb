@@ -21,7 +21,7 @@ Okay, _enough_.
   end
 
   def render_doc(doc)
-    CommonMarker.render_doc(doc, :default, %w[table])
+    CommonMarker.render_doc(doc, :default, %i[table])
   end
 
   def test_to_commonmark
