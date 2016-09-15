@@ -16,7 +16,9 @@ end
 Rake::Task['clean'].enhance do
   ext_dir = File.join(File.dirname(__FILE__), 'ext', 'commonmarker', 'cmark')
   Dir.chdir(ext_dir) do
-    `make clean`
+    host_os = RbConfig::CONFIG['host_os']
+    make = (host_os == 'mingw32') ? 'nmake.bat' : 'make'
+    `#{make} clean`
   end
 end
 
