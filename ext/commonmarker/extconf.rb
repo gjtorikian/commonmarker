@@ -24,14 +24,12 @@ FileUtils.mkdir_p(CMARK_BUILD_DIR)
 
 Dir.chdir(CMARK_BUILD_DIR) do
   if host_os == 'mingw32'
-    make = 'nmake'
-    system 'cmake -G "NMake Makefiles" -D CMAKE_BUILD_TYPE= -D CMAKE_INSTALL_PREFIX=windows .."'
+    system 'cmake .. -G "MSYS Makefiles"'
   else
-    make = 'make'
     system 'cmake .. -DCMAKE_C_FLAGS=-fPIC'
   end
-  system "#{make} libcmark_static" or abort "make libcmark_static failed"
-  system "#{make} libcmarkextensions_static" or abort "make libcmarkextensions_static failed"
+  system "make libcmark_static" or abort "make libcmark_static failed"
+  system "make libcmarkextensions_static" or abort "make libcmarkextensions_static failed"
   # rake-compiler seems to complain about this line, not sure why it's messing with it
   FileUtils.rm_rf(File.join(CMARK_BUILD_DIR, 'Testing', 'Temporary'))
 end
@@ -49,5 +47,6 @@ end
 
 $LDFLAGS << " -L#{CMARK_BUILD_DIR}/src -L#{CMARK_BUILD_DIR}/extensions -lcmark -lcmarkextensions"
 $CFLAGS << " -O2 -I#{CMARK_DIR}/src -I#{CMARK_DIR}/extensions -I#{CMARK_BUILD_DIR}/src"
+$CFLAGS << " -DCMARK_STATIC_DEFINE"
 
 create_makefile('commonmarker/commonmarker')

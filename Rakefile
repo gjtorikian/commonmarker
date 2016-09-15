@@ -3,6 +3,9 @@ require 'rake/clean'
 require 'rake/extensiontask'
 require 'digest/md5'
 
+host_os = RbConfig::CONFIG['host_os']
+require 'devkit' if host_os == 'mingw32'
+
 task :default => [:test]
 
 # Gem Spec
@@ -16,9 +19,7 @@ end
 Rake::Task['clean'].enhance do
   ext_dir = File.join(File.dirname(__FILE__), 'ext', 'commonmarker', 'cmark')
   Dir.chdir(ext_dir) do
-    host_os = RbConfig::CONFIG['host_os']
-    make = (host_os == 'mingw32') ? 'nmake.bat' : 'make'
-    `#{make} clean`
+    `make clean`
   end
 end
 
