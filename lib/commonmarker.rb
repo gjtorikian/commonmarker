@@ -15,7 +15,7 @@ module CommonMarker
   #
   # text - A {String} of text
   # option - Either a {Symbol} or {Array of Symbol}s indicating the render options
-  # extensions - An {Array of String}s indicating the extensions to use
+  # extensions - An {Array of Symbol}s indicating the extensions to use
   #
   # Returns a {String} of converted HTML.
   def self.render_html(text, options = :default, extensions = [])
@@ -30,7 +30,7 @@ module CommonMarker
   #
   # string - {String} to be parsed
   # option - A {Symbol} or {Array of Symbol}s indicating the parse options
-  # extensions - An {Array of String}s indicating the extensions to use
+  # extensions - An {Array of Symbol}s indicating the extensions to use
   #
   # Returns the `document` node.
   def self.render_doc(text, options = :default, extensions = [])

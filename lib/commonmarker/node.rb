@@ -17,7 +17,7 @@ module CommonMarker
     # Public: Convert the node to an HTML string.
     #
     # options - A {Symbol} or {Array of Symbol}s indicating the render options
-    # extensions - An {Array of String}s indicating the extensions to use
+    # extensions - An {Array of Symbol}s indicating the extensions to use
     #
     # Returns a {String}.
     def to_html(options = :default, extensions = [])
