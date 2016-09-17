@@ -8,6 +8,7 @@ One extension:
 | a   | b   |
 | --- | --- |
 | c   | d   |
+| **x** | |
 
 Another extension:
 
@@ -16,21 +17,29 @@ Another extension:
   end
 
   def test_uses_specified_extensions
-    none_in_use = CommonMarker.render_html(@markdown, :default, %i[])
-    assert none_in_use.include?("| a")
-    assert none_in_use.include?("~~hi~~")
+    CommonMarker.render_html(@markdown, :default, %i[]).tap do |out|
+      assert out.include?("| a")
+      assert out.include?("| <strong>x</strong>")
+      assert out.include?("~~hi~~")
+    end
 
-    none_in_use = CommonMarker.render_html(@markdown, :default, %i[table])
-    refute none_in_use.include?("| a")
-    assert none_in_use.include?("~~hi~~")
+    CommonMarker.render_html(@markdown, :default, %i[table]).tap do |out|
+      refute out.include?("| a")
+      %w(<table> <tr> <th> a</th> <td> c</td> <strong>x</strong></td>).each {|html| assert out.include?(html) }
+      assert out.include?("~~hi~~")
+    end
 
-    none_in_use = CommonMarker.render_html(@markdown, :default, %i[strikethrough])
-    assert none_in_use.include?("| a")
-    refute none_in_use.include?("~~hi~~")
+    CommonMarker.render_html(@markdown, :default, %i[strikethrough]).tap do |out|
+      assert out.include?("| a")
+      refute out.include?("~~hi~~")
+      assert out.include?("<del>hi</del>")
+    end
 
-    none_in_use = CommonMarker.render_html(@markdown, :default, %i[table strikethrough])
-    refute none_in_use.include?("| a")
-    refute none_in_use.include?("~~hi~~")
+    CommonMarker.render_html(@markdown, :default, %i[table strikethrough]).tap do |out|
+      refute out.include?("| a")
+      refute out.include?("| <strong>x</strong>")
+      refute out.include?("~~hi~~")
+    end
   end
 
   def test_bad_extension_specifications
