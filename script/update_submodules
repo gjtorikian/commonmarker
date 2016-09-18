@@ -3,7 +3,7 @@
 set -e
 
 if [ -z "$1" ]; then
-  BRANCH="master"
+  BRANCH="extensions"
 else
   BRANCH=$1
 fi
@@ -18,4 +18,4 @@ git checkout $BRANCH && git pull
 sha=`git rev-parse HEAD`
 cd ../../..
 git add ext/commonmarker/cmark
-git commit -m "Update cmark to https://github.com/jgm/cmark/commit/${sha}"
+git commit -m "Update cmark to $(git config submodule.ext/commonmarker/cmark.url | sed s_.git\$__)/commit/${sha}"
