@@ -5,7 +5,7 @@ module CommonMarker
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
     def initialize
-      @stream = StringIO.new("".force_encoding("utf-8"))
+      @stream = StringIO.new
       @need_blocksep = false
       @warnings = Set.new []
       @in_tight = false

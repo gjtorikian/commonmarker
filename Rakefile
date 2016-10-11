@@ -3,9 +3,6 @@ require 'rake/clean'
 require 'rake/extensiontask'
 require 'digest/md5'
 
-host_os = RbConfig::CONFIG['host_os']
-require 'devkit' if host_os == 'mingw32'
-
 task :default => [:test]
 
 # Gem Spec

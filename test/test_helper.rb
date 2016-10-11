@@ -1,4 +1,3 @@
-# coding: utf-8
 require 'commonmarker'
 require 'minitest/autorun'
 require 'minitest/pride'
@@ -21,7 +20,7 @@ def open_spec_file(filename)
   header_re = Regexp.new('#+ ')
   filepath = File.join('ext', 'commonmarker', 'cmark', 'test', filename)
 
-  File.readlines(filepath, encoding: "utf-8").each do |line|
+  File.readlines(filepath).each do |line|
     line_number += 1
 
     l = line.strip
