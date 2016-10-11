@@ -29,24 +29,22 @@ Dir.chdir(CMARK_BUILD_DIR) do
     system 'cmake .. -DCMAKE_C_FLAGS=-fPIC'
   end
   system "make libcmark_static" or abort "make libcmark_static failed"
-  system "make libcmarkextensions_static" or abort "make libcmarkextensions_static failed"
   # rake-compiler seems to complain about this line, not sure why it's messing with it
   FileUtils.rm_rf(File.join(CMARK_BUILD_DIR, 'Testing', 'Temporary'))
 end
 
 HEADER_DIRS = [INCLUDEDIR]
-LIB_DIRS = [LIBDIR, "#{CMARK_BUILD_DIR}/src", "#{CMARK_BUILD_DIR}/extensions"]
+LIB_DIRS = [LIBDIR, "#{CMARK_BUILD_DIR}/src"]
 
 dir_config('cmark', HEADER_DIRS, LIB_DIRS)
 
 # don't even bother to do this check if using OS X's messed up system Ruby: http://git.io/vsxkn
 unless sitearch =~ /^universal-darwin/
   abort 'libcmark is missing.' unless find_library('cmark', 'cmark_parse_document')
-  abort 'cmarkextensions is missing.' unless find_library('cmarkextensions', 'core_extensions_registration')
 end
 
-$LDFLAGS << " -L#{CMARK_BUILD_DIR}/src -L#{CMARK_BUILD_DIR}/extensions -lcmark -lcmarkextensions"
-$CFLAGS << " -O2 -I#{CMARK_DIR}/src -I#{CMARK_DIR}/extensions -I#{CMARK_BUILD_DIR}/src"
+$LDFLAGS << " -L#{CMARK_BUILD_DIR}/src -lcmark"
+$CFLAGS << " -O2 -I#{CMARK_DIR}/src -I#{CMARK_BUILD_DIR}/src"
 $CFLAGS << " -DCMARK_STATIC_DEFINE"
 
 create_makefile('commonmarker/commonmarker')

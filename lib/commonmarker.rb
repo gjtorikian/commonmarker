@@ -15,14 +15,13 @@ module CommonMarker
   #
   # text - A {String} of text
   # option - Either a {Symbol} or {Array of Symbol}s indicating the render options
-  # extensions - An {Array of Symbol}s indicating the extensions to use
   #
   # Returns a {String} of converted HTML.
-  def self.render_html(text, options = :default, extensions = [])
-    fail TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
+  def self.render_html(text, options = :default)
+    fail TypeError, 'text must be a string!' unless text.is_a?(String)
     opts = Config.process_options(options, :render)
     text = text.encode('UTF-8')
-    html = Node.markdown_to_html(text, opts, extensions)
+    html = Node.markdown_to_html(text, opts)
     html.force_encoding('UTF-8')
   end
 
@@ -30,13 +29,12 @@ module CommonMarker
   #
   # string - {String} to be parsed
   # option - A {Symbol} or {Array of Symbol}s indicating the parse options
-  # extensions - An {Array of Symbol}s indicating the extensions to use
   #
   # Returns the `document` node.
-  def self.render_doc(text, options = :default, extensions = [])
-    fail TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
+  def self.render_doc(text, options = :default)
+    fail TypeError, 'text must be a string!' unless text.is_a?(String)
     opts = Config.process_options(options, :parse)
     text = text.encode('UTF-8')
-    Node.parse_document(text, text.bytesize, opts, extensions)
+    Node.parse_document(text, text.bytesize, opts)
   end
 end
