@@ -28,6 +28,13 @@ static VALUE sym_image;
 static VALUE sym_bullet_list;
 static VALUE sym_ordered_list;
 
+static VALUE encode_utf8_string(char *c_string) {
+  VALUE string = rb_str_new2(c_string);
+  int enc = rb_enc_find_index("UTF-8");
+  rb_enc_associate_index(string, enc);
+  return string;
+}
+
 static void rb_mark_c_struct(void *data) {
   cmark_node *node = data;
   cmark_node *child;
@@ -231,7 +238,7 @@ static VALUE rb_node_get_string_content(VALUE self) {
     rb_raise(rb_mNodeError, "could not get string content");
   }
 
-  return rb_str_new2(text);
+  return encode_utf8_string(text);
 }
 
 /*
