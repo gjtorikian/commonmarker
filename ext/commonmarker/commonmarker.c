@@ -2,6 +2,10 @@
 #include "cmark.h"
 #include "houdini.h"
 #include "node.h"
+#include "registry.h"
+#include "parser.h"
+#include "syntax_extension.h"
+#include "core-extensions.h"
 
 static VALUE rb_mNodeError;
 static VALUE rb_mNode;
@@ -98,25 +102,73 @@ static void rb_parent_removed(VALUE val) {
   RDATA(val)->dfree = rb_free_c_struct;
 }
 
+static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions, cmark_mem *mem) {
+  int options;
+  int extensions_len;
+  VALUE rb_ext_name;
+  int i;
+
+  Check_Type(rb_options, T_FIXNUM);
+  Check_Type(rb_extensions, T_ARRAY);
+
+  options = FIX2INT(rb_options);
+  extensions_len = RARRAY_LEN(rb_extensions);
+
+  cmark_parser *parser = cmark_parser_new_with_mem(options, mem);
+  for (i = 0; i < extensions_len; ++i) {
+    rb_ext_name = RARRAY_PTR(rb_extensions)[i];
+
+    if (!SYMBOL_P(rb_ext_name)) {
+      cmark_parser_free(parser);
+      cmark_arena_reset();
+      rb_raise(rb_eTypeError, "extension names should be Symbols; got a %"PRIsVALUE"", rb_obj_class(rb_ext_name));
+    }
+
+    cmark_syntax_extension *syntax_extension =
+      cmark_find_syntax_extension(rb_id2name(SYM2ID(rb_ext_name)));
+
+    if (!syntax_extension) {
+      cmark_parser_free(parser);
+      cmark_arena_reset();
+      rb_raise(rb_eArgError, "extension %s not found", rb_id2name(SYM2ID(rb_ext_name)));
+    }
+
+    cmark_parser_attach_syntax_extension(parser, syntax_extension);
+  }
+
+  return parser;
+}
+
 /*
  * Internal: Parses a Markdown string into an HTML string.
  *
  */
-static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options) {
-  char *str;
-  int len, options;
-
+static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VALUE rb_extensions) {
+  char *str, *html;
+  int len;
+  cmark_parser *parser;
+  cmark_node *doc;
   Check_Type(rb_text, T_STRING);
   Check_Type(rb_options, T_FIXNUM);
 
+  parser = prepare_parser(rb_options, rb_extensions, cmark_get_arena_mem_allocator());
+
   str = (char *)RSTRING_PTR(rb_text);
   len = RSTRING_LEN(rb_text);
-  options = FIX2INT(rb_options);
 
-  char *html = cmark_markdown_to_html(str, len, options);
+  cmark_parser_feed(parser, str, len);
+  doc = cmark_parser_finish(parser);
+  if (doc == NULL) {
+    cmark_arena_reset();
+    rb_raise(rb_mNodeError, "error parsing document");
+  }
+
+  cmark_mem *default_mem = cmark_get_default_mem_allocator();
+  html = cmark_render_html_with_mem(doc, FIX2INT(rb_options), parser->syntax_extensions, default_mem);
+  cmark_arena_reset();
+
   VALUE ruby_html = rb_str_new2(html);
-
-  free(html);
+  default_mem->free(html);
 
   return ruby_html;
 }
@@ -203,22 +255,27 @@ static VALUE rb_node_new(VALUE self, VALUE type) {
  *
  */
 static VALUE rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len,
-                               VALUE rb_options) {
+                               VALUE rb_options, VALUE rb_extensions) {
   char *text;
   int len, options;
+  cmark_parser *parser;
   cmark_node *doc;
   Check_Type(rb_text, T_STRING);
   Check_Type(rb_len, T_FIXNUM);
   Check_Type(rb_options, T_FIXNUM);
 
+  parser = prepare_parser(rb_options, rb_extensions, cmark_get_default_mem_allocator());
+
   text = (char *)RSTRING_PTR(rb_text);
   len = FIX2INT(rb_len);
   options = FIX2INT(rb_options);
 
-  doc = cmark_parse_document(text, len, options);
+  cmark_parser_feed(parser, text, len);
+  doc = cmark_parser_finish(parser);
   if (doc == NULL) {
     rb_raise(rb_mNodeError, "error parsing document");
   }
+  cmark_parser_free(parser);
 
   return rb_node_to_value(doc);
 }
@@ -446,21 +503,66 @@ static VALUE rb_node_insert_before(VALUE self, VALUE sibling) {
  *
  * Returns a {String}.
  */
-static VALUE rb_render_html(VALUE n, VALUE rb_options) {
+static VALUE rb_render_html(VALUE n, VALUE rb_options, VALUE rb_extensions) {
+  int options, extensions_len;
+  VALUE rb_ext_name;
+  int i;
+  cmark_node *node;
+  cmark_llist *extensions = NULL;
+  cmark_mem *mem = cmark_get_default_mem_allocator();
+  Check_Type(rb_options, T_FIXNUM);
+  Check_Type(rb_extensions, T_ARRAY);
+
+  options = FIX2INT(rb_options);
+  extensions_len = RARRAY_LEN(rb_extensions);
+
+  Data_Get_Struct(n, cmark_node, node);
+
+  for (i = 0; i < extensions_len; ++i) {
+    rb_ext_name = RARRAY_PTR(rb_extensions)[i];
+
+    if (!SYMBOL_P(rb_ext_name)) {
+      cmark_llist_free(mem, extensions);
+      rb_raise(rb_eTypeError, "extension names should be Symbols; got a %"PRIsVALUE"", rb_obj_class(rb_ext_name));
+    }
+
+    cmark_syntax_extension *syntax_extension =
+      cmark_find_syntax_extension(rb_id2name(SYM2ID(rb_ext_name)));
+
+    if (!syntax_extension) {
+      cmark_llist_free(mem, extensions);
+      rb_raise(rb_eArgError, "extension %s not found\n", rb_id2name(SYM2ID(rb_ext_name)));
+    }
+
+    extensions = cmark_llist_append(mem, extensions, syntax_extension);
+  }
+
+  char *html = cmark_render_html(node, options, extensions);
+  VALUE ruby_html = rb_str_new2(html);
+
+  cmark_llist_free(mem, extensions);
+  free(html);
+
+  return ruby_html;
+}
+
+/* Internal: Convert the node to a CommonMark string.
+ *
+ * Returns a {String}.
+ */
+static VALUE rb_render_commonmark(VALUE n, VALUE rb_options) {
   int options;
   cmark_node *node;
   Check_Type(rb_options, T_FIXNUM);
 
   options = FIX2INT(rb_options);
-
   Data_Get_Struct(n, cmark_node, node);
 
-  char *html = cmark_render_html(node, options);
-  VALUE ruby_html = rb_str_new2(html);
+  char *cmark = cmark_render_commonmark(node, options, 120);
+  VALUE ruby_cmark = rb_str_new2(cmark);
+  free(cmark);
 
-  free(html);
-
-  return ruby_html;
+  return ruby_cmark;
 }
 
 /*
@@ -914,6 +1016,22 @@ static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   return rb_text;
 }
 
+VALUE rb_extensions(VALUE self) {
+  cmark_llist *exts, *it;
+  cmark_syntax_extension *ext;
+  VALUE ary = rb_ary_new();
+
+  cmark_mem *mem = cmark_get_default_mem_allocator();
+  exts = cmark_list_syntax_extensions(mem);
+  for (it = exts; it; it = it->next) {
+    ext = it->data;
+    rb_ary_push(ary, rb_str_new2(ext->name));
+  }
+  cmark_llist_free(mem, exts);
+
+  return ary;
+}
+
 __attribute__((visibility("default"))) void Init_commonmarker() {
   VALUE module;
   sym_document = ID2SYM(rb_intern("document"));
@@ -939,12 +1057,13 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   sym_ordered_list = ID2SYM(rb_intern("ordered_list"));
 
   module = rb_define_module("CommonMarker");
+  rb_define_singleton_method(module, "extensions", rb_extensions, 0);
   rb_mNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
   rb_mNode = rb_define_class_under(module, "Node", rb_cObject);
   rb_define_singleton_method(rb_mNode, "markdown_to_html", rb_markdown_to_html,
-                             2);
+                             3);
   rb_define_singleton_method(rb_mNode, "new", rb_node_new, 1);
-  rb_define_singleton_method(rb_mNode, "parse_document", rb_parse_document, 3);
+  rb_define_singleton_method(rb_mNode, "parse_document", rb_parse_document, 4);
   rb_define_method(rb_mNode, "string_content", rb_node_get_string_content, 0);
   rb_define_method(rb_mNode, "string_content=", rb_node_set_string_content, 1);
   rb_define_method(rb_mNode, "type", rb_node_get_type, 0);
@@ -954,7 +1073,8 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "first_child", rb_node_first_child, 0);
   rb_define_method(rb_mNode, "next", rb_node_next, 0);
   rb_define_method(rb_mNode, "insert_before", rb_node_insert_before, 1);
-  rb_define_method(rb_mNode, "_render_html", rb_render_html, 1);
+  rb_define_method(rb_mNode, "_render_html", rb_render_html, 2);
+  rb_define_method(rb_mNode, "_render_commonmark", rb_render_commonmark, 1);
   rb_define_method(rb_mNode, "insert_after", rb_node_insert_after, 1);
   rb_define_method(rb_mNode, "prepend_child", rb_node_prepend_child, 1);
   rb_define_method(rb_mNode, "append_child", rb_node_append_child, 1);
@@ -978,4 +1098,6 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
 
   rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);
+
+  cmark_register_plugin(core_extensions_registration);
 }
