@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'minitest', '~> 5.6'
   s.add_development_dependency 'rake-compiler', '~> 0.9'
-  s.add_development_dependency 'bundler', '~> 1.9'
+  s.add_development_dependency 'bundler', '~> 1.2'
   s.add_development_dependency 'json', '~> 1.8.1'
   s.add_development_dependency 'awesome_print'
   s.add_development_dependency 'rdoc', '~> 4.1.0'
