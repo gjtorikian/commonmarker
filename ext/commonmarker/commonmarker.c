@@ -32,7 +32,7 @@ static VALUE sym_image;
 static VALUE sym_bullet_list;
 static VALUE sym_ordered_list;
 
-static VALUE encode_utf8_string(char *c_string) {
+static VALUE encode_utf8_string(const char *c_string) {
   VALUE string = rb_str_new2(c_string);
   int enc = rb_enc_find_index("UTF-8");
   rb_enc_associate_index(string, enc);
