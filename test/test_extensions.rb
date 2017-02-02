@@ -40,6 +40,23 @@ Another extension:
       refute out.include?("| <strong>x</strong>")
       refute out.include?("~~hi~~")
     end
+
+  end
+
+  def test_extensions_with_renderers
+    doc = CommonMarker.render_doc(@markdown, :default, %i[table])
+
+    doc.to_html.tap do |out|
+      refute out.include?("| a")
+      %w(<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>).each {|html| assert out.include?(html) }
+      assert out.include?("~~hi~~")
+    end
+
+    HtmlRenderer.new.render(doc).tap do |out|
+      refute out.include?("| a")
+      %w(<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>).each {|html| assert out.include?(html) }
+      assert out.include?("~~hi~~")
+    end
   end
 
   def test_bad_extension_specifications
