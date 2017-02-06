@@ -329,6 +329,7 @@ static VALUE rb_node_get_type(VALUE self) {
   int node_type;
   cmark_node *node;
   VALUE symbol;
+  const char *s;
 
   Data_Get_Struct(self, cmark_node, node);
 
@@ -391,6 +392,10 @@ static VALUE rb_node_get_type(VALUE self) {
     symbol = sym_image;
     break;
   default:
+    if (node->extension) {
+      s = node->extension->get_type_string_func(node->extension, node);
+      return ID2SYM(rb_intern(s));
+    }
     rb_raise(rb_mNodeError, "invalid node type %d", node_type);
   }
 
