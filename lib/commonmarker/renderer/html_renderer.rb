@@ -137,5 +137,23 @@ module CommonMarker
     def softbreak(_)
       out("\n")
     end
+
+    def table(_)
+      out('<table>', :children, '</tbody></table>')
+    end
+
+    def table_header(_)
+      @in_header = true
+      out('<thead>', :children, '</thead><tbody>')
+      @in_header = false
+    end
+
+    def table_row(_)
+      out('<tr>', :children, '</tr>')
+    end
+
+    def table_cell(_)
+      out(@in_header ? '<th>' : '<td>', :children, @in_header ? '</th>' : '</td>')
+    end
   end
 end
