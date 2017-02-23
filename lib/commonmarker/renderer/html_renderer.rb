@@ -155,5 +155,9 @@ module CommonMarker
     def table_cell(_)
       out(@in_header ? '<th>' : '<td>', :children, @in_header ? '</th>' : '</td>')
     end
+
+    def strikethrough(_)
+      out('<strike>', :children, '</strike>')
+    end
   end
 end
