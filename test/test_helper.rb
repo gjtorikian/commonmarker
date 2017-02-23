@@ -17,6 +17,7 @@ def open_spec_file(filename)
   state = 0 # 0 regular text, 1 markdown example, 2 html output
   headertext = ''
   tests = []
+  extensions = []
 
   header_re = Regexp.new('#+ ')
   filepath = File.join('ext', 'commonmarker', 'cmark', 'test', filename)
@@ -25,8 +26,9 @@ def open_spec_file(filename)
     line_number += 1
 
     l = line.strip
-    if l == '`' * 32 + ' example'
+    if l =~ /^`{32} example(.*)$/
       state = 1
+      extensions = $1.split
     elsif l == '`' * 32
       state = 0
       example_number += 1
@@ -37,7 +39,8 @@ def open_spec_file(filename)
         :example => example_number,
         :start_line => start_line,
         :end_line => end_line,
-        :section => headertext
+        :section => headertext,
+        :extensions => extensions.map(&:to_sym),
       }
       start_line = 0
       markdown_lines = []
