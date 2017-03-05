@@ -27,7 +27,7 @@ Call `render_html` on a string to convert it to HTML:
 
 ``` ruby
 require 'commonmarker'
-CommonMarker.render_html('Hi *there*', :default)
+CommonMarker.render_html('Hi *there*', :DEFAULT)
 # <p>Hi <em>there</em></p>\n
 ```
 
@@ -40,7 +40,7 @@ You can also parse a string to receive a `Document` node. You can than print tha
 ``` ruby
 require 'commonmarker'
 
-doc = CommonMarker.render_doc('*Hello* world', :default)
+doc = CommonMarker.render_doc('*Hello* world', :DEFAULT)
 puts(doc.to_html) # <p>Hi <em>there</em></p>\n
 
 doc.walk do |node|
@@ -129,33 +129,33 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 
 | Name  |  Description |
 |-------|--------------|
-| `:default`  | The default parsing system.  
-| `:normalize`  | Attempt to normalize the HTML.
-| `:smart`  | Use smart punctuation (curly quotes, etc.).
-| `:validate_utf8`  | Replace illegal sequences with the replacement character `U+FFFD`.
+| `:DEFAULT`  | The default parsing system.  
+| `:NORMALIZE`  | Attempt to normalize the HTML.
+| `:SMART`  | Use smart punctuation (curly quotes, etc.).
+| `:VALIDATE_UTF8`  | Replace illegal sequences with the replacement character `U+FFFD`.
 
 ### Render options
 
 | Name  |  Description |
 |-------|--------------|
-| `:default`  | The default rendering system.
-| `:sourcepos` |  Include source position in rendered HTML.
-| `:hardbreaks`  | Treat `\n` as hardbreaks (by adding `<br/>`).
-| `:safe`  | Suppress raw HTML and unsafe links.
+| `:DEFAULT`  | The default rendering system.
+| `:SOURCEPOS` |  Include source position in rendered HTML.
+| `:HARDBREAKS`  | Treat `\n` as hardbreaks (by adding `<br/>`).
+| `:SAFE`  | Suppress raw HTML and unsafe links.
 
 ### Passing options
 
 To apply a single option, pass it in as a symbol argument:
 
 ``` ruby
-CommonMarker.render_doc("\"Hello,\" said the spider.", :smart)
+CommonMarker.render_doc("\"Hello,\" said the spider.", :SMART)
 # <p>“Hello,” said the spider.</p>\n
 ```
 
 To have multiple options applied, pass in an array of symbols:
 
 ``` ruby
-CommonMarker.render_html("\"'Shelob' is my name.\"", [:hardbreaks, :sourcepos])
+CommonMarker.render_html("\"'Shelob' is my name.\"", [:HARDBREAKS, :SOURCEPOS])
 ```
 
 For more information on these options, see [the CMark documentation](http://git.io/vlQii).
