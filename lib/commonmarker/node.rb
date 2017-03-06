@@ -20,7 +20,7 @@ module CommonMarker
     # extensions - An {Array of Symbol}s indicating the extensions to use
     #
     # Returns a {String}.
-    def to_html(options = :default, extensions = [])
+    def to_html(options = :DEFAULT, extensions = [])
       opts = Config.process_options(options, :render)
       _render_html(opts, extensions).force_encoding('utf-8')
     end
@@ -30,7 +30,7 @@ module CommonMarker
     # options - A {Symbol} or {Array of Symbol}s indicating the render options
     #
     # Returns a {String}.
-    def to_commonmark(options = :default)
+    def to_commonmark(options = :DEFAULT)
       opts = Config.process_options(options, :render)
       _render_commonmark(opts).force_encoding('utf-8')
     end

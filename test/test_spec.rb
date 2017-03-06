@@ -6,10 +6,10 @@ class TestSpec < Minitest::Test
 
   spec.each do |testcase|
     # next unless testcase['example'] == 420
-    doc = CommonMarker.render_doc(testcase[:markdown], :default, testcase[:extensions])
+    doc = CommonMarker.render_doc(testcase[:markdown], :DEFAULT, testcase[:extensions])
 
     define_method("test_to_html_example_#{testcase[:example]}") do
-      actual = doc.to_html(:default, testcase[:extensions]).rstrip
+      actual = doc.to_html(:DEFAULT, testcase[:extensions]).rstrip
       assert_equal testcase[:html], actual, testcase[:markdown]
     end
 

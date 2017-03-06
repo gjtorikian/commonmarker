@@ -18,7 +18,7 @@ module CommonMarker
   # extensions - An {Array of Symbol}s indicating the extensions to use
   #
   # Returns a {String} of converted HTML.
-  def self.render_html(text, options = :default, extensions = [])
+  def self.render_html(text, options = :DEFAULT, extensions = [])
     fail TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
     opts = Config.process_options(options, :render)
     text = text.encode('UTF-8')
@@ -33,7 +33,7 @@ module CommonMarker
   # extensions - An {Array of Symbol}s indicating the extensions to use
   #
   # Returns the `document` node.
-  def self.render_doc(text, options = :default, extensions = [])
+  def self.render_doc(text, options = :DEFAULT, extensions = [])
     fail TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
     opts = Config.process_options(options, :parse)
     text = text.encode('UTF-8')

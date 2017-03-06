@@ -11,6 +11,7 @@
 /test/version_tmp/
 /tmp/
 /vendor/gems
+/vendor/cache
 Gemfile.lock
 
 ## Specific to RubyMotion:

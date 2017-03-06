@@ -47,6 +47,6 @@ end
 
 $LDFLAGS << " -L#{CMARK_BUILD_DIR}/src -L#{CMARK_BUILD_DIR}/extensions -lcmark -lcmarkextensions"
 $CFLAGS << " -O2 -I#{CMARK_DIR}/src -I#{CMARK_DIR}/extensions -I#{CMARK_BUILD_DIR}/src -I#{CMARK_BUILD_DIR}/extensions"
-$CFLAGS << " -DCMARK_STATIC_DEFINE"
+$CFLAGS << " -DCMARK_STATIC_DEFINE -DCMARKEXTENSIONS_STATIC_DEFINE"
 
 create_makefile('commonmarker/commonmarker')
