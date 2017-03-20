@@ -67,7 +67,7 @@ class CommonMarker::TestMaliciousness < Minitest::Test
     err = assert_raises TypeError do
       CommonMarker.render_html("foo \n baz", [:SMART])
     end
-    assert_equal err.message, 'option \':smart\' does not exist for CommonMarker::Config::Render'
+    assert_equal err.message, 'option \':SMART\' does not exist for CommonMarker::Config::Render'
 
     assert_raises TypeError do
       CommonMarker.render_doc("foo \n baz", 123)
