@@ -23,10 +23,13 @@ class TestNode < Minitest::Test
 
   def test_deprecated_each_child
     nodes = []
-    @doc.first_child.each_child do |node|
-      nodes << node.type
+    out, err = capture_io do
+      @doc.first_child.each_child do |node|
+        nodes << node.type
+      end
     end
     assert_equal [:text, :emph, :text, :text], nodes
+    assert_match /`each_child` is deprecated/, err
   end
 
   def test_select

@@ -118,8 +118,8 @@ class CommonMarker::TestMaliciousness < Minitest::Test
   end
 
   def test_bad_walking
-    assert_equal @doc.parent, nil
-    assert_equal @doc.previous, nil
+    assert_nil @doc.parent
+    assert_nil @doc.previous
   end
 
   def test_bad_insertion
