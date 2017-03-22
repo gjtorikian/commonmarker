@@ -8,8 +8,7 @@ Gem::Specification.new do |s|
   s.version = CommonMarker::VERSION
   s.summary = 'CommonMark parser and renderer. Written in C, wrapped in Ruby.'
   s.description = 'A fast, safe, extensible parser for CommonMark. This wraps the official libcmark library.'
-  s.authors       = ['Garen Torikian']
-  s.email         = ['gjtorikian@gmail.com']
+  s.authors       = ['Garen Torikian', 'Yuki Izumi']
   s.homepage = 'http://github.com/gjtorikian/commonmarker'
   s.license = 'MIT'
   s.required_ruby_version = '>= 2.0.0'
