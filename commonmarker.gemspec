@@ -23,6 +23,8 @@ Gem::Specification.new do |s|
   s.executables = ['commonmarker']
   s.require_paths = %w(lib ext)
 
+  s.rdoc_options += ['-x', 'ext/commonmarker/cmark/.*']
+
   s.add_dependency 'ruby-enum', '~> 0.5'
 
   s.add_development_dependency 'minitest', '~> 5.6'
