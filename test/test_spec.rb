@@ -5,7 +5,7 @@ class TestSpec < Minitest::Test
   spec = open_spec_file('spec.txt')
 
   spec.each do |testcase|
-    # next unless testcase['example'] == 420
+    next if testcase[:extensions].include?(:disabled)
     doc = CommonMarker.render_doc(testcase[:markdown], :DEFAULT, testcase[:extensions])
 
     define_method("test_to_html_example_#{testcase[:example]}") do
