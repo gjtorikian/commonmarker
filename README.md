@@ -35,7 +35,7 @@ The second argument is optional--[see below](#options) for more information.
 
 ### Generating a document
 
-You can also parse a string to receive a `Document` node. You can than print that node to HTML, iterate over the children, and other fun node stuff. For example:
+You can also parse a string to receive a `Document` node. You can then print that node to HTML, iterate over the children, and other fun node stuff. For example:
 
 ``` ruby
 require 'commonmarker'
