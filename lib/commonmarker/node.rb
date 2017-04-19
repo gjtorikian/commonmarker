@@ -1,6 +1,9 @@
+require 'commonmarker/node/inspect'
+
 module CommonMarker
   class Node
     include Enumerable
+    include Inspect
 
     # Public: An iterator that "walks the tree," descending into children recursively.
     #
