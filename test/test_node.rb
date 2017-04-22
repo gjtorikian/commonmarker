@@ -78,4 +78,12 @@ class TestNode < Minitest::Test
     end
     assert_equal "<p>Hi there, I am mostly text!</p>\n", @doc.to_html
   end
+
+  def test_inspect
+    assert_match /#<CommonMarker::Node\(document\):/, @doc.inspect
+  end
+
+  def test_pretty_print
+    assert_match /#<CommonMarker::Node\(document\):/, PP.pp(@doc, '')
+  end
 end
