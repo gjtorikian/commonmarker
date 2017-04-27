@@ -1,7 +1,7 @@
 *.so
 *.rbc
 *.bundle
-!/.bundle
+/.bundle
 /.config
 /coverage/
 /InstalledFiles
