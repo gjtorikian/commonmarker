@@ -10,7 +10,7 @@ class TestNode < Minitest::Test
     @doc.walk do |node|
       nodes << node.type
     end
-    assert_equal [:document, :paragraph, :text, :emph, :text, :text, :text], nodes
+    assert_equal [:document, :paragraph, :text, :emph, :text, :text], nodes
   end
 
   def test_each
@@ -18,7 +18,7 @@ class TestNode < Minitest::Test
     @doc.first_child.each do |node|
       nodes << node.type
     end
-    assert_equal [:text, :emph, :text, :text], nodes
+    assert_equal [:text, :emph, :text], nodes
   end
 
   def test_deprecated_each_child
@@ -28,19 +28,19 @@ class TestNode < Minitest::Test
         nodes << node.type
       end
     end
-    assert_equal [:text, :emph, :text, :text], nodes
+    assert_equal [:text, :emph, :text], nodes
     assert_match /`each_child` is deprecated/, err
   end
 
   def test_select
     nodes = @doc.first_child.select { |node| node.type == :text }
     assert_equal CommonMarker::Node, nodes.first.class
-    assert_equal [:text, :text, :text], nodes.map(&:type)
+    assert_equal [:text, :text], nodes.map(&:type)
   end
 
   def test_map
     nodes = @doc.first_child.map(&:type)
-    assert_equal [:text, :emph, :text, :text], nodes
+    assert_equal [:text, :emph, :text], nodes
   end
 
   def test_insert_illegal
