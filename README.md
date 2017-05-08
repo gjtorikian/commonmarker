@@ -130,7 +130,6 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 | Name  |  Description |
 |-------|--------------|
 | `:DEFAULT`  | The default parsing system.  
-| `:NORMALIZE`  | Attempt to normalize the HTML.
 | `:SMART`  | Use smart punctuation (curly quotes, etc.).
 | `:VALIDATE_UTF8`  | Replace illegal sequences with the replacement character `U+FFFD`.
 
