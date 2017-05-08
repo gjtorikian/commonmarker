@@ -9,6 +9,7 @@ module CommonMarker
       define :NORMALIZE, (1 << 8)
       define :VALIDATE_UTF8, (1 << 9)
       define :SMART, (1 << 10)
+      define :LIBERAL_HTML_TAG, (1 << 12)
     end
 
     class Render

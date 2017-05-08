@@ -570,6 +570,25 @@ static VALUE rb_render_commonmark(VALUE n, VALUE rb_options) {
   return ruby_cmark;
 }
 
+/* Internal: Convert the node to a plain textstring.
+ *
+ * Returns a {String}.
+ */
+static VALUE rb_render_plaintext(VALUE n, VALUE rb_options) {
+  int options;
+  cmark_node *node;
+  Check_Type(rb_options, T_FIXNUM);
+
+  options = FIX2INT(rb_options);
+  Data_Get_Struct(n, cmark_node, node);
+
+  char *text = cmark_render_plaintext(node, options, 120);
+  VALUE ruby_text = rb_str_new2(text);
+  free(text);
+
+  return ruby_text;
+}
+
 /*
  * Public: Inserts a node as a sibling after the current node.
  *
@@ -1080,6 +1099,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "insert_before", rb_node_insert_before, 1);
   rb_define_method(rb_mNode, "_render_html", rb_render_html, 2);
   rb_define_method(rb_mNode, "_render_commonmark", rb_render_commonmark, 1);
+  rb_define_method(rb_mNode, "_render_plaintext", rb_render_plaintext, 1);
   rb_define_method(rb_mNode, "insert_after", rb_node_insert_after, 1);
   rb_define_method(rb_mNode, "prepend_child", rb_node_prepend_child, 1);
   rb_define_method(rb_mNode, "append_child", rb_node_append_child, 1);
