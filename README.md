@@ -127,21 +127,23 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 
 ### Parse options
 
-| Name  |  Description |
-|-------|--------------|
-| `:DEFAULT`  | The default parsing system.  
-| `:SMART`  | Use smart punctuation (curly quotes, etc.).
-| `:VALIDATE_UTF8`  | Replace illegal sequences with the replacement character `U+FFFD`.
-| `:LIBERAL_HTML_TAG`  | Support liberal parsing of inline HTML tags.
+| Name                | Description
+| ------------------- | -----------
+| `:DEFAULT`          | The default parsing system.
+| `:SMART`            | Use smart punctuation (curly quotes, etc.).
+| `:VALIDATE_UTF8`    | Replace illegal sequences with the replacement character `U+FFFD`.
+| `:LIBERAL_HTML_TAG` | Support liberal parsing of inline HTML tags.
 
 ### Render options
 
-| Name  |  Description |
-|-------|--------------|
-| `:DEFAULT`  | The default rendering system.
-| `:SOURCEPOS` |  Include source position in rendered HTML.
-| `:HARDBREAKS`  | Treat `\n` as hardbreaks (by adding `<br/>`).
-| `:SAFE`  | Suppress raw HTML and unsafe links.
+| Name               | Description
+| ------------------ | -----------
+| `:DEFAULT`         | The default rendering system.
+| `:SOURCEPOS`       | Include source position in rendered HTML.
+| `:HARDBREAKS`      | Treat `\n` as hardbreaks (by adding `<br/>`).
+| `:NOBREAKS`        | Translate `\n` in the source to a single whitespace.
+| `:SAFE`            | Suppress raw HTML and unsafe links.
+| `:GITHUB_PRE_LANG` | Use GitHub-style `<pre lang>` for fenced code blocks.
 
 ### Passing options
 
