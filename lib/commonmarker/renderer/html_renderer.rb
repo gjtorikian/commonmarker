@@ -139,25 +139,25 @@ module CommonMarker
     end
 
     def table(_)
-      out('<table>', :children, '</tbody></table>')
+      out("<table>\n", :children, "</tbody></table>\n")
     end
 
     def table_header(_)
       @in_header = true
-      out('<thead>', :children, '</thead><tbody>')
+      out("<thead>\n<tr>", :children, "\n</tr>\n</thead>\n<tbody>")
       @in_header = false
     end
 
     def table_row(_)
-      out('<tr>', :children, '</tr>')
+      out("\n<tr>", :children, "\n</tr>")
     end
 
     def table_cell(_)
-      out(@in_header ? '<th>' : '<td>', :children, @in_header ? '</th>' : '</td>')
+      out(@in_header ? "\n<th>" : "\n<td>", :children, @in_header ? "</th>" : "</td>")
     end
 
     def strikethrough(_)
-      out('<strike>', :children, '</strike>')
+      out('<del>', :children, '</del>')
     end
   end
 end
