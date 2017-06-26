@@ -116,5 +116,15 @@ module CommonMarker
         str
       end
     end
+
+    def sourcepos(node)
+      if @opts & CommonMarker::Config::Render::SOURCEPOS != 0
+        s = node.sourcepos
+        " data-sourcepos=\"#{s[:start_line]}:#{s[:start_column]}-" \
+          "#{s[:end_line]}:#{s[:end_column]}\""
+      else
+        ""
+      end
+    end
   end
 end
