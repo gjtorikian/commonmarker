@@ -1005,7 +1005,7 @@ static VALUE rb_node_set_fence_info(VALUE self, VALUE info) {
 }
 
 static VALUE rb_node_get_table_alignments(VALUE self) {
-  uint16_t column_count;
+  uint16_t column_count, i;
   uint8_t *alignments;
   cmark_node *node;
   VALUE ary;
@@ -1019,7 +1019,7 @@ static VALUE rb_node_get_table_alignments(VALUE self) {
   }
 
   ary = rb_ary_new();
-  for (uint16_t i = 0; i < column_count; ++i) {
+  for (i = 0; i < column_count; ++i) {
     if (alignments[i] == 'l')
       rb_ary_push(ary, sym_left);
     else if (alignments[i] == 'c')
