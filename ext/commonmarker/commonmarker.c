@@ -1031,6 +1031,7 @@ static VALUE rb_node_get_table_alignments(VALUE self) {
   }
   return ary;
 }
+
 /* Internal: Escapes href URLs safely. */
 static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   char *result;
