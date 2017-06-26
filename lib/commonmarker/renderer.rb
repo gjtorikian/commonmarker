@@ -11,7 +11,6 @@ module CommonMarker
       @warnings = Set.new []
       @in_tight = false
       @in_plain = false
-      @buffer = ''
       @tagfilter = extensions.include?(:tagfilter)
     end
 
@@ -24,7 +23,6 @@ module CommonMarker
         elsif arg.is_a?(Node)
           render(arg)
         else
-          @buffer << arg.to_s.force_encoding('utf-8')
           @stream.write(arg)
         end
       end
@@ -59,7 +57,7 @@ module CommonMarker
     end
 
     def cr
-      return if @buffer.empty? || @buffer[-1] == "\n"
+      return if @stream.string.empty? || @stream.string[-1] == "\n"
       out("\n")
     end
 
