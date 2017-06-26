@@ -4,13 +4,14 @@ require 'stringio'
 module CommonMarker
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
-    def initialize
+    def initialize(extensions: [])
       @stream = StringIO.new("".force_encoding("utf-8"))
       @need_blocksep = false
       @warnings = Set.new []
       @in_tight = false
       @in_plain = false
       @buffer = ''
+      @tagfilter = extensions.include?(:tagfilter)
     end
 
     def out(*args)
@@ -96,6 +97,23 @@ module CommonMarker
 
     def escape_html(str)
       @node.html_escape_html(str)
+    end
+
+    def tagfilter(str)
+      if @tagfilter
+        str.gsub(
+          %r{
+            <
+            (
+            title|textarea|style|xmp|iframe|
+            noembed|noframes|script|plaintext
+            )
+            (?=\s|>|/>)
+          }x,
+          '&lt;\1')
+      else
+        str
+      end
     end
   end
 end

@@ -14,7 +14,7 @@ class TestSpec < Minitest::Test
     end
 
     define_method("test_html_renderer_example_#{testcase[:example]}") do
-      actual = HtmlRenderer.new.render(doc).rstrip
+      actual = HtmlRenderer.new(extensions: testcase[:extensions]).render(doc).rstrip
       File.write('test.txt', testcase[:html])
       File.write('actual.txt', actual)
       assert_equal testcase[:html], actual, testcase[:markdown]

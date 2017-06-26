@@ -84,12 +84,12 @@ module CommonMarker
 
     def html(node)
       block do
-        out(node.string_content)
+        out(tagfilter(node.string_content))
       end
     end
 
     def inline_html(node)
-      out(node.string_content)
+      out(tagfilter(node.string_content))
     end
 
     def emph(_)
