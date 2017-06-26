@@ -138,22 +138,33 @@ module CommonMarker
       out("\n")
     end
 
-    def table(_)
+    def table(node)
+      @alignments = node.table_alignments
       out("<table>\n", :children, "</tbody></table>\n")
     end
 
     def table_header(_)
+      @column_index = 0
+
       @in_header = true
       out("<thead>\n<tr>", :children, "\n</tr>\n</thead>\n<tbody>")
       @in_header = false
     end
 
     def table_row(_)
+      @column_index = 0
       out("\n<tr>", :children, "\n</tr>")
     end
 
     def table_cell(_)
-      out(@in_header ? "\n<th>" : "\n<td>", :children, @in_header ? "</th>" : "</td>")
+      align = case @alignments[@column_index]
+              when :left; ' align="left"'
+              when :right; ' align="right"'
+              when :center; ' align="center"'
+              else; ''
+              end
+      out(@in_header ? "\n<th#{align}>" : "\n<td#{align}>", :children, @in_header ? "</th>" : "</td>")
+      @column_index += 1
     end
 
     def strikethrough(_)
