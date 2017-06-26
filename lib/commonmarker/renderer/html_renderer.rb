@@ -71,11 +71,19 @@ module CommonMarker
 
     def code_block(node)
       block do
-        out('<pre><code')
-        if node.fence_info && !node.fence_info.empty?
-          out(' class="language-', node.fence_info.split(/\s+/)[0], '">')
+        if @opts & CommonMarker::Config::Render::GITHUB_PRE_LANG != 0
+          out('<pre')
+          if node.fence_info && !node.fence_info.empty?
+            out(' lang="', node.fence_info.split(/\s+/)[0], '"')
+          end
+          out('><code>')
         else
-          out('>')
+          out('<pre><code')
+          if node.fence_info && !node.fence_info.empty?
+            out(' class="language-', node.fence_info.split(/\s+/)[0], '">')
+          else
+            out('>')
+          end
         end
         out(escape_html(node.string_content))
         out('</code></pre>')
