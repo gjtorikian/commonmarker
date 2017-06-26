@@ -18,6 +18,7 @@ module CommonMarker
       define :SOURCEPOS, (1 << 1)
       define :HARDBREAKS, (1 << 2)
       define :SAFE, (1 << 3)
+      define :NOBREAKS, (1 << 4)
       define :GITHUB_PRE_LANG, (1 << 11)
     end
 

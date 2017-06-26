@@ -92,12 +92,20 @@ module CommonMarker
 
     def html(node)
       block do
-        out(tagfilter(node.string_content))
+        if @opts & CommonMarker::Config::Render::SAFE != 0
+          out('<!-- raw HTML omitted -->')
+        else
+          out(tagfilter(node.string_content))
+        end
       end
     end
 
     def inline_html(node)
-      out(tagfilter(node.string_content))
+      if @opts & CommonMarker::Config::Render::SAFE != 0
+        out('<!-- raw HTML omitted -->')
+      else
+        out(tagfilter(node.string_content))
+      end
     end
 
     def emph(_)
@@ -138,12 +146,17 @@ module CommonMarker
     end
 
     def linebreak(node)
-      out('<br />')
-      softbreak(node)
+      out("<br />\n")
     end
 
     def softbreak(_)
-      out("\n")
+      if @opts & CommonMarker::Config::Render::HARDBREAKS != 0
+        out("<br />\n")
+      elsif @opts & CommonMarker::Config::Render::NOBREAKS != 0
+        out(' ')
+      else
+        out("\n")
+      end
     end
 
     def table(node)
