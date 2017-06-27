@@ -6,7 +6,7 @@ module CommonMarker
 
     def header(node)
       block do
-        out('<h', node.header_level, '>', :children,
+        out('<h', node.header_level, "#{sourcepos(node)}>", :children,
             '</h', node.header_level, '>')
       end
     end
@@ -16,7 +16,7 @@ module CommonMarker
         out(:children)
       else
         block do
-          container('<p>', '</p>') do
+          container("<p#{sourcepos(node)}>", '</p>') do
             out(:children)
           end
         end
@@ -29,14 +29,14 @@ module CommonMarker
 
       block do
         if node.list_type == :bullet_list
-          container("<ul>\n", '</ul>') do
+          container("<ul#{sourcepos(node)}>\n", '</ul>') do
             out(:children)
           end
         else
           start = if node.list_start == 1
-                    "<ol>\n"
+                    "<ol#{sourcepos(node)}>\n"
                   else
-                    "<ol start=\"#{node.list_start}\">\n"
+                    "<ol start=\"#{node.list_start}\"#{sourcepos(node)}>\n"
                   end
           container(start, '</ol>') do
             out(:children)
@@ -47,35 +47,43 @@ module CommonMarker
       @in_tight = old_in_tight
     end
 
-    def list_item(_)
+    def list_item(node)
       block do
-        container('<li>', '</li>') do
+        container("<li#{sourcepos(node)}>", '</li>') do
           out(:children)
         end
       end
     end
 
-    def blockquote(_)
+    def blockquote(node)
       block do
-        container("<blockquote>\n", '</blockquote>') do
+        container("<blockquote#{sourcepos(node)}>\n", '</blockquote>') do
           out(:children)
         end
       end
     end
 
-    def hrule(_)
+    def hrule(node)
       block do
-        out('<hr />')
+        out("<hr#{sourcepos(node)} />")
       end
     end
 
     def code_block(node)
       block do
-        out('<pre><code')
-        if node.fence_info && !node.fence_info.empty?
-          out(' class="language-', node.fence_info.split(/\s+/)[0], '">')
+        if option_enabled?(:GITHUB_PRE_LANG)
+          out("<pre#{sourcepos(node)}")
+          if node.fence_info && !node.fence_info.empty?
+            out(' lang="', node.fence_info.split(/\s+/)[0], '"')
+          end
+          out('><code>')
         else
-          out('>')
+          out("<pre#{sourcepos(node)}><code")
+          if node.fence_info && !node.fence_info.empty?
+            out(' class="language-', node.fence_info.split(/\s+/)[0], '">')
+          else
+            out('>')
+          end
         end
         out(escape_html(node.string_content))
         out('</code></pre>')
@@ -84,12 +92,20 @@ module CommonMarker
 
     def html(node)
       block do
-        out(node.string_content)
+        if option_enabled?(:SAFE)
+          out('<!-- raw HTML omitted -->')
+        else
+          out(tagfilter(node.string_content))
+        end
       end
     end
 
     def inline_html(node)
-      out(node.string_content)
+      if option_enabled?(:SAFE)
+        out('<!-- raw HTML omitted -->')
+      else
+        out(tagfilter(node.string_content))
+      end
     end
 
     def emph(_)
@@ -130,34 +146,50 @@ module CommonMarker
     end
 
     def linebreak(node)
-      out('<br />')
-      softbreak(node)
+      out("<br />\n")
     end
 
     def softbreak(_)
-      out("\n")
+      if option_enabled?(:HARDBREAKS)
+        out("<br />\n")
+      elsif option_enabled?(:NOBREAKS)
+        out(' ')
+      else
+        out("\n")
+      end
     end
 
-    def table(_)
-      out('<table>', :children, '</tbody></table>')
+    def table(node)
+      @alignments = node.table_alignments
+      out("<table#{sourcepos(node)}>\n", :children, "</tbody></table>\n")
     end
 
-    def table_header(_)
+    def table_header(node)
+      @column_index = 0
+
       @in_header = true
-      out('<thead>', :children, '</thead><tbody>')
+      out("<thead>\n<tr#{sourcepos(node)}>", :children, "\n</tr>\n</thead>\n<tbody>")
       @in_header = false
     end
 
-    def table_row(_)
-      out('<tr>', :children, '</tr>')
+    def table_row(node)
+      @column_index = 0
+      out("\n<tr#{sourcepos(node)}>", :children, "\n</tr>")
     end
 
-    def table_cell(_)
-      out(@in_header ? '<th>' : '<td>', :children, @in_header ? '</th>' : '</td>')
+    def table_cell(node)
+      align = case @alignments[@column_index]
+              when :left; ' align="left"'
+              when :right; ' align="right"'
+              when :center; ' align="center"'
+              else; ''
+              end
+      out(@in_header ? "\n<th#{align}#{sourcepos(node)}>" : "\n<td#{align}#{sourcepos(node)}>", :children, @in_header ? "</th>" : "</td>")
+      @column_index += 1
     end
 
     def strikethrough(_)
-      out('<strike>', :children, '</strike>')
+      out('<del>', :children, '</del>')
     end
   end
 end

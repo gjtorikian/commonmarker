@@ -30,7 +30,7 @@ active_extensions = []
 renderer = nil
 ARGV.delete_if do |arg|
   if arg =~ /^--html-renderer$/
-    renderer = CommonMarker::HtmlRenderer.new
+    renderer = true
     true
   elsif arg =~ /^--list-extensions$/
     puts extensions
@@ -51,6 +51,7 @@ end
 doc = CommonMarker.render_doc(ARGF.read, :DEFAULT, active_extensions)
 
 if renderer
+  renderer = CommonMarker::HtmlRenderer.new(extensions: active_extensions)
   STDOUT.write(renderer.render(doc))
 else
   STDOUT.write(doc.to_html(:DEFAULT, active_extensions))

@@ -4,13 +4,14 @@ require 'stringio'
 module CommonMarker
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
-    def initialize
+    def initialize(options: :DEFAULT, extensions: [])
+      @opts = Config.process_options(options, :render)
       @stream = StringIO.new("".force_encoding("utf-8"))
       @need_blocksep = false
       @warnings = Set.new []
       @in_tight = false
       @in_plain = false
-      @buffer = ''
+      @tagfilter = extensions.include?(:tagfilter)
     end
 
     def out(*args)
@@ -22,7 +23,6 @@ module CommonMarker
         elsif arg.is_a?(Node)
           render(arg)
         else
-          @buffer << arg.to_s.force_encoding('utf-8')
           @stream.write(arg)
         end
       end
@@ -57,7 +57,7 @@ module CommonMarker
     end
 
     def cr
-      return if @buffer.empty? || @buffer[-1] == "\n"
+      return if @stream.string.empty? || @stream.string[-1] == "\n"
       out("\n")
     end
 
@@ -96,6 +96,34 @@ module CommonMarker
 
     def escape_html(str)
       @node.html_escape_html(str)
+    end
+
+    def tagfilter(str)
+      if @tagfilter
+        str.gsub(
+          %r{
+            <
+            (
+            title|textarea|style|xmp|iframe|
+            noembed|noframes|script|plaintext
+            )
+            (?=\s|>|/>)
+          }x,
+          '&lt;\1')
+      else
+        str
+      end
+    end
+
+    def sourcepos(node)
+      return "" unless option_enabled?(:SOURCEPOS)
+      s = node.sourcepos
+      " data-sourcepos=\"#{s[:start_line]}:#{s[:start_column]}-" \
+        "#{s[:end_line]}:#{s[:end_column]}\""
+    end
+
+    def option_enabled?(opt)
+      (@opts & CommonMarker::Config::Render.value(opt)) != 0
     end
   end
 end

@@ -13,13 +13,15 @@ class TestSpec < Minitest::Test
       assert_equal testcase[:html], actual, testcase[:markdown]
     end
 
-    unless testcase[:extensions].any?
-      define_method("test_html_renderer_example_#{testcase[:example]}") do
-        actual = HtmlRenderer.new.render(doc).rstrip
-        File.write('test.txt', testcase[:html])
-        File.write('actual.txt', actual)
-        assert_equal testcase[:html], actual, testcase[:markdown]
-      end
+    define_method("test_html_renderer_example_#{testcase[:example]}") do
+      actual = HtmlRenderer.new(extensions: testcase[:extensions]).render(doc).rstrip
+      assert_equal testcase[:html], actual, testcase[:markdown]
+    end
+
+    define_method("test_sourcepos_example_#{testcase[:example]}") do
+      lhs = doc.to_html(:SOURCEPOS, testcase[:extensions]).rstrip
+      rhs = HtmlRenderer.new(options: :SOURCEPOS, extensions: testcase[:extensions]).render(doc).rstrip
+      assert_equal lhs, rhs, testcase[:markdown]
     end
   end
 end

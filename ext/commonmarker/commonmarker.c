@@ -32,6 +32,10 @@ static VALUE sym_image;
 static VALUE sym_bullet_list;
 static VALUE sym_ordered_list;
 
+static VALUE sym_left;
+static VALUE sym_right;
+static VALUE sym_center;
+
 static VALUE encode_utf8_string(const char *c_string) {
   VALUE string = rb_str_new2(c_string);
   int enc = rb_enc_find_index("UTF-8");
@@ -1000,6 +1004,34 @@ static VALUE rb_node_set_fence_info(VALUE self, VALUE info) {
   return Qnil;
 }
 
+static VALUE rb_node_get_table_alignments(VALUE self) {
+  uint16_t column_count, i;
+  uint8_t *alignments;
+  cmark_node *node;
+  VALUE ary;
+  Data_Get_Struct(self, cmark_node, node);
+
+  column_count = cmarkextensions_get_table_columns(node);
+  alignments = cmarkextensions_get_table_alignments(node);
+
+  if (!column_count || !alignments) {
+    rb_raise(rb_mNodeError, "could not get column_count or alignments");
+  }
+
+  ary = rb_ary_new();
+  for (i = 0; i < column_count; ++i) {
+    if (alignments[i] == 'l')
+      rb_ary_push(ary, sym_left);
+    else if (alignments[i] == 'c')
+      rb_ary_push(ary, sym_center);
+    else if (alignments[i] == 'r')
+      rb_ary_push(ary, sym_right);
+    else
+      rb_ary_push(ary, Qnil);
+  }
+  return ary;
+}
+
 /* Internal: Escapes href URLs safely. */
 static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   char *result;
@@ -1080,6 +1112,10 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   sym_bullet_list = ID2SYM(rb_intern("bullet_list"));
   sym_ordered_list = ID2SYM(rb_intern("ordered_list"));
 
+  sym_left = ID2SYM(rb_intern("left"));
+  sym_right = ID2SYM(rb_intern("right"));
+  sym_center = ID2SYM(rb_intern("center"));
+
   module = rb_define_module("CommonMarker");
   rb_define_singleton_method(module, "extensions", rb_extensions, 0);
   rb_mNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
@@ -1120,6 +1156,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "list_tight=", rb_node_set_list_tight, 1);
   rb_define_method(rb_mNode, "fence_info", rb_node_get_fence_info, 0);
   rb_define_method(rb_mNode, "fence_info=", rb_node_set_fence_info, 1);
+  rb_define_method(rb_mNode, "table_alignments", rb_node_get_table_alignments, 0);
 
   rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);
