@@ -71,7 +71,7 @@ module CommonMarker
 
     def code_block(node)
       block do
-        if @opts & CommonMarker::Config::Render::GITHUB_PRE_LANG != 0
+        if option_enabled?(:GITHUB_PRE_LANG)
           out("<pre#{sourcepos(node)}")
           if node.fence_info && !node.fence_info.empty?
             out(' lang="', node.fence_info.split(/\s+/)[0], '"')
@@ -92,7 +92,7 @@ module CommonMarker
 
     def html(node)
       block do
-        if @opts & CommonMarker::Config::Render::SAFE != 0
+        if option_enabled?(:SAFE)
           out('<!-- raw HTML omitted -->')
         else
           out(tagfilter(node.string_content))
@@ -101,7 +101,7 @@ module CommonMarker
     end
 
     def inline_html(node)
-      if @opts & CommonMarker::Config::Render::SAFE != 0
+      if option_enabled?(:SAFE)
         out('<!-- raw HTML omitted -->')
       else
         out(tagfilter(node.string_content))
@@ -150,9 +150,9 @@ module CommonMarker
     end
 
     def softbreak(_)
-      if @opts & CommonMarker::Config::Render::HARDBREAKS != 0
+      if option_enabled?(:HARDBREAKS)
         out("<br />\n")
-      elsif @opts & CommonMarker::Config::Render::NOBREAKS != 0
+      elsif option_enabled?(:NOBREAKS)
         out(' ')
       else
         out("\n")
