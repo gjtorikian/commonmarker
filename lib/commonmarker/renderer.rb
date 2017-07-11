@@ -108,7 +108,7 @@ module CommonMarker
             noembed|noframes|script|plaintext
             )
             (?=\s|>|/>)
-          }x,
+          }xi,
           '&lt;\1')
       else
         str
