@@ -1,3 +1,3 @@
 module CommonMarker
-  VERSION = '0.16.5'.freeze
+  VERSION = '0.16.6'.freeze
 end
