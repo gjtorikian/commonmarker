@@ -36,6 +36,8 @@ static VALUE sym_left;
 static VALUE sym_right;
 static VALUE sym_center;
 
+static VALUE sym_timeout;
+
 static VALUE encode_utf8_string(const char *c_string) {
   VALUE string = rb_str_new2(c_string);
   int enc = rb_enc_find_index("UTF-8");
@@ -147,21 +149,39 @@ static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions, cmark
  * Internal: Parses a Markdown string into an HTML string.
  *
  */
-static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VALUE rb_extensions) {
+static VALUE rb_markdown_to_html(int argc, VALUE *argv, VALUE self) {
   char *str, *html;
   int len;
   cmark_parser *parser;
   cmark_node *doc;
+  uint32_t timeout = 0;
+  VALUE rb_text, rb_options, rb_extensions, rb_opts, rb_timeout;
+
+  rb_scan_args(argc, argv, "3:", &rb_text, &rb_options, &rb_extensions, &rb_opts);
+
   Check_Type(rb_text, T_STRING);
   Check_Type(rb_options, T_FIXNUM);
+
+  if (!NIL_P(rb_opts) && !NIL_P(rb_timeout = rb_hash_lookup(rb_opts, sym_timeout))) {
+    Check_Type(rb_timeout, T_FIXNUM);
+    timeout = FIX2INT(rb_timeout);
+  }
 
   parser = prepare_parser(rb_options, rb_extensions, cmark_get_arena_mem_allocator());
 
   str = (char *)RSTRING_PTR(rb_text);
   len = RSTRING_LEN(rb_text);
 
+#ifdef CMARK_TIMEOUT_SUPPORTED
+  doc = cmark_parser_feed_finish(parser, str, len, timeout);
+#else
+  if (timeout > 0) {
+    rb_raise(rb_eArgError, "timeout specified but no timeout available");
+  }
   cmark_parser_feed(parser, str, len);
   doc = cmark_parser_finish(parser);
+#endif
+
   if (doc == NULL) {
     cmark_arena_reset();
     rb_raise(rb_mNodeError, "error parsing document");
@@ -1116,12 +1136,14 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   sym_right = ID2SYM(rb_intern("right"));
   sym_center = ID2SYM(rb_intern("center"));
 
+  sym_timeout = ID2SYM(rb_intern("timeout"));
+
   module = rb_define_module("CommonMarker");
   rb_define_singleton_method(module, "extensions", rb_extensions, 0);
   rb_mNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
   rb_mNode = rb_define_class_under(module, "Node", rb_cObject);
   rb_define_singleton_method(rb_mNode, "markdown_to_html", rb_markdown_to_html,
-                             3);
+                             -1);
   rb_define_singleton_method(rb_mNode, "new", rb_node_new, 1);
   rb_define_singleton_method(rb_mNode, "parse_document", rb_parse_document, 4);
   rb_define_method(rb_mNode, "string_content", rb_node_get_string_content, 0);
