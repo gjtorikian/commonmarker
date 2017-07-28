@@ -160,7 +160,7 @@ To have multiple options applied, pass in an array of symbols:
 CommonMarker.render_html("\"'Shelob' is my name.\"", [:HARDBREAKS, :SOURCEPOS])
 ```
 
-For more information on these options, see [the CMark documentation](http://git.io/vlQii).
+For more information on these options, see [the CMark documentation](https://git.io/v7nh1).
 
 ## Hacking
 
