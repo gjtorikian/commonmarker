@@ -1161,5 +1161,5 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);
 
-  cmark_register_plugin(core_extensions_registration);
+  core_extensions_ensure_registered();
 }

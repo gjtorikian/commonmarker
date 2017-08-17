@@ -42,7 +42,7 @@ dir_config('cmark', HEADER_DIRS, LIB_DIRS)
 # don't even bother to do this check if using OS X's messed up system Ruby: http://git.io/vsxkn
 unless sitearch =~ /^universal-darwin/
   abort 'libcmark-gfm is missing.' unless find_library('cmark-gfm', 'cmark_parse_document')
-  abort 'libcmark-gfmextensions is missing.' unless find_library('cmark-gfmextensions', 'core_extensions_registration')
+  abort 'libcmark-gfmextensions is missing.' unless find_library('cmark-gfmextensions', 'core_extensions_ensure_registered')
 end
 
 $LDFLAGS << " -L#{CMARK_BUILD_DIR}/src -L#{CMARK_BUILD_DIR}/extensions -lcmark-gfm -lcmark-gfmextensions"
