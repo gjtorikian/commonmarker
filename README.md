@@ -3,7 +3,9 @@
 [![Build Status](https://travis-ci.org/gjtorikian/commonmarker.svg)](https://travis-ci.org/gjtorikian/commonmarker) [![Gem Version](https://badge.fury.io/rb/commonmarker.svg)](http://badge.fury.io/rb/commonmarker)
 
 Ruby wrapper for [libcmark](https://github.com/jgm/CommonMark),
-the reference parser for CommonMark. It passes all of the C tests, and is therefore spec-complete.
+the reference parser for CommonMark. It passes all of the C tests, and is therefore spec-complete. It also provides unique extensions to the CommonMark spec, such as support for tables, strikethroughs, and autolinking.
+
+For more information on available extensions, see [the documentation below](#extensions).
 
 ## Installation
 
@@ -162,7 +164,19 @@ CommonMarker.render_html("\"'Shelob' is my name.\"", [:HARDBREAKS, :SOURCEPOS])
 
 For more information on these options, see [the CMark documentation](https://git.io/v7nh1).
 
-## Hacking
+## Extensions
+
+Both `render_html` and `render_doc` take an optional third argument defining the extensions you want enabled as your CommonMark document is being processed. The documentation for these extensions are [defined in this spec](https://github.github.com/gfm/), and the rationale is provided [in this blog post](https://githubengineering.com/a-formal-spec-for-github-markdown/).
+
+The available extensions are:
+
+* `:table` - This provides support for tables.
+* `:strikethrough` - This provides support for strikethroughs.
+* `:autolink` - This provides support for automatically converting URLs to anchor tags.
+* `:tagfilter` - This strips out [several "unsafe" HTML tags](https://github.github.com/gfm/#disallowed-raw-html-extension-) from being used.
+* `:tasklist` - This enables support for task list rendering.
+
+## Developing locally
 
 After cloning the repo:
 
