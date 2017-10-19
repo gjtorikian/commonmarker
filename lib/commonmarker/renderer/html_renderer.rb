@@ -161,6 +161,7 @@ module CommonMarker
 
     def table(node)
       @alignments = node.table_alignments
+      @needs_close_tbody = false
       out("<table#{sourcepos(node)}>\n", :children)
       out("</tbody>") if @needs_close_tbody
       out("</table>\n")
