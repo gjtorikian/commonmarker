@@ -4,6 +4,13 @@ module CommonMarker
       super(node)
     end
 
+    def document(_)
+      super
+      if @written_footnote_ix
+        out("</ol>\n</section>\n")
+      end
+    end
+
     def header(node)
       block do
         out('<h', node.header_level, "#{sourcepos(node)}>", :children,
@@ -18,6 +25,10 @@ module CommonMarker
         block do
           container("<p#{sourcepos(node)}>", '</p>') do
             out(:children)
+            if node.parent.type == :footnote_definition && node.next.nil?
+              out(" ")
+              out_footnote_backref
+            end
           end
         end
       end
@@ -197,6 +208,36 @@ module CommonMarker
 
     def strikethrough(_)
       out('<del>', :children, '</del>')
+    end
+
+    def footnote_reference(node)
+      out("<sup class=\"footnote-ref\"><a href=\"#fn#{node.string_content}\" id=\"fnref#{node.string_content}\">[#{node.string_content}]</a></sup>")
+    end
+
+    def footnote_definition(_)
+      if !@footnote_ix
+        out("<section class=\"footnotes\">\n<ol>\n")
+        @footnote_ix = 0
+      end
+
+      @footnote_ix += 1
+      out("<li id=\"fn#@footnote_ix\">\n", :children)
+      if out_footnote_backref
+        out("\n")
+      end
+      out("</li>\n")
+#</ol>
+#</section>
+    end
+
+    private
+
+    def out_footnote_backref
+      return false if @written_footnote_ix == @footnote_ix
+      @written_footnote_ix = @footnote_ix
+
+      out("<a href=\"#fnref#@footnote_ix\" class=\"footnote-backref\">↩</a>")
+      true
     end
   end
 end

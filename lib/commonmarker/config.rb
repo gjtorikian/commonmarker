@@ -9,6 +9,7 @@ module CommonMarker
       define :VALIDATE_UTF8, (1 << 9)
       define :SMART, (1 << 10)
       define :LIBERAL_HTML_TAG, (1 << 12)
+      define :FOOTNOTES, (1 << 13)
     end
 
     class Render

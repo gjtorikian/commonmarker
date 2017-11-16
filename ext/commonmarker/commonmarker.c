@@ -28,6 +28,8 @@ static VALUE sym_emph;
 static VALUE sym_strong;
 static VALUE sym_link;
 static VALUE sym_image;
+static VALUE sym_footnote_reference;
+static VALUE sym_footnote_definition;
 
 static VALUE sym_bullet_list;
 static VALUE sym_ordered_list;
@@ -243,6 +245,10 @@ static VALUE rb_node_new(VALUE self, VALUE type) {
     node_type = CMARK_NODE_LINK;
   else if (type == sym_image)
     node_type = CMARK_NODE_IMAGE;
+  else if (type == sym_footnote_reference)
+    node_type = CMARK_NODE_FOOTNOTE_REFERENCE;
+  else if (type == sym_footnote_definition)
+    node_type = CMARK_NODE_FOOTNOTE_DEFINITION;
   else
     rb_raise(rb_mNodeError, "invalid node of type %d", node_type);
 
@@ -394,6 +400,12 @@ static VALUE rb_node_get_type(VALUE self) {
     break;
   case CMARK_NODE_IMAGE:
     symbol = sym_image;
+    break;
+  case CMARK_NODE_FOOTNOTE_REFERENCE:
+    symbol = sym_footnote_reference;
+    break;
+  case CMARK_NODE_FOOTNOTE_DEFINITION:
+    symbol = sym_footnote_definition;
     break;
   default:
     if (node->extension) {
@@ -1108,6 +1120,8 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   sym_strong = ID2SYM(rb_intern("strong"));
   sym_link = ID2SYM(rb_intern("link"));
   sym_image = ID2SYM(rb_intern("image"));
+  sym_footnote_reference = ID2SYM(rb_intern("footnote_reference"));
+  sym_footnote_definition = ID2SYM(rb_intern("footnote_definition"));
 
   sym_bullet_list = ID2SYM(rb_intern("bullet_list"));
   sym_ordered_list = ID2SYM(rb_intern("ordered_list"));
