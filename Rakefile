@@ -16,13 +16,6 @@ Rake::ExtensionTask.new('commonmarker', gem_spec) do |ext|
   ext.lib_dir = File.join('lib', 'commonmarker')
 end
 
-Rake::Task['clean'].enhance do
-  ext_dir = File.join(File.dirname(__FILE__), 'ext', 'commonmarker', 'cmark')
-  Dir.chdir(ext_dir) do
-    `make clean`
-  end
-end
-
 # Packaging
 require 'bundler/gem_tasks'
 

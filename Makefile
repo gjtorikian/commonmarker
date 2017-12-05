@@ -1,18 +1,21 @@
-C_SOURCES = $(wildcard ext/commonmarker/cmark/*/*)
+C_SOURCES = $(wildcard ext/commonmarker/*.[ch])
 
 update-c-sources: $(C_SOURCES)
 
-ext/commonmarker/cmark/%: ext/commonmarker/cmark-upstream/%
+ext/commonmarker/%: ext/commonmarker/cmark-upstream/src/%
 	cp $< $@
 
-ext/commonmarker/cmark/src/config.h: ext/commonmarker/cmark-upstream/build/src/config.h
+ext/commonmarker/%: ext/commonmarker/cmark-upstream/extensions/%
 	cp $< $@
 
-ext/commonmarker/cmark/src/cmark_export.h: ext/commonmarker/cmark-upstream/build/src/cmark_export.h
+ext/commonmarker/config.h: ext/commonmarker/cmark-upstream/build/src/config.h
 	cp $< $@
 
-ext/commonmarker/cmark/src/cmark_version.h: ext/commonmarker/cmark-upstream/build/src/cmark_version.h
+ext/commonmarker/cmark_export.h: ext/commonmarker/cmark-upstream/build/src/cmark_export.h
 	cp $< $@
 
-ext/commonmarker/cmark/extensions/cmarkextensions_export.h: ext/commonmarker/cmark-upstream/build/extensions/cmarkextensions_export.h
+ext/commonmarker/cmark_version.h: ext/commonmarker/cmark-upstream/build/src/cmark_version.h
+	cp $< $@
+
+ext/commonmarker/cmarkextensions_export.h: ext/commonmarker/cmark-upstream/build/extensions/cmarkextensions_export.h
 	cp $< $@

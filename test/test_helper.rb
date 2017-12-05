@@ -20,7 +20,7 @@ def open_spec_file(filename)
   extensions = []
 
   header_re = Regexp.new('#+ ')
-  filepath = File.join('ext', 'commonmarker', 'cmark', 'test', filename)
+  filepath = File.join('ext', 'commonmarker', 'cmark-upstream', 'test', filename)
 
   File.readlines(filepath, encoding: "utf-8").each do |line|
     line_number += 1
