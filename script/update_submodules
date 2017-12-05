@@ -10,12 +10,14 @@ fi
 
 echo "Using $BRANCH..."
 
-echo "Checking out cmark"
+echo "Checking out cmark-upstream"
 echo "---------------------"
-cd ext/commonmarker/cmark
+cd ext/commonmarker/cmark-upstream
 git fetch origin
 git checkout $BRANCH && git pull
 sha=`git rev-parse HEAD`
 cd ../../..
-git add ext/commonmarker/cmark
-git commit -m "Update cmark to $(git config submodule.ext/commonmarker/cmark.url | sed s_.git\$__)/commit/${sha}"
+make
+git add ext/commonmarker/cmark-upstream
+git add ext/commonmarker/*.[ch]
+git commit -m "Update cmark-upstream to $(git config submodule.ext/commonmarker/cmark-upstream.url | sed s_.git\$__)/commit/${sha}"
