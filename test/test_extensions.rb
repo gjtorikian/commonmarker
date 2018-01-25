@@ -35,6 +35,9 @@ Another extension:
       assert out.include?("<del>hi</del>")
     end
 
+    doc = CommonMarker.render_doc("~a~ ~~b~~ ~~~c~~~", :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
+    assert_equal doc.to_html, "<p>~a~ <del>b</del> ~~~c~~~</p>\n"
+
     CommonMarker.render_html(@markdown, :DEFAULT, %i[table strikethrough]).tap do |out|
       refute out.include?("| a")
       refute out.include?("| <strong>x</strong>")
@@ -57,6 +60,9 @@ Another extension:
       %w(<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>).each {|html| assert out.include?(html) }
       assert out.include?("~~hi~~")
     end
+
+    doc = CommonMarker.render_doc("~a~ ~~b~~ ~~~c~~~", :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
+    assert_equal HtmlRenderer.new.render(doc), "<p>~a~ <del>b</del> ~~~c~~~</p>\n"
   end
 
   def test_bad_extension_specifications

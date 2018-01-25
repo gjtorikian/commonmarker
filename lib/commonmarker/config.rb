@@ -10,6 +10,7 @@ module CommonMarker
       define :SMART, (1 << 10)
       define :LIBERAL_HTML_TAG, (1 << 12)
       define :FOOTNOTES, (1 << 13)
+      define :STRIKETHROUGH_DOUBLE_TILDE, (1 << 14)
     end
 
     class Render
