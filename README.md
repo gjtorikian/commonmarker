@@ -175,7 +175,6 @@ The available extensions are:
 * `:strikethrough` - This provides support for strikethroughs.
 * `:autolink` - This provides support for automatically converting URLs to anchor tags.
 * `:tagfilter` - This strips out [several "unsafe" HTML tags](https://github.github.com/gfm/#disallowed-raw-html-extension-) from being used.
-* `:tasklist` - This enables support for task list rendering.
 
 ## Developing locally
 
