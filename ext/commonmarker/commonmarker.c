@@ -579,7 +579,7 @@ static VALUE rb_render_commonmark(VALUE n, VALUE rb_options) {
   options = FIX2INT(rb_options);
   Data_Get_Struct(n, cmark_node, node);
 
-  char *cmark = cmark_render_commonmark(node, options, 120);
+  char *cmark = cmark_render_commonmark(node, options, 0);
   VALUE ruby_cmark = rb_str_new2(cmark);
   free(cmark);
 
