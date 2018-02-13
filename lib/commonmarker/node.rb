@@ -31,21 +31,23 @@ module CommonMarker
     # Public: Convert the node to a CommonMark string.
     #
     # options - A {Symbol} or {Array of Symbol}s indicating the render options
+    # width - Column to wrap the output at
     #
     # Returns a {String}.
-    def to_commonmark(options = :DEFAULT)
+    def to_commonmark(options = :DEFAULT, width = 120)
       opts = Config.process_options(options, :render)
-      _render_commonmark(opts).force_encoding('utf-8')
+      _render_commonmark(opts, width).force_encoding('utf-8')
     end
 
     # Public: Convert the node to a plain text string.
     #
     # options - A {Symbol} or {Array of Symbol}s indicating the render options
+    # width - Column to wrap the output at
     #
     # Returns a {String}.
-    def to_plaintext(options = :DEFAULT)
+    def to_plaintext(options = :DEFAULT, width = 120)
       opts = Config.process_options(options, :render)
-      _render_plaintext(opts).force_encoding('utf-8')
+      _render_plaintext(opts, width).force_encoding('utf-8')
     end
 
     # Public: Iterate over the children (if any) of the current pointer.

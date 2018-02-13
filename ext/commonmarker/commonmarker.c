@@ -571,7 +571,16 @@ static VALUE rb_render_html(VALUE n, VALUE rb_options, VALUE rb_extensions) {
  *
  * Returns a {String}.
  */
-static VALUE rb_render_commonmark(VALUE n, VALUE rb_options) {
+static VALUE rb_render_commonmark(int argc, VALUE *argv, VALUE n) {
+  VALUE rb_options, rb_width;
+  rb_scan_args(argc, argv, "11", &rb_options, &rb_width);
+
+  int width = 120;
+  if (!NIL_P(rb_width)) {
+    Check_Type(rb_width, T_FIXNUM);
+    width = FIX2INT(rb_width);
+  }
+
   int options;
   cmark_node *node;
   Check_Type(rb_options, T_FIXNUM);
@@ -579,7 +588,7 @@ static VALUE rb_render_commonmark(VALUE n, VALUE rb_options) {
   options = FIX2INT(rb_options);
   Data_Get_Struct(n, cmark_node, node);
 
-  char *cmark = cmark_render_commonmark(node, options, 120);
+  char *cmark = cmark_render_commonmark(node, options, width);
   VALUE ruby_cmark = rb_str_new2(cmark);
   free(cmark);
 
@@ -590,7 +599,16 @@ static VALUE rb_render_commonmark(VALUE n, VALUE rb_options) {
  *
  * Returns a {String}.
  */
-static VALUE rb_render_plaintext(VALUE n, VALUE rb_options) {
+static VALUE rb_render_plaintext(int argc, VALUE *argv, VALUE n) {
+  VALUE rb_options, rb_width;
+  rb_scan_args(argc, argv, "11", &rb_options, &rb_width);
+
+  int width = 120;
+  if (!NIL_P(rb_width)) {
+    Check_Type(rb_width, T_FIXNUM);
+    width = FIX2INT(rb_width);
+  }
+
   int options;
   cmark_node *node;
   Check_Type(rb_options, T_FIXNUM);
@@ -598,7 +616,7 @@ static VALUE rb_render_plaintext(VALUE n, VALUE rb_options) {
   options = FIX2INT(rb_options);
   Data_Get_Struct(n, cmark_node, node);
 
-  char *text = cmark_render_plaintext(node, options, 120);
+  char *text = cmark_render_plaintext(node, options, width);
   VALUE ruby_text = rb_str_new2(text);
   free(text);
 
@@ -1148,8 +1166,8 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "next", rb_node_next, 0);
   rb_define_method(rb_mNode, "insert_before", rb_node_insert_before, 1);
   rb_define_method(rb_mNode, "_render_html", rb_render_html, 2);
-  rb_define_method(rb_mNode, "_render_commonmark", rb_render_commonmark, 1);
-  rb_define_method(rb_mNode, "_render_plaintext", rb_render_plaintext, 1);
+  rb_define_method(rb_mNode, "_render_commonmark", rb_render_commonmark, -1);
+  rb_define_method(rb_mNode, "_render_plaintext", rb_render_plaintext, -1);
   rb_define_method(rb_mNode, "insert_after", rb_node_insert_after, 1);
   rb_define_method(rb_mNode, "prepend_child", rb_node_prepend_child, 1);
   rb_define_method(rb_mNode, "append_child", rb_node_append_child, 1);
