@@ -592,7 +592,7 @@ static VALUE rb_render_commonmark(int argc, VALUE *argv, VALUE n) {
   VALUE ruby_cmark = rb_str_new2(cmark);
   free(cmark);
 
-  return ruby_cmark;  
+  return ruby_cmark;
 }
 
 /* Internal: Convert the node to a plain textstring.
