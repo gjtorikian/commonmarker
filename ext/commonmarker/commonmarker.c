@@ -524,7 +524,7 @@ static VALUE rb_node_insert_before(VALUE self, VALUE sibling) {
  *
  * Returns a {String}.
  */
-static VALUE rb_render_html(VALUE n, VALUE rb_options, VALUE rb_extensions) {
+static VALUE rb_render_html(VALUE self, VALUE rb_options, VALUE rb_extensions) {
   int options, extensions_len;
   VALUE rb_ext_name;
   int i;
@@ -537,7 +537,7 @@ static VALUE rb_render_html(VALUE n, VALUE rb_options, VALUE rb_extensions) {
   options = FIX2INT(rb_options);
   extensions_len = RARRAY_LEN(rb_extensions);
 
-  Data_Get_Struct(n, cmark_node, node);
+  Data_Get_Struct(self, cmark_node, node);
 
   for (i = 0; i < extensions_len; ++i) {
     rb_ext_name = RARRAY_PTR(rb_extensions)[i];
@@ -586,7 +586,7 @@ static VALUE rb_render_commonmark(int argc, VALUE *argv, VALUE self) {
   Check_Type(rb_options, T_FIXNUM);
 
   options = FIX2INT(rb_options);
-  Data_Get_Struct(n, cmark_node, node);
+  Data_Get_Struct(self, cmark_node, node);
 
   char *cmark = cmark_render_commonmark(node, options, width);
   VALUE ruby_cmark = rb_str_new2(cmark);
@@ -614,7 +614,7 @@ static VALUE rb_render_plaintext(int argc, VALUE *argv, VALUE self) {
   Check_Type(rb_options, T_FIXNUM);
 
   options = FIX2INT(rb_options);
-  Data_Get_Struct(n, cmark_node, node);
+  Data_Get_Struct(self, cmark_node, node);
 
   char *text = cmark_render_plaintext(node, options, width);
   VALUE ruby_text = rb_str_new2(text);
