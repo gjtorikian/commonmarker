@@ -571,7 +571,7 @@ static VALUE rb_render_html(VALUE n, VALUE rb_options, VALUE rb_extensions) {
  *
  * Returns a {String}.
  */
-static VALUE rb_render_commonmark(int argc, VALUE *argv, VALUE n) {
+static VALUE rb_render_commonmark(int argc, VALUE *argv, VALUE self) {
   VALUE rb_options, rb_width;
   rb_scan_args(argc, argv, "11", &rb_options, &rb_width);
 
@@ -599,7 +599,7 @@ static VALUE rb_render_commonmark(int argc, VALUE *argv, VALUE n) {
  *
  * Returns a {String}.
  */
-static VALUE rb_render_plaintext(int argc, VALUE *argv, VALUE n) {
+static VALUE rb_render_plaintext(int argc, VALUE *argv, VALUE self) {
   VALUE rb_options, rb_width;
   rb_scan_args(argc, argv, "11", &rb_options, &rb_width);
 
