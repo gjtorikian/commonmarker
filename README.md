@@ -147,6 +147,7 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 | `:NOBREAKS`        | Translate `\n` in the source to a single whitespace.
 | `:SAFE`            | Suppress raw HTML and unsafe links.
 | `:GITHUB_PRE_LANG` | Use GitHub-style `<pre lang>` for fenced code blocks.
+| `:TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells
 
 ### Passing options
 

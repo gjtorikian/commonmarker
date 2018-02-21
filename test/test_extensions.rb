@@ -75,4 +75,31 @@ Another extension:
     assert_equal "<!--hello--> <blah> &lt;xmp>\n",
       CommonMarker.render_html("<!--hello--> <blah> <xmp>\n", :DEFAULT, %i[tagfilter])
   end
+
+  def test_table_prefer_style_attributes
+      assert_equal(<<-HTML, CommonMarker.render_html(<<-MD, :TABLE_PREFER_STYLE_ATTRIBUTES, %i[table]))
+<table>
+<thead>
+<tr>
+<th style="text-align: left">aaa</th>
+<th>bbb</th>
+<th style="text-align: center">ccc</th>
+<th>ddd</th>
+<th style="text-align: right">eee</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left">fff</td>
+<td>ggg</td>
+<td style="text-align: center">hhh</td>
+<td>iii</td>
+<td style="text-align: right">jjj</td>
+</tr></tbody></table>
+      HTML
+aaa | bbb | ccc | ddd | eee
+:-- | --- | :-: | --- | --:
+fff | ggg | hhh | iii | jjj
+      MD
+  end
 end
