@@ -129,24 +129,25 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 
 ### Parse options
 
-| Name                | Description
-| ------------------- | -----------
-| `:DEFAULT`          | The default parsing system.
-| `:SMART`            | Use smart punctuation (curly quotes, etc.).
-| `:VALIDATE_UTF8`    | Replace illegal sequences with the replacement character `U+FFFD`.
-| `:LIBERAL_HTML_TAG` | Support liberal parsing of inline HTML tags.
-| `:FOOTNOTES`        | Parse footnotes.
+| Name                          | Description
+| ----------------------------- | -----------
+| `:DEFAULT`                    | The default parsing system.
+| `:FOOTNOTES`                  | Parse footnotes.
+| `:LIBERAL_HTML_TAG`           | Support liberal parsing of inline HTML tags.
+| `:SMART`                      | Use smart punctuation (curly quotes, etc.).
+| `:STRIKETHROUGH_DOUBLE_TILDE` | Parse strikethroughs by double tildes (compatibility with [redcarpet](https://github.com/vmg/redcarpet))
+| `:VALIDATE_UTF8`              | Replace illegal sequences with the replacement character `U+FFFD`.
 
 ### Render options
 
 | Name               | Description
 | ------------------ | -----------
 | `:DEFAULT`         | The default rendering system.
-| `:SOURCEPOS`       | Include source position in rendered HTML.
+| `:GITHUB_PRE_LANG` | Use GitHub-style `<pre lang>` for fenced code blocks.
 | `:HARDBREAKS`      | Treat `\n` as hardbreaks (by adding `<br/>`).
 | `:NOBREAKS`        | Translate `\n` in the source to a single whitespace.
 | `:SAFE`            | Suppress raw HTML and unsafe links.
-| `:GITHUB_PRE_LANG` | Use GitHub-style `<pre lang>` for fenced code blocks.
+| `:SOURCEPOS`       | Include source position in rendered HTML.
 | `:TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells
 
 ### Passing options
