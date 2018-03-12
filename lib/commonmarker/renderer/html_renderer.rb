@@ -211,7 +211,7 @@ module CommonMarker
     end
 
     def footnote_reference(node)
-      out("<sup class=\"footnote-ref\"><a href=\"#fn#{node.string_content}\" id=\"fnref#{node.string_content}\">[#{node.string_content}]</a></sup>")
+      out("<sup class=\"footnote-ref\"><a href=\"#fn#{node.string_content}\" id=\"fnref#{node.string_content}\">#{node.string_content}</a></sup>")
     end
 
     def footnote_definition(_)

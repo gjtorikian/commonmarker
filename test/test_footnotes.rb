@@ -4,7 +4,7 @@ class TestFootnotes < Minitest::Test
   def setup
     @doc = CommonMarker.render_doc("Hello[^hi].\n\n[^hi]: Hey!\n", :FOOTNOTES)
     @expected = <<-HTML
-<p>Hello<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>.</p>
+<p>Hello<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup>.</p>
 <section class="footnotes">
 <ol>
 <li id="fn1">
