@@ -21,7 +21,12 @@ module CommonMarker
       define :HARDBREAKS, (1 << 2)
       define :SAFE, (1 << 3)
       define :NOBREAKS, (1 << 4)
+      define :VALIDATE_UTF8, (1 << 9)
       define :GITHUB_PRE_LANG, (1 << 11)
+      define :SMART, (1 << 10)
+      define :LIBERAL_HTML_TAG, (1 << 12)
+      define :FOOTNOTES, (1 << 13)
+      define :STRIKETHROUGH_DOUBLE_TILDE, (1 << 14)
       define :TABLE_PREFER_STYLE_ATTRIBUTES, (1 << 15)
     end
 
