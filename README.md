@@ -140,15 +140,16 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 
 ### Render options
 
-| Name               | Description
-| ------------------ | -----------
-| `:DEFAULT`         | The default rendering system.
-| `:GITHUB_PRE_LANG` | Use GitHub-style `<pre lang>` for fenced code blocks.
-| `:HARDBREAKS`      | Treat `\n` as hardbreaks (by adding `<br/>`).
-| `:NOBREAKS`        | Translate `\n` in the source to a single whitespace.
-| `:SAFE`            | Suppress raw HTML and unsafe links.
-| `:SOURCEPOS`       | Include source position in rendered HTML.
-| `:TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells
+| Name                             | Description                                                    |
+| ------------------               | -----------                                                    |
+| `:DEFAULT`                       | The default rendering system.                                  |
+| `:GITHUB_PRE_LANG`               | Use GitHub-style `<pre lang>` for fenced code blocks.          |
+| `:HARDBREAKS`                    | Treat `\n` as hardbreaks (by adding `<br/>`).                  |
+| `:NOBREAKS`                      | Translate `\n` in the source to a single whitespace.           |
+| `:SAFE`                          | Suppress raw HTML and unsafe links.                            |
+| `:SOURCEPOS`                     | Include source position in rendered HTML.                      |
+| `:TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells                  |
+| `:FULL_INFO_STRING`              | Include full info strings of code blocks in separate attribute |
 
 ### Passing options
 
