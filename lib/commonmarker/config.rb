@@ -23,6 +23,7 @@ module CommonMarker
       define :NOBREAKS, (1 << 4)
       define :GITHUB_PRE_LANG, (1 << 11)
       define :TABLE_PREFER_STYLE_ATTRIBUTES, (1 << 15)
+      define :FULL_INFO_STRING, (1 << 16)
     end
 
     def self.process_options(option, type)

@@ -1,6 +1,11 @@
 C_SOURCES = $(wildcard ext/commonmarker/*.[ch])
 
-update-c-sources: $(C_SOURCES)
+update-c-sources: build-upstream $(C_SOURCES)
+
+.PHONY: build-upstream
+
+build-upstream:
+	cd ext/commonmarker/cmark-upstream && make
 
 ext/commonmarker/%: ext/commonmarker/cmark-upstream/src/%
 	cp $< $@
