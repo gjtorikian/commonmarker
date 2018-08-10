@@ -102,4 +102,20 @@ aaa | bbb | ccc | ddd | eee
 fff | ggg | hhh | iii | jjj
       MD
   end
+
+  def test_plaintext
+    assert_equal(<<-HTML, CommonMarker.render_doc(<<-MD, :DEFAULT, %i[table strikethrough]).to_plaintext)
+Hello ~there~.
+
+| a |
+| --- |
+| b |
+    HTML
+Hello ~~there~~.
+
+| a |
+| - |
+| b |
+    MD
+  end
 end
