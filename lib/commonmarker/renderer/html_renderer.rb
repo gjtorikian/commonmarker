@@ -174,7 +174,7 @@ module CommonMarker
       @alignments = node.table_alignments
       @needs_close_tbody = false
       out("<table#{sourcepos(node)}>\n", :children)
-      out("</tbody>") if @needs_close_tbody
+      out("</tbody>\n") if @needs_close_tbody
       out("</table>\n")
     end
 
@@ -182,7 +182,7 @@ module CommonMarker
       @column_index = 0
 
       @in_header = true
-      out("<thead>\n<tr#{sourcepos(node)}>", :children, "\n</tr>\n</thead>")
+      out("<thead>\n<tr#{sourcepos(node)}>\n", :children, "</tr>\n</thead>\n")
       @in_header = false
     end
 
@@ -190,9 +190,9 @@ module CommonMarker
       @column_index = 0
       if !@in_header && !@needs_close_tbody
         @needs_close_tbody = true
-        out("\n<tbody>")
+        out("<tbody>\n")
       end
-      out("\n<tr#{sourcepos(node)}>", :children, "\n</tr>")
+      out("<tr#{sourcepos(node)}>\n", :children, "</tr>\n")
     end
 
     def table_cell(node)
@@ -202,7 +202,7 @@ module CommonMarker
               when :center; ' align="center"'
               else; ''
               end
-      out(@in_header ? "\n<th#{align}#{sourcepos(node)}>" : "\n<td#{align}#{sourcepos(node)}>", :children, @in_header ? "</th>" : "</td>")
+      out(@in_header ? "<th#{align}#{sourcepos(node)}>" : "<td#{align}#{sourcepos(node)}>", :children, @in_header ? "</th>\n" : "</td>\n")
       @column_index += 1
     end
 

@@ -95,7 +95,9 @@ Another extension:
 <td style="text-align: center">hhh</td>
 <td>iii</td>
 <td style="text-align: right">jjj</td>
-</tr></tbody></table>
+</tr>
+</tbody>
+</table>
       HTML
 aaa | bbb | ccc | ddd | eee
 :-- | --- | :-: | --- | --:
