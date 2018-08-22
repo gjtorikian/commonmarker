@@ -1,11 +1,11 @@
 #include "commonmarker.h"
-#include "cmark.h"
+#include "cmark-gfm.h"
 #include "houdini.h"
 #include "node.h"
 #include "registry.h"
 #include "parser.h"
 #include "syntax_extension.h"
-#include "core-extensions.h"
+#include "cmark-gfm-core-extensions.h"
 
 static VALUE rb_mNodeError;
 static VALUE rb_mNode;
@@ -1041,8 +1041,8 @@ static VALUE rb_node_get_table_alignments(VALUE self) {
   VALUE ary;
   Data_Get_Struct(self, cmark_node, node);
 
-  column_count = cmarkextensions_get_table_columns(node);
-  alignments = cmarkextensions_get_table_alignments(node);
+  column_count = cmark_gfm_extensions_get_table_columns(node);
+  alignments = cmark_gfm_extensions_get_table_alignments(node);
 
   if (!column_count || !alignments) {
     rb_raise(rb_mNodeError, "could not get column_count or alignments");
@@ -1193,5 +1193,5 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);
 
-  core_extensions_ensure_registered();
+  cmark_gfm_core_extensions_ensure_registered();
 }

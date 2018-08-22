@@ -16,11 +16,11 @@ ext/commonmarker/%: ext/commonmarker/cmark-upstream/extensions/%
 ext/commonmarker/config.h: ext/commonmarker/cmark-upstream/build/src/config.h
 	cp $< $@
 
-ext/commonmarker/cmark_export.h: ext/commonmarker/cmark-upstream/build/src/cmark_export.h
+ext/commonmarker/cmark-gfm_export.h: ext/commonmarker/cmark-upstream/build/src/cmark-gfm_export.h
 	cp $< $@
 
-ext/commonmarker/cmark_version.h: ext/commonmarker/cmark-upstream/build/src/cmark_version.h
+ext/commonmarker/cmark-gfm_version.h: ext/commonmarker/cmark-upstream/build/src/cmark-gfm_version.h
 	cp $< $@
 
-ext/commonmarker/cmarkextensions_export.h: ext/commonmarker/cmark-upstream/build/extensions/cmarkextensions_export.h
+ext/commonmarker/cmark-gfm-extensions_export.h: ext/commonmarker/cmark-upstream/build/extensions/cmark-gfm-extensions_export.h
 	cp $< $@

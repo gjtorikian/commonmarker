@@ -5,7 +5,7 @@
 #define __MSXML_LIBRARY_DEFINED__
 #endif
 
-#include "cmark.h"
+#include "cmark-gfm.h"
 #include "ruby.h"
 #include "ruby/encoding.h"
 
