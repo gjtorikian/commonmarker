@@ -103,19 +103,19 @@ module CommonMarker
 
     def html(node)
       block do
-        if option_enabled?(:SAFE)
-          out('<!-- raw HTML omitted -->')
-        else
+        if option_enabled?(:UNSAFE)
           out(tagfilter(node.string_content))
+        else
+          out('<!-- raw HTML omitted -->')
         end
       end
     end
 
     def inline_html(node)
-      if option_enabled?(:SAFE)
-        out('<!-- raw HTML omitted -->')
-      else
+      if option_enabled?(:UNSAFE)
         out(tagfilter(node.string_content))
+      else
+        out('<!-- raw HTML omitted -->')
       end
     end
 

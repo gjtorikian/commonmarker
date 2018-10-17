@@ -19,7 +19,7 @@ module CommonMarker
       define :DEFAULT, 0
       define :SOURCEPOS, (1 << 1)
       define :HARDBREAKS, (1 << 2)
-      define :SAFE, (1 << 3)
+      define :UNSAFE, (1 << 17)
       define :NOBREAKS, (1 << 4)
       define :GITHUB_PRE_LANG, (1 << 11)
       define :TABLE_PREFER_STYLE_ATTRIBUTES, (1 << 15)
