@@ -146,7 +146,7 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 | `:GITHUB_PRE_LANG`               | Use GitHub-style `<pre lang>` for fenced code blocks.          |
 | `:HARDBREAKS`                    | Treat `\n` as hardbreaks (by adding `<br/>`).                  |
 | `:NOBREAKS`                      | Translate `\n` in the source to a single whitespace.           |
-| `:SAFE`                          | Suppress raw HTML and unsafe links.                            |
+| `:UNSAFE`                        | Allow raw HTML and unsafe links.                               |
 | `:SOURCEPOS`                     | Include source position in rendered HTML.                      |
 | `:TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells                  |
 | `:FULL_INFO_STRING`              | Include full info strings of code blocks in separate attribute |
@@ -177,7 +177,7 @@ The available extensions are:
 * `:table` - This provides support for tables.
 * `:strikethrough` - This provides support for strikethroughs.
 * `:autolink` - This provides support for automatically converting URLs to anchor tags.
-* `:tagfilter` - This strips out [several "unsafe" HTML tags](https://github.github.com/gfm/#disallowed-raw-html-extension-) from being used.
+* `:tagfilter` - This escapes [several "unsafe" HTML tags](https://github.github.com/gfm/#disallowed-raw-html-extension-), causing them to not have any effect.
 
 ## Developing locally
 

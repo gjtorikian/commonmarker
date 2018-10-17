@@ -73,7 +73,7 @@ Another extension:
 
   def test_comments_are_kept_as_expected
     assert_equal "<!--hello--> <blah> &lt;xmp>\n",
-      CommonMarker.render_html("<!--hello--> <blah> <xmp>\n", :DEFAULT, %i[tagfilter])
+      CommonMarker.render_html("<!--hello--> <blah> <xmp>\n", :UNSAFE, %i[tagfilter])
   end
 
   def test_table_prefer_style_attributes
