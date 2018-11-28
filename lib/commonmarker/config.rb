@@ -11,6 +11,7 @@ module CommonMarker
       define :LIBERAL_HTML_TAG, (1 << 12)
       define :FOOTNOTES, (1 << 13)
       define :STRIKETHROUGH_DOUBLE_TILDE, (1 << 14)
+      define :UNSAFE, (1 << 17)
     end
 
     class Render
@@ -19,11 +20,11 @@ module CommonMarker
       define :DEFAULT, 0
       define :SOURCEPOS, (1 << 1)
       define :HARDBREAKS, (1 << 2)
-      define :UNSAFE, (1 << 17)
       define :NOBREAKS, (1 << 4)
       define :GITHUB_PRE_LANG, (1 << 11)
       define :TABLE_PREFER_STYLE_ATTRIBUTES, (1 << 15)
       define :FULL_INFO_STRING, (1 << 16)
+      define :UNSAFE, (1 << 17)
     end
 
     def self.process_options(option, type)
@@ -41,7 +42,7 @@ module CommonMarker
     end
 
     def self.check_option(option, type)
-      unless type.keys.include?(option)
+      unless type.key?(option)
         raise TypeError, "option ':#{option}' does not exist for #{type}"
       end
     end
