@@ -1,4 +1,6 @@
 # coding: utf-8
+# frozen_string_literal: true
+
 require 'commonmarker'
 require 'minitest/autorun'
 require 'minitest/pride'
@@ -22,7 +24,7 @@ def open_spec_file(filename)
   header_re = Regexp.new('#+ ')
   filepath = File.join('ext', 'commonmarker', 'cmark-upstream', 'test', filename)
 
-  File.readlines(filepath, encoding: "utf-8").each do |line|
+  File.readlines(filepath, encoding: 'utf-8').each do |line|
     line_number += 1
 
     l = line.strip
@@ -34,13 +36,13 @@ def open_spec_file(filename)
       example_number += 1
       end_line = line_number
       tests << {
-        :markdown => markdown_lines.join('').tr('→', "\t"),
-        :html => html_lines.join('').tr('→', "\t").rstrip,
-        :example => example_number,
-        :start_line => start_line,
-        :end_line => end_line,
-        :section => headertext,
-        :extensions => extensions.map(&:to_sym),
+        markdown: markdown_lines.join('').tr('→', "\t"),
+        html: html_lines.join('').tr('→', "\t").rstrip,
+        example: example_number,
+        start_line: start_line,
+        end_line: end_line,
+        section: headertext,
+        extensions: extensions.map(&:to_sym),
       }
       start_line = 0
       markdown_lines = []

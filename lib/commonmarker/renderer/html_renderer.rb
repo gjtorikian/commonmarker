@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CommonMarker
   class HtmlRenderer < Renderer
     def render(node)
@@ -26,7 +28,7 @@ module CommonMarker
           container("<p#{sourcepos(node)}>", '</p>') do
             out(:children)
             if node.parent.type == :footnote_definition && node.next.nil?
-              out(" ")
+              out(' ')
               out_footnote_backref
             end
           end

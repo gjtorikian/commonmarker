@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'commonmarker/node/inspect'
 
 module CommonMarker

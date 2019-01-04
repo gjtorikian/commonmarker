@@ -1,4 +1,6 @@
 # encoding: utf-8
+# frozen_string_literal: true
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'commonmarker/version'
@@ -32,4 +34,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'json', '~> 1.8.1'
   s.add_development_dependency 'awesome_print'
   s.add_development_dependency 'rdoc', '~> 5.1'
+  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'rubocop-github'
 end

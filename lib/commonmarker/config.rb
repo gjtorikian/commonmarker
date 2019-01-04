@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ruby-enum'
 module CommonMarker
   # For Ruby::Enum, these must be classes, not modules
