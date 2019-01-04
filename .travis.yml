@@ -4,18 +4,11 @@ rvm:
   - 2.3.6
   - 2.4.3
   - 2.5.0
+
 git:
   depth: 10
 
 sudo: false
-
-# we need a more recent cmake than travis/linux provides (at least 2.8.9):
-addons:
-  apt:
-    sources:
-      - kalakris-cmake
-    packages:
-      - cmake
 
 before_install:
   - gem install bundler
