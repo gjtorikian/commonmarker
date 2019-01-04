@@ -84,8 +84,8 @@ class TestNode < Minitest::Test
   def test_inspect
     assert_match /#<CommonMarker::Node\(document\):/, @doc.inspect
   end
-
+  focus
   def test_pretty_print
-    assert_match /#<CommonMarker::Node\(document\):/, PP.pp(@doc, '')
+    assert_match /#<CommonMarker::Node\(document\):/, PP.pp(@doc, ''.dup)
   end
 end

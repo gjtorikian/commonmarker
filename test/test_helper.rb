@@ -4,6 +4,7 @@
 require 'commonmarker'
 require 'minitest/autorun'
 require 'minitest/pride'
+require 'minitest/focus'
 
 include CommonMarker
 

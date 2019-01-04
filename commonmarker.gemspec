@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'ruby-enum', '~> 0.5'
 
   s.add_development_dependency 'minitest', '~> 5.6'
+  s.add_development_dependency 'minitest-focus', '~> 1.1'
   s.add_development_dependency 'rake-compiler', '~> 0.9'
   s.add_development_dependency 'json', '~> 1.8.1'
   s.add_development_dependency 'awesome_print'

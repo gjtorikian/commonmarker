@@ -10,7 +10,7 @@ module CommonMarker
     attr_accessor :in_tight, :warnings, :in_plain
     def initialize(options: :DEFAULT, extensions: [])
       @opts = Config.process_options(options, :render)
-      @stream = StringIO.new(''.force_encoding('utf-8'))
+      @stream = StringIO.new(''.dup.force_encoding('utf-8'))
       @need_blocksep = false
       @warnings = Set.new []
       @in_tight = false
