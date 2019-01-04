@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TestNode < Minitest::Test
@@ -11,7 +13,7 @@ class TestNode < Minitest::Test
     doc = nil
     GC.start
     # Test that doc has not been freed.
-    assert_equal "there", text.string_content
+    assert_equal 'there', text.string_content
   end
 
   def test_drop_child_reference
@@ -21,7 +23,7 @@ class TestNode < Minitest::Test
     GC.start
     # Test that the cached child object is still valid.
     text = doc.first_child.last_child.first_child
-    assert_equal "there", text.string_content
+    assert_equal 'there', text.string_content
   end
 
   def test_remove_parent

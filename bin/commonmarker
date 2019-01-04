@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # Usage: commonmarker [--html-renderer] [--list-extensions] [--extension=EXTENSION] [FILE..]
 # Convert one or more CommonMark files to HTML and write to standard output.
 # If no FILE argument is provided, text will be read from STDIN.
@@ -13,7 +15,7 @@ if ARGV.include?('--help') or ARGV.include?('-h')
   exit 0
 end
 
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), *%w( .. lib ))
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'commonmarker'
 
 if ARGV.include?('--version') or ARGV.include?('-v')

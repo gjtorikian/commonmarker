@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'commonmarker'
 require 'github/markdown'
 require 'redcarpet'
@@ -9,7 +11,7 @@ def dobench(name, &blk)
   puts Benchmark.measure(&blk)
 end
 
-benchinput = File.open('test/benchinput.md', 'r').read()
+benchinput = File.open('test/benchinput.md', 'r').read
 
 printf("input size = %d bytes\n\n", benchinput.bytesize)
 

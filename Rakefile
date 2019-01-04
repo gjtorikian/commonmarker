@@ -1,12 +1,15 @@
+# frozen_string_literal: true
+
 require 'date'
 require 'rake/clean'
 require 'rake/extensiontask'
 require 'digest/md5'
 
+
 host_os = RbConfig::CONFIG['host_os']
 require 'devkit' if host_os == 'mingw32'
 
-task :default => [:test]
+task default: [:test]
 
 # Gem Spec
 gem_spec = Gem::Specification.load('commonmarker.gemspec')
@@ -33,7 +36,11 @@ end
 task 'test:unit' => :compile
 
 desc 'Run unit and conformance tests'
-task :test => %w(test:unit)
+task test: %w(test:unit)
+
+require 'rubocop/rake_task'
+
+RuboCop::RakeTask.new(:rubocop)
 
 desc 'Run benchmarks'
 task :benchmark do
@@ -71,7 +78,7 @@ RDoc::Task.new do |rd|
 end
 
 desc 'Generate and publish docs to gh-pages'
-task :publish => [:rdoc] do
+task publish: [:rdoc] do
   require 'shellwords'
 
   Dir.mktmpdir do |tmp|

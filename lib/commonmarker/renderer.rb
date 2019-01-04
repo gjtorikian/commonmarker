@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+# rubocop:disable GitHub/RailsViewRenderLiteral
+# rubocop:disable GitHub/RailsControllerRenderLiteral
+
 require 'set'
 require 'stringio'
 
@@ -6,7 +10,7 @@ module CommonMarker
     attr_accessor :in_tight, :warnings, :in_plain
     def initialize(options: :DEFAULT, extensions: [])
       @opts = Config.process_options(options, :render)
-      @stream = StringIO.new("".force_encoding("utf-8"))
+      @stream = StringIO.new(''.dup.force_encoding('utf-8'))
       @need_blocksep = false
       @warnings = Set.new []
       @in_tight = false
@@ -116,7 +120,7 @@ module CommonMarker
     end
 
     def sourcepos(node)
-      return "" unless option_enabled?(:SOURCEPOS)
+      return '' unless option_enabled?(:SOURCEPOS)
       s = node.sourcepos
       " data-sourcepos=\"#{s[:start_line]}:#{s[:start_column]}-" \
         "#{s[:end_line]}:#{s[:end_column]}\""
