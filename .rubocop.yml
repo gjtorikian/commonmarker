@@ -8,3 +8,7 @@ Style/StringLiterals:
 
 Naming/FileName:
   Enabled: false
+
+AllCops:
+  Exclude:
+    - 'ext/**/*'
