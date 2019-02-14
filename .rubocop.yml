@@ -12,3 +12,4 @@ Naming/FileName:
 AllCops:
   Exclude:
     - 'ext/**/*'
+    - 'vendor/**/*'
