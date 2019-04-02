@@ -1034,6 +1034,20 @@ static VALUE rb_node_set_fence_info(VALUE self, VALUE info) {
   return Qnil;
 }
 
+static VALUE rb_node_get_tasklist_state(VALUE self) {
+  const char *tasklist_state;
+  cmark_node *node;
+  Data_Get_Struct(self, cmark_node, node);
+
+  tasklist_state = cmark_gfm_extensions_get_tasklist_state(node);
+
+  if (tasklist_state == NULL) {
+    rb_raise(rb_mNodeError, "could not get tasklist_state");
+  }
+
+  return rb_str_new2(tasklist_state);
+}
+
 static VALUE rb_node_get_table_alignments(VALUE self) {
   uint16_t column_count, i;
   uint8_t *alignments;
@@ -1189,6 +1203,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "fence_info", rb_node_get_fence_info, 0);
   rb_define_method(rb_mNode, "fence_info=", rb_node_set_fence_info, 1);
   rb_define_method(rb_mNode, "table_alignments", rb_node_get_table_alignments, 0);
+  rb_define_method(rb_mNode, "tasklist_state", rb_node_get_tasklist_state, 0);
 
   rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);
