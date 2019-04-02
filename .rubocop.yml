@@ -13,3 +13,4 @@ AllCops:
   Exclude:
     - 'ext/**/*'
     - 'vendor/**/*'
+    - 'tmp/**/*'

@@ -71,16 +71,12 @@ module CommonMarker
 
     def tasklist(node)
       return '' unless tasklist?(node)
-      state = if node.tasklist_state == "checked"
-        "disabled=\"\""
+      state = if checked?(node)
+        'disabled=""'
       else
-        "checked=\"\" disabled=\"\""
+        'checked="" disabled="""'
       end
       return "><input type=\"checkbox\" #{state} /"
-    end
-
-    def tasklist?(node)
-      node.type_string == "tasklist"
     end
 
     def blockquote(node)
@@ -256,5 +252,14 @@ module CommonMarker
       out("<a href=\"#fnref#@footnote_ix\" class=\"footnote-backref\">↩</a>")
       true
     end
+
+    def tasklist?(node)
+      node.type_string == 'tasklist'
+    end
+
+    def checked?(node)
+      node.tasklist_state == 'checked'
+    end
+
   end
 end
