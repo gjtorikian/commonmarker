@@ -62,10 +62,25 @@ module CommonMarker
 
     def list_item(node)
       block do
-        container("<li#{sourcepos(node)}>", '</li>') do
+        tasklist_data = tasklist(node)
+        container("<li#{sourcepos(node)}#{tasklist_data}>#{' ' if tasklist?(node)}", '</li>') do
           out(:children)
         end
       end
+    end
+
+    def tasklist(node)
+      return '' unless tasklist?(node)
+      state = if node.tasklist_state == "checked"
+        "disabled=\"\""
+      else
+        "checked=\"\" disabled=\"\""
+      end
+      return "><input type=\"checkbox\" #{state} /"
+    end
+
+    def tasklist?(node)
+      node.type_string == "tasklist"
     end
 
     def blockquote(node)
