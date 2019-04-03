@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake-compiler', '~> 0.9'
   s.add_development_dependency 'json', '~> 1.8.1'
   s.add_development_dependency 'awesome_print'
+  s.add_development_dependency 'rake'
   s.add_development_dependency 'rdoc', '~> 5.1'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'rubocop-standard'
