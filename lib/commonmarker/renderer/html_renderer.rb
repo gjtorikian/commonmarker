@@ -74,7 +74,7 @@ module CommonMarker
       state = if checked?(node)
         'disabled=""'
       else
-        'checked="" disabled="""'
+        'checked="" disabled=""'
       end
       return "><input type=\"checkbox\" #{state} /"
     end
