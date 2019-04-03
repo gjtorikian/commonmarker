@@ -36,5 +36,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'awesome_print'
   s.add_development_dependency 'rdoc', '~> 5.1'
   s.add_development_dependency 'rubocop'
-  s.add_development_dependency 'rubocop-github'
+  s.add_development_dependency 'rubocop-standard'
 end

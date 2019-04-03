@@ -57,6 +57,7 @@ static void S_out(cmark_renderer *renderer, cmark_node *node,
       }
     }
     renderer->column = 0;
+    renderer->last_breakable = 0;
     renderer->begin_line = true;
     renderer->begin_content = true;
     renderer->need_cr -= 1;
@@ -188,7 +189,7 @@ char *cmark_render(cmark_mem *mem, cmark_node *root, int options, int width,
   }
 
   // ensure final newline
-  if (renderer.buffer->ptr[renderer.buffer->size - 1] != '\n') {
+  if (renderer.buffer->size == 0 || renderer.buffer->ptr[renderer.buffer->size - 1] != '\n') {
     cmark_strbuf_putc(renderer.buffer, '\n');
   }
 

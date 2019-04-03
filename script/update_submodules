@@ -18,6 +18,9 @@ git checkout $BRANCH && git pull
 sha=`git rev-parse HEAD`
 cd ../../..
 make
+cp ext/commonmarker/cmark-upstream/extensions/*.{c,h} ext/commonmarker
+cp ext/commonmarker/cmark-upstream/src/*.{inc,c,h} ext/commonmarker
+rm ext/commonmarker/main.c
 git add ext/commonmarker/cmark-upstream
-git add ext/commonmarker/*.[ch]
+git add ext/commonmarker/
 git commit -m "Update cmark-upstream to $(git config submodule.ext/commonmarker/cmark-upstream.url | sed s_.git\$__)/commit/${sha}"

@@ -1,5 +1,5 @@
 inherit_gem:
-  rubocop-github:
+  rubocop-standard:
     - config/default.yml
 
 Style/StringLiterals:
@@ -8,3 +8,9 @@ Style/StringLiterals:
 
 Naming/FileName:
   Enabled: false
+
+AllCops:
+  Exclude:
+    - 'ext/**/*'
+    - 'vendor/**/*'
+    - 'tmp/**/*'

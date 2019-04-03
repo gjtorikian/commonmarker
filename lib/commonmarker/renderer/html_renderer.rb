@@ -62,10 +62,21 @@ module CommonMarker
 
     def list_item(node)
       block do
-        container("<li#{sourcepos(node)}>", '</li>') do
+        tasklist_data = tasklist(node)
+        container("<li#{sourcepos(node)}#{tasklist_data}>#{' ' if tasklist?(node)}", '</li>') do
           out(:children)
         end
       end
+    end
+
+    def tasklist(node)
+      return '' unless tasklist?(node)
+      state = if checked?(node)
+        'disabled=""'
+      else
+        'checked="" disabled=""'
+      end
+      return "><input type=\"checkbox\" #{state} /"
     end
 
     def blockquote(node)
@@ -241,5 +252,14 @@ module CommonMarker
       out("<a href=\"#fnref#@footnote_ix\" class=\"footnote-backref\">↩</a>")
       true
     end
+
+    def tasklist?(node)
+      node.type_string == 'tasklist'
+    end
+
+    def checked?(node)
+      node.tasklist_state == 'checked'
+    end
+
   end
 end

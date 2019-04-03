@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-# rubocop:disable GitHub/RailsViewRenderLiteral
-# rubocop:disable GitHub/RailsControllerRenderLiteral
+# rubocop:disable Standard/RailsViewRenderLiteral
+# rubocop:disable Standard/RailsControllerRenderLiteral
 
 require 'set'
 require 'stringio'
