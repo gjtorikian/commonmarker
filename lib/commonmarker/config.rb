@@ -39,7 +39,7 @@ module CommonMarker
         # neckbearding around. the map will both check the opts and then bitwise-OR it
         option.map { |o| check_option(o, type); type.to_h[o] }.inject(0, :|)
       else
-        raise TypeError, 'option type must be a valid symbol or array of symbols'
+        raise TypeError, "option type must be a valid symbol or array of symbols within the #{type} context"
       end
     end
 
