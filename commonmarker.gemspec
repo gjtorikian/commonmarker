@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.files         = %w(LICENSE.txt README.md Rakefile commonmarker.gemspec bin/commonmarker)
   s.files        += Dir.glob('lib/**/*.rb')
   s.files        += Dir.glob('ext/commonmarker/*.*')
-  s.test_files    = Dir.glob('test/**/*')
+  s.test_files    = Dir.glob('test/**/*').reject { |f| f == 'test/benchinput.md' || f.start_with?('test/progit/') }
   s.extensions    = ['ext/commonmarker/extconf.rb']
 
   s.test_files = s.files.grep(%r{^test/})
