@@ -72,9 +72,9 @@ module CommonMarker
     def tasklist(node)
       return '' unless tasklist?(node)
       state = if checked?(node)
-        'disabled=""'
-      else
         'checked="" disabled=""'
+      else
+        'disabled=""'
       end
       return "><input type=\"checkbox\" #{state} /"
     end
