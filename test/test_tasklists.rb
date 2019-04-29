@@ -24,4 +24,10 @@ MD
   def test_html_renderer
     assert_equal @expected, CommonMarker::HtmlRenderer.new.render(@doc)
   end
+
+  def test_tasklist_state
+    list = @doc.first_child
+    assert_equal 'checked', list.first_child.tasklist_state
+    assert_equal 'unchecked', list.first_child.next.tasklist_state
+  end
 end
