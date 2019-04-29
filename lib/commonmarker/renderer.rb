@@ -1,6 +1,4 @@
 # frozen_string_literal: true
-# rubocop:disable Standard/RailsViewRenderLiteral
-# rubocop:disable Standard/RailsControllerRenderLiteral
 
 require 'set'
 require 'stringio'
