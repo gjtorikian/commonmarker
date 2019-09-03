@@ -176,6 +176,7 @@ Both `render_html` and `render_doc` take an optional third argument defining the
 The available extensions are:
 
 * `:table` - This provides support for tables.
+* `:tasklist` - This provides support for task list items.
 * `:strikethrough` - This provides support for strikethroughs.
 * `:autolink` - This provides support for automatically converting URLs to anchor tags.
 * `:tagfilter` - This escapes [several "unsafe" HTML tags](https://github.github.com/gfm/#disallowed-raw-html-extension-), causing them to not have any effect.
