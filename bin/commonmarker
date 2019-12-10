@@ -7,8 +7,8 @@ require 'ostruct'
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'commonmarker'
 
-root = File.expand_path('../../', __FILE__)
-$:.unshift File.expand_path('lib', root)
+root = File.expand_path('..', __dir__)
+$LOAD_PATH.unshift File.expand_path('lib', root)
 
 def parse_options
   options = OpenStruct.new
@@ -21,7 +21,7 @@ def parse_options
   options.active_render_options = [:DEFAULT]
 
   option_parser = OptionParser.new do |opts|
-    opts.banner  = 'Usage: commonmarker [--html-renderer] [--list-extensions] [--extension=EXTENSION]'
+    opts.banner = 'Usage: commonmarker [--html-renderer] [--list-extensions] [--extension=EXTENSION]'
     opts.separator '                    [--list-parse-options] [--parse-option=OPTION]'
     opts.separator '                    [--list-render-options] [--render-option=OPTION]'
     opts.separator '                    [FILE..]'
@@ -30,11 +30,13 @@ def parse_options
     opts.separator 'If no FILE argument is provided, text will be read from STDIN.'
     opts.separator ''
 
-    opts.on('--extension=EXTENSION', 'Use EXTENSION for parsing and HTML output unless --html-renderer is specified') do |value|
-      if extensions.include?(value)
-        options.active_extensions << value.to_sym
-      else
-        abort("extension '#{value}' not found")
+    opts.on('--extension=EXTENSION', Array, 'Use EXTENSION for parsing and HTML output unless --html-renderer is specified') do |values|
+      values.each do |value|
+        if extensions.include?(value)
+          options.active_extensions << value.to_sym
+        else
+          abort("extension '#{value}' not found")
+        end
       end
     end
 
@@ -62,23 +64,27 @@ def parse_options
       exit
     end
 
-    opts.on('--parse-option=OPTION', 'OPTION will be passed during parsing') do |value|
-      if parse_options.key?(value.to_sym)
-        options.active_parse_options << value.to_sym
-      else
-        abort("parse-option '#{value}' not found")
+    opts.on('--parse-option=OPTION', Array, 'OPTION will be passed during parsing') do |values|
+      values.each do |value|
+        if parse_options.key?(value.to_sym)
+          options.active_parse_options << value.to_sym
+        else
+          abort("parse-option '#{value}' not found")
+        end
       end
     end
 
-    opts.on('--render-option=OPTION', 'OPTION will be passed during rendering') do |value|
-      if render_options.key?(value.to_sym)
-        options.active_render_options << value.to_sym
-      else
-        abort("render-option '#{value}' not found")
+    opts.on('--render-option=OPTION', Array, 'OPTION will be passed during rendering') do |values|
+      values.each do |value|
+        if render_options.key?(value.to_sym)
+          options.active_render_options << value.to_sym
+        else
+          abort("render-option '#{value}' not found")
+        end
       end
     end
 
-    opts.on("-v", "--version", 'Version information') do
+    opts.on('-v', '--version', 'Version information') do
       puts "commonmarker #{CommonMarker::VERSION}"
       exit
     end
@@ -86,7 +92,7 @@ def parse_options
 
   option_parser.parse!
 
-  return options
+  options
 end
 
 options = parse_options
