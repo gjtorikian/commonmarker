@@ -21,16 +21,16 @@ def parse_options
   options.active_render_options = [:DEFAULT]
 
   option_parser = OptionParser.new do |opts|
-    opts.banner = 'Usage: commonmarker [--html-renderer] [--list-extensions] [--extension=EXTENSION]'
-    opts.separator '                    [--list-parse-options] [--parse-option=OPTION]'
-    opts.separator '                    [--list-render-options] [--render-option=OPTION]'
+    opts.banner = 'Usage: commonmarker [--html-renderer] [--extension=EXTENSION]'
+    opts.separator '                    [--parse-option=OPTION]'
+    opts.separator '                    [--render-option=OPTION]'
     opts.separator '                    [FILE..]'
     opts.separator ''
     opts.separator 'Convert one or more CommonMark files to HTML and write to standard output.'
     opts.separator 'If no FILE argument is provided, text will be read from STDIN.'
     opts.separator ''
 
-    opts.on('--extension=EXTENSION', Array, 'Use EXTENSION for parsing and HTML output unless --html-renderer is specified') do |values|
+    opts.on('--extension=EXTENSION', Array, 'Use EXTENSION for parsing and HTML output (unless --html-renderer is specified)') do |values|
       values.each do |value|
         if extensions.include?(value)
           options.active_extensions << value.to_sym
@@ -42,6 +42,12 @@ def parse_options
 
     opts.on('-h', '--help', 'Prints this help') do
       puts opts
+      puts
+      puts "Available extentions: #{extensions.join(', ')}"
+      puts "Available parse options: #{parse_options.keys.join(', ')}"
+      puts "Available render options: #{render_options.keys.join(', ')}"
+      puts
+      puts 'See the README for more information on these.'
       exit
     end
 
@@ -49,22 +55,7 @@ def parse_options
       options.renderer = true
     end
 
-    opts.on('--list-extensions', 'List the supported extensions') do
-      puts extensions
-      exit
-    end
-
-    opts.on('--list-parse-options', 'List the supported parsing options') do
-      puts parse_options.keys
-      exit
-    end
-
-    opts.on('--list-render-options', 'List the supported rendering options') do
-      puts render_options.keys
-      exit
-    end
-
-    opts.on('--parse-option=OPTION', Array, 'OPTION will be passed during parsing') do |values|
+    opts.on('--parse-option=OPTION', Array, 'OPTION passed during parsing') do |values|
       values.each do |value|
         if parse_options.key?(value.to_sym)
           options.active_parse_options << value.to_sym
@@ -74,7 +65,7 @@ def parse_options
       end
     end
 
-    opts.on('--render-option=OPTION', Array, 'OPTION will be passed during rendering') do |values|
+    opts.on('--render-option=OPTION', Array, 'OPTION passed during rendering') do |values|
       values.each do |value|
         if render_options.key?(value.to_sym)
           options.active_render_options << value.to_sym

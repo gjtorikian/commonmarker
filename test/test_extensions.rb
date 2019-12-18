@@ -4,18 +4,7 @@ require 'test_helper'
 
 class TestExtensions < Minitest::Test
   def setup
-    @markdown = <<-MD
-One extension:
-
-| a   | b   |
-| --- | --- |
-| c   | d   |
-| **x** | |
-
-Another extension:
-
-~~hi~~
-    MD
+    @markdown = fixtures_file('table.md')
   end
 
   def test_uses_specified_extensions

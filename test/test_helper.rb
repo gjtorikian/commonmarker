@@ -10,6 +10,14 @@ include CommonMarker
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), 'fixtures')
 
+def fixtures_file(file)
+  File.read(File.join(FIXTURES_DIR, file), encoding: 'utf-8')
+end
+
+def make_bin(file, args = '')
+  `bin/commonmarker #{File.join(FIXTURES_DIR, file)} #{args}`.chomp
+end
+
 def open_spec_file(filename)
   line_number = 0
   start_line = 0
