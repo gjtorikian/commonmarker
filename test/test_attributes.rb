@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestAttributes < Minitest::Test
   def setup
-    contents = File.read(File.join(FIXTURES_DIR, 'dingus.md'))
+    contents = fixtures_file('dingus.md')
     @doc = CommonMarker.render_doc(contents.strip)
   end
 

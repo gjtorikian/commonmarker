@@ -1,60 +1,98 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Usage: commonmarker [--html-renderer] [--list-extensions] [--extension=EXTENSION] [FILE..]
-# Convert one or more CommonMark files to HTML and write to standard output.
-# If no FILE argument is provided, text will be read from STDIN.
-# With --html-renderer, use the HtmlRenderer renderer rather than the native C
-# renderer.
-# With --extension=EXTENSION, EXTENSION will be used for parsing, and HTML
-# output unless --html-renderer is specified.
-if ARGV.include?('--help') or ARGV.include?('-h')
-  File.read(__FILE__).split("\n").grep(/^# /).each do |line|
-    puts line[2..-1]
-  end
-  exit 0
-end
+require 'optparse'
+require 'ostruct'
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'commonmarker'
 
-if ARGV.include?('--version') or ARGV.include?('-v')
-  puts "commonmarker #{CommonMarker::VERSION}"
-  exit 0
-end
+root = File.expand_path('..', __dir__)
+$LOAD_PATH.unshift File.expand_path('lib', root)
 
-root = File.expand_path('../../', __FILE__)
-$:.unshift File.expand_path('lib', root)
+def parse_options
+  options = OpenStruct.new
+  extensions = CommonMarker.extensions
+  parse_options = CommonMarker::Config::Parse
+  render_options = CommonMarker::Config::Render
 
-extensions = CommonMarker.extensions
-active_extensions = []
+  options.active_extensions = []
+  options.active_parse_options = [:DEFAULT]
+  options.active_render_options = [:DEFAULT]
 
-renderer = nil
-ARGV.delete_if do |arg|
-  if arg =~ /^--html-renderer$/
-    renderer = true
-    true
-  elsif arg =~ /^--list-extensions$/
-    puts extensions
-    exit 0
-  elsif arg =~ /^--extension=(.+)$/
-    if extensions.include?($1)
-      active_extensions << $1.intern
-    else
-      STDERR.puts "extension #$1 not found"
-      exit 1
+  option_parser = OptionParser.new do |opts|
+    opts.banner = 'Usage: commonmarker [--html-renderer] [--extension=EXTENSION]'
+    opts.separator '                    [--parse-option=OPTION]'
+    opts.separator '                    [--render-option=OPTION]'
+    opts.separator '                    [FILE..]'
+    opts.separator ''
+    opts.separator 'Convert one or more CommonMark files to HTML and write to standard output.'
+    opts.separator 'If no FILE argument is provided, text will be read from STDIN.'
+    opts.separator ''
+
+    opts.on('--extension=EXTENSION', Array, 'Use EXTENSION for parsing and HTML output (unless --html-renderer is specified)') do |values|
+      values.each do |value|
+        if extensions.include?(value)
+          options.active_extensions << value.to_sym
+        else
+          abort("extension '#{value}' not found")
+        end
+      end
     end
-    true
-  else
-    false
+
+    opts.on('-h', '--help', 'Prints this help') do
+      puts opts
+      puts
+      puts "Available extentions: #{extensions.join(', ')}"
+      puts "Available parse options: #{parse_options.keys.join(', ')}"
+      puts "Available render options: #{render_options.keys.join(', ')}"
+      puts
+      puts 'See the README for more information on these.'
+      exit
+    end
+
+    opts.on('--html-renderer', 'Use the HtmlRenderer renderer rather than the native C renderer') do
+      options.renderer = true
+    end
+
+    opts.on('--parse-option=OPTION', Array, 'OPTION passed during parsing') do |values|
+      values.each do |value|
+        if parse_options.key?(value.to_sym)
+          options.active_parse_options << value.to_sym
+        else
+          abort("parse-option '#{value}' not found")
+        end
+      end
+    end
+
+    opts.on('--render-option=OPTION', Array, 'OPTION passed during rendering') do |values|
+      values.each do |value|
+        if render_options.key?(value.to_sym)
+          options.active_render_options << value.to_sym
+        else
+          abort("render-option '#{value}' not found")
+        end
+      end
+    end
+
+    opts.on('-v', '--version', 'Version information') do
+      puts "commonmarker #{CommonMarker::VERSION}"
+      exit
+    end
   end
+
+  option_parser.parse!
+
+  options
 end
 
-doc = CommonMarker.render_doc(ARGF.read, :DEFAULT, active_extensions)
+options = parse_options
 
-if renderer
-  renderer = CommonMarker::HtmlRenderer.new(extensions: active_extensions)
+doc = CommonMarker.render_doc(ARGF.read, options.active_parse_options, options.active_extensions)
+
+if options.renderer
+  renderer = CommonMarker::HtmlRenderer.new(extensions: options.active_extensions)
   STDOUT.write(renderer.render(doc))
 else
-  STDOUT.write(doc.to_html(:DEFAULT, active_extensions))
+  STDOUT.write(doc.to_html(options.active_render_options, options.active_extensions))
 end
