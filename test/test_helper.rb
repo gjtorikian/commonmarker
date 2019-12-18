@@ -15,7 +15,7 @@ def fixtures_file(file)
 end
 
 def make_bin(file, args = '')
-  system("bin/commonmarker #{File.join(FIXTURES_DIR, file)} #{args}").chomp
+  `bin/commonmarker '#{File.join(FIXTURES_DIR, file)}' #{args}`.chomp
 end
 
 def open_spec_file(filename)
