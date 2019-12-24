@@ -95,7 +95,7 @@ task publish: [:rdoc] do
 
   Dir.mktmpdir do |tmp|
     system "mv docs/* #{tmp}"
-    system 'git checkout gh-pages'
+    system 'git checkout origin/gh-pages'
     system 'rm -rf *'
     system "mv #{tmp}/* ."
     message = Shellwords.escape("Site updated at #{Time.now.utc}")
