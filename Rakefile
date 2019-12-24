@@ -76,6 +76,18 @@ RDoc::Task.new do |rd|
   rd.options << '--fileboxes'
 end
 
+desc 'Generate the documentation and run a web server'
+task serve: [:rdoc] do
+  require 'webrick'
+
+  puts 'Navigate to http://localhost:3000 to see the docs'
+
+  server = WEBrick::HTTPServer.new Port: 3000
+  server.mount '/', WEBrick::HTTPServlet::FileHandler, 'docs'
+  trap('INT') { server.stop }
+  server.start
+end
+
 desc 'Generate and publish docs to gh-pages'
 task publish: [:rdoc] do
   require 'tmpdir'
