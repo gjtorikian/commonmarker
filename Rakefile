@@ -5,7 +5,6 @@ require 'rake/clean'
 require 'rake/extensiontask'
 require 'digest/md5'
 
-
 host_os = RbConfig::CONFIG['host_os']
 require 'devkit' if host_os == 'mingw32'
 
@@ -36,7 +35,7 @@ end
 task 'test:unit' => :compile
 
 desc 'Run unit and conformance tests'
-task test: %w(test:unit)
+task test: %w[test:unit]
 
 require 'rubocop/rake_task'
 
@@ -47,7 +46,7 @@ task :benchmark do
   if ENV['FETCH_PROGIT']
     `rm -rf test/progit`
     `git clone https://github.com/progit/progit.git test/progit`
-    langs = %w(ar az be ca cs de en eo es es-ni fa fi fr hi hu id it ja ko mk nl no-nb pl pt-br ro ru sr th tr uk vi zh zh-tw)
+    langs = %w[ar az be ca cs de en eo es es-ni fa fi fr hi hu id it ja ko mk nl no-nb pl pt-br ro ru sr th tr uk vi zh zh-tw]
     langs.each do |lang|
       `cat test/progit/#{lang}/*/*.markdown >> test/benchinput.md`
     end
@@ -79,6 +78,7 @@ end
 
 desc 'Generate and publish docs to gh-pages'
 task publish: [:rdoc] do
+  require 'tmpdir'
   require 'shellwords'
 
   Dir.mktmpdir do |tmp|

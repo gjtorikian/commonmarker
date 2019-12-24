@@ -8,6 +8,7 @@ class TestSpec < Minitest::Test
 
   spec.each do |testcase|
     next if testcase[:extensions].include?(:disabled)
+
     doc = CommonMarker.render_doc(testcase[:markdown], :DEFAULT, testcase[:extensions])
 
     define_method("test_to_html_example_#{testcase[:example]}") do
@@ -21,8 +22,8 @@ class TestSpec < Minitest::Test
     end
 
     define_method("test_sourcepos_example_#{testcase[:example]}") do
-      lhs = doc.to_html([:UNSAFE, :SOURCEPOS], testcase[:extensions]).rstrip
-      rhs = HtmlRenderer.new(options: [:UNSAFE, :SOURCEPOS], extensions: testcase[:extensions]).render(doc).rstrip
+      lhs = doc.to_html(%i[UNSAFE SOURCEPOS], testcase[:extensions]).rstrip
+      rhs = HtmlRenderer.new(options: %i[UNSAFE SOURCEPOS], extensions: testcase[:extensions]).render(doc).rstrip
       assert_equal lhs, rhs, testcase[:markdown]
     end
   end

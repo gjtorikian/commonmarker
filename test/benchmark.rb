@@ -13,7 +13,7 @@ end
 
 benchinput = File.open('test/benchinput.md', 'r').read
 
-printf("input size = %d bytes\n\n", benchinput.bytesize)
+printf("input size = %<bytes>d bytes\n\n", benchinput.bytesize)
 
 dobench('redcarpet') do
   Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)

@@ -3,22 +3,22 @@
 require 'test_helper'
 
 class TestCommonmark < Minitest::Test
-  HTML_COMMENT = %r[<!--.*?-->\s?]
+  HTML_COMMENT = /<!--.*?-->\s?/.freeze
 
   def setup
-    @markdown = <<-MD
-Hi *there*!
+    @markdown = <<~MD
+      Hi *there*!
 
-1. I am a numeric list.
-2. I continue the list.
-* Suddenly, an unordered list!
-* What fun!
+      1. I am a numeric list.
+      2. I continue the list.
+      * Suddenly, an unordered list!
+      * What fun!
 
-Okay, _enough_.
+      Okay, _enough_.
 
-| a   | b   |
-| --- | --- |
-| c   | d   |
+      | a   | b   |
+      | --- | --- |
+      | c   | d   |
     MD
   end
 

@@ -8,7 +8,7 @@ module CommonMarker
     attr_accessor :in_tight, :warnings, :in_plain
     def initialize(options: :DEFAULT, extensions: [])
       @opts = Config.process_options(options, :render)
-      @stream = StringIO.new(''.dup.force_encoding('utf-8'))
+      @stream = StringIO.new(+'')
       @need_blocksep = false
       @warnings = Set.new []
       @in_tight = false
@@ -34,7 +34,7 @@ module CommonMarker
       @node = node
       if node.type == :document
         document(node)
-        return @stream.string
+        @stream.string
       elsif @in_plain && node.type != :text && node.type != :softbreak
         node.each { |child| render(child) }
       else
@@ -55,11 +55,11 @@ module CommonMarker
       code_block(node)
     end
 
-    def reference_def(_node)
-    end
+    def reference_def(_node); end
 
     def cr
       return if @stream.string.empty? || @stream.string[-1] == "\n"
+
       out("\n")
     end
 
@@ -111,7 +111,8 @@ module CommonMarker
             )
             (?=\s|>|/>)
           }xi,
-          '&lt;\1')
+          '&lt;\1'
+        )
       else
         str
       end
@@ -119,6 +120,7 @@ module CommonMarker
 
     def sourcepos(node)
       return '' unless option_enabled?(:SOURCEPOS)
+
       s = node.sourcepos
       " data-sourcepos=\"#{s[:start_line]}:#{s[:start_column]}-" \
         "#{s[:end_line]}:#{s[:end_column]}\""
