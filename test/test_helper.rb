@@ -1,4 +1,3 @@
-# coding: utf-8
 # frozen_string_literal: true
 
 require 'commonmarker'
@@ -6,7 +5,7 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'minitest/focus'
 
-include CommonMarker
+include CommonMarker # rubocop:disable Style/MixinUsage
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), 'fixtures')
 
@@ -39,7 +38,7 @@ def open_spec_file(filename)
     l = line.strip
     if l =~ /^`{32} example(.*)$/
       state = 1
-      extensions = $1.split
+      extensions = Regexp.last_match(1).split
     elsif l == '`' * 32
       state = 0
       example_number += 1
@@ -51,7 +50,7 @@ def open_spec_file(filename)
         start_line: start_line,
         end_line: end_line,
         section: headertext,
-        extensions: extensions.map(&:to_sym),
+        extensions: extensions.map(&:to_sym)
       }
       start_line = 0
       markdown_lines = []
@@ -59,11 +58,11 @@ def open_spec_file(filename)
     elsif l == '.'
       state = 2
     elsif state == 1
-      start_line = line_number - 1 if start_line == 0
-      markdown_lines << "#{line}"
+      start_line = line_number - 1 if start_line.zero?
+      markdown_lines << line.to_s
     elsif state == 2
-      html_lines << "#{line}"
-    elsif state == 0 && header_re.match(line)
+      html_lines << line.to_s
+    elsif state.zero? && header_re.match(line)
       headertext = line.sub(header_re, '').strip
     end
   end

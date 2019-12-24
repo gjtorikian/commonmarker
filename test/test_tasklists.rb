@@ -7,13 +7,13 @@ class TestTasklists < Minitest::Test
     text = <<-MD
  - [x] Add task list
  - [ ] Define task list
-MD
+    MD
     @doc = CommonMarker.render_doc(text, :DEFAULT, %i[tasklist])
-    @expected = <<-HTML
-<ul>
-<li><input type="checkbox" checked="" disabled="" /> Add task list</li>
-<li><input type="checkbox" disabled="" /> Define task list</li>
-</ul>
+    @expected = <<~HTML
+      <ul>
+      <li><input type="checkbox" checked="" disabled="" /> Add task list</li>
+      <li><input type="checkbox" disabled="" /> Define task list</li>
+      </ul>
     HTML
   end
 

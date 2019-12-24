@@ -8,9 +8,7 @@ module CommonMarker
 
     def document(_)
       super
-      if @written_footnote_ix
-        out("</ol>\n</section>\n")
-      end
+      out("</ol>\n</section>\n") if @written_footnote_ix
     end
 
     def header(node)
@@ -71,12 +69,13 @@ module CommonMarker
 
     def tasklist(node)
       return '' unless tasklist?(node)
+
       state = if checked?(node)
-        'checked="" disabled=""'
-      else
-        'disabled=""'
+                'checked="" disabled=""'
+              else
+                'disabled=""'
       end
-      return "><input type=\"checkbox\" #{state} /"
+      "><input type=\"checkbox\" #{state} /"
     end
 
     def blockquote(node)
@@ -97,9 +96,7 @@ module CommonMarker
       block do
         if option_enabled?(:GITHUB_PRE_LANG)
           out("<pre#{sourcepos(node)}")
-          if node.fence_info && !node.fence_info.empty?
-            out(' lang="', node.fence_info.split(/\s+/)[0], '"')
-          end
+          out(' lang="', node.fence_info.split(/\s+/)[0], '"') if node.fence_info && !node.fence_info.empty?
           out('><code>')
         else
           out("<pre#{sourcepos(node)}><code")
@@ -142,9 +139,7 @@ module CommonMarker
 
     def link(node)
       out('<a href="', node.url.nil? ? '' : escape_href(node.url), '"')
-      if node.title && !node.title.empty?
-        out(' title="', escape_html(node.title), '"')
-      end
+      out(' title="', escape_html(node.title), '"') if node.title && !node.title.empty?
       out('>', :children, '</a>')
     end
 
@@ -153,9 +148,7 @@ module CommonMarker
       plain do
         out(' alt="', :children, '"')
       end
-      if node.title && !node.title.empty?
-        out(' title="', escape_html(node.title), '"')
-      end
+      out(' title="', escape_html(node.title), '"') if node.title && !node.title.empty?
       out(' />')
     end
 
@@ -169,7 +162,7 @@ module CommonMarker
       out('</code>')
     end
 
-    def linebreak(node)
+    def linebreak(_node)
       out("<br />\n")
     end
 
@@ -210,9 +203,9 @@ module CommonMarker
 
     def table_cell(node)
       align = case @alignments[@column_index]
-              when :left; ' align="left"'
-              when :right; ' align="right"'
-              when :center; ' align="center"'
+              when :left then ' align="left"'
+              when :right then ' align="right"'
+              when :center then ' align="center"'
               else; ''
               end
       out(@in_header ? "<th#{align}#{sourcepos(node)}>" : "<td#{align}#{sourcepos(node)}>", :children, @in_header ? "</th>\n" : "</td>\n")
@@ -228,28 +221,27 @@ module CommonMarker
     end
 
     def footnote_definition(_)
-      if !@footnote_ix
+      unless @footnote_ix
         out("<section class=\"footnotes\">\n<ol>\n")
         @footnote_ix = 0
       end
 
       @footnote_ix += 1
-      out("<li id=\"fn#@footnote_ix\">\n", :children)
-      if out_footnote_backref
-        out("\n")
-      end
+      out("<li id=\"fn#{@footnote_ix}\">\n", :children)
+      out("\n") if out_footnote_backref
       out("</li>\n")
-#</ol>
-#</section>
+      # </ol>
+      # </section>
     end
 
     private
 
     def out_footnote_backref
       return false if @written_footnote_ix == @footnote_ix
+
       @written_footnote_ix = @footnote_ix
 
-      out("<a href=\"#fnref#@footnote_ix\" class=\"footnote-backref\">↩</a>")
+      out("<a href=\"#fnref#{@footnote_ix}\" class=\"footnote-backref\">↩</a>")
       true
     end
 
@@ -260,6 +252,5 @@ module CommonMarker
     def checked?(node)
       node.tasklist_state == 'checked'
     end
-
   end
 end

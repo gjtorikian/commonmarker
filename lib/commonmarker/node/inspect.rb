@@ -8,13 +8,13 @@ module CommonMarker
       PP_INDENT_SIZE = 2
 
       def inspect
-        PP.pp(self, String.new, Float::INFINITY)
+        PP.pp(self, +'', Float::INFINITY)
       end
 
       # @param [PrettyPrint] pp
-      def pretty_print(pp)
-        pp.group(PP_INDENT_SIZE, "#<#{self.class}(#{type}):", '>') do
-          pp.breakable
+      def pretty_print(printer)
+        printer.group(PP_INDENT_SIZE, "#<#{self.class}(#{type}):", '>') do
+          printer.breakable
 
           attrs = %i[
             sourcepos
@@ -34,22 +34,22 @@ module CommonMarker
             end
           end.compact
 
-          pp.seplist(attrs) do |name, value|
-            pp.text "#{name}="
-            pp.pp value
+          printer.seplist(attrs) do |name, value|
+            printer.text "#{name}="
+            printer.pp value
           end
 
           if first_child
-            pp.breakable
-            pp.group(PP_INDENT_SIZE) do
+            printer.breakable
+            printer.group(PP_INDENT_SIZE) do
               children = []
               node = first_child
               while node
                 children << node
                 node = node.next
               end
-              pp.text 'children='
-              pp.pp children
+              printer.text 'children='
+              printer.pp children
             end
           end
         end

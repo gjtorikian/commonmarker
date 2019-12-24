@@ -37,16 +37,17 @@ module CommonMarker
       elsif option.is_a?(Array)
         option = [nil] if option.empty?
         # neckbearding around. the map will both check the opts and then bitwise-OR it
-        option.map { |o| check_option(o, type); type.to_h[o] }.inject(0, :|)
+        option.map do |o|
+          check_option(o, type)
+          type.to_h[o]
+        end.inject(0, :|)
       else
         raise TypeError, "option type must be a valid symbol or array of symbols within the #{type} context"
       end
     end
 
     def self.check_option(option, type)
-      unless type.key?(option)
-        raise TypeError, "option ':#{option}' does not exist for #{type}"
-      end
+      raise TypeError, "option ':#{option}' does not exist for #{type}" unless type.key?(option)
     end
   end
 end

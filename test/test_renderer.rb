@@ -14,16 +14,16 @@ class TestRenderer < Minitest::Test
   end
 
   def test_multiple_tables
-    content = '''
-| Input       | Expected         | Actual    |
-| ----------- | ---------------- | --------- |
-| One         | Two              | Three     |
+    content = <<~DOC
+      | Input       | Expected         | Actual    |
+      | ----------- | ---------------- | --------- |
+      | One         | Two              | Three     |
 
-| Header   | Row  | Example |
-| :------: | ---: | :------ |
-| Foo      | Bar  | Baz     |
-'''
-    doc = CommonMarker.render_doc(content, :DEFAULT, [:autolink, :table, :tagfilter])
+      | Header   | Row  | Example |
+      | :------: | ---: | :------ |
+      | Foo      | Bar  | Baz     |
+    DOC
+    doc = CommonMarker.render_doc(content, :DEFAULT, %i[autolink table tagfilter])
     results = CommonMarker::HtmlRenderer.new.render(doc)
     assert_equal 2, results.scan(/<tbody>/).size
   end

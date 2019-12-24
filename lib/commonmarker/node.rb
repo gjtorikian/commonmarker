@@ -53,7 +53,7 @@ module CommonMarker
     end
 
     # Public: Iterate over the children (if any) of the current pointer.
-    def each(&block)
+    def each
       return enum_for(:each) unless block_given?
 
       child = first_child

@@ -12,7 +12,7 @@ class TestNode < Minitest::Test
     @doc.walk do |node|
       nodes << node.type
     end
-    assert_equal [:document, :paragraph, :text, :emph, :text, :text], nodes
+    assert_equal %i[document paragraph text emph text text], nodes
   end
 
   def test_each
@@ -20,29 +20,29 @@ class TestNode < Minitest::Test
     @doc.first_child.each do |node|
       nodes << node.type
     end
-    assert_equal [:text, :emph, :text], nodes
+    assert_equal %i[text emph text], nodes
   end
 
   def test_deprecated_each_child
     nodes = []
-    out, err = capture_io do
+    _, err = capture_io do
       @doc.first_child.each_child do |node|
         nodes << node.type
       end
     end
-    assert_equal [:text, :emph, :text], nodes
-    assert_match /`each_child` is deprecated/, err
+    assert_equal %i[text emph text], nodes
+    assert_match(/`each_child` is deprecated/, err)
   end
 
   def test_select
     nodes = @doc.first_child.select { |node| node.type == :text }
     assert_equal CommonMarker::Node, nodes.first.class
-    assert_equal [:text, :text], nodes.map(&:type)
+    assert_equal %i[text text], nodes.map(&:type)
   end
 
   def test_map
     nodes = @doc.first_child.map(&:type)
-    assert_equal [:text, :emph, :text], nodes
+    assert_equal %i[text emph text], nodes
   end
 
   def test_insert_illegal
@@ -63,9 +63,7 @@ class TestNode < Minitest::Test
 
   def test_walk_and_set_string_content
     @doc.walk do |node|
-      if node.type == :text && node.string_content == 'there'
-        node.string_content = 'world'
-      end
+      node.string_content = 'world' if node.type == :text && node.string_content == 'there'
     end
     result = HtmlRenderer.new.render(@doc)
     assert_equal "<p>Hi <em>world</em>, I am mostly text!</p>\n", result
@@ -82,10 +80,10 @@ class TestNode < Minitest::Test
   end
 
   def test_inspect
-    assert_match /#<CommonMarker::Node\(document\):/, @doc.inspect
+    assert_match(/#<CommonMarker::Node\(document\):/, @doc.inspect)
   end
 
   def test_pretty_print
-    assert_match /#<CommonMarker::Node\(document\):/, PP.pp(@doc, ''.dup)
+    assert_match(/#<CommonMarker::Node\(document\):/, PP.pp(@doc, +''))
   end
 end

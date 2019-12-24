@@ -11,6 +11,7 @@ Naming/FileName:
 
 AllCops:
   Exclude:
-    - 'ext/**/*'
-    - 'vendor/**/*'
-    - 'tmp/**/*'
+    - "ext/**/*"
+    - "vendor/**/*"
+    - "tmp/**/*"
+    - "test/progit/**/*"

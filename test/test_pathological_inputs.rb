@@ -3,8 +3,8 @@
 require 'test_helper'
 require 'minitest/benchmark' if ENV['BENCH']
 
-def markdown(s)
-  CommonMarker.render_doc(s).to_html
+def markdown(str)
+  CommonMarker.render_doc(str).to_html
 end
 
 # list of pairs consisting of input and a regex that must match the output.
