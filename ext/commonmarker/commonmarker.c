@@ -7,8 +7,8 @@
 #include "syntax_extension.h"
 #include "cmark-gfm-core-extensions.h"
 
-static VALUE rb_mNodeError;
-static VALUE rb_mNode;
+static VALUE rb_eNodeError;
+static VALUE rb_cNode;
 
 static VALUE sym_document;
 static VALUE sym_blockquote;
@@ -94,7 +94,7 @@ static VALUE rb_node_to_value(cmark_node *node) {
 
   /* Only free tree roots. */
   free_func = cmark_node_parent(node) ? NULL : rb_free_c_struct;
-  val = Data_Wrap_Struct(rb_mNode, rb_mark_c_struct, free_func, node);
+  val = Data_Wrap_Struct(rb_cNode, rb_mark_c_struct, free_func, node);
   cmark_node_set_user_data(node, (void *)val);
 
   return val;
@@ -166,7 +166,7 @@ static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VA
   doc = cmark_parser_finish(parser);
   if (doc == NULL) {
     cmark_arena_reset();
-    rb_raise(rb_mNodeError, "error parsing document");
+    rb_raise(rb_eNodeError, "error parsing document");
   }
 
   cmark_mem *default_mem = cmark_get_default_mem_allocator();
@@ -250,11 +250,11 @@ static VALUE rb_node_new(VALUE self, VALUE type) {
   else if (type == sym_footnote_definition)
     node_type = CMARK_NODE_FOOTNOTE_DEFINITION;
   else
-    rb_raise(rb_mNodeError, "invalid node of type %d", node_type);
+    rb_raise(rb_eNodeError, "invalid node of type %d", node_type);
 
   node = cmark_node_new(node_type);
   if (node == NULL) {
-    rb_raise(rb_mNodeError, "could not create node of type %d", node_type);
+    rb_raise(rb_eNodeError, "could not create node of type %d", node_type);
   }
 
   return rb_node_to_value(node);
@@ -283,7 +283,7 @@ static VALUE rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len,
   cmark_parser_feed(parser, text, len);
   doc = cmark_parser_finish(parser);
   if (doc == NULL) {
-    rb_raise(rb_mNodeError, "error parsing document");
+    rb_raise(rb_eNodeError, "error parsing document");
   }
   cmark_parser_free(parser);
 
@@ -302,7 +302,7 @@ static VALUE rb_node_get_string_content(VALUE self) {
 
   text = cmark_node_get_literal(node);
   if (text == NULL) {
-    rb_raise(rb_mNodeError, "could not get string content");
+    rb_raise(rb_eNodeError, "could not get string content");
   }
 
   return encode_utf8_string(text);
@@ -324,7 +324,7 @@ static VALUE rb_node_set_string_content(VALUE self, VALUE s) {
   text = StringValueCStr(s);
 
   if (!cmark_node_set_literal(node, text)) {
-    rb_raise(rb_mNodeError, "could not set string content");
+    rb_raise(rb_eNodeError, "could not set string content");
   }
 
   return Qnil;
@@ -412,7 +412,7 @@ static VALUE rb_node_get_type(VALUE self) {
       s = node->extension->get_type_string_func(node->extension, node);
       return ID2SYM(rb_intern(s));
     }
-    rb_raise(rb_mNodeError, "invalid node type %d", node_type);
+    rb_raise(rb_eNodeError, "invalid node type %d", node_type);
   }
 
   return symbol;
@@ -512,7 +512,7 @@ static VALUE rb_node_insert_before(VALUE self, VALUE sibling) {
   Data_Get_Struct(sibling, cmark_node, node2);
 
   if (!cmark_node_insert_before(node1, node2)) {
-    rb_raise(rb_mNodeError, "could not insert before");
+    rb_raise(rb_eNodeError, "could not insert before");
   }
 
   rb_parent_added(sibling);
@@ -638,7 +638,7 @@ static VALUE rb_node_insert_after(VALUE self, VALUE sibling) {
   Data_Get_Struct(sibling, cmark_node, node2);
 
   if (!cmark_node_insert_after(node1, node2)) {
-    rb_raise(rb_mNodeError, "could not insert after");
+    rb_raise(rb_eNodeError, "could not insert after");
   }
 
   rb_parent_added(sibling);
@@ -661,7 +661,7 @@ static VALUE rb_node_prepend_child(VALUE self, VALUE child) {
   Data_Get_Struct(child, cmark_node, node2);
 
   if (!cmark_node_prepend_child(node1, node2)) {
-    rb_raise(rb_mNodeError, "could not prepend child");
+    rb_raise(rb_eNodeError, "could not prepend child");
   }
 
   rb_parent_added(child);
@@ -684,7 +684,7 @@ static VALUE rb_node_append_child(VALUE self, VALUE child) {
   Data_Get_Struct(child, cmark_node, node2);
 
   if (!cmark_node_append_child(node1, node2)) {
-    rb_raise(rb_mNodeError, "could not append child");
+    rb_raise(rb_eNodeError, "could not append child");
   }
 
   rb_parent_added(child);
@@ -744,7 +744,7 @@ static VALUE rb_node_get_url(VALUE self) {
 
   text = cmark_node_get_url(node);
   if (text == NULL) {
-    rb_raise(rb_mNodeError, "could not get url");
+    rb_raise(rb_eNodeError, "could not get url");
   }
 
   return rb_str_new2(text);
@@ -766,7 +766,7 @@ static VALUE rb_node_set_url(VALUE self, VALUE url) {
   text = StringValueCStr(url);
 
   if (!cmark_node_set_url(node, text)) {
-    rb_raise(rb_mNodeError, "could not set url");
+    rb_raise(rb_eNodeError, "could not set url");
   }
 
   return Qnil;
@@ -785,7 +785,7 @@ static VALUE rb_node_get_title(VALUE self) {
 
   text = cmark_node_get_title(node);
   if (text == NULL) {
-    rb_raise(rb_mNodeError, "could not get title");
+    rb_raise(rb_eNodeError, "could not get title");
   }
 
   return rb_str_new2(text);
@@ -807,7 +807,7 @@ static VALUE rb_node_set_title(VALUE self, VALUE title) {
   text = StringValueCStr(title);
 
   if (!cmark_node_set_title(node, text)) {
-    rb_raise(rb_mNodeError, "could not set title");
+    rb_raise(rb_eNodeError, "could not set title");
   }
 
   return Qnil;
@@ -827,7 +827,7 @@ static VALUE rb_node_get_header_level(VALUE self) {
   header_level = cmark_node_get_header_level(node);
 
   if (header_level == 0) {
-    rb_raise(rb_mNodeError, "could not get header_level");
+    rb_raise(rb_eNodeError, "could not get header_level");
   }
 
   return INT2NUM(header_level);
@@ -849,7 +849,7 @@ static VALUE rb_node_set_header_level(VALUE self, VALUE level) {
   l = FIX2INT(level);
 
   if (!cmark_node_set_header_level(node, l)) {
-    rb_raise(rb_mNodeError, "could not set header_level");
+    rb_raise(rb_eNodeError, "could not set header_level");
   }
 
   return Qnil;
@@ -874,7 +874,7 @@ static VALUE rb_node_get_list_type(VALUE self) {
   } else if (list_type == CMARK_ORDERED_LIST) {
     symbol = sym_ordered_list;
   } else {
-    rb_raise(rb_mNodeError, "could not get list_type");
+    rb_raise(rb_eNodeError, "could not get list_type");
   }
 
   return symbol;
@@ -899,11 +899,11 @@ static VALUE rb_node_set_list_type(VALUE self, VALUE list_type) {
   } else if (list_type == sym_ordered_list) {
     type = CMARK_ORDERED_LIST;
   } else {
-    rb_raise(rb_mNodeError, "invalid list_type");
+    rb_raise(rb_eNodeError, "invalid list_type");
   }
 
   if (!cmark_node_set_list_type(node, type)) {
-    rb_raise(rb_mNodeError, "could not set list_type");
+    rb_raise(rb_eNodeError, "could not set list_type");
   }
 
   return Qnil;
@@ -922,7 +922,7 @@ static VALUE rb_node_get_list_start(VALUE self) {
 
   if (cmark_node_get_type(node) != CMARK_NODE_LIST ||
       cmark_node_get_list_type(node) != CMARK_ORDERED_LIST) {
-    rb_raise(rb_mNodeError, "can't get list_start for non-ordered list %d",
+    rb_raise(rb_eNodeError, "can't get list_start for non-ordered list %d",
              cmark_node_get_list_type(node));
   }
 
@@ -946,7 +946,7 @@ static VALUE rb_node_set_list_start(VALUE self, VALUE start) {
   s = FIX2INT(start);
 
   if (!cmark_node_set_list_start(node, s)) {
-    rb_raise(rb_mNodeError, "could not set list_start");
+    rb_raise(rb_eNodeError, "could not set list_start");
   }
 
   return Qnil;
@@ -964,7 +964,7 @@ static VALUE rb_node_get_list_tight(VALUE self) {
   Data_Get_Struct(self, cmark_node, node);
 
   if (cmark_node_get_type(node) != CMARK_NODE_LIST) {
-    rb_raise(rb_mNodeError, "can't get list_tight for non-list");
+    rb_raise(rb_eNodeError, "can't get list_tight for non-list");
   }
 
   flag = cmark_node_get_list_tight(node);
@@ -986,7 +986,7 @@ static VALUE rb_node_set_list_tight(VALUE self, VALUE tight) {
   t = RTEST(tight);
 
   if (!cmark_node_set_list_tight(node, t)) {
-    rb_raise(rb_mNodeError, "could not set list_tight");
+    rb_raise(rb_eNodeError, "could not set list_tight");
   }
 
   return Qnil;
@@ -1006,7 +1006,7 @@ static VALUE rb_node_get_fence_info(VALUE self) {
   fence_info = cmark_node_get_fence_info(node);
 
   if (fence_info == NULL) {
-    rb_raise(rb_mNodeError, "could not get fence_info");
+    rb_raise(rb_eNodeError, "could not get fence_info");
   }
 
   return rb_str_new2(fence_info);
@@ -1028,7 +1028,7 @@ static VALUE rb_node_set_fence_info(VALUE self, VALUE info) {
   text = StringValueCStr(info);
 
   if (!cmark_node_set_fence_info(node, text)) {
-    rb_raise(rb_mNodeError, "could not set fence_info");
+    rb_raise(rb_eNodeError, "could not set fence_info");
   }
 
   return Qnil;
@@ -1074,7 +1074,7 @@ static VALUE rb_node_get_table_alignments(VALUE self) {
   alignments = cmark_gfm_extensions_get_table_alignments(node);
 
   if (!column_count || !alignments) {
-    rb_raise(rb_mNodeError, "could not get column_count or alignments");
+    rb_raise(rb_eNodeError, "could not get column_count or alignments");
   }
 
   ary = rb_ary_new();
@@ -1179,50 +1179,50 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
 
   module = rb_define_module("CommonMarker");
   rb_define_singleton_method(module, "extensions", rb_extensions, 0);
-  rb_mNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
-  rb_mNode = rb_define_class_under(module, "Node", rb_cObject);
-  rb_define_singleton_method(rb_mNode, "markdown_to_html", rb_markdown_to_html,
+  rb_eNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
+  rb_cNode = rb_define_class_under(module, "Node", rb_cObject);
+  rb_define_singleton_method(rb_cNode, "markdown_to_html", rb_markdown_to_html,
                              3);
-  rb_define_singleton_method(rb_mNode, "new", rb_node_new, 1);
-  rb_define_singleton_method(rb_mNode, "parse_document", rb_parse_document, 4);
-  rb_define_method(rb_mNode, "string_content", rb_node_get_string_content, 0);
-  rb_define_method(rb_mNode, "string_content=", rb_node_set_string_content, 1);
-  rb_define_method(rb_mNode, "type", rb_node_get_type, 0);
-  rb_define_method(rb_mNode, "type_string", rb_node_get_type_string, 0);
-  rb_define_method(rb_mNode, "sourcepos", rb_node_get_sourcepos, 0);
-  rb_define_method(rb_mNode, "delete", rb_node_unlink, 0);
-  rb_define_method(rb_mNode, "first_child", rb_node_first_child, 0);
-  rb_define_method(rb_mNode, "next", rb_node_next, 0);
-  rb_define_method(rb_mNode, "insert_before", rb_node_insert_before, 1);
-  rb_define_method(rb_mNode, "_render_html", rb_render_html, 2);
-  rb_define_method(rb_mNode, "_render_commonmark", rb_render_commonmark, -1);
-  rb_define_method(rb_mNode, "_render_plaintext", rb_render_plaintext, -1);
-  rb_define_method(rb_mNode, "insert_after", rb_node_insert_after, 1);
-  rb_define_method(rb_mNode, "prepend_child", rb_node_prepend_child, 1);
-  rb_define_method(rb_mNode, "append_child", rb_node_append_child, 1);
-  rb_define_method(rb_mNode, "last_child", rb_node_last_child, 0);
-  rb_define_method(rb_mNode, "parent", rb_node_parent, 0);
-  rb_define_method(rb_mNode, "previous", rb_node_previous, 0);
-  rb_define_method(rb_mNode, "url", rb_node_get_url, 0);
-  rb_define_method(rb_mNode, "url=", rb_node_set_url, 1);
-  rb_define_method(rb_mNode, "title", rb_node_get_title, 0);
-  rb_define_method(rb_mNode, "title=", rb_node_set_title, 1);
-  rb_define_method(rb_mNode, "header_level", rb_node_get_header_level, 0);
-  rb_define_method(rb_mNode, "header_level=", rb_node_set_header_level, 1);
-  rb_define_method(rb_mNode, "list_type", rb_node_get_list_type, 0);
-  rb_define_method(rb_mNode, "list_type=", rb_node_set_list_type, 1);
-  rb_define_method(rb_mNode, "list_start", rb_node_get_list_start, 0);
-  rb_define_method(rb_mNode, "list_start=", rb_node_set_list_start, 1);
-  rb_define_method(rb_mNode, "list_tight", rb_node_get_list_tight, 0);
-  rb_define_method(rb_mNode, "list_tight=", rb_node_set_list_tight, 1);
-  rb_define_method(rb_mNode, "fence_info", rb_node_get_fence_info, 0);
-  rb_define_method(rb_mNode, "fence_info=", rb_node_set_fence_info, 1);
-  rb_define_method(rb_mNode, "table_alignments", rb_node_get_table_alignments, 0);
-  rb_define_method(rb_mNode, "tasklist_state", rb_node_get_tasklist_state, 0);
-  rb_define_method(rb_mNode, "tasklist_item_checked?", rb_node_get_tasklist_item_checked, 0);
+  rb_define_singleton_method(rb_cNode, "new", rb_node_new, 1);
+  rb_define_singleton_method(rb_cNode, "parse_document", rb_parse_document, 4);
+  rb_define_method(rb_cNode, "string_content", rb_node_get_string_content, 0);
+  rb_define_method(rb_cNode, "string_content=", rb_node_set_string_content, 1);
+  rb_define_method(rb_cNode, "type", rb_node_get_type, 0);
+  rb_define_method(rb_cNode, "type_string", rb_node_get_type_string, 0);
+  rb_define_method(rb_cNode, "sourcepos", rb_node_get_sourcepos, 0);
+  rb_define_method(rb_cNode, "delete", rb_node_unlink, 0);
+  rb_define_method(rb_cNode, "first_child", rb_node_first_child, 0);
+  rb_define_method(rb_cNode, "next", rb_node_next, 0);
+  rb_define_method(rb_cNode, "insert_before", rb_node_insert_before, 1);
+  rb_define_method(rb_cNode, "_render_html", rb_render_html, 2);
+  rb_define_method(rb_cNode, "_render_commonmark", rb_render_commonmark, -1);
+  rb_define_method(rb_cNode, "_render_plaintext", rb_render_plaintext, -1);
+  rb_define_method(rb_cNode, "insert_after", rb_node_insert_after, 1);
+  rb_define_method(rb_cNode, "prepend_child", rb_node_prepend_child, 1);
+  rb_define_method(rb_cNode, "append_child", rb_node_append_child, 1);
+  rb_define_method(rb_cNode, "last_child", rb_node_last_child, 0);
+  rb_define_method(rb_cNode, "parent", rb_node_parent, 0);
+  rb_define_method(rb_cNode, "previous", rb_node_previous, 0);
+  rb_define_method(rb_cNode, "url", rb_node_get_url, 0);
+  rb_define_method(rb_cNode, "url=", rb_node_set_url, 1);
+  rb_define_method(rb_cNode, "title", rb_node_get_title, 0);
+  rb_define_method(rb_cNode, "title=", rb_node_set_title, 1);
+  rb_define_method(rb_cNode, "header_level", rb_node_get_header_level, 0);
+  rb_define_method(rb_cNode, "header_level=", rb_node_set_header_level, 1);
+  rb_define_method(rb_cNode, "list_type", rb_node_get_list_type, 0);
+  rb_define_method(rb_cNode, "list_type=", rb_node_set_list_type, 1);
+  rb_define_method(rb_cNode, "list_start", rb_node_get_list_start, 0);
+  rb_define_method(rb_cNode, "list_start=", rb_node_set_list_start, 1);
+  rb_define_method(rb_cNode, "list_tight", rb_node_get_list_tight, 0);
+  rb_define_method(rb_cNode, "list_tight=", rb_node_set_list_tight, 1);
+  rb_define_method(rb_cNode, "fence_info", rb_node_get_fence_info, 0);
+  rb_define_method(rb_cNode, "fence_info=", rb_node_set_fence_info, 1);
+  rb_define_method(rb_cNode, "table_alignments", rb_node_get_table_alignments, 0);
+  rb_define_method(rb_cNode, "tasklist_state", rb_node_get_tasklist_state, 0);
+  rb_define_method(rb_cNode, "tasklist_item_checked?", rb_node_get_tasklist_item_checked, 0);
 
-  rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
-  rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);
+  rb_define_method(rb_cNode, "html_escape_href", rb_html_escape_href, 1);
+  rb_define_method(rb_cNode, "html_escape_html", rb_html_escape_html, 1);
 
   cmark_gfm_core_extensions_ensure_registered();
 }
