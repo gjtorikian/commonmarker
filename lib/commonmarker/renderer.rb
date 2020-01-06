@@ -6,6 +6,18 @@ require 'stringio'
 module CommonMarker
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
+
+    INLINE_TYPES = %i[
+      emph
+      strong
+      link
+      image
+      text
+      code
+      linebreak
+      softbreak
+    ].freeze
+
     def initialize(options: :DEFAULT, extensions: [])
       @opts = Config.process_options(options, :render)
       @stream = StringIO.new(+'')
@@ -14,6 +26,8 @@ module CommonMarker
       @in_tight = false
       @in_plain = false
       @tagfilter = extensions.include?(:tagfilter)
+
+      @defined_subclass_methods = method_overrides
     end
 
     def out(*args)
@@ -39,7 +53,11 @@ module CommonMarker
         node.each { |child| render(child) }
       else
         begin
-          send(node.type, node)
+          if @defined_subclass_methods.include?(node.type) || !INLINE_TYPES.include?(node.type)
+            send(node.type, node)
+          else # go back to C for inline types for a bit of a perf gain
+            out(node.to_html)
+          end
         rescue NoMethodError => e
           @warnings.add("WARNING: #{node.type} not implemented.")
           raise e
@@ -91,6 +109,11 @@ module CommonMarker
     end
 
     private
+
+    # fetch the methods a subclass is implementing
+    def method_overrides
+      @defined_subclass_methods = (self.class.instance_methods(false) & HtmlRenderer.instance_methods(false))
+    end
 
     def escape_href(str)
       @node.html_escape_href(str)
