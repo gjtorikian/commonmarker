@@ -1034,18 +1034,33 @@ static VALUE rb_node_set_fence_info(VALUE self, VALUE info) {
   return Qnil;
 }
 
-static VALUE rb_node_get_tasklist_state(VALUE self) {
-  const char *tasklist_state;
+static VALUE rb_node_get_tasklist_item_checked(VALUE self) {
+  int tasklist_state;
   cmark_node *node;
   Data_Get_Struct(self, cmark_node, node);
 
-  tasklist_state = cmark_gfm_extensions_get_tasklist_state(node);
+  tasklist_state = cmark_gfm_extensions_get_tasklist_item_checked(node);
 
-  if (tasklist_state == NULL) {
-    rb_raise(rb_mNodeError, "could not get tasklist_state");
+  if (tasklist_state == 1) {
+    return Qtrue;
+  } else {
+    return Qfalse;
   }
+}
 
-  return rb_str_new2(tasklist_state);
+// TODO: remove this, superseded by the above method
+static VALUE rb_node_get_tasklist_state(VALUE self) {
+  int tasklist_state;
+  cmark_node *node;
+  Data_Get_Struct(self, cmark_node, node);
+
+  tasklist_state = cmark_gfm_extensions_get_tasklist_item_checked(node);
+
+  if (tasklist_state == 1) {
+    return rb_str_new2("checked");
+  } else {
+    return rb_str_new2("unchecked");
+  }
 }
 
 static VALUE rb_node_get_table_alignments(VALUE self) {
@@ -1204,6 +1219,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_mNode, "fence_info=", rb_node_set_fence_info, 1);
   rb_define_method(rb_mNode, "table_alignments", rb_node_get_table_alignments, 0);
   rb_define_method(rb_mNode, "tasklist_state", rb_node_get_tasklist_state, 0);
+  rb_define_method(rb_mNode, "tasklist_item_checked?", rb_node_get_tasklist_item_checked, 0);
 
   rb_define_method(rb_mNode, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_mNode, "html_escape_html", rb_html_escape_html, 1);

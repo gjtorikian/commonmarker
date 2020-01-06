@@ -250,7 +250,7 @@ module CommonMarker
     end
 
     def checked?(node)
-      node.tasklist_state == 'checked'
+      node.tasklist_item_checked?
     end
   end
 end
