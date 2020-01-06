@@ -2,10 +2,6 @@
 
 module CommonMarker
   class HtmlRenderer < Renderer
-    def render(node)
-      super(node)
-    end
-
     def document(_)
       super
       out("</ol>\n</section>\n") if @written_footnote_ix
@@ -250,7 +246,7 @@ module CommonMarker
     end
 
     def checked?(node)
-      node.tasklist_state == 'checked'
+      node.tasklist_item_checked?
     end
   end
 end
