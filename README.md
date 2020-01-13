@@ -112,10 +112,8 @@ class MyHtmlRenderer < CommonMarker::HtmlRenderer
   end
 end
 
-# this renderer prints directly to STDOUT, instead
-# of returning a string
 myrenderer = MyHtmlRenderer.new
-print(myrenderer.render(doc))
+puts myrenderer.render(doc)
 
 # Print any warnings to STDERR
 renderer.warnings.each do |w|
