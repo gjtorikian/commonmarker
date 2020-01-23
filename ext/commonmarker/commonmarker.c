@@ -1048,6 +1048,31 @@ static VALUE rb_node_get_tasklist_item_checked(VALUE self) {
   }
 }
 
+/*
+ * Public: Sets the checkbox state of the current node (must be a `:tasklist`).
+ *
+ * item_checked - A {Boolean} representing the new checkbox state
+ *
+ * Returns a {Boolean} representing the new checkbox state.
+ * Raises a NodeError if the checkbox state can't be set.
+ */
+static VALUE rb_node_set_tasklist_item_checked(VALUE self, VALUE item_checked) {
+  int tasklist_state;
+  cmark_node *node;
+  Data_Get_Struct(self, cmark_node, node);
+  tasklist_state = RTEST(item_checked);
+
+  if (!cmark_gfm_extensions_set_tasklist_item_checked(node, tasklist_state)) {
+    rb_raise(rb_eNodeError, "could not set tasklist_item_checked");
+  };
+
+  if (tasklist_state) {
+    return Qtrue;
+  } else {
+    return Qfalse;
+  }
+}
+
 // TODO: remove this, superseded by the above method
 static VALUE rb_node_get_tasklist_state(VALUE self) {
   int tasklist_state;
@@ -1220,6 +1245,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_cNode, "table_alignments", rb_node_get_table_alignments, 0);
   rb_define_method(rb_cNode, "tasklist_state", rb_node_get_tasklist_state, 0);
   rb_define_method(rb_cNode, "tasklist_item_checked?", rb_node_get_tasklist_item_checked, 0);
+  rb_define_method(rb_cNode, "tasklist_item_checked=", rb_node_set_tasklist_item_checked, 1);
 
   rb_define_method(rb_cNode, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_cNode, "html_escape_html", rb_html_escape_html, 1);
