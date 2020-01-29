@@ -1,6 +1,6 @@
 # CommonMarker
 
-[![Build Status](https://travis-ci.org/gjtorikian/commonmarker.svg)](https://travis-ci.org/gjtorikian/commonmarker) [![Gem Version](https://badge.fury.io/rb/commonmarker.svg)](http://badge.fury.io/rb/commonmarker)
+[![Financial Contributors on Open Collective](https://opencollective.com/commonmarker/all/badge.svg?label=financial+contributors)](https://opencollective.com/commonmarker) [![Build Status](https://travis-ci.org/gjtorikian/commonmarker.svg)](https://travis-ci.org/gjtorikian/commonmarker) [![Gem Version](https://badge.fury.io/rb/commonmarker.svg)](http://badge.fury.io/rb/commonmarker)
 
 Ruby wrapper for [libcmark-gfm](https://github.com/github/cmark),
 GitHub's fork of the reference parser for CommonMark. It passes all of the C tests, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
@@ -210,3 +210,33 @@ commonmarker with ruby HtmlRenderer
 kramdown
   4.610000   0.070000   4.680000 (  4.678398)
 ```
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/gjtorikian/commonmarker/graphs/contributors"><img src="https://opencollective.com/commonmarker/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/commonmarker/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/commonmarker"><img src="https://opencollective.com/commonmarker/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/commonmarker/contribute)]
+
+<a href="https://opencollective.com/commonmarker/organization/0/website"><img src="https://opencollective.com/commonmarker/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/1/website"><img src="https://opencollective.com/commonmarker/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/2/website"><img src="https://opencollective.com/commonmarker/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/3/website"><img src="https://opencollective.com/commonmarker/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/4/website"><img src="https://opencollective.com/commonmarker/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/5/website"><img src="https://opencollective.com/commonmarker/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/6/website"><img src="https://opencollective.com/commonmarker/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/7/website"><img src="https://opencollective.com/commonmarker/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/8/website"><img src="https://opencollective.com/commonmarker/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/commonmarker/organization/9/website"><img src="https://opencollective.com/commonmarker/organization/9/avatar.svg"></a>
