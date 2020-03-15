@@ -11,7 +11,7 @@ module CommonMarker
         PP.pp(self, +'', Float::INFINITY)
       end
 
-      # @param [PrettyPrint] pp
+      # @param printer [PrettyPrint] pp
       def pretty_print(printer)
         printer.group(PP_INDENT_SIZE, "#<#{self.class}(#{type}):", '>') do
           printer.breakable
