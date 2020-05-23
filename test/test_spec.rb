@@ -5,8 +5,11 @@ require 'test_helper'
 class TestSpec < Minitest::Test
   spec = open_spec_file('spec.txt')
 
+  ignore = [617]
+
   spec.each do |testcase|
     next if testcase[:extensions].include?(:disabled)
+    next if ignore.include?(testcase[:example])
 
     doc = Markly.parse(testcase[:markdown], :DEFAULT, testcase[:extensions])
 
