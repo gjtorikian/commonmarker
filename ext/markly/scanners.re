@@ -35,7 +35,7 @@ bufsize_t _scan_at(bufsize_t (*scanner)(const unsigned char *), cmark_chunk *c, 
 
   escaped_char = [\\][!"#$%&'()*+,./:;<=>?@[\\\]^_`{|}~-];
 
-  tagname = [A-Za-z][A-Za-z0-9-]*;
+  tagname = [A-Za-z][A-Za-z0-9-:]*;
 
   blocktagname = 'address'|'article'|'aside'|'base'|'basefont'|'blockquote'|'body'|'caption'|'center'|'col'|'colgroup'|'dd'|'details'|'dialog'|'dir'|'div'|'dl'|'dt'|'fieldset'|'figcaption'|'figure'|'footer'|'form'|'frame'|'frameset'|'h1'|'h2'|'h3'|'h4'|'h5'|'h6'|'head'|'header'|'hr'|'html'|'iframe'|'legend'|'li'|'link'|'main'|'menu'|'menuitem'|'nav'|'noframes'|'ol'|'optgroup'|'option'|'p'|'param'|'section'|'source'|'title'|'summary'|'table'|'tbody'|'td'|'tfoot'|'th'|'thead'|'title'|'tr'|'track'|'ul';
 
