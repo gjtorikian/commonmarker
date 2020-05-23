@@ -215,8 +215,9 @@ kramdown
 
 Released under the MIT license.
 
-Copyright, 2015, by Garen J. Torikian.
-Copyright, 2018, by [Samuel G. D. Williams](http://www.codeotaku.com).
+Copyright, 2015, by Garen J. Torikian.  
+Copyright, 2015, by Ashe Connor.  
+Copyright, 2020, by [Samuel G. D. Williams](http://www.codeotaku.com).  
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
