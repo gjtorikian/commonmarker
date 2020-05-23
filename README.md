@@ -1,11 +1,8 @@
 # Markly
 
-[![Build Status](https://travis-ci.org/gjtorikian/markly.svg)](https://travis-ci.org/gjtorikian/markly) [![Gem Version](https://badge.fury.io/rb/markly.svg)](http://badge.fury.io/rb/markly)
+A parser and abstract syntax tree for Markdown documents (CommonMark compatible) in Ruby. Originally forked from [CommonMarker](https://github.com/gjtorikian/commonmarker). It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking. For more information on available extensions, see [the documentation below](#extensions).
 
-Ruby wrapper for [libcmark-gfm](https://github.com/github/cmark),
-GitHub's fork of the reference parser for CommonMark. It passes all of the C tests, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
-
-For more information on available extensions, see [the documentation below](#extensions).
+[![Development](https://github.com/ioquatix/markly/workflows/Development/badge.svg)](https://github.com/ioquatix/markly/actions?workflow=Development)
 
 ## Installation
 
