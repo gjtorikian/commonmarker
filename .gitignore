@@ -12,7 +12,7 @@
 /tmp/
 /vendor/gems
 /vendor/cache
-Gemfile.lock
+/gems.locked
 
 ## Specific to RubyMotion:
 .dat*
