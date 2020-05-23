@@ -10,17 +10,17 @@ fi
 
 echo "Using $BRANCH..."
 
-echo "Checking out cmark-upstream"
+echo "Checking out cmark-gfm"
 echo "---------------------"
-cd cmark-upstream
+cd cmark-gfm
 git fetch origin
 git checkout $BRANCH && git pull
 sha=`git rev-parse HEAD`
 cd ../../..
 make
-cp cmark-upstream/extensions/*.{c,h} ext/markly
-cp cmark-upstream/src/*.{inc,c,h} ext/markly
+cp cmark-gfm/extensions/*.{c,h} ext/markly
+cp cmark-gfm/src/*.{inc,c,h} ext/markly
 rm ext/markly/main.c
-git add cmark-upstream
+git add cmark-gfm
 git add ext/markly/
-git commit -m "Update cmark-upstream to $(git config submodule.cmark-upstream.url | sed s_.git\$__)/commit/${sha}"
+git commit -m "Update cmark-gfm to $(git config submodule.cmark-gfm.url | sed s_.git\$__)/commit/${sha}"

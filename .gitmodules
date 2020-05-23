@@ -1,4 +1,4 @@
-[submodule "cmark-upstream"]
-	path = cmark-upstream
+[submodule "cmark-gfm"]
+	path = cmark-gfm
 	url = https://github.com/github/cmark-gfm.git
 	ignore = dirty
