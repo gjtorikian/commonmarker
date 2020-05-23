@@ -16,13 +16,12 @@ Gem::Specification.new do |spec|
 	}
 	
 	spec.files = Dir['{bin,ext,lib}/**/*', base: __dir__]
-	spec.require_paths = ['lib', 'ext']
 	
 	spec.executables = ["markly"]
 	
 	spec.extensions = ["ext/markly/extconf.rb"]
 
-	spec.required_ruby_version = ">= 0"
+	spec.required_ruby_version = ">= 2.5"
 	
 	spec.add_dependency "ruby-enum", "~> 0.5"
 	
