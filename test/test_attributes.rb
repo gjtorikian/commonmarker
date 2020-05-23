@@ -5,7 +5,7 @@ require 'test_helper'
 class TestAttributes < Minitest::Test
   def setup
     contents = fixtures_file('dingus.md')
-    @doc = CommonMarker.render_doc(contents.strip)
+    @doc = Markly.render_doc(contents.strip)
   end
 
   def test_sourcepos

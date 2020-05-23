@@ -1,17 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'commonmarker/commonmarker'
-require 'commonmarker/config'
-require 'commonmarker/node'
-require 'commonmarker/renderer'
-require 'commonmarker/renderer/html_renderer'
-require 'commonmarker/version'
+require 'markly/markly'
+require 'markly/config'
+require 'markly/node'
+require 'markly/renderer'
+require 'markly/renderer/html_renderer'
+require 'markly/version'
 
 begin
   require 'awesome_print'
 rescue LoadError; end # rubocop:disable Lint/SuppressedException
-module CommonMarker
+module Markly
   # Public:  Parses a Markdown string into an HTML string.
   #
   # text - A {String} of text

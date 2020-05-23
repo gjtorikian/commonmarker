@@ -1,26 +1,26 @@
-C_SOURCES = $(wildcard ext/commonmarker/*.[ch])
+C_SOURCES = $(wildcard ext/markly/*.[ch])
 
 update-c-sources: build-upstream $(C_SOURCES)
 
 .PHONY: build-upstream
 
 build-upstream:
-	cd ext/commonmarker/cmark-upstream && make
+	cd ext/markly/cmark-upstream && make
 
-ext/commonmarker/%: ext/commonmarker/cmark-upstream/src/%
+ext/markly/%: ext/markly/cmark-upstream/src/%
 	cp $< $@
 
-ext/commonmarker/%: ext/commonmarker/cmark-upstream/extensions/%
+ext/markly/%: ext/markly/cmark-upstream/extensions/%
 	cp $< $@
 
-ext/commonmarker/config.h: ext/commonmarker/cmark-upstream/build/src/config.h
+ext/markly/config.h: ext/markly/cmark-upstream/build/src/config.h
 	cp $< $@
 
-ext/commonmarker/cmark-gfm_export.h: ext/commonmarker/cmark-upstream/build/src/cmark-gfm_export.h
+ext/markly/cmark-gfm_export.h: ext/markly/cmark-upstream/build/src/cmark-gfm_export.h
 	cp $< $@
 
-ext/commonmarker/cmark-gfm_version.h: ext/commonmarker/cmark-upstream/build/src/cmark-gfm_version.h
+ext/markly/cmark-gfm_version.h: ext/markly/cmark-upstream/build/src/cmark-gfm_version.h
 	cp $< $@
 
-ext/commonmarker/cmark-gfm-extensions_export.h: ext/commonmarker/cmark-upstream/build/extensions/cmark-gfm-extensions_export.h
+ext/markly/cmark-gfm-extensions_export.h: ext/markly/cmark-upstream/build/extensions/cmark-gfm-extensions_export.h
 	cp $< $@

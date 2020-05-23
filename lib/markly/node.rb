@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'commonmarker/node/inspect'
+require 'markly/node/inspect'
 
-module CommonMarker
+module Markly
   class Node
     include Enumerable
     include Inspect

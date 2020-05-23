@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'commonmarker'
+require 'markly'
 require 'github/markdown'
 require 'redcarpet'
 require 'kramdown'
@@ -23,12 +23,12 @@ dobench('github-markdown') do
   GitHub::Markdown.render(benchinput)
 end
 
-dobench('commonmarker with to_html') do
-  CommonMarker.render_html(benchinput)
+dobench('markly with to_html') do
+  Markly.render_html(benchinput)
 end
 
-dobench('commonmarker with ruby HtmlRenderer') do
-  CommonMarker::HtmlRenderer.new.render(CommonMarker.render_doc(benchinput))
+dobench('markly with ruby HtmlRenderer') do
+  Markly::HtmlRenderer.new.render(Markly.render_doc(benchinput))
 end
 
 dobench('kramdown') do

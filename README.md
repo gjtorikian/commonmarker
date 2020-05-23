@@ -1,6 +1,6 @@
-# CommonMarker
+# Markly
 
-[![Build Status](https://travis-ci.org/gjtorikian/commonmarker.svg)](https://travis-ci.org/gjtorikian/commonmarker) [![Gem Version](https://badge.fury.io/rb/commonmarker.svg)](http://badge.fury.io/rb/commonmarker)
+[![Build Status](https://travis-ci.org/gjtorikian/markly.svg)](https://travis-ci.org/gjtorikian/markly) [![Gem Version](https://badge.fury.io/rb/markly.svg)](http://badge.fury.io/rb/markly)
 
 Ruby wrapper for [libcmark-gfm](https://github.com/github/cmark),
 GitHub's fork of the reference parser for CommonMark. It passes all of the C tests, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
@@ -11,7 +11,7 @@ For more information on available extensions, see [the documentation below](#ext
 
 Add this line to your application's Gemfile:
 
-    gem 'commonmarker'
+    gem 'markly'
 
 And then execute:
 
@@ -19,7 +19,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install commonmarker
+    $ gem install markly
 
 ## Usage
 
@@ -28,8 +28,8 @@ Or install it yourself as:
 Call `render_html` on a string to convert it to HTML:
 
 ``` ruby
-require 'commonmarker'
-CommonMarker.render_html('Hi *there*', :DEFAULT)
+require 'markly'
+Markly.render_html('Hi *there*', :DEFAULT)
 # <p>Hi <em>there</em></p>\n
 ```
 
@@ -40,9 +40,9 @@ The second argument is optional--[see below](#options) for more information.
 You can also parse a string to receive a `Document` node. You can then print that node to HTML, iterate over the children, and other fun node stuff. For example:
 
 ``` ruby
-require 'commonmarker'
+require 'markly'
 
-doc = CommonMarker.render_doc('*Hello* world', :DEFAULT)
+doc = Markly.render_doc('*Hello* world', :DEFAULT)
 puts(doc.to_html) # <p>Hi <em>there</em></p>\n
 
 doc.walk do |node|
@@ -60,10 +60,10 @@ You can use `walk` or `each` to iterate over nodes:
 - `each` will iterate on a node and its children, but no further.
 
 ``` ruby
-require 'commonmarker'
+require 'markly'
 
 # parse the files specified on the command line
-doc = CommonMarker.render_doc("# The site\n\n [GitHub](https://www.github.com)")
+doc = Markly.render_doc("# The site\n\n [GitHub](https://www.github.com)")
 
 # Walk tree and print out URLs for links
 doc.walk do |node|
@@ -94,10 +94,10 @@ end
 
 ### Creating a custom renderer
 
-You can also derive a class from CommonMarker's `HtmlRenderer` class. This produces slower output, but is far more customizable. For example:
+You can also derive a class from Markly's `HtmlRenderer` class. This produces slower output, but is far more customizable. For example:
 
 ``` ruby
-class MyHtmlRenderer < CommonMarker::HtmlRenderer
+class MyHtmlRenderer < Markly::HtmlRenderer
   def initialize
     super
     @headerid = 1
@@ -123,7 +123,7 @@ end
 
 ## Options
 
-CommonMarker accepts the same options that CMark does, as symbols. Note that there is a distinction in CMark for "parse" options and "render" options, which are represented in the tables below.
+Markly accepts the same options that CMark does, as symbols. Note that there is a distinction in CMark for "parse" options and "render" options, which are represented in the tables below.
 
 ### Parse options
 
@@ -155,21 +155,21 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 To apply a single option, pass it in as a symbol argument:
 
 ``` ruby
-CommonMarker.render_doc("\"Hello,\" said the spider.", :SMART)
+Markly.render_doc("\"Hello,\" said the spider.", :SMART)
 # <p>“Hello,” said the spider.</p>\n
 ```
 
 To have multiple options applied, pass in an array of symbols:
 
 ``` ruby
-CommonMarker.render_html("\"'Shelob' is my name.\"", [:HARDBREAKS, :SOURCEPOS])
+Markly.render_html("\"'Shelob' is my name.\"", [:HARDBREAKS, :SOURCEPOS])
 ```
 
 For more information on these options, see [the CMark documentation](https://git.io/v7nh1).
 
 ## Extensions
 
-Both `render_html` and `render_doc` take an optional third argument defining the extensions you want enabled as your CommonMark document is being processed. The documentation for these extensions are [defined in this spec](https://github.github.com/gfm/), and the rationale is provided [in this blog post](https://githubengineering.com/a-formal-spec-for-github-markdown/).
+Both `render_html` and `parse` take an optional third argument defining the extensions you want enabled as your CommonMark document is being processed. The documentation for these extensions are [defined in this spec](https://github.github.com/gfm/), and the rationale is provided [in this blog post](https://githubengineering.com/a-formal-spec-for-github-markdown/).
 
 The available extensions are:
 
@@ -203,10 +203,35 @@ redcarpet
   0.070000   0.020000   0.090000 (  0.079641)
 github-markdown
   0.070000   0.010000   0.080000 (  0.083535)
-commonmarker with to_html
+markly with to_html
   0.100000   0.010000   0.110000 (  0.111947)
-commonmarker with ruby HtmlRenderer
+markly with ruby HtmlRenderer
   1.830000   0.030000   1.860000 (  1.866203)
 kramdown
   4.610000   0.070000   4.680000 (  4.678398)
 ```
+
+## License
+
+Released under the MIT license.
+
+Copyright, 2015, by Garen J. Torikian.
+Copyright, 2018, by [Samuel G. D. Williams](http://www.codeotaku.com).
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CommonMarker
+module Markly
   class HtmlRenderer < Renderer
     def document(_)
       super

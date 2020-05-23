@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'ruby-enum'
-module CommonMarker
+module Markly
   # For Ruby::Enum, these must be classes, not modules
   module Config
     class Parse

@@ -5,23 +5,23 @@ require 'optparse'
 require 'ostruct'
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
-require 'commonmarker'
+require 'markly'
 
 root = File.expand_path('..', __dir__)
 $LOAD_PATH.unshift File.expand_path('lib', root)
 
 def parse_options
   options = OpenStruct.new
-  extensions = CommonMarker.extensions
-  parse_options = CommonMarker::Config::Parse
-  render_options = CommonMarker::Config::Render
+  extensions = Markly.extensions
+  parse_options = Markly::Config::Parse
+  render_options = Markly::Config::Render
 
   options.active_extensions = []
   options.active_parse_options = [:DEFAULT]
   options.active_render_options = [:DEFAULT]
 
   option_parser = OptionParser.new do |opts|
-    opts.banner = 'Usage: commonmarker [--html-renderer] [--extension=EXTENSION]'
+    opts.banner = 'Usage: markly [--html-renderer] [--extension=EXTENSION]'
     opts.separator '                    [--parse-option=OPTION]'
     opts.separator '                    [--render-option=OPTION]'
     opts.separator '                    [FILE..]'
@@ -76,7 +76,7 @@ def parse_options
     end
 
     opts.on('-v', '--version', 'Version information') do
-      puts "commonmarker #{CommonMarker::VERSION}"
+      puts "markly #{Markly::VERSION}"
       exit
     end
   end
@@ -88,10 +88,10 @@ end
 
 options = parse_options
 
-doc = CommonMarker.render_doc(ARGF.read, options.active_parse_options, options.active_extensions)
+doc = Markly.render_doc(ARGF.read, options.active_parse_options, options.active_extensions)
 
 if options.renderer
-  renderer = CommonMarker::HtmlRenderer.new(extensions: options.active_extensions)
+  renderer = Markly::HtmlRenderer.new(extensions: options.active_extensions)
   STDOUT.write(renderer.render(doc))
 else
   STDOUT.write(doc.to_html(options.active_render_options, options.active_extensions))

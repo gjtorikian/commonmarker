@@ -20,12 +20,12 @@ class TestPlaintext < Minitest::Test
     MD
   end
 
-  def render_doc(doc)
-    CommonMarker.render_doc(doc, :DEFAULT, %i[table])
+  def parse(doc)
+    Markly.render_doc(doc, :DEFAULT, %i[table])
   end
 
   def test_to_commonmark
-    compare = render_doc(@markdown).to_plaintext
+    compare = parse(@markdown).to_plaintext
 
     assert_equal <<~PLAINTEXT, compare
       Hi there!

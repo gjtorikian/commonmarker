@@ -4,16 +4,16 @@ require 'test_helper'
 
 class TestDocNode < Minitest::Test
   def setup
-    @doc = CommonMarker.render_doc('Hi *there*. This has __many nodes__!')
+    @doc = Markly.render_doc('Hi *there*. This has __many nodes__!')
     @first_child = @doc.first_child
     @last_child = @doc.last_child
-    @link = CommonMarker.render_doc('[GitHub](https://www.github.com)').first_child.first_child
-    @image = CommonMarker.render_doc('![alt text](https://github.com/favicon.ico "Favicon")')
+    @link = Markly.render_doc('[GitHub](https://www.github.com)').first_child.first_child
+    @image = Markly.render_doc('![alt text](https://github.com/favicon.ico "Favicon")')
     @image = @image.first_child.first_child
-    @header = CommonMarker.render_doc('### Header Three').first_child
-    @ul_list = CommonMarker.render_doc("* Bullet\n*Bullet").first_child
-    @ol_list = CommonMarker.render_doc("1. One\n2. Two").first_child
-    @fence = CommonMarker.render_doc("``` ruby\nputs 'wow'\n```").first_child
+    @header = Markly.render_doc('### Header Three').first_child
+    @ul_list = Markly.render_doc("* Bullet\n*Bullet").first_child
+    @ol_list = Markly.render_doc("1. One\n2. Two").first_child
+    @fence = Markly.render_doc("``` ruby\nputs 'wow'\n```").first_child
   end
 
   def test_get_type

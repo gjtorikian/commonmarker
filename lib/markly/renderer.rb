@@ -3,7 +3,7 @@
 require 'set'
 require 'stringio'
 
-module CommonMarker
+module Markly
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
     def initialize(options: :DEFAULT, extensions: [])
@@ -127,7 +127,7 @@ module CommonMarker
     end
 
     def option_enabled?(opt)
-      (@opts & CommonMarker::Config::Render.value(opt)) != 0
+      (@opts & Markly::Config::Render.value(opt)) != 0
     end
   end
 end
