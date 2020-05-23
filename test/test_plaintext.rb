@@ -21,7 +21,7 @@ class TestPlaintext < Minitest::Test
   end
 
   def parse(doc)
-    Markly.render_doc(doc, :DEFAULT, %i[table])
+    Markly.parse(doc, :DEFAULT, %i[table])
   end
 
   def test_to_commonmark

@@ -8,7 +8,7 @@ class TestTasklists < Minitest::Test
  - [x] Add task list
  - [ ] Define task list
     MD
-    @doc = Markly.render_doc(text, :DEFAULT, %i[tasklist])
+    @doc = Markly.parse(text, :DEFAULT, %i[tasklist])
     @expected = <<~HTML
       <ul>
       <li><input type="checkbox" checked="" disabled="" /> Add task list</li>

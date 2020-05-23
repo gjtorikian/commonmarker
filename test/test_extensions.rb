@@ -26,7 +26,7 @@ class TestExtensions < Minitest::Test
       assert out.include?('<del>hi</del>')
     end
 
-    doc = Markly.render_doc('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
+    doc = Markly.parse('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
     assert_equal doc.to_html, "<p>~a~ <del>b</del> ~~~c~~~</p>\n"
 
     Markly.render_html(@markdown, :DEFAULT, %i[table strikethrough]).tap do |out|
@@ -37,7 +37,7 @@ class TestExtensions < Minitest::Test
   end
 
   def test_extensions_with_renderers
-    doc = Markly.render_doc(@markdown, :DEFAULT, %i[table])
+    doc = Markly.parse(@markdown, :DEFAULT, %i[table])
 
     doc.to_html.tap do |out|
       refute out.include?('| a')
@@ -51,7 +51,7 @@ class TestExtensions < Minitest::Test
       assert out.include?('~~hi~~')
     end
 
-    doc = Markly.render_doc('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
+    doc = Markly.parse('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
     assert_equal HtmlRenderer.new.render(doc), "<p>~a~ <del>b</del> ~~~c~~~</p>\n"
   end
 
@@ -96,7 +96,7 @@ class TestExtensions < Minitest::Test
   end
 
   def test_plaintext
-    assert_equal(<<~HTML, Markly.render_doc(<<~MD, :DEFAULT, %i[table strikethrough]).to_plaintext)
+    assert_equal(<<~HTML, Markly.parse(<<~MD, :DEFAULT, %i[table strikethrough]).to_plaintext)
       Hello ~there~.
 
       | a |

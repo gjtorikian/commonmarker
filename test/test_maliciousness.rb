@@ -5,7 +5,7 @@ require 'test_helper'
 module Markly
   class TestMaliciousness < Minitest::Test
     def setup
-      @doc = Markly.render_doc('Hi *there*')
+      @doc = Markly.parse('Hi *there*')
     end
 
     def test_init_with_bad_type
@@ -73,44 +73,44 @@ module Markly
       assert_equal err.message, 'option \':SMART\' does not exist for Markly::Config::Render'
 
       assert_raises TypeError do
-        Markly.render_doc("foo \n baz", 123)
+        Markly.parse("foo \n baz", 123)
       end
 
       err = assert_raises TypeError do
-        Markly.render_doc("foo \n baz", :safe)
+        Markly.parse("foo \n baz", :safe)
       end
       assert_equal err.message, 'option \':safe\' does not exist for Markly::Config::Parse'
 
       assert_raises TypeError do
-        Markly.render_doc("foo \n baz", :totes_fake)
+        Markly.parse("foo \n baz", :totes_fake)
       end
 
       assert_raises TypeError do
-        Markly.render_doc("foo \n baz", [])
+        Markly.parse("foo \n baz", [])
       end
 
       assert_raises TypeError do
-        Markly.render_doc("foo \n baz", [23])
+        Markly.parse("foo \n baz", [23])
       end
 
       assert_raises TypeError do
-        Markly.render_doc("foo \n baz", nil)
+        Markly.parse("foo \n baz", nil)
       end
 
       assert_raises TypeError do
-        Markly.render_doc("foo \n baz", [:SMART, 'totes_fake'])
+        Markly.parse("foo \n baz", [:SMART, 'totes_fake'])
       end
 
       assert_raises TypeError do
-        Markly.render_doc(123)
+        Markly.parse(123)
       end
 
       assert_raises TypeError do
-        Markly.render_doc([123])
+        Markly.parse([123])
       end
 
       assert_raises TypeError do
-        Markly.render_doc(nil)
+        Markly.parse(nil)
       end
     end
 
@@ -157,7 +157,7 @@ module Markly
         @doc.url = '123'
       end
 
-      link = Markly.render_doc('[GitHub](https://www.github.com)').first_child.first_child
+      link = Markly.parse('[GitHub](https://www.github.com)').first_child.first_child
       assert_raises TypeError do
         link.url = 123
       end
@@ -174,7 +174,7 @@ module Markly
         @doc.title = '123'
       end
 
-      image = Markly.render_doc('![alt text](https://github.com/favicon.ico "Favicon")')
+      image = Markly.parse('![alt text](https://github.com/favicon.ico "Favicon")')
       image = image.first_child.first_child
       assert_raises TypeError do
         image.title = 123
@@ -192,7 +192,7 @@ module Markly
         @doc.header_level = 1
       end
 
-      header = Markly.render_doc('### Header Three').first_child
+      header = Markly.parse('### Header Three').first_child
       assert_raises TypeError do
         header.header_level = '123'
       end
@@ -209,7 +209,7 @@ module Markly
         @doc.list_type = :bullet_list
       end
 
-      ul_list = Markly.render_doc("* Bullet\n*Bullet").first_child
+      ul_list = Markly.parse("* Bullet\n*Bullet").first_child
       assert_raises NodeError do
         ul_list.list_type = :fake
       end
@@ -229,7 +229,7 @@ module Markly
         @doc.list_start = 12
       end
 
-      ol_list = Markly.render_doc("1. One\n2. Two").first_child
+      ol_list = Markly.parse("1. One\n2. Two").first_child
       assert_raises TypeError do
         ol_list.list_start = :fake
       end
@@ -258,7 +258,7 @@ module Markly
         @doc.fence_info = 'ruby'
       end
 
-      fence = Markly.render_doc("``` ruby\nputs 'wow'\n```").first_child
+      fence = Markly.parse("``` ruby\nputs 'wow'\n```").first_child
       assert_raises TypeError do
         fence.fence_info = 123
       end

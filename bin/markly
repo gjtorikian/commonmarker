@@ -88,7 +88,7 @@ end
 
 options = parse_options
 
-doc = Markly.render_doc(ARGF.read, options.active_parse_options, options.active_extensions)
+doc = Markly.parse(ARGF.read, options.active_parse_options, options.active_extensions)
 
 if options.renderer
   renderer = Markly::HtmlRenderer.new(extensions: options.active_extensions)

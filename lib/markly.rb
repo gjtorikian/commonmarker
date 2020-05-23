@@ -35,7 +35,7 @@ module Markly
   # extensions - An {Array of Symbol}s indicating the extensions to use
   #
   # Returns the `document` node.
-  def self.render_doc(text, options = :DEFAULT, extensions = [])
+  def self.parse(text, options = :DEFAULT, extensions = [])
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
 
     opts = Config.process_options(options, :parse)

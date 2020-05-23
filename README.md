@@ -42,7 +42,7 @@ You can also parse a string to receive a `Document` node. You can then print tha
 ``` ruby
 require 'markly'
 
-doc = Markly.render_doc('*Hello* world', :DEFAULT)
+doc = Markly.parse('*Hello* world', :DEFAULT)
 puts(doc.to_html) # <p>Hi <em>there</em></p>\n
 
 doc.walk do |node|
@@ -63,7 +63,7 @@ You can use `walk` or `each` to iterate over nodes:
 require 'markly'
 
 # parse the files specified on the command line
-doc = Markly.render_doc("# The site\n\n [GitHub](https://www.github.com)")
+doc = Markly.parse("# The site\n\n [GitHub](https://www.github.com)")
 
 # Walk tree and print out URLs for links
 doc.walk do |node|
@@ -155,7 +155,7 @@ Markly accepts the same options that CMark does, as symbols. Note that there is 
 To apply a single option, pass it in as a symbol argument:
 
 ``` ruby
-Markly.render_doc("\"Hello,\" said the spider.", :SMART)
+Markly.parse("\"Hello,\" said the spider.", :SMART)
 # <p>“Hello,” said the spider.</p>\n
 ```
 

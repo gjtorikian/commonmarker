@@ -4,16 +4,16 @@ require 'test_helper'
 
 class TestDocNode < Minitest::Test
   def setup
-    @doc = Markly.render_doc('Hi *there*. This has __many nodes__!')
+    @doc = Markly.parse('Hi *there*. This has __many nodes__!')
     @first_child = @doc.first_child
     @last_child = @doc.last_child
-    @link = Markly.render_doc('[GitHub](https://www.github.com)').first_child.first_child
-    @image = Markly.render_doc('![alt text](https://github.com/favicon.ico "Favicon")')
+    @link = Markly.parse('[GitHub](https://www.github.com)').first_child.first_child
+    @image = Markly.parse('![alt text](https://github.com/favicon.ico "Favicon")')
     @image = @image.first_child.first_child
-    @header = Markly.render_doc('### Header Three').first_child
-    @ul_list = Markly.render_doc("* Bullet\n*Bullet").first_child
-    @ol_list = Markly.render_doc("1. One\n2. Two").first_child
-    @fence = Markly.render_doc("``` ruby\nputs 'wow'\n```").first_child
+    @header = Markly.parse('### Header Three').first_child
+    @ul_list = Markly.parse("* Bullet\n*Bullet").first_child
+    @ol_list = Markly.parse("1. One\n2. Two").first_child
+    @fence = Markly.parse("``` ruby\nputs 'wow'\n```").first_child
   end
 
   def test_get_type

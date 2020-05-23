@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestBasics < Minitest::Test
   def setup
-    @doc = Markly.render_doc('Hi *there*')
+    @doc = Markly.parse('Hi *there*')
   end
 
   def test_to_html

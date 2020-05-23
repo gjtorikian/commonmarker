@@ -9,7 +9,7 @@ class TestNode < Minitest::Test
   # isn't valid by accident.
 
   def test_drop_parent_reference
-    doc = Markly.render_doc('Hi *there*')
+    doc = Markly.parse('Hi *there*')
     text = doc.first_child.last_child.first_child
     doc = nil
     GC.start
@@ -18,7 +18,7 @@ class TestNode < Minitest::Test
   end
 
   def test_drop_child_reference
-    doc = Markly.render_doc('Hi *there*')
+    doc = Markly.parse('Hi *there*')
     text = doc.first_child.last_child.first_child
     text = nil
     GC.start
@@ -28,7 +28,7 @@ class TestNode < Minitest::Test
   end
 
   def test_remove_parent
-    doc = Markly.render_doc('Hi *there*')
+    doc = Markly.parse('Hi *there*')
     para = doc.first_child
     para.delete
     doc = nil

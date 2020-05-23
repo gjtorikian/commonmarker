@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestNode < Minitest::Test
   def setup
-    @doc = Markly.render_doc('Hi *there*, I am mostly text!')
+    @doc = Markly.parse('Hi *there*, I am mostly text!')
   end
 
   def test_walk
