@@ -9,7 +9,7 @@ module Markly
 
     def header(node)
       block do
-        out('<h', node.header_level, "#{sourcepos(node)}>", :children,
+        out('<h', node.header_level, "#{source_position(node)}>", :children,
             '</h', node.header_level, '>')
       end
     end
@@ -19,7 +19,7 @@ module Markly
         out(:children)
       else
         block do
-          container("<p#{sourcepos(node)}>", '</p>') do
+          container("<p#{source_position(node)}>", '</p>') do
             out(:children)
             if node.parent.type == :footnote_definition && node.next.nil?
               out(' ')
@@ -36,14 +36,14 @@ module Markly
 
       block do
         if node.list_type == :bullet_list
-          container("<ul#{sourcepos(node)}>\n", '</ul>') do
+          container("<ul#{source_position(node)}>\n", '</ul>') do
             out(:children)
           end
         else
           start = if node.list_start == 1
-                    "<ol#{sourcepos(node)}>\n"
+                    "<ol#{source_position(node)}>\n"
                   else
-                    "<ol start=\"#{node.list_start}\"#{sourcepos(node)}>\n"
+                    "<ol start=\"#{node.list_start}\"#{source_position(node)}>\n"
                   end
           container(start, '</ol>') do
             out(:children)
@@ -57,7 +57,7 @@ module Markly
     def list_item(node)
       block do
         tasklist_data = tasklist(node)
-        container("<li#{sourcepos(node)}#{tasklist_data}>#{' ' if tasklist?(node)}", '</li>') do
+        container("<li#{source_position(node)}#{tasklist_data}>#{' ' if tasklist?(node)}", '</li>') do
           out(:children)
         end
       end
@@ -76,7 +76,7 @@ module Markly
 
     def blockquote(node)
       block do
-        container("<blockquote#{sourcepos(node)}>\n", '</blockquote>') do
+        container("<blockquote#{source_position(node)}>\n", '</blockquote>') do
           out(:children)
         end
       end
@@ -84,18 +84,18 @@ module Markly
 
     def hrule(node)
       block do
-        out("<hr#{sourcepos(node)} />")
+        out("<hr#{source_position(node)} />")
       end
     end
 
     def code_block(node)
       block do
-        if option_enabled?(:GITHUB_PRE_LANG)
-          out("<pre#{sourcepos(node)}")
+        if flag_enabled?(GITHUB_PRE_LANG)
+          out("<pre#{source_position(node)}")
           out(' lang="', node.fence_info.split(/\s+/)[0], '"') if node.fence_info && !node.fence_info.empty?
           out('><code>')
         else
-          out("<pre#{sourcepos(node)}><code")
+          out("<pre#{source_position(node)}><code")
           if node.fence_info && !node.fence_info.empty?
             out(' class="language-', node.fence_info.split(/\s+/)[0], '">')
           else
@@ -109,7 +109,7 @@ module Markly
 
     def html(node)
       block do
-        if option_enabled?(:UNSAFE)
+        if flag_enabled?(UNSAFE)
           out(tagfilter(node.string_content))
         else
           out('<!-- raw HTML omitted -->')
@@ -118,7 +118,7 @@ module Markly
     end
 
     def inline_html(node)
-      if option_enabled?(:UNSAFE)
+      if flag_enabled?(UNSAFE)
         out(tagfilter(node.string_content))
       else
         out('<!-- raw HTML omitted -->')
@@ -163,9 +163,9 @@ module Markly
     end
 
     def softbreak(_)
-      if option_enabled?(:HARDBREAKS)
+      if flag_enabled?(HARD_BREAKS)
         out("<br />\n")
-      elsif option_enabled?(:NOBREAKS)
+      elsif flag_enabled?(NO_BREAKS)
         out(' ')
       else
         out("\n")
@@ -175,7 +175,7 @@ module Markly
     def table(node)
       @alignments = node.table_alignments
       @needs_close_tbody = false
-      out("<table#{sourcepos(node)}>\n", :children)
+      out("<table#{source_position(node)}>\n", :children)
       out("</tbody>\n") if @needs_close_tbody
       out("</table>\n")
     end
@@ -184,7 +184,7 @@ module Markly
       @column_index = 0
 
       @in_header = true
-      out("<thead>\n<tr#{sourcepos(node)}>\n", :children, "</tr>\n</thead>\n")
+      out("<thead>\n<tr#{source_position(node)}>\n", :children, "</tr>\n</thead>\n")
       @in_header = false
     end
 
@@ -194,7 +194,7 @@ module Markly
         @needs_close_tbody = true
         out("<tbody>\n")
       end
-      out("<tr#{sourcepos(node)}>\n", :children, "</tr>\n")
+      out("<tr#{source_position(node)}>\n", :children, "</tr>\n")
     end
 
     def table_cell(node)
@@ -204,7 +204,7 @@ module Markly
               when :center then ' align="center"'
               else; ''
               end
-      out(@in_header ? "<th#{align}#{sourcepos(node)}>" : "<td#{align}#{sourcepos(node)}>", :children, @in_header ? "</th>\n" : "</td>\n")
+      out(@in_header ? "<th#{align}#{source_position(node)}>" : "<td#{align}#{source_position(node)}>", :children, @in_header ? "</th>\n" : "</td>\n")
       @column_index += 1
     end
 

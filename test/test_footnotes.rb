@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestFootnotes < Minitest::Test
   def setup
-    @doc = Markly.parse("Hello[^hi].\n\n[^hi]: Hey!\n", :FOOTNOTES)
+    @doc = Markly.parse("Hello[^hi].\n\n[^hi]: Hey!\n", flags: Markly::FOOTNOTES)
     @expected = <<~HTML
       <p>Hello<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup>.</p>
       <section class="footnotes">

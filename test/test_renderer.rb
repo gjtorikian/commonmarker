@@ -23,7 +23,7 @@ class TestRenderer < Minitest::Test
       | :------: | ---: | :------ |
       | Foo      | Bar  | Baz     |
     DOC
-    doc = Markly.parse(content, :DEFAULT, %i[autolink table tagfilter])
+    doc = Markly.parse(content, extensions: %i[autolink table tagfilter])
     results = Markly::HtmlRenderer.new.render(doc)
     assert_equal 2, results.scan(/<tbody>/).size
   end

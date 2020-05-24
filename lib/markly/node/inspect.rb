@@ -17,7 +17,7 @@ module Markly
           printer.breakable
 
           attrs = %i[
-            sourcepos
+            source_position
             string_content
             url
             title
@@ -29,7 +29,7 @@ module Markly
           ].map do |name|
             begin
               [name, __send__(name)]
-            rescue NodeError
+            rescue Error
               nil
             end
           end.compact

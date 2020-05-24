@@ -13,7 +13,7 @@ module Markly
         Node.new(123)
       end
 
-      assert_raises NodeError do
+      assert_raises Error do
         Node.new(:totes_fake)
       end
 
@@ -30,90 +30,6 @@ module Markly
       end
     end
 
-    def test_rendering_with_bad_type
-      assert_raises TypeError do
-        Markly.render_html("foo \n baz", 123)
-      end
-
-      assert_raises TypeError do
-        Markly.render_html("foo \n baz", :totes_fake)
-      end
-
-      assert_raises TypeError do
-        Markly.render_html("foo \n baz", [])
-      end
-
-      assert_raises TypeError do
-        Markly.render_html("foo \n baz", [23])
-      end
-
-      assert_raises TypeError do
-        Markly.render_html("foo \n baz", nil)
-      end
-
-      assert_raises TypeError do
-        Markly.render_html("foo \n baz", [:SMART, 'totes_fake'])
-      end
-
-      assert_raises TypeError do
-        Markly.render_html(123)
-      end
-
-      assert_raises TypeError do
-        Markly.render_html([123])
-      end
-
-      assert_raises TypeError do
-        Markly.render_html(nil)
-      end
-
-      err = assert_raises TypeError do
-        Markly.render_html("foo \n baz", [:SMART])
-      end
-      assert_equal err.message, 'option \':SMART\' does not exist for Markly::Config::Render'
-
-      assert_raises TypeError do
-        Markly.parse("foo \n baz", 123)
-      end
-
-      err = assert_raises TypeError do
-        Markly.parse("foo \n baz", :safe)
-      end
-      assert_equal err.message, 'option \':safe\' does not exist for Markly::Config::Parse'
-
-      assert_raises TypeError do
-        Markly.parse("foo \n baz", :totes_fake)
-      end
-
-      assert_raises TypeError do
-        Markly.parse("foo \n baz", [])
-      end
-
-      assert_raises TypeError do
-        Markly.parse("foo \n baz", [23])
-      end
-
-      assert_raises TypeError do
-        Markly.parse("foo \n baz", nil)
-      end
-
-      assert_raises TypeError do
-        Markly.parse("foo \n baz", [:SMART, 'totes_fake'])
-      end
-
-      assert_raises TypeError do
-        Markly.parse(123)
-      end
-
-      assert_raises TypeError do
-        Markly.parse([123])
-      end
-
-      assert_raises TypeError do
-        Markly.parse(nil)
-      end
-    end
-
     def test_bad_set_string_content
       assert_raises TypeError do
         @doc.string_content = 123
@@ -127,33 +43,33 @@ module Markly
 
     def test_bad_insertion
       code = Node.new(:code)
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.insert_before(code)
       end
 
       paragraph = Node.new(:paragraph)
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.insert_after(paragraph)
       end
 
       document = Node.new(:document)
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.prepend_child(document)
       end
 
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.append_child(document)
       end
     end
 
     def test_bad_url_get
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.url
       end
     end
 
     def test_bad_url_set
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.url = '123'
       end
 
@@ -164,13 +80,13 @@ module Markly
     end
 
     def test_bad_title_get
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.title
       end
     end
 
     def test_bad_title_set
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.title = '123'
       end
 
@@ -182,13 +98,13 @@ module Markly
     end
 
     def test_bad_header_level_get
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.header_level
       end
     end
 
     def test_bad_header_level_set
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.header_level = 1
       end
 
@@ -199,18 +115,18 @@ module Markly
     end
 
     def test_bad_list_type_get
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.list_type
       end
     end
 
     def test_bad_list_type_set
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.list_type = :bullet_list
       end
 
       ul_list = Markly.parse("* Bullet\n*Bullet").first_child
-      assert_raises NodeError do
+      assert_raises Error do
         ul_list.list_type = :fake
       end
       assert_raises TypeError do
@@ -219,13 +135,13 @@ module Markly
     end
 
     def test_bad_list_start_get
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.list_start
       end
     end
 
     def test_bad_list_start_set
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.list_start = 12
       end
 
@@ -236,25 +152,25 @@ module Markly
     end
 
     def test_bad_list_tight_get
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.list_tight
       end
     end
 
     def test_bad_list_tight_set
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.list_tight = false
       end
     end
 
     def test_bad_fence_info_get
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.fence_info
       end
     end
 
     def test_bad_fence_info_set
-      assert_raises NodeError do
+      assert_raises Error do
         @doc.fence_info = 'ruby'
       end
 

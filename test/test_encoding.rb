@@ -6,7 +6,7 @@ class TestEncoding < Minitest::Test
   # see http://git.io/vq4FR
   def test_encoding
     contents = fixtures_file('curly.md')
-    doc = Markly.parse(contents, :SMART)
+    doc = Markly.parse(contents, flags: Markly::SMART)
     render = doc.to_html
     assert_equal render.rstrip, '<p>This curly quote “makes markly throw an exception”.</p>'
   end

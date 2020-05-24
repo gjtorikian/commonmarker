@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'markly/node/inspect'
+require_relative 'node/inspect'
 
 module Markly
   class Node
@@ -25,9 +25,8 @@ module Markly
     # extensions - An {Array of Symbol}s indicating the extensions to use
     #
     # Returns a {String}.
-    def to_html(options = :DEFAULT, extensions = [])
-      opts = Config.process_options(options, :render)
-      _render_html(opts, extensions).force_encoding('utf-8')
+    def to_html(flags: DEFAULT, extensions: [])
+      _render_html(flags, extensions).force_encoding('utf-8')
     end
 
     # Public: Convert the node to a CommonMark string.
@@ -36,9 +35,8 @@ module Markly
     # width - Column to wrap the output at
     #
     # Returns a {String}.
-    def to_commonmark(options = :DEFAULT, width = 120)
-      opts = Config.process_options(options, :render)
-      _render_commonmark(opts, width).force_encoding('utf-8')
+    def to_commonmark(flags: DEFAULT, width: 120)
+      _render_commonmark(flags, width).force_encoding('utf-8')
     end
 
     # Public: Convert the node to a plain text string.
@@ -47,9 +45,8 @@ module Markly
     # width - Column to wrap the output at
     #
     # Returns a {String}.
-    def to_plaintext(options = :DEFAULT, width = 120)
-      opts = Config.process_options(options, :render)
-      _render_plaintext(opts, width).force_encoding('utf-8')
+    def to_plaintext(flags: DEFAULT, width: 120)
+      _render_plaintext(flags, width).force_encoding('utf-8')
     end
 
     # Public: Iterate over the children (if any) of the current pointer.

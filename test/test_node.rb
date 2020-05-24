@@ -46,7 +46,7 @@ class TestNode < Minitest::Test
   end
 
   def test_insert_illegal
-    assert_raises NodeError do
+    assert_raises Error do
       @doc.insert_before(@doc)
     end
   end

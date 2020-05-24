@@ -20,18 +20,13 @@ Gem::Specification.new do |spec|
 	spec.executables = ["markly"]
 	
 	spec.extensions = ["ext/markly/extconf.rb"]
-
-	spec.required_ruby_version = ">= 2.5"
 	
-	spec.add_dependency "ruby-enum", "~> 0.5"
+	spec.required_ruby_version = ">= 2.5"
 	
 	spec.add_development_dependency "bake"
 	spec.add_development_dependency "bake-bundler"
 	spec.add_development_dependency "bake-modernize"
 	spec.add_development_dependency "minitest", "~> 5.6"
-	spec.add_development_dependency "minitest-focus", "~> 1.1"
 	spec.add_development_dependency "rake"
 	spec.add_development_dependency "rake-compiler", "~> 0.9"
-	spec.add_development_dependency "rubocop"
-	spec.add_development_dependency "rubocop-standard"
 end

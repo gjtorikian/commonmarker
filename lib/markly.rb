@@ -1,17 +1,33 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'markly/markly'
-require 'markly/config'
-require 'markly/node'
-require 'markly/renderer'
-require 'markly/renderer/html_renderer'
-require 'markly/version'
+# The compiled library.
+require_relative 'markly/markly'
 
-begin
-  require 'awesome_print'
-rescue LoadError; end # rubocop:disable Lint/SuppressedException
+require_relative 'markly/flags'
+require_relative 'markly/node'
+require_relative 'markly/renderer'
+require_relative 'markly/renderer/html_renderer'
+require_relative 'markly/version'
+
 module Markly
+  # Public: Parses a Markdown string into a `document` node.
+  #
+  # string - {String} to be parsed
+  # option - A {Symbol} or {Array of Symbol}s indicating the parse options
+  # extensions - An {Array of Symbol}s indicating the extensions to use
+  #
+  # Returns the `parser` node.
+  def self.parse(text, flags: DEFAULT, extensions: nil)
+    parser = Parser.new(flags)
+    
+    extensions&.each do |extension|
+      parser.enable(extension)
+    end
+    
+    return parser.parse(text.encode(Encoding::UTF_8))
+  end
+  
   # Public:  Parses a Markdown string into an HTML string.
   #
   # text - A {String} of text
@@ -19,27 +35,9 @@ module Markly
   # extensions - An {Array of Symbol}s indicating the extensions to use
   #
   # Returns a {String} of converted HTML.
-  def self.render_html(text, options = :DEFAULT, extensions = [])
-    raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
-
-    opts = Config.process_options(options, :render)
-    text = text.encode('UTF-8')
-    html = Node.markdown_to_html(text, opts, extensions)
-    html.force_encoding('UTF-8')
-  end
-
-  # Public: Parses a Markdown string into a `document` node.
-  #
-  # string - {String} to be parsed
-  # option - A {Symbol} or {Array of Symbol}s indicating the parse options
-  # extensions - An {Array of Symbol}s indicating the extensions to use
-  #
-  # Returns the `document` node.
-  def self.parse(text, options = :DEFAULT, extensions = [])
-    raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
-
-    opts = Config.process_options(options, :parse)
-    text = text.encode('UTF-8')
-    Node.parse_document(text, text.bytesize, opts, extensions)
+  def self.render_html(text, flags: DEFAULT, parse_flags: flags, render_flags: flags, extensions: [])
+    root = self.parse(text, flags: parse_flags, extensions: extensions)
+    
+    return root.to_html(flags: render_flags, extensions: extensions)
   end
 end

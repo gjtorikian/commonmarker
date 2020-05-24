@@ -4,21 +4,17 @@
 require 'optparse'
 require 'ostruct'
 
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
-require 'markly'
-
-root = File.expand_path('..', __dir__)
-$LOAD_PATH.unshift File.expand_path('lib', root)
+require_relative '../lib/markly'
 
 def parse_options
   options = OpenStruct.new
   extensions = Markly.extensions
-  parse_options = Markly::Config::Parse
-  render_options = Markly::Config::Render
+  parse_flags = Markly::PARSE_FLAGS
+  render_flags = Markly::RENDER_FLAGS
 
   options.active_extensions = []
-  options.active_parse_options = [:DEFAULT]
-  options.active_render_options = [:DEFAULT]
+  options.active_parse_flags = Markly::DEFAULT
+  options.active_render_flags = Markly::DEFAULT
 
   option_parser = OptionParser.new do |opts|
     opts.banner = 'Usage: markly [--html-renderer] [--extension=EXTENSION]'
@@ -44,8 +40,8 @@ def parse_options
       puts opts
       puts
       puts "Available extentions: #{extensions.join(', ')}"
-      puts "Available parse options: #{parse_options.keys.join(', ')}"
-      puts "Available render options: #{render_options.keys.join(', ')}"
+      puts "Available parse flags: #{parser_flags.keys.join(', ')}"
+      puts "Available render flags: #{render_flags.keys.join(', ')}"
       puts
       puts 'See the README for more information on these.'
       exit
@@ -56,9 +52,9 @@ def parse_options
     end
 
     opts.on('--parse-option=OPTION', Array, 'OPTION passed during parsing') do |values|
-      values.each do |value|
-        if parse_options.key?(value.to_sym)
-          options.active_parse_options << value.to_sym
+      values.each do |value|active_parser_flags
+        if parser_flags.key?(value.to_sym)
+          options.active_parser_flags << value.to_sym
         else
           abort("parse-option '#{value}' not found")
         end
@@ -67,8 +63,8 @@ def parse_options
 
     opts.on('--render-option=OPTION', Array, 'OPTION passed during rendering') do |values|
       values.each do |value|
-        if render_options.key?(value.to_sym)
-          options.active_render_options << value.to_sym
+        if render_flags.key?(value.to_sym)
+          options.active_render_flags << value.to_sym
         else
           abort("render-option '#{value}' not found")
         end
@@ -88,11 +84,11 @@ end
 
 options = parse_options
 
-doc = Markly.parse(ARGF.read, options.active_parse_options, options.active_extensions)
+doc = Markly.parse(ARGF.read, flags: options.active_parse_flags, extensions: options.active_extensions)
 
 if options.renderer
   renderer = Markly::HtmlRenderer.new(extensions: options.active_extensions)
   STDOUT.write(renderer.render(doc))
 else
-  STDOUT.write(doc.to_html(options.active_render_options, options.active_extensions))
+  STDOUT.write(doc.to_html(flags: options.active_render_flags, extensions: options.active_extensions))
 end

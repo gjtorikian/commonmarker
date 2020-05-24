@@ -6,11 +6,11 @@ require 'stringio'
 module Markly
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
-    def initialize(options: :DEFAULT, extensions: [])
-      @opts = Config.process_options(options, :render)
+    def initialize(flags: DEFAULT, extensions: [])
+      @flags = flags
       @stream = StringIO.new(+'')
       @need_blocksep = false
-      @warnings = Set.new []
+      @warnings = Set.new
       @in_tight = false
       @in_plain = false
       @tagfilter = extensions.include?(:tagfilter)
@@ -118,16 +118,16 @@ module Markly
       end
     end
 
-    def sourcepos(node)
-      return '' unless option_enabled?(:SOURCEPOS)
+    def source_position(node)
+      return '' unless flag_enabled?(SOURCE_POSITION)
 
-      s = node.sourcepos
+      s = node.source_position
       " data-sourcepos=\"#{s[:start_line]}:#{s[:start_column]}-" \
         "#{s[:end_line]}:#{s[:end_column]}\""
     end
 
-    def option_enabled?(opt)
-      (@opts & Markly::Config::Render.value(opt)) != 0
+    def flag_enabled?(flag)
+      (@flags & flag) != 0
     end
   end
 end
