@@ -39,6 +39,8 @@ module Markly
       _render_commonmark(flags, width).force_encoding('utf-8')
     end
 
+    alias to_markdown to_commonmark
+
     # Public: Convert the node to a plain text string.
     #
     # options - A {Symbol} or {Array of Symbol}s indicating the render options
