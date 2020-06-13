@@ -5,7 +5,7 @@ require 'minitest/autorun'
 require 'minitest/pride'
 require 'minitest/focus'
 
-include Markly # rubocop:disable Style/MixinUsage
+include Markly
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), 'fixtures')
 

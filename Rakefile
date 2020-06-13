@@ -37,10 +37,6 @@ task 'test:unit' => :compile
 desc 'Run unit and conformance tests'
 task test: %w[test:unit]
 
-require 'rubocop/rake_task'
-
-RuboCop::RakeTask.new(:rubocop)
-
 desc 'Run benchmarks'
 task :benchmark do
   if ENV['FETCH_PROGIT']

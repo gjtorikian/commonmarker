@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Lint/UselessAssignment
 require 'test_helper'
 
 class TestNode < Minitest::Test
@@ -44,4 +43,3 @@ class TestNode < Minitest::Test
     # free.
   end
 end
-# rubocop:enable Lint/UselessAssignment
