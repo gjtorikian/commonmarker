@@ -121,16 +121,6 @@ static const rb_data_type_t rb_Markly_Parser_Type = {
 	.flags = RUBY_TYPED_FREE_IMMEDIATELY,
 };
 
-static VALUE rb_Markly_Parser_root(VALUE self) {
-	cmark_parser *parser = NULL;
-	
-	TypedData_Get_Struct(self, cmark_parser, &rb_Markly_Parser_Type, parser);
-	
-	assert(parser != NULL);
-	
-	return rb_Markly_Node_wrap(parser->root);
-}
-
 static VALUE rb_Markly_Parser_alloc(VALUE self) {
 	return TypedData_Wrap_Struct(self, &rb_Markly_Parser_Type, NULL);
 }
@@ -1193,7 +1183,6 @@ __attribute__((visibility("default"))) void Init_markly() {
 	rb_define_method(rb_Markly_Parser, "initialize", rb_Markly_Parser_initialize, 1);
 	rb_define_method(rb_Markly_Parser, "enable", rb_Markly_Parser_enable, 1);
 	rb_define_method(rb_Markly_Parser, "parse", rb_Markly_Parser_parse, 1);
-	rb_define_method(rb_Markly_Parser, "root", rb_Markly_Parser_root, 0);
 	
   rb_Markly_Node = rb_define_class_under(rb_Markly, "Node", rb_cObject);
   rb_define_singleton_method(rb_Markly_Node, "new", rb_node_new, 1);
