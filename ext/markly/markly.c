@@ -262,6 +262,21 @@ static VALUE rb_node_new(VALUE self, VALUE type) {
   return rb_Markly_Node_wrap(node);
 }
 
+static VALUE rb_node_replace(VALUE self, VALUE other) {
+	cmark_node *current_node = NULL, *replacement_node = NULL;
+	
+	TypedData_Get_Struct(self, cmark_node, &rb_Markly_Node_Type, current_node);
+	TypedData_Get_Struct(other, cmark_node, &rb_Markly_Node_Type, replacement_node);
+	
+	int result = cmark_node_replace(current_node, replacement_node);
+	
+	if (result == 0) {
+		rb_raise(rb_Markly_Error, "could not replace node");
+	}
+	
+	return other;
+}
+
 static VALUE encode_utf8_string(const char *c_string) {
   VALUE string = rb_str_new2(c_string);
   int enc = rb_enc_find_index("UTF-8");
@@ -1182,6 +1197,9 @@ __attribute__((visibility("default"))) void Init_markly() {
 	
   rb_Markly_Node = rb_define_class_under(rb_Markly, "Node", rb_cObject);
   rb_define_singleton_method(rb_Markly_Node, "new", rb_node_new, 1);
+
+	rb_define_method(rb_Markly_Node, "replace", rb_node_replace, 1);
+
   rb_define_method(rb_Markly_Node, "string_content", rb_node_get_string_content, 0);
   rb_define_method(rb_Markly_Node, "string_content=", rb_node_set_string_content, 1);
   rb_define_method(rb_Markly_Node, "type", rb_node_get_type, 0);
