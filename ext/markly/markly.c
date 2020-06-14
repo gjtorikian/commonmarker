@@ -41,11 +41,13 @@ static VALUE sym_right;
 static VALUE sym_center;
 
 static void rb_Markly_Node_free(void *data) {
-	// It's important that the `free` function does not inspect the node data, as it may be part of a tree that was already freed.
-	cmark_node *node = (cmark_node*)data;
-	
-	if (cmark_node_parent(node) == NULL) {
-		cmark_node_free(node);
+	// If a parent of this node is already freed, `rb_Markly_Node_freed` will ensure all the nodes are nullified.
+	if (data) {
+		cmark_node *node = (cmark_node*)data;
+		
+		if (cmark_node_parent(node) == NULL) {
+			cmark_node_free(node);
+		}
 	}
 }
 
@@ -79,6 +81,12 @@ static const rb_data_type_t rb_Markly_Node_Type = {
 	.flags = RUBY_TYPED_FREE_IMMEDIATELY,
 };
 
+static void rb_Markly_Node_freed(cmark_mem *mem, void *user_data) {
+	VALUE self = (VALUE)user_data;
+	
+	RTYPEDDATA_DATA(self) = NULL;
+}
+
 static VALUE rb_Markly_Node_wrap(cmark_node *node) {
 	if (node == NULL)
 		return Qnil;
@@ -91,6 +99,7 @@ static VALUE rb_Markly_Node_wrap(cmark_node *node) {
 	
 	VALUE self = TypedData_Wrap_Struct(rb_Markly_Node, &rb_Markly_Node_Type, node);
 	cmark_node_set_user_data(node, (void *)self);
+	cmark_node_set_user_data_free_func(node, rb_Markly_Node_freed);
 	
 	return self;
 }
