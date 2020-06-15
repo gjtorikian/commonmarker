@@ -4,8 +4,13 @@ source 'https://rubygems.org/'
 
 gemspec
 
+group :maintenance, optional: true do
+	gem "bake-bundler"
+	gem "bake-modernize"
+end
+
 group :benchmark do
-  gem 'github-markdown'
-  gem 'kramdown'
-  gem 'redcarpet'
+	gem 'github-markdown'
+	gem 'kramdown'
+	gem 'redcarpet'
 end

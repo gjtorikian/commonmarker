@@ -24,8 +24,6 @@ Gem::Specification.new do |spec|
 	spec.required_ruby_version = ">= 2.5"
 	
 	spec.add_development_dependency "bake"
-	spec.add_development_dependency "bake-bundler"
-	spec.add_development_dependency "bake-modernize"
 	spec.add_development_dependency "minitest", "~> 5.6"
 	spec.add_development_dependency "rake"
 	spec.add_development_dependency "rake-compiler", "~> 0.9"
