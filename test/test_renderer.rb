@@ -4,13 +4,25 @@ require 'test_helper'
 
 class TestRenderer < Minitest::Test
   def setup
-    @doc = Markly.parse('Hi *there*')
+    @doc = Markly.parse("# Introduction\nHi *there*")
   end
 
   def test_html_renderer
     renderer = HtmlRenderer.new
     result = renderer.render(@doc)
-    assert_equal "<p>Hi <em>there</em></p>\n", result
+    assert_equal <<~HTML, result
+    <h1>Introduction</h1>
+    <p>Hi <em>there</em></p>
+    HTML
+  end
+
+  def test_html_renderer_with_ids
+    renderer = HtmlRenderer.new(ids: true)
+    result = renderer.render(@doc)
+    assert_equal <<~HTML, result
+    <h1 id="introduction">Introduction</h1>
+    <p>Hi <em>there</em></p>
+    HTML
   end
 
   def test_multiple_tables

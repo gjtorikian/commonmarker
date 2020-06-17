@@ -1,15 +1,29 @@
 # frozen_string_literal: true
 
 module Markly
-  class HtmlRenderer < Renderer
+  class HTMLRenderer < Renderer
+    def initialize(ids: false, **options)
+      super(**options)
+      
+      @ids = ids
+    end
+    
     def document(_)
       super
       out("</ol>\n</section>\n") if @written_footnote_ix
     end
 
+    def id_for(node)
+      if @ids
+        id = node.to_plaintext.chomp.downcase.gsub(/\s+/, '-')
+        
+        return " id=\"#{id}\""
+      end
+    end
+
     def header(node)
       block do
-        out('<h', node.header_level, "#{source_position(node)}>", :children,
+        out('<h', node.header_level, "#{id_for(node)}#{source_position(node)}>", :children,
             '</h', node.header_level, '>')
       end
     end
@@ -249,4 +263,7 @@ module Markly
       node.tasklist_item_checked?
     end
   end
+  
+  # Legacy.
+  HtmlRenderer = HTMLRenderer
 end
