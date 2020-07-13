@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'cgi'
+
 module Markly
   class HTMLRenderer < Renderer
     def initialize(ids: false, **options)
@@ -17,7 +19,7 @@ module Markly
       if @ids
         id = node.to_plaintext.chomp.downcase.gsub(/\s+/, '-')
         
-        return " id=\"#{id}\""
+        return " id=\"#{CGI.escape_html id}\""
       end
     end
 
