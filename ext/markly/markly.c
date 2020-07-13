@@ -47,6 +47,8 @@ static void rb_Markly_Node_free(void *data) {
 		
 		if (cmark_node_parent(node) == NULL) {
 			cmark_node_free(node);
+		} else {
+			cmark_node_set_user_data(node, NULL);
 		}
 	}
 }
