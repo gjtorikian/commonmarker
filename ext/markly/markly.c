@@ -331,10 +331,10 @@ static VALUE rb_node_set_string_content(VALUE self, VALUE s) {
  * Returns a {Symbol} representing the node's type.
  */
 static VALUE rb_node_get_type(VALUE self) {
-  int node_type;
-  cmark_node *node;
-  VALUE symbol;
-  const char *s;
+  int node_type = 0;
+  cmark_node *node = NULL;
+  VALUE symbol = NULL;
+  const char *s = NULL;
 
   TypedData_Get_Struct(self, cmark_node, &rb_Markly_Node_Type, node);
 
