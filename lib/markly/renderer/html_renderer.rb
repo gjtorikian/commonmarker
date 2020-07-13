@@ -8,11 +8,14 @@ module Markly
       super(**options)
       
       @ids = ids
+      @section = nil
     end
     
     def document(_)
+      @section = false
       super
       out("</ol>\n</section>\n") if @written_footnote_ix
+      out("</section>") if @section
     end
 
     def id_for(node)
@@ -25,7 +28,10 @@ module Markly
 
     def header(node)
       block do
-        out('<h', node.header_level, "#{id_for(node)}#{source_position(node)}>", :children,
+        out('</section>') if @section
+        @section = true
+        out("<section #{id_for(node)}>")
+        out('<h', node.header_level, "#{source_position(node)}>", :children,
             '</h', node.header_level, '>')
       end
     end
