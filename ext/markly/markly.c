@@ -333,7 +333,7 @@ static VALUE rb_node_set_string_content(VALUE self, VALUE s) {
 static VALUE rb_node_get_type(VALUE self) {
   int node_type = 0;
   cmark_node *node = NULL;
-  VALUE symbol = NULL;
+  VALUE symbol = Qnil;
   const char *s = NULL;
 
   TypedData_Get_Struct(self, cmark_node, &rb_Markly_Node_Type, node);
