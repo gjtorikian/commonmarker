@@ -11,17 +11,18 @@ class TestRenderer < Minitest::Test
     renderer = HtmlRenderer.new
     result = renderer.render(@doc)
     assert_equal <<~HTML, result
-    <h1>Introduction</h1>
-    <p>Hi <em>there</em></p>
+      <h1>Introduction</h1>
+      <p>Hi <em>there</em></p>
     HTML
   end
 
   def test_html_renderer_with_ids
     renderer = HtmlRenderer.new(ids: true)
     result = renderer.render(@doc)
-    assert_equal <<~HTML, result
-    <h1 id="introduction">Introduction</h1>
-    <p>Hi <em>there</em></p>
+    assert_equal <<~HTML.chomp, result
+      <section id="introduction"><h1>Introduction</h1>
+      <p>Hi <em>there</em></p>
+      </section>
     HTML
   end
 

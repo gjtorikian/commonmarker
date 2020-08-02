@@ -28,9 +28,12 @@ module Markly
 
     def header(node)
       block do
-        out('</section>') if @section
-        @section = true
-        out("<section #{id_for(node)}>")
+        if @ids
+          out('</section>') if @section
+          @section = true
+          out("<section#{id_for(node)}>")
+        end
+        
         out('<h', node.header_level, "#{source_position(node)}>", :children,
             '</h', node.header_level, '>')
       end
