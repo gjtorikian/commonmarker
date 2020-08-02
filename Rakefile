@@ -8,7 +8,7 @@ require 'digest/md5'
 host_os = RbConfig::CONFIG['host_os']
 require 'devkit' if host_os == 'mingw32'
 
-task default: [:test]
+task default: [:compile, :test]
 
 # Gem Spec
 gem_spec = Gem::Specification.load('markly.gemspec')
