@@ -70,7 +70,7 @@ module CommonMarker
                 'checked="" disabled=""'
               else
                 'disabled=""'
-      end
+              end
       "><input type=\"checkbox\" #{state} /"
     end
 
