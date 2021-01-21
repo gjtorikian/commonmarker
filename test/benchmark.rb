@@ -19,10 +19,6 @@ dobench('redcarpet') do
   Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
 end
 
-dobench('github-markdown') do
-  GitHub::Markdown.render(benchinput)
-end
-
 dobench('commonmarker with to_html') do
   CommonMarker.render_html(benchinput)
 end
