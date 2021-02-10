@@ -24,7 +24,7 @@ class TestFootnotes < Minitest::Test
   def test_html_renderer
     assert_equal @expected, CommonMarker::HtmlRenderer.new.render(@doc)
   end
-        
+
   def test_render_html
     md = <<~MARKDOWN
       # footnotes
