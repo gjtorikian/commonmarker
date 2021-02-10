@@ -92,7 +92,7 @@ doc = CommonMarker.render_doc(ARGF.read, options.active_parse_options, options.a
 
 if options.renderer
   renderer = CommonMarker::HtmlRenderer.new(extensions: options.active_extensions)
-  STDOUT.write(renderer.render(doc))
+  $stdout.write(renderer.render(doc))
 else
-  STDOUT.write(doc.to_html(options.active_render_options, options.active_extensions))
+  $stdout.write(doc.to_html(options.active_render_options, options.active_extensions))
 end

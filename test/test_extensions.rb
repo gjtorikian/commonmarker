@@ -9,30 +9,30 @@ class TestExtensions < Minitest::Test
 
   def test_uses_specified_extensions
     CommonMarker.render_html(@markdown, :DEFAULT, %i[]).tap do |out|
-      assert out.include?('| a')
-      assert out.include?('| <strong>x</strong>')
-      assert out.include?('~~hi~~')
+      assert_includes out, '| a'
+      assert_includes out, '| <strong>x</strong>'
+      assert_includes out, '~~hi~~'
     end
 
     CommonMarker.render_html(@markdown, :DEFAULT, %i[table]).tap do |out|
-      refute out.include?('| a')
-      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert out.include?(html) }
-      assert out.include?('~~hi~~')
+      refute_includes out, '| a'
+      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert_includes out, html }
+      assert_includes out, '~~hi~~'
     end
 
     CommonMarker.render_html(@markdown, :DEFAULT, %i[strikethrough]).tap do |out|
-      assert out.include?('| a')
-      refute out.include?('~~hi~~')
-      assert out.include?('<del>hi</del>')
+      assert_includes out, '| a'
+      refute_includes out, '~~hi~~'
+      assert_includes out, '<del>hi</del>'
     end
 
     doc = CommonMarker.render_doc('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
-    assert_equal doc.to_html, "<p>~a~ <del>b</del> ~~~c~~~</p>\n"
+    assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", doc.to_html)
 
     CommonMarker.render_html(@markdown, :DEFAULT, %i[table strikethrough]).tap do |out|
-      refute out.include?('| a')
-      refute out.include?('| <strong>x</strong>')
-      refute out.include?('~~hi~~')
+      refute_includes out, '| a'
+      refute_includes out, '| <strong>x</strong>'
+      refute_includes out, '~~hi~~'
     end
   end
 
@@ -40,19 +40,19 @@ class TestExtensions < Minitest::Test
     doc = CommonMarker.render_doc(@markdown, :DEFAULT, %i[table])
 
     doc.to_html.tap do |out|
-      refute out.include?('| a')
-      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert out.include?(html) }
-      assert out.include?('~~hi~~')
+      refute_includes out, '| a'
+      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert_includes out, html }
+      assert_includes out, '~~hi~~'
     end
 
     HtmlRenderer.new.render(doc).tap do |out|
-      refute out.include?('| a')
-      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert out.include?(html) }
-      assert out.include?('~~hi~~')
+      refute_includes out, '| a'
+      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert_includes out, html }
+      assert_includes out, '~~hi~~'
     end
 
     doc = CommonMarker.render_doc('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
-    assert_equal HtmlRenderer.new.render(doc), "<p>~a~ <del>b</del> ~~~c~~~</p>\n"
+    assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", HtmlRenderer.new.render(doc))
   end
 
   def test_bad_extension_specifications

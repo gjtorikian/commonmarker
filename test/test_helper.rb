@@ -44,8 +44,8 @@ def open_spec_file(filename)
       example_number += 1
       end_line = line_number
       tests << {
-        markdown: markdown_lines.join('').tr('→', "\t"),
-        html: html_lines.join('').tr('→', "\t").rstrip,
+        markdown: markdown_lines.join.tr('→', "\t"),
+        html: html_lines.join.tr('→', "\t").rstrip,
         example: example_number,
         start_line: start_line,
         end_line: end_line,

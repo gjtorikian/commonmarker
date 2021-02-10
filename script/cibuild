@@ -2,11 +2,6 @@
 
 set -e
 
-if [ -d /usr/share/rbenv/shims ]; then
-  export PATH=/usr/share/rbenv/shims:$PATH
-  export RBENV_VERSION="2.1.7-github"
-fi
-
 git submodule sync
 git submodule update --init
 bundle
