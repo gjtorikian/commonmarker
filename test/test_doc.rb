@@ -17,114 +17,114 @@ class TestDocNode < Minitest::Test
   end
 
   def test_get_type
-    assert_equal @doc.type, :document
+    assert_equal(:document, @doc.type)
   end
 
   def test_get_type_string
-    assert_equal @doc.type_string, 'document'
+    assert_equal('document', @doc.type_string)
   end
 
   def test_get_first_child
-    assert_equal @first_child.type, :paragraph
+    assert_equal(:paragraph, @first_child.type)
   end
 
   def test_get_next
-    assert_equal @first_child.first_child.next.type, :emph
+    assert_equal(:emph, @first_child.first_child.next.type)
   end
 
   def test_insert_before
     paragraph = Node.new(:paragraph)
-    assert_equal @first_child.insert_before(paragraph), true
+    assert(@first_child.insert_before(paragraph))
     assert_match "<p></p>\n<p>Hi <em>there</em>.", @doc.to_html
   end
 
   def test_insert_after
     paragraph = Node.new(:paragraph)
-    assert_equal @first_child.insert_after(paragraph), true
+    assert(@first_child.insert_after(paragraph))
     assert_match "<strong>many nodes</strong>!</p>\n<p></p>\n", @doc.to_html
   end
 
   def test_prepend_child
     code = Node.new(:code)
-    assert_equal @first_child.prepend_child(code), true
+    assert(@first_child.prepend_child(code))
     assert_match '<p><code></code>Hi <em>there</em>.', @doc.to_html
   end
 
   def test_append_child
     strong = Node.new(:strong)
-    assert_equal @first_child.append_child(strong), true
+    assert(@first_child.append_child(strong))
     assert_match "!<strong></strong></p>\n", @doc.to_html
   end
 
   def test_get_last_child
-    assert_equal @last_child.type, :paragraph
+    assert_equal(:paragraph, @last_child.type)
   end
 
   def test_get_parent
-    assert_equal @first_child.first_child.next.parent.type, :paragraph
+    assert_equal(:paragraph, @first_child.first_child.next.parent.type)
   end
 
   def test_get_previous
-    assert_equal @first_child.first_child.next.previous.type, :text
+    assert_equal(:text, @first_child.first_child.next.previous.type)
   end
 
   def test_get_url
-    assert_equal @link.url, 'https://www.github.com'
+    assert_equal('https://www.github.com', @link.url)
   end
 
   def test_set_url
-    assert_equal @link.url = 'https://www.mozilla.org', 'https://www.mozilla.org'
+    assert_equal('https://www.mozilla.org', @link.url = 'https://www.mozilla.org')
   end
 
   def test_get_title
-    assert_equal @image.title, 'Favicon'
+    assert_equal('Favicon', @image.title)
   end
 
   def test_set_title
-    assert_equal @image.title = 'Octocat', 'Octocat'
+    assert_equal('Octocat', @image.title = 'Octocat')
   end
 
   def test_get_header_level
-    assert_equal @header.header_level, 3
+    assert_equal(3, @header.header_level)
   end
 
   def test_set_header_level
-    assert_equal @header.header_level = 6, 6
+    assert_equal(6, @header.header_level = 6)
   end
 
   def test_get_list_type
-    assert_equal @ul_list.list_type, :bullet_list
-    assert_equal @ol_list.list_type, :ordered_list
+    assert_equal(:bullet_list, @ul_list.list_type)
+    assert_equal(:ordered_list, @ol_list.list_type)
   end
 
   def test_set_list_type
-    assert_equal @ul_list.list_type = :ordered_list, :ordered_list
-    assert_equal @ol_list.list_type = :bullet_list, :bullet_list
+    assert_equal(:ordered_list, @ul_list.list_type = :ordered_list)
+    assert_equal(:bullet_list, @ol_list.list_type = :bullet_list)
   end
 
   def test_get_list_start
-    assert_equal @ol_list.list_start, 1
+    assert_equal(1, @ol_list.list_start)
   end
 
   def test_set_list_start
-    assert_equal @ol_list.list_start = 8, 8
+    assert_equal(8, @ol_list.list_start = 8)
   end
 
   def test_get_list_tight
-    assert_equal @ul_list.list_tight, true
-    assert_equal @ol_list.list_tight, true
+    assert(@ul_list.list_tight)
+    assert(@ol_list.list_tight)
   end
 
   def test_set_list_tight
-    assert_equal @ul_list.list_tight = false, false
-    assert_equal @ol_list.list_tight = false, false
+    refute(@ul_list.list_tight = false)
+    refute(@ol_list.list_tight = false)
   end
 
   def test_get_fence_info
-    assert_equal @fence.fence_info, 'ruby'
+    assert_equal('ruby', @fence.fence_info)
   end
 
   def test_set_fence_info
-    assert_equal @fence.fence_info = 'javascript', 'javascript'
+    assert_equal('javascript', @fence.fence_info = 'javascript')
   end
 end

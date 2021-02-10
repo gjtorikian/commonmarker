@@ -10,7 +10,7 @@ end
 # list of pairs consisting of input and a regex that must match the output.
 pathological = {
   'nested strong emph' =>
-              [('*a **a ' * 65_000) + 'b' + (' a** a*' * 65_000),
+              ["#{'*a **a ' * 65_000}b#{' a** a*' * 65_000}",
                Regexp.compile('(<em>a <strong>a ){65_000}b( a</strong> a</em>){65_000}')],
   'many emph closers with no openers' =>
                [('a_ ' * 65_000),
@@ -34,10 +34,10 @@ pathological = {
                ['**x [a*b**c*](d)',
                 Regexp.compile('\\*\\*x <a href=\'d\'>a<em>b</em><em>c</em></a>')],
   'nested brackets' =>
-               [('[' * 50_000) + 'a' + (']' * 50_000),
+               ["#{'[' * 50_000}a#{']' * 50_000}",
                 Regexp.compile('\[{50000}a\]{50000}')],
   'nested block quotes' =>
-               [(('> ' * 50_000) + 'a'),
+               ["#{'> ' * 50_000}a",
                 Regexp.compile('(<blockquote>\n){50000}')],
   'U+0000 in input' =>
                ['abc\u0000de\u0000',
@@ -53,41 +53,41 @@ end
 
 if ENV['BENCH']
   class PathologicalInputsPerformanceTest < Minitest::Benchmark
-    def bench_pathological_1
+    def test_bench_pathological_one
       assert_performance_linear 0.99 do |n|
         star = '*' * (n * 10)
         markdown("#{star}#{star}hi#{star}#{star}")
       end
     end
 
-    def bench_pathological_2
+    def test_bench_pathological_two
       assert_performance_linear 0.99 do |n|
         c = '`t`t`t`t`t`t' * (n * 10)
         markdown(c)
       end
     end
 
-    def bench_pathological_3
+    def test_bench_pathological_three
       assert_performance_linear 0.99 do |n|
         markdown(" [a]: #{'A' * n}\n\n#{'[a][]' * n}\n")
       end
     end
 
-    def bench_pathological_4
+    def test_bench_pathological_four
       assert_performance_linear 0.5 do |n|
         markdown("#{'[' * n}a#{']' * n}")
       end
     end
 
-    def bench_pathological_5
+    def test_bench_pathological_five
       assert_performance_linear 0.99 do |n|
         markdown("#{'**a *a ' * n}#{'a* a**' * n}")
       end
     end
 
-    def bench_unbound_recursion
+    def test_bench_unbound_recursion
       assert_performance_linear 0.99 do |n|
-        markdown(('[' * n) + 'foo' + ('](bar)' * n))
+        markdown("#{'[' * n}foo#{'](bar)' * n}")
       end
     end
   end

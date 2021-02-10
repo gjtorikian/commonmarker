@@ -6,6 +6,7 @@ require 'stringio'
 module CommonMarker
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
+
     def initialize(options: :DEFAULT, extensions: [])
       @opts = Config.process_options(options, :render)
       @stream = StringIO.new(+'')
@@ -18,11 +19,12 @@ module CommonMarker
 
     def out(*args)
       args.each do |arg|
-        if arg == :children
+        case arg
+        when :children
           @node.each { |child| out(child) }
-        elsif arg.is_a?(Array)
+        when Array
           arg.each { |x| render(x) }
-        elsif arg.is_a?(Node)
+        when Node
           render(arg)
         else
           @stream.write(arg)
