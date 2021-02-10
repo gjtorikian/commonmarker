@@ -8,13 +8,13 @@ class TestEncoding < Minitest::Test
     contents = fixtures_file('curly.md')
     doc = CommonMarker.render_doc(contents, :SMART)
     render = doc.to_html
-    assert_equal render.rstrip, '<p>This curly quote “makes commonmarker throw an exception”.</p>'
+    assert_equal('<p>This curly quote “makes commonmarker throw an exception”.</p>', render.rstrip)
   end
 
   def test_string_content_is_utf8
     doc = CommonMarker.render_doc('Hi *there*')
     text = doc.first_child.last_child.first_child
-    assert_equal text.string_content, 'there'
-    assert_equal text.string_content.encoding.name, 'UTF-8'
+    assert_equal('there', text.string_content)
+    assert_equal('UTF-8', text.string_content.encoding.name)
   end
 end

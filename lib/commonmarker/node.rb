@@ -11,7 +11,7 @@ module CommonMarker
     #
     # blk - A {Proc} representing the action to take for each child
     def walk(&block)
-      return enum_for(:walk) unless block_given?
+      return enum_for(:walk) unless block
 
       yield self
       each do |child|

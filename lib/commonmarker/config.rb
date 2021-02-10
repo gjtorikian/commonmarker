@@ -31,10 +31,11 @@ module CommonMarker
 
     def self.process_options(option, type)
       type = Config.const_get(type.capitalize)
-      if option.is_a?(Symbol)
+      case option
+      when Symbol
         check_option(option, type)
         type.to_h[option]
-      elsif option.is_a?(Array)
+      when Array
         option = [nil] if option.empty?
         # neckbearding around. the map will both check the opts and then bitwise-OR it
         option.map do |o|
