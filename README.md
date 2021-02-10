@@ -149,6 +149,7 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 | `:SOURCEPOS`                     | Include source position in rendered HTML.                      |
 | `:TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells                  |
 | `:FULL_INFO_STRING`              | Include full info strings of code blocks in separate attribute |
+| `:FOOTNOTES`                     | Render footnoes                                                |
 
 ### Passing options
 
