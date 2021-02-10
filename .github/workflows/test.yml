@@ -35,9 +35,5 @@ jobs:
         run: bundle install
 
       - name: Run ${{ matrix.os }} tests
-        if: ${{ matrix.os != 'windows-latest' }}
+        shell: bash
         run: script/cibuild
-
-      - name: Run ${{ matrix.os }} tests
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: script/cibuild.cmd
