@@ -27,6 +27,7 @@ module CommonMarker
       define :TABLE_PREFER_STYLE_ATTRIBUTES, (1 << 15)
       define :FULL_INFO_STRING, (1 << 16)
       define :UNSAFE, (1 << 17)
+      define :FOOTNOTES, (1 << 13)
     end
 
     def self.process_options(option, type)
