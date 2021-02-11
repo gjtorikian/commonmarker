@@ -1120,6 +1120,7 @@ static VALUE rb_node_get_table_alignments(VALUE self) {
 static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   char *result;
   cmark_node *node;
+  VALUE escaped;
   Check_Type(rb_text, T_STRING);
 
   Data_Get_Struct(self, cmark_node, node);
@@ -1130,7 +1131,10 @@ static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   if (houdini_escape_href(&buf, (const uint8_t *)RSTRING_PTR(rb_text),
                           RSTRING_LEN(rb_text))) {
     result = (char *)cmark_strbuf_detach(&buf);
-    return rb_str_new2(result);
+    escaped = rb_str_new2(result);
+    rb_enc_copy(escaped, rb_text);
+    return escaped;
+
   }
 
   return rb_text;
@@ -1140,6 +1144,7 @@ static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
 static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   char *result;
   cmark_node *node;
+  VALUE escaped;
   Check_Type(rb_text, T_STRING);
 
   Data_Get_Struct(self, cmark_node, node);
@@ -1150,7 +1155,9 @@ static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   if (houdini_escape_html0(&buf, (const uint8_t *)RSTRING_PTR(rb_text),
                            RSTRING_LEN(rb_text), 0)) {
     result = (char *)cmark_strbuf_detach(&buf);
-    return rb_str_new2(result);
+    escaped = rb_str_new2(result);
+    rb_enc_copy(escaped, rb_text);
+    return escaped;
   }
 
   return rb_text;
