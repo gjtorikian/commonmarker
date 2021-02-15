@@ -45,6 +45,13 @@ static VALUE encode_utf8_string(const char *c_string) {
   return string;
 }
 
+/* Encode a C string using the encoding from Ruby string +source+. */
+static VALUE encode_source_string(const char *c_string, VALUE source) {
+  VALUE string = rb_str_new2(c_string);
+  rb_enc_copy(string, source);
+  return string;
+}
+
 static void rb_mark_c_struct(void *data) {
   cmark_node *node = data;
   cmark_node *child;
@@ -1120,7 +1127,6 @@ static VALUE rb_node_get_table_alignments(VALUE self) {
 static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   char *result;
   cmark_node *node;
-  VALUE escaped;
   Check_Type(rb_text, T_STRING);
 
   Data_Get_Struct(self, cmark_node, node);
@@ -1131,9 +1137,7 @@ static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   if (houdini_escape_href(&buf, (const uint8_t *)RSTRING_PTR(rb_text),
                           RSTRING_LEN(rb_text))) {
     result = (char *)cmark_strbuf_detach(&buf);
-    escaped = rb_str_new2(result);
-    rb_enc_copy(escaped, rb_text);
-    return escaped;
+    return encode_source_string(result, rb_text);
 
   }
 
@@ -1144,7 +1148,6 @@ static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
 static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   char *result;
   cmark_node *node;
-  VALUE escaped;
   Check_Type(rb_text, T_STRING);
 
   Data_Get_Struct(self, cmark_node, node);
@@ -1155,9 +1158,7 @@ static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   if (houdini_escape_html0(&buf, (const uint8_t *)RSTRING_PTR(rb_text),
                            RSTRING_LEN(rb_text), 0)) {
     result = (char *)cmark_strbuf_detach(&buf);
-    escaped = rb_str_new2(result);
-    rb_enc_copy(escaped, rb_text);
-    return escaped;
+    return encode_source_string(result, rb_text);
   }
 
   return rb_text;
