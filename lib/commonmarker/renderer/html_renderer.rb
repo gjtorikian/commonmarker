@@ -134,7 +134,7 @@ module CommonMarker
     end
 
     def link(node)
-      out('<a href="', node.url.nil? ? '' : escape_href(node.url), '"')
+      out('<a href="', node.url.nil? ? '' : escape_href(node.url), '" target="_blank" rel="noopener"')
       out(' title="', escape_html(node.title), '"') if node.title && !node.title.empty?
       out('>', :children, '</a>')
     end
