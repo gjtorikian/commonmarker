@@ -129,7 +129,7 @@ module CommonMarker
     end
 
     def option_enabled?(opt)
-      (@opts & CommonMarker::Config::Render.value(opt)) != 0
+      (@opts & CommonMarker::Config::OPTS.dig(:render, opt)) != 0
     end
   end
 end

@@ -25,8 +25,6 @@ Gem::Specification.new do |s|
 
   s.rdoc_options += ['-x', 'ext/commonmarker/cmark/.*']
 
-  s.add_dependency 'ruby-enum', '~> 0.5'
-
   s.add_development_dependency 'awesome_print'
   s.add_development_dependency 'json', '~> 2.3'
   s.add_development_dependency 'minitest', '~> 5.6'
