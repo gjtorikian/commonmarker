@@ -4,6 +4,7 @@ inherit_gem:
     - config/minitest.yml
 
 AllCops:
+  TargetRubyVersion: 2.6
   Exclude:
     - "ext/**/*"
     - "vendor/**/*"

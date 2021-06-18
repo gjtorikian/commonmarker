@@ -27,11 +27,9 @@ module CommonMarker
             list_tight
             fence_info
           ].map do |name|
-            begin
-              [name, __send__(name)]
-            rescue NodeError
-              nil
-            end
+            [name, __send__(name)]
+          rescue NodeError
+            nil
           end.compact
 
           printer.seplist(attrs) do |name, value|
