@@ -70,7 +70,7 @@ module CommonMarker
       err = assert_raises TypeError do
         CommonMarker.render_html("foo \n baz", [:SMART])
       end
-      assert_equal('option \':SMART\' does not exist for CommonMarker::Config::Render', err.message)
+      assert_equal('option \':SMART\' does not exist for CommonMarker::Config::OPTS[:render]', err.message)
 
       assert_raises TypeError do
         CommonMarker.render_doc("foo \n baz", 123)
@@ -79,7 +79,7 @@ module CommonMarker
       err = assert_raises TypeError do
         CommonMarker.render_doc("foo \n baz", :safe)
       end
-      assert_equal('option \':safe\' does not exist for CommonMarker::Config::Parse', err.message)
+      assert_equal('option \':safe\' does not exist for CommonMarker::Config::OPTS[:parse]', err.message)
 
       assert_raises TypeError do
         CommonMarker.render_doc("foo \n baz", :totes_fake)

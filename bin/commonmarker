@@ -13,8 +13,8 @@ $LOAD_PATH.unshift File.expand_path('lib', root)
 def parse_options
   options = OpenStruct.new
   extensions = CommonMarker.extensions
-  parse_options = CommonMarker::Config::Parse
-  render_options = CommonMarker::Config::Render
+  parse_options = CommonMarker::Config::OPTS.fetch(:parse)
+  render_options = CommonMarker::Config::OPTS.fetch(:render)
 
   options.active_extensions = []
   options.active_parse_options = [:DEFAULT]

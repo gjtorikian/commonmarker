@@ -21,11 +21,9 @@ Gem::Specification.new do |s|
 
   s.executables = ['commonmarker']
   s.require_paths = %w[lib ext]
-  s.required_ruby_version = ['>= 2.4.10', '< 4.0']
+  s.required_ruby_version = ['>= 2.6', '< 4.0']
 
   s.rdoc_options += ['-x', 'ext/commonmarker/cmark/.*']
-
-  s.add_dependency 'ruby-enum', '~> 0.5'
 
   s.add_development_dependency 'awesome_print'
   s.add_development_dependency 'json', '~> 2.3'
