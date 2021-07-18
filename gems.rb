@@ -10,7 +10,7 @@ group :maintenance, optional: true do
 end
 
 group :benchmark do
-	gem 'github-markdown'
+	# gem 'github-markdown'
 	gem 'kramdown'
 	gem 'redcarpet'
 end
