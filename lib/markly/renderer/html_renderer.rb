@@ -4,11 +4,12 @@ require 'cgi'
 
 module Markly
   class HTMLRenderer < Renderer
-    def initialize(ids: false, **options)
+    def initialize(ids: false, tight: false, **options)
       super(**options)
       
       @ids = ids
       @section = nil
+      @tight = tight
     end
     
     def document(_)
@@ -40,7 +41,7 @@ module Markly
     end
 
     def paragraph(node)
-      if @in_tight && node.parent.type != :blockquote
+      if @tight && node.parent.type != :blockquote
         out(:children)
       else
         block do
@@ -56,8 +57,8 @@ module Markly
     end
 
     def list(node)
-      old_in_tight = @in_tight
-      @in_tight = node.list_tight
+      old_tight = @tight
+      @tight = node.list_tight
 
       block do
         if node.list_type == :bullet_list
@@ -76,7 +77,7 @@ module Markly
         end
       end
 
-      @in_tight = old_in_tight
+      @tight = old_tight
     end
 
     def list_item(node)
