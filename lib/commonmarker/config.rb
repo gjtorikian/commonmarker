@@ -24,7 +24,8 @@ module CommonMarker
         FULL_INFO_STRING: (1 << 16),
         UNSAFE: (1 << 17),
         FOOTNOTES: (1 << 13)
-      }.freeze
+      }.freeze,
+      format: %i[html xml].freeze
     }.freeze
 
     def self.process_options(option, type)

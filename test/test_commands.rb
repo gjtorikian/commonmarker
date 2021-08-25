@@ -28,4 +28,10 @@ class TestCommands < Minitest::Test
     assert_includes out, '<p><del>hi</del>'
     %w[<table> <tr> <th> a </th> <td> c </td>].each { |html| assert_includes out, html }
   end
+
+  def test_understands_format
+    out = make_bin('strong.md', '--to=xml')
+    assert_includes out, '<?xml version="1.0" encoding="UTF-8"?>'
+    assert_includes out, '<text xml:space="preserve">strong</text>'
+  end
 end

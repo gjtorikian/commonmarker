@@ -187,6 +187,40 @@ static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VA
 }
 
 /*
+ * Internal: Parses a Markdown string into an HTML string.
+ *
+ */
+static VALUE rb_markdown_to_xml(VALUE self, VALUE rb_text, VALUE rb_options, VALUE rb_extensions) {
+  char *str, *xml;
+  int len;
+  cmark_parser *parser;
+  cmark_node *doc;
+  Check_Type(rb_text, T_STRING);
+  Check_Type(rb_options, T_FIXNUM);
+
+  parser = prepare_parser(rb_options, rb_extensions, cmark_get_arena_mem_allocator());
+
+  str = (char *)RSTRING_PTR(rb_text);
+  len = RSTRING_LEN(rb_text);
+
+  cmark_parser_feed(parser, str, len);
+  doc = cmark_parser_finish(parser);
+  if (doc == NULL) {
+    cmark_arena_reset();
+    rb_raise(rb_eNodeError, "error parsing document");
+  }
+
+  cmark_mem *default_mem = cmark_get_default_mem_allocator();
+  xml = cmark_render_xml_with_mem(doc, FIX2INT(rb_options), default_mem);
+  cmark_arena_reset();
+
+  VALUE ruby_xml = rb_str_new2(xml);
+  default_mem->free(xml);
+
+  return ruby_xml;
+}
+
+/*
  * Internal: Creates a node based on a node type.
  *
  * type -  A {Symbol} representing the node to be created. Must be one of the
@@ -572,6 +606,28 @@ static VALUE rb_render_html(VALUE self, VALUE rb_options, VALUE rb_extensions) {
   free(html);
 
   return ruby_html;
+}
+
+/* Internal: Convert the node to an XML string.
+ *
+ * Returns a {String}.
+ */
+static VALUE rb_render_xml(VALUE self, VALUE rb_options) {
+  int options;
+  int i;
+  cmark_node *node;
+  Check_Type(rb_options, T_FIXNUM);
+
+  options = FIX2INT(rb_options);
+
+  Data_Get_Struct(self, cmark_node, node);
+
+  char *xml = cmark_render_xml(node, options);
+  VALUE ruby_xml = rb_str_new2(xml);
+
+  free(xml);
+
+  return ruby_xml;
 }
 
 /* Internal: Convert the node to a CommonMark string.
@@ -1216,6 +1272,8 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_cNode = rb_define_class_under(module, "Node", rb_cObject);
   rb_define_singleton_method(rb_cNode, "markdown_to_html", rb_markdown_to_html,
                              3);
+  rb_define_singleton_method(rb_cNode, "markdown_to_xml", rb_markdown_to_xml,
+                             3);
   rb_define_singleton_method(rb_cNode, "new", rb_node_new, 1);
   rb_define_singleton_method(rb_cNode, "parse_document", rb_parse_document, 4);
   rb_define_method(rb_cNode, "string_content", rb_node_get_string_content, 0);
@@ -1228,6 +1286,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_cNode, "next", rb_node_next, 0);
   rb_define_method(rb_cNode, "insert_before", rb_node_insert_before, 1);
   rb_define_method(rb_cNode, "_render_html", rb_render_html, 2);
+  rb_define_method(rb_cNode, "_render_xml", rb_render_xml, 1);
   rb_define_method(rb_cNode, "_render_commonmark", rb_render_commonmark, -1);
   rb_define_method(rb_cNode, "_render_plaintext", rb_render_plaintext, -1);
   rb_define_method(rb_cNode, "insert_after", rb_node_insert_after, 1);

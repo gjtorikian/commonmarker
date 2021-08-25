@@ -15,13 +15,16 @@ def parse_options
   extensions = CommonMarker.extensions
   parse_options = CommonMarker::Config::OPTS.fetch(:parse)
   render_options = CommonMarker::Config::OPTS.fetch(:render)
+  format_options = CommonMarker::Config::OPTS.fetch(:format)
 
   options.active_extensions = []
   options.active_parse_options = [:DEFAULT]
   options.active_render_options = [:DEFAULT]
+  options.output_format = :html
 
   option_parser = OptionParser.new do |opts|
     opts.banner = 'Usage: commonmarker [--html-renderer] [--extension=EXTENSION]'
+    opts.separator '                    [--to=FORMAT]'
     opts.separator '                    [--parse-option=OPTION]'
     opts.separator '                    [--render-option=OPTION]'
     opts.separator '                    [FILE..]'
@@ -43,6 +46,7 @@ def parse_options
     opts.on('-h', '--help', 'Prints this help') do
       puts opts
       puts
+      puts "Available formats: #{format_options.join(', ')}"
       puts "Available extentions: #{extensions.join(', ')}"
       puts "Available parse options: #{parse_options.keys.join(', ')}"
       puts "Available render options: #{render_options.keys.join(', ')}"
@@ -51,7 +55,12 @@ def parse_options
       exit
     end
 
-    opts.on('--html-renderer', 'Use the HtmlRenderer renderer rather than the native C renderer') do
+    opts.on('-tFORMAT', '--to=FORMAT', String, 'Specify output format (html, xml)') do |value|
+      value = value.to_sym
+      options.output_format = value if format_options.include?(value)
+    end
+
+    opts.on('--html-renderer', 'Use the HtmlRenderer renderer rather than the native C renderer (only valid when format is html)') do
       options.renderer = true
     end
 
@@ -87,12 +96,16 @@ def parse_options
 end
 
 options = parse_options
-
 doc = CommonMarker.render_doc(ARGF.read, options.active_parse_options, options.active_extensions)
 
-if options.renderer
-  renderer = CommonMarker::HtmlRenderer.new(extensions: options.active_extensions)
-  $stdout.write(renderer.render(doc))
-else
-  $stdout.write(doc.to_html(options.active_render_options, options.active_extensions))
+case options.output_format
+when :html
+  if options.renderer
+    renderer = CommonMarker::HtmlRenderer.new(options: options.active_render_options, extensions: options.active_extensions)
+    $stdout.write(renderer.render(doc))
+  else
+    $stdout.write(doc.to_html(options.active_render_options, options.active_extensions))
+  end
+when :xml
+  $stdout.write(doc.to_xml(options.active_render_options))
 end
