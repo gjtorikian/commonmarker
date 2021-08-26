@@ -25,7 +25,7 @@ module CommonMarker
         UNSAFE: (1 << 17),
         FOOTNOTES: (1 << 13)
       }.freeze,
-      format: %i[html xml].freeze
+      format: %i[html xml commonmark plaintext].freeze
     }.freeze
 
     def self.process_options(option, type)

@@ -29,9 +29,19 @@ class TestCommands < Minitest::Test
     %w[<table> <tr> <th> a </th> <td> c </td>].each { |html| assert_includes out, html }
   end
 
-  def test_understands_format
+  def test_understands_xml_format
     out = make_bin('strong.md', '--to=xml')
     assert_includes out, '<?xml version="1.0" encoding="UTF-8"?>'
     assert_includes out, '<text xml:space="preserve">strong</text>'
+  end
+
+  def test_understands_commonmark_format
+    out = make_bin('strong.md', '--to=commonmark')
+    assert_equal('I am **strong**', out)
+  end
+
+  def test_understands_plaintext_format
+    out = make_bin('strong.md', '--to=plaintext')
+    assert_equal('I am strong', out)
   end
 end

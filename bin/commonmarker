@@ -55,7 +55,7 @@ def parse_options
       exit
     end
 
-    opts.on('-tFORMAT', '--to=FORMAT', String, 'Specify output format (html, xml)') do |value|
+    opts.on('-tFORMAT', '--to=FORMAT', String, 'Specify output FORMAT') do |value|
       value = value.to_sym
       options.output_format = value if format_options.include?(value)
     end
@@ -108,4 +108,8 @@ when :html
   end
 when :xml
   $stdout.write(doc.to_xml(options.active_render_options))
+when :commonmark
+  $stdout.write(doc.to_commonmark(options.active_render_options))
+when :plaintext
+  $stdout.write(doc.to_plaintext(options.active_render_options))
 end
