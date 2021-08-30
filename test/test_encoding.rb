@@ -9,6 +9,9 @@ class TestEncoding < Minitest::Test
     doc = CommonMarker.render_doc(contents, :SMART)
     render = doc.to_html
     assert_equal('<p>This curly quote “makes commonmarker throw an exception”.</p>', render.rstrip)
+
+    render = doc.to_xml
+    assert_includes(render, '<text xml:space="preserve">This curly quote “makes commonmarker throw an exception”.</text>')
   end
 
   def test_string_content_is_utf8

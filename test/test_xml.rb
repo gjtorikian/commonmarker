@@ -24,7 +24,7 @@ class TestXml < Minitest::Test
     CommonMarker.render_doc(doc, :DEFAULT, [:table])
   end
 
-  def test_to_commonmark
+  def test_to_xml
     compare = render_doc(@markdown).to_xml(:SOURCEPOS)
 
     assert_equal <<~XML, compare
@@ -87,6 +87,20 @@ class TestXml < Minitest::Test
             </table_cell>
           </table_row>
         </table>
+      </document>
+    XML
+  end
+
+  def test_to_xml_with_quotes
+    compare = render_doc('"quotes" should be escaped').to_xml(:DEFAULT)
+
+    assert_equal <<~XML, compare
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE document SYSTEM "CommonMark.dtd">
+      <document xmlns="http://commonmark.org/xml/1.0">
+        <paragraph>
+          <text xml:space="preserve">&quot;quotes&quot; should be escaped</text>
+        </paragraph>
       </document>
     XML
   end

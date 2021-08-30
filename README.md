@@ -180,6 +180,76 @@ The available extensions are:
 * `:autolink` - This provides support for automatically converting URLs to anchor tags.
 * `:tagfilter` - This escapes [several "unsafe" HTML tags](https://github.github.com/gfm/#disallowed-raw-html-extension-), causing them to not have any effect.
 
+## Output formats
+
+Like CMark, CommonMarker can generate output in several formats: HTML, XML, plaintext, and commonmark are currently supported.
+
+### HTML
+
+The default output format, HTML, will be generated when calling `to_html` or using `--to=html` on the command line.
+
+```ruby
+doc = CommonMarker.render_doc('*Hello* world!', :DEFAULT)
+puts(doc.to_html)
+
+<p><em>Hello</em> world!</p>
+```
+
+### XML
+
+XML will be generated when calling `to_xml` or using `--to=xml` on the command line.
+
+```ruby
+doc = CommonMarker.render_doc('*Hello* world!', :DEFAULT)
+puts(doc.to_xml)
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document SYSTEM "CommonMark.dtd">
+<document xmlns="http://commonmark.org/xml/1.0">
+  <paragraph>
+    <emph>
+      <text xml:space="preserve">Hello</text>
+    </emph>
+    <text xml:space="preserve"> world!</text>
+  </paragraph>
+</document>
+```
+
+### Plaintext
+
+Plaintext will be generated when calling `to_plaintext` or using `--to=plaintext` on the command line.
+
+```ruby
+doc = CommonMarker.render_doc('*Hello* world!', :DEFAULT)
+puts(doc.to_plaintext)
+
+Hello world!
+```
+
+### Commonmark
+
+Commonmark will be generated when calling `to_commonmark` or using `--to=commonmark` on the command line.
+
+``` ruby
+text = <<-TEXT
+1. I am a numeric list.
+2. I continue the list.
+* Suddenly, an unordered list!
+* What fun!
+TEXT
+
+doc = CommonMarker.render_doc(text, :DEFAULT)
+puts(doc.to_commonmark)
+
+1.  I am a numeric list.
+2.  I continue the list.
+
+<!-- end list -->
+
+  - Suddenly, an unordered list\!
+  - What fun\!
+```
+
 ## Developing locally
 
 After cloning the repo:

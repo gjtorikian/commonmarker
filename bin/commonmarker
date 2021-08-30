@@ -57,7 +57,11 @@ def parse_options
 
     opts.on('-tFORMAT', '--to=FORMAT', String, 'Specify output FORMAT') do |value|
       value = value.to_sym
-      options.output_format = value if format_options.include?(value)
+      if format_options.include?(value)
+        options.output_format = value
+      else
+        abort("format '#{value}' not found")
+      end
     end
 
     opts.on('--html-renderer', 'Use the HtmlRenderer renderer rather than the native C renderer (only valid when format is html)') do
@@ -96,6 +100,10 @@ def parse_options
 end
 
 options = parse_options
+
+abort("format '#{options.output_format}' does not support using the HtmlRenderer renderer") if
+  options.renderer && options.output_format != :html
+
 doc = CommonMarker.render_doc(ARGF.read, options.active_parse_options, options.active_extensions)
 
 case options.output_format
