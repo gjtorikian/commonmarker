@@ -30,6 +30,16 @@ module CommonMarker
       _render_html(opts, extensions).force_encoding('utf-8')
     end
 
+    # Public: Convert the node to an XML string.
+    #
+    # options - A {Symbol} or {Array of Symbol}s indicating the render options
+    #
+    # Returns a {String}.
+    def to_xml(options = :DEFAULT)
+      opts = Config.process_options(options, :render)
+      _render_xml(opts).force_encoding('utf-8')
+    end
+
     # Public: Convert the node to a CommonMark string.
     #
     # options - A {Symbol} or {Array of Symbol}s indicating the render options
