@@ -29,7 +29,8 @@ module CommonMarker
         STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
         TABLE_PREFER_STYLE_ATTRIBUTES: (1 << 15),
         FULL_INFO_STRING: (1 << 16),
-      }.freeze
+      }.freeze,
+      format: %i[html xml commonmark plaintext].freeze
     }.freeze
 
     def self.process_options(option, type)
