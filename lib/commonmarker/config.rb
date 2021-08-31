@@ -7,23 +7,28 @@ module CommonMarker
     OPTS = {
       parse: {
         DEFAULT: 0,
+        SOURCEPOS: (1 << 1),
+        UNSAFE: (1 << 17)
         VALIDATE_UTF8: (1 << 9),
         SMART: (1 << 10),
         LIBERAL_HTML_TAG: (1 << 12),
         FOOTNOTES: (1 << 13),
         STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
-        UNSAFE: (1 << 17)
       }.freeze,
       render: {
         DEFAULT: 0,
         SOURCEPOS: (1 << 1),
         HARDBREAKS: (1 << 2),
+        UNSAFE: (1 << 17),
         NOBREAKS: (1 << 4),
+        VALIDATE_UTF8: (1 << 9),
+        SMART: (1 << 10),
         GITHUB_PRE_LANG: (1 << 11),
+        LIBERAL_HTML_TAG: (1 << 12),
+        FOOTNOTES: (1 << 13)
+        STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
         TABLE_PREFER_STYLE_ATTRIBUTES: (1 << 15),
         FULL_INFO_STRING: (1 << 16),
-        UNSAFE: (1 << 17),
-        FOOTNOTES: (1 << 13)
       }.freeze
     }.freeze
 
