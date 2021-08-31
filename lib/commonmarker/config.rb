@@ -8,7 +8,7 @@ module CommonMarker
       parse: {
         DEFAULT: 0,
         SOURCEPOS: (1 << 1),
-        UNSAFE: (1 << 17)
+        UNSAFE: (1 << 17),
         VALIDATE_UTF8: (1 << 9),
         SMART: (1 << 10),
         LIBERAL_HTML_TAG: (1 << 12),
@@ -25,7 +25,7 @@ module CommonMarker
         SMART: (1 << 10),
         GITHUB_PRE_LANG: (1 << 11),
         LIBERAL_HTML_TAG: (1 << 12),
-        FOOTNOTES: (1 << 13)
+        FOOTNOTES: (1 << 13),
         STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
         TABLE_PREFER_STYLE_ATTRIBUTES: (1 << 15),
         FULL_INFO_STRING: (1 << 16),
