@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 # The compiled library.
-require_relative 'markly/markly'
+require 'markly/markly'
 
 require_relative 'markly/flags'
 require_relative 'markly/node'
