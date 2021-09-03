@@ -67,11 +67,6 @@ module CommonMarker
         CommonMarker.render_html(nil)
       end
 
-      err = assert_raises TypeError do
-        CommonMarker.render_html("foo \n baz", [:SMART])
-      end
-      assert_equal('option \':SMART\' does not exist for CommonMarker::Config::OPTS[:render]', err.message)
-
       assert_raises TypeError do
         CommonMarker.render_doc("foo \n baz", 123)
       end

@@ -130,26 +130,31 @@ CommonMarker accepts the same options that CMark does, as symbols. Note that the
 | Name                          | Description
 | ----------------------------- | -----------
 | `:DEFAULT`                    | The default parsing system.
+| `:SOURCEPOS`                  | Include source position in nodes
 | `:UNSAFE`                     | Allow raw/custom HTML and unsafe links.
-| `:FOOTNOTES`                  | Parse footnotes.
-| `:LIBERAL_HTML_TAG`           | Support liberal parsing of inline HTML tags.
-| `:SMART`                      | Use smart punctuation (curly quotes, etc.).
-| `:STRIKETHROUGH_DOUBLE_TILDE` | Parse strikethroughs by double tildes (compatibility with [redcarpet](https://github.com/vmg/redcarpet))
 | `:VALIDATE_UTF8`              | Replace illegal sequences with the replacement character `U+FFFD`.
+| `:SMART`                      | Use smart punctuation (curly quotes, etc.).
+| `:LIBERAL_HTML_TAG`           | Support liberal parsing of inline HTML tags.
+| `:FOOTNOTES`                  | Parse footnotes.
+| `:STRIKETHROUGH_DOUBLE_TILDE` | Parse strikethroughs by double tildes (compatibility with [redcarpet](https://github.com/vmg/redcarpet))
 
 ### Render options
 
 | Name                             | Description                                                     |
 | ------------------               | -----------                                                     |
 | `:DEFAULT`                       | The default rendering system.                                   |
-| `:UNSAFE`                        | Allow raw/custom HTML and unsafe links.                         |
-| `:GITHUB_PRE_LANG`               | Use GitHub-style `<pre lang>` for fenced code blocks.           |
-| `:HARDBREAKS`                    | Treat `\n` as hardbreaks (by adding `<br/>`).                   |
-| `:NOBREAKS`                      | Translate `\n` in the source to a single whitespace.            |
 | `:SOURCEPOS`                     | Include source position in rendered HTML.                       |
+| `:HARDBREAKS`                    | Treat `\n` as hardbreaks (by adding `<br/>`).                   |
+| `:UNSAFE`                        | Allow raw/custom HTML and unsafe links.                         |
+| `:NOBREAKS`                      | Translate `\n` in the source to a single whitespace.            |
+| `:VALIDATE_UTF8`                 | Replace illegal sequences with the replacement character `U+FFFD`. |
+| `:SMART`                         | Use smart punctuation (curly quotes, etc.).                     |
+| `:GITHUB_PRE_LANG`               | Use GitHub-style `<pre lang>` for fenced code blocks.           |
+| `:LIBERAL_HTML_TAG`              | Support liberal parsing of inline HTML tags.                    |
+| `:FOOTNOTES`                     | Render footnotes.                                               |
+| `:STRIKETHROUGH_DOUBLE_TILDE`    | Parse strikethroughs by double tildes (compatibility with [redcarpet](https://github.com/vmg/redcarpet)) |
 | `:TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells.                  |
 | `:FULL_INFO_STRING`              | Include full info strings of code blocks in separate attribute. |
-| `:FOOTNOTES`                     | Render footnotes.                                               |
 
 ### Passing options
 

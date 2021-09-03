@@ -7,11 +7,14 @@ class SmartPunctTest < Minitest::Test
 
   smart_punct.each do |testcase|
     doc = CommonMarker.render_doc(testcase[:markdown], :SMART)
+    html = CommonMarker.render_html(testcase[:markdown], :SMART)
 
     define_method("test_smart_punct_example_#{testcase[:example]}") do
-      actual = doc.to_html.strip
+      doc_rendered = doc.to_html.strip
+      html_rendered = html.strip
 
-      assert_equal testcase[:html], actual, testcase[:markdown]
+      assert_equal testcase[:html], doc_rendered, testcase[:markdown]
+      assert_equal testcase[:html], html_rendered, testcase[:markdown]
     end
   end
 

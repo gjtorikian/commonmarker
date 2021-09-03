@@ -29,6 +29,9 @@ class TestExtensions < Minitest::Test
     doc = CommonMarker.render_doc('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
     assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", doc.to_html)
 
+    html = CommonMarker.render_html('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
+    assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", html)
+
     CommonMarker.render_html(@markdown, :DEFAULT, %i[table strikethrough]).tap do |out|
       refute_includes out, '| a'
       refute_includes out, '| <strong>x</strong>'
