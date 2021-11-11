@@ -1,0 +1,70 @@
+# frozen_string_literal: true
+
+require('fileutils')
+
+namespace :qiita_marker do
+  desc 'Rename commonmarker to qiita_marker'
+  task :rename_project do
+    ProjectRenamer.rename
+  end
+end
+
+module ProjectRenamer
+  PATH_MAP = {
+    'commonmarker' => 'qiita_marker'
+  }.freeze
+
+  SYMBOL_MAP = {
+    'commonmarker' => 'qiita_marker',
+    'CommonMarker' => 'QiitaMarker',
+    'COMMONMARKER' => 'QIITA_MARKER'
+  }.freeze
+
+  SYMBOL_RENAME_EXCLUSION_PATH_PATTERNS = [
+    /\.(?:bundle|so)$/,
+    /README/,
+    %r{^ext/commonmarker/cmark-upstream/},
+    %r{^tasks/},
+    %r{^tmp/}
+  ].freeze
+
+  class << self
+    def rename
+      rename_paths
+      rename_symbols
+    end
+
+    private
+
+    def rename_paths
+      Dir.glob('**/*').each do |path|
+        next if SYMBOL_RENAME_EXCLUSION_PATH_PATTERNS.any? { |pattern| path.match?(pattern) }
+
+        PATH_MAP.each do |old, new|
+          next unless path.include?(old)
+
+          if File.directory?(path)
+            FileUtils.mkdir_p(path.gsub(old, new))
+          else
+            File.rename(path, path.gsub(old, new))
+          end
+        end
+      end
+    end
+
+    def rename_symbols
+      Dir.glob('**/*').each do |path|
+        next if SYMBOL_RENAME_EXCLUSION_PATH_PATTERNS.any? { |pattern| path.match?(pattern) }
+        next unless File.file?(path)
+
+        source = File.read(path)
+
+        SYMBOL_MAP.each do |old, new|
+          source.gsub!(old, new)
+        end
+
+        File.write(path, source)
+      end
+    end
+  end
+end
