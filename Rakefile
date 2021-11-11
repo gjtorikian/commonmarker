@@ -106,3 +106,8 @@ task publish: [:rdoc] do
     system 'echo yolo'
   end
 end
+
+# Custom tasks
+Dir.glob('tasks/*.rake').each do |f|
+  load f
+end
