@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-module CommonMarker
+module QiitaMarker
   VERSION = '0.23.2'
 end

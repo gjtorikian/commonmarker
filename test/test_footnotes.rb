@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestFootnotes < Minitest::Test
   def setup
-    @doc = CommonMarker.render_doc("Hello[^hi].\n\n[^hi]: Hey!\n", :FOOTNOTES)
+    @doc = QiitaMarker.render_doc("Hello[^hi].\n\n[^hi]: Hey!\n", :FOOTNOTES)
   end
 
   def test_to_html
@@ -34,7 +34,7 @@ class TestFootnotes < Minitest::Test
       </section>
     HTML
 
-    assert_equal expected, CommonMarker::HtmlRenderer.new.render(@doc)
+    assert_equal expected, QiitaMarker::HtmlRenderer.new.render(@doc)
   end
 
   def test_render_html
@@ -55,6 +55,6 @@ class TestFootnotes < Minitest::Test
       </ol>
       </section>
     HTML
-    assert_equal expected, CommonMarker.render_html(md, :FOOTNOTES)
+    assert_equal expected, QiitaMarker.render_html(md, :FOOTNOTES)
   end
 end

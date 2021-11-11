@@ -1,1 +1,1 @@
-This curly quote “makes commonmarker throw an exception”.
+This curly quote “makes qiita_marker throw an exception”.

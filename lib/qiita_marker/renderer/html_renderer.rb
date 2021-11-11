@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CommonMarker
+module QiitaMarker
   class HtmlRenderer < Renderer
     def document(_)
       super
