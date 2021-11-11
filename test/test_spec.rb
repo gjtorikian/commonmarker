@@ -9,7 +9,7 @@ class TestSpec < Minitest::Test
   spec.each do |testcase|
     next if testcase[:extensions].include?(:disabled)
 
-    doc = CommonMarker.render_doc(testcase[:markdown], :DEFAULT, testcase[:extensions])
+    doc = QiitaMarker.render_doc(testcase[:markdown], :DEFAULT, testcase[:extensions])
 
     define_method("test_to_html_example_#{testcase[:example]}") do
       actual = doc.to_html(:UNSAFE, testcase[:extensions]).rstrip

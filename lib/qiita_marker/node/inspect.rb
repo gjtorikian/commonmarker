@@ -2,7 +2,7 @@
 
 require 'pp'
 
-module CommonMarker
+module QiitaMarker
   class Node
     module Inspect
       PP_INDENT_SIZE = 2

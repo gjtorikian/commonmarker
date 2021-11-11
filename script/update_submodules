@@ -12,15 +12,15 @@ echo "Using $BRANCH..."
 
 echo "Checking out cmark-upstream"
 echo "---------------------"
-cd ext/commonmarker/cmark-upstream
+cd ext/qiita_marker/cmark-upstream
 git fetch origin
 git checkout $BRANCH && git pull
 sha=`git rev-parse HEAD`
 cd ../../..
 make
-cp ext/commonmarker/cmark-upstream/extensions/*.{c,h} ext/commonmarker
-cp ext/commonmarker/cmark-upstream/src/*.{inc,c,h} ext/commonmarker
-rm ext/commonmarker/main.c
-git add ext/commonmarker/cmark-upstream
-git add ext/commonmarker/
-git commit -m "Update cmark-upstream to $(git config submodule.ext/commonmarker/cmark-upstream.url | sed s_.git\$__)/commit/${sha}"
+cp ext/qiita_marker/cmark-upstream/extensions/*.{c,h} ext/qiita_marker
+cp ext/qiita_marker/cmark-upstream/src/*.{inc,c,h} ext/qiita_marker
+rm ext/qiita_marker/main.c
+git add ext/qiita_marker/cmark-upstream
+git add ext/qiita_marker/
+git commit -m "Update cmark-upstream to $(git config submodule.ext/qiita_marker/cmark-upstream.url | sed s_.git\$__)/commit/${sha}"

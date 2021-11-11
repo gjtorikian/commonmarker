@@ -61,7 +61,7 @@ class TestCommands < Minitest::Test
   end
 
   def test_aborts_format_and_html_renderer_combinations
-    (CommonMarker::Config::OPTS[:format] - [:html]).each do |format|
+    (QiitaMarker::Config::OPTS[:format] - [:html]).each do |format|
       _out, err = capture_subprocess_io do
         make_bin('strong.md', "--to=#{format} --html-renderer")
       end
