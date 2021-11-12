@@ -1,0 +1,11 @@
+version: "3"
+services:
+  app:
+    build: .
+    volumes:
+      - .:/work/
+      - vendor-gems:/work/vendor/gems
+    tty: true
+    stdin_open: true
+volumes:
+  vendor-gems:
