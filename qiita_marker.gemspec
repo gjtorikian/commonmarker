@@ -34,4 +34,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rdoc', '~> 6.2'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'rubocop-standard'
+  s.metadata = {
+    'rubygems_mfa_required' => 'true'
+  }
 end
