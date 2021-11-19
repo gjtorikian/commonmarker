@@ -4,7 +4,7 @@ require 'test_helper'
 
 class TestBasics < Minitest::Test
   def setup
-    @doc = CommonMarker.render_doc('Hi *there*')
+    @doc = QiitaMarker.render_doc('Hi *there*')
   end
 
   def test_to_html
@@ -12,7 +12,7 @@ class TestBasics < Minitest::Test
   end
 
   def test_markdown_to_html
-    html = CommonMarker.render_html('Hi *there*')
+    html = QiitaMarker.render_html('Hi *there*')
     assert_equal "<p>Hi <em>there</em></p>\n", html
   end
 
@@ -24,12 +24,12 @@ class TestBasics < Minitest::Test
 
     extensions = %i[table tasklist strikethrough autolink tagfilter]
 
-    assert_equal "<p>Hello <strong>world</strong> – how are <em>you</em> today? I’m <del>fine</del>, ~yourself~?</p>\n", CommonMarker.render_doc(text, parse_opt, extensions).to_html
+    assert_equal "<p>Hello <strong>world</strong> – how are <em>you</em> today? I’m <del>fine</del>, ~yourself~?</p>\n", QiitaMarker.render_doc(text, parse_opt, extensions).to_html
 
     # NOTE: how tho the doc returned has sourcepos info, by default the renderer
     # won't emit it. for that we need to pass in the render opt
-    assert_equal "<p data-sourcepos=\"1:1-1:65\">Hello <strong>world</strong> – how are <em>you</em> today? I’m <del>fine</del>, ~yourself~?</p>\n", CommonMarker.render_doc(text, parse_opt, extensions).to_html(render_opt, extensions)
+    assert_equal "<p data-sourcepos=\"1:1-1:65\">Hello <strong>world</strong> – how are <em>you</em> today? I’m <del>fine</del>, ~yourself~?</p>\n", QiitaMarker.render_doc(text, parse_opt, extensions).to_html(render_opt, extensions)
 
-    assert_equal "<p data-sourcepos=\"1:1-1:65\">Hello <strong>world</strong> – how are <em>you</em> today? I’m <del>fine</del>, ~yourself~?</p>\n", CommonMarker.render_html(text, parse_opt, extensions)
+    assert_equal "<p data-sourcepos=\"1:1-1:65\">Hello <strong>world</strong> – how are <em>you</em> today? I’m <del>fine</del>, ~yourself~?</p>\n", QiitaMarker.render_html(text, parse_opt, extensions)
   end
 end

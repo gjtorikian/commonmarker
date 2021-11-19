@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'commonmarker'
+require 'qiita_marker'
 require 'github/markdown'
 require 'redcarpet'
 require 'kramdown'
@@ -19,12 +19,12 @@ dobench('redcarpet') do
   Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
 end
 
-dobench('commonmarker with to_html') do
-  CommonMarker.render_html(benchinput)
+dobench('qiita_marker with to_html') do
+  QiitaMarker.render_html(benchinput)
 end
 
-dobench('commonmarker with ruby HtmlRenderer') do
-  CommonMarker::HtmlRenderer.new.render(CommonMarker.render_doc(benchinput))
+dobench('qiita_marker with ruby HtmlRenderer') do
+  QiitaMarker::HtmlRenderer.new.render(QiitaMarker.render_doc(benchinput))
 end
 
 dobench('kramdown') do

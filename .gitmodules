@@ -1,4 +1,4 @@
 [submodule "ext/commonmarker/cmark-upstream"]
-	path = ext/commonmarker/cmark-upstream
+	path = ext/qiita_marker/cmark-upstream
 	url = https://github.com/github/cmark-gfm.git
 	ignore = dirty
