@@ -10,6 +10,7 @@
 #include "syntax_extension.h"
 #include "html.h"
 #include "render.h"
+#include "qfm.h"
 
 // Functions to convert cmark_nodes to HTML strings.
 
@@ -222,6 +223,18 @@ static int S_render_node(cmark_html_renderer *renderer, cmark_node *node,
           escape_html(html, node->as.code.info.data + first_tag + 1, node->as.code.info.len - first_tag - 1);
         }
         cmark_strbuf_puts(html, "\"><code>");
+      } else if (options & CMARK_OPT_CODE_DATA_METADATA) {
+        cmark_strbuf_puts(html, "<pre");
+        cmark_html_render_sourcepos(node, html, options);
+        cmark_strbuf_puts(html, "><code data-metadata=\"");
+        escape_html(html, node->as.code.info.data, first_tag);
+        if (first_tag < node->as.code.info.len &&
+            (options & CMARK_OPT_FULL_INFO_STRING)) {
+          cmark_strbuf_puts(html, "\" data-meta=\"");
+          escape_html(html, node->as.code.info.data + first_tag + 1,
+                      node->as.code.info.len - first_tag - 1);
+        }
+        cmark_strbuf_puts(html, "\">");
       } else {
         cmark_strbuf_puts(html, "<pre");
         cmark_html_render_sourcepos(node, html, options);
