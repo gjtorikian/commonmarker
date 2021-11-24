@@ -7,10 +7,10 @@ require 'qiita_marker/version'
 Gem::Specification.new do |s|
   s.name = 'qiita_marker'
   s.version = QiitaMarker::VERSION
-  s.summary = 'CommonMark parser and renderer. Written in C, wrapped in Ruby.'
-  s.description = 'A fast, safe, extensible parser for CommonMark. This wraps the official libcmark library.'
-  s.authors = ['Garen Torikian', 'Ashe Connor']
-  s.homepage = 'https://github.com/gjtorikian/qiita_marker'
+  s.summary = 'Qiita Marker is a Ruby library for Markdown processing, based on CommonMarker.'
+  s.description = 'A Ruby library that is the core module of the Qiita-specified markdown processor.'
+  s.authors = ['Increments Inc.']
+  s.homepage = 'https://github.com/increments/qiita_marker'
   s.license = 'MIT'
 
   s.files         = %w[LICENSE.txt README.md Rakefile qiita_marker.gemspec bin/qiita_marker]
