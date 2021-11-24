@@ -13,6 +13,8 @@
 #include "scanners.h"
 #include "inlines.h"
 #include "syntax_extension.h"
+#include "qfm.h"
+#include "qfm_mention_no_emphasis.h"
 
 static const char *EMDASH = "\xE2\x80\x94";
 static const char *ENDASH = "\xE2\x80\x93";
@@ -381,17 +383,25 @@ static cmark_node *handle_backticks(subject *subj, int options) {
   }
 }
 
-
 // Scan ***, **, or * and return number scanned, or 0.
 // Advances position.
 static int scan_delims(subject *subj, unsigned char c, bool *can_open,
-                       bool *can_close) {
+                       bool *can_close, bool mention_no_emphasis) {
   int numdelims = 0;
   bufsize_t before_char_pos, after_char_pos;
   int32_t after_char = 0;
   int32_t before_char = 0;
   int len;
   bool left_flanking, right_flanking;
+
+  if (mention_no_emphasis &&
+      is_part_of_mention(subj->input.data + subj->pos, subj->pos)) {
+    numdelims++;
+    advance(subj);
+    *can_open = false;
+    *can_close = false;
+    return numdelims;
+  }
 
   if (subj->pos == 0) {
     before_char = 10;
@@ -528,13 +538,14 @@ static void push_bracket(subject *subj, bool image, cmark_node *inl_text) {
 }
 
 // Assumes the subject has a c at the current position.
-static cmark_node *handle_delim(subject *subj, unsigned char c, bool smart) {
+static cmark_node *handle_delim(subject *subj, unsigned char c, bool smart,
+                                bool mention_no_emphasis) {
   bufsize_t numdelims;
   cmark_node *inl_text;
   bool can_open, can_close;
   cmark_chunk contents;
 
-  numdelims = scan_delims(subj, c, &can_open, &can_close);
+  numdelims = scan_delims(subj, c, &can_open, &can_close, mention_no_emphasis);
 
   if (c == '\'' && smart) {
     contents = cmark_chunk_literal(RIGHTSINGLEQUOTE);
@@ -1387,7 +1398,8 @@ static int parse_inline(cmark_parser *parser, subject *subj, cmark_node *parent,
   case '_':
   case '\'':
   case '"':
-    new_inl = handle_delim(subj, c, (options & CMARK_OPT_SMART) != 0);
+    new_inl = handle_delim(subj, c, (options & CMARK_OPT_SMART) != 0,
+                           (options & CMARK_OPT_MENTION_NO_EMPHASIS) != 0);
     break;
   case '-':
     new_inl = handle_hyphen(subj, (options & CMARK_OPT_SMART) != 0);
