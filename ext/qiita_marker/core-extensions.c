@@ -6,6 +6,7 @@
 #include "tasklist.h"
 #include "registry.h"
 #include "plugin.h"
+#include "qfm_custom_block.h"
 
 static int core_extensions_registration(cmark_plugin *plugin) {
   cmark_plugin_register_syntax_extension(plugin, create_table_extension());
@@ -14,6 +15,7 @@ static int core_extensions_registration(cmark_plugin *plugin) {
   cmark_plugin_register_syntax_extension(plugin, create_autolink_extension());
   cmark_plugin_register_syntax_extension(plugin, create_tagfilter_extension());
   cmark_plugin_register_syntax_extension(plugin, create_tasklist_extension());
+  cmark_plugin_register_syntax_extension(plugin, create_qfm_custom_block_extension());
   return 1;
 }
 
