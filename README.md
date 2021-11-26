@@ -1,6 +1,6 @@
 # Qiita Marker
 
-[![Build Status](https://github.com/increments/qiita-marker/actions/workflows/test.yml/badge.svg)](https://github.com/increments/qiita-marker/actions/workflows/test.yml)
+[![Build Status](https://github.com/increments/qiita-marker/actions/workflows/test.yml/badge.svg)](https://github.com/increments/qiita-marker/actions/workflows/test.yml) [![Gem Version](https://badge.fury.io/rb/qiita_marker.svg)](https://badge.fury.io/rb/qiita_marker)
 
 :warning: This library is still in the testing phase. As such, development may be halted.
 
