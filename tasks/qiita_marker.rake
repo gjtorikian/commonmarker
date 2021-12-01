@@ -13,6 +13,12 @@ namespace :qiita_marker do
     sh 'rm -fr ext/qiita_marker/cmark-upstream'
     sh 'git mv ext/commonmarker/cmark-upstream ext/qiita_marker/cmark-upstream'
   end
+
+  desc 'Format clang files of qfm'
+  task :format_qfm do
+    paths = Dir.glob('ext/qiita_marker/qfm*.{c,h,re}')
+    sh "clang-format -style llvm -i #{paths.join(' ')}"
+  end
 end
 
 module ProjectRenamer
