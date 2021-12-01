@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version = QiitaMarker::VERSION
   s.summary = 'Qiita Marker is a Ruby library for Markdown processing, based on CommonMarker.'
   s.description = 'A Ruby library that is the core module of the Qiita-specified markdown processor.'
-  s.authors = ['Increments Inc.']
+  s.authors = ['Qiita Inc.']
   s.homepage = 'https://github.com/increments/qiita_marker'
   s.license = 'MIT'
 
