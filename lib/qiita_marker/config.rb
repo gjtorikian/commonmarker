@@ -28,7 +28,8 @@ module QiitaMarker
         FOOTNOTES: (1 << 13),
         STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
         TABLE_PREFER_STYLE_ATTRIBUTES: (1 << 15),
-        FULL_INFO_STRING: (1 << 16)
+        FULL_INFO_STRING: (1 << 16),
+        CODE_DATA_METADATA: (1 << 25)
       }.freeze,
       format: %i[html xml commonmark plaintext].freeze
     }.freeze
