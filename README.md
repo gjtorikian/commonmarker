@@ -45,6 +45,11 @@ $ docker compose run --rm app ./script/bootstrap
 $ docker compose run --rm rake test
 ```
 
+### Versioning policy
+
+Qiita Marker follows CommonMarker's updates by merging the upstream changes.
+The version format is `MAJOR.MINOR.PATCH.FORK`. `MAJOR.MINOR.PATCH` is the same as the version of CommonMarker that Qiita Marker is based on. `FORK` is incremented on each release of Qiita Marker itself and reset to zero when any of `MAJOR.MINOR.PATCH` is bumped.
+
 ## License
 
 Please see [LICENSE.txt](/LICENSE.txt).
