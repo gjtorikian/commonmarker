@@ -19,6 +19,23 @@ namespace :qiita_marker do
     paths = Dir.glob('ext/qiita_marker/qfm*.{c,h,re}')
     sh "clang-format -style llvm -i #{paths.join(' ')}"
   end
+
+  desc 'Run re2c'
+  task :re2c do
+    Dir.glob('ext/qiita_marker/qfm_*.re').each do |path|
+      c_filename = path.sub(/\.re$/, '.c')
+      sh "re2c --case-insensitive -b -i --no-debug-info --no-generation-date -8 --encoding-policy substitute -o #{c_filename} #{path}"
+      sh "clang-format -style llvm -i #{c_filename} #{path}"
+    end
+  end
+
+  desc 'Clean generated files by re2c'
+  task :re2c_clean do
+    Dir.glob('ext/qiita_marker/qfm_*.re').each do |path|
+      c_filename = path.sub(/\.re$/, '.c')
+      sh "test -e #{c_filename} && rm -f #{c_filename} || true"
+    end
+  end
 end
 
 module ProjectRenamer
