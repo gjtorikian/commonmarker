@@ -13,7 +13,8 @@ module QiitaMarker
         SMART: (1 << 10),
         LIBERAL_HTML_TAG: (1 << 12),
         FOOTNOTES: (1 << 13),
-        STRIKETHROUGH_DOUBLE_TILDE: (1 << 14)
+        STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
+        MENTION_NO_EMPHASIS: (1 << 26)
       }.freeze,
       render: {
         DEFAULT: 0,
