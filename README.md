@@ -11,6 +11,27 @@ It will be a core module of [Qiita Markdown](https://github.com/increments/qiita
 
 Please see [CommonMarker's Usage](https://github.com/gjtorikian/commonmarker#usage).
 
+In addition to CommonMarker's options and extensions, the following are available in Qiita Marker.
+
+### Original options
+
+#### Parse options
+
+| Name | Description |
+| --- | --- |
+| `:MENTION_NO_EMPHASIS` | Prevent parsing mentions as emphasis. |
+
+#### Render options
+
+| Name | Description |
+| --- | --- |
+| `:CODE_DATA_METADATA` | Use `<code data-metadata>` for fenced code blocks. |
+| `:MENTION_NO_EMPHASIS` | Prevent parsing mentions as emphasis. |
+
+### Original extensions
+
+- `:custom_block` - This provides support for customizable blocks.
+
 ## Contributing
 
 If you have suggestion or modification to this repository, please create an Issue or Pull Request.
