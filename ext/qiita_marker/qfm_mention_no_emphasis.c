@@ -1,5 +1,5 @@
-#include "cmark_ctype.h"
 #include "cmark-gfm.h"
+#include "cmark_ctype.h"
 #include "config.h"
 
 static bool is_wordchar(char c) {
