@@ -157,20 +157,7 @@ static int can_contain(cmark_syntax_extension *self, cmark_node *node,
                        cmark_node_type child_type) {
   cmark_node_type node_type = cmark_node_get_type(node);
 
-  if (node_type == CMARK_NODE_QFM_CUSTOM_BLOCK) {
-    return
-        // Block
-        child_type == CMARK_NODE_LIST || child_type == CMARK_NODE_PARAGRAPH ||
-        // Inline
-        child_type == CMARK_NODE_TEXT || child_type == CMARK_NODE_CODE ||
-        child_type == CMARK_NODE_HTML_INLINE || child_type == CMARK_NODE_EMPH ||
-        child_type == CMARK_NODE_STRONG || child_type == CMARK_NODE_LINK ||
-        child_type == CMARK_NODE_IMAGE ||
-        child_type == CMARK_NODE_FOOTNOTE_REFERENCE ||
-        child_type == CMARK_NODE_STRIKETHROUGH;
-  }
-
-  return 0;
+  return node_type == CMARK_NODE_QFM_CUSTOM_BLOCK;
 }
 
 static int contains_inlines(cmark_syntax_extension *self, cmark_node *node) {

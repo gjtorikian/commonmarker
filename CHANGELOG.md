@@ -6,6 +6,8 @@
 
 ### Changed
 
+- [#19](https://github.com/increments/qiita_marker/pull/19): Allow a custom block to contain any node type.
+
 ## 0.23.2.1 - 2021-12-08
 
 ### Added
