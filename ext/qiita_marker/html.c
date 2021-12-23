@@ -227,7 +227,7 @@ static int S_render_node(cmark_html_renderer *renderer, cmark_node *node,
         cmark_strbuf_puts(html, "<pre");
         cmark_html_render_sourcepos(node, html, options);
         cmark_strbuf_puts(html, "><code data-metadata=\"");
-        escape_html(html, node->as.code.info.data, first_tag);
+        escape_html(html, node->as.code.info.data, node->as.code.info.len);
         if (first_tag < node->as.code.info.len &&
             (options & CMARK_OPT_FULL_INFO_STRING)) {
           cmark_strbuf_puts(html, "\" data-meta=\"");

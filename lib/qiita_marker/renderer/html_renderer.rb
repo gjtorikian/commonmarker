@@ -96,7 +96,7 @@ module QiitaMarker
           out('><code>')
         elsif option_enabled?(:CODE_DATA_METADATA)
           out("<pre#{sourcepos(node)}><code")
-          out(' data-metadata="', node.fence_info.split(/\s+/)[0], '"') if node.fence_info && !node.fence_info.empty?
+          out(' data-metadata="', node.fence_info, '"') if node.fence_info && !node.fence_info.empty?
           out('>')
         else
           out("<pre#{sourcepos(node)}><code")
