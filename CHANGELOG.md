@@ -7,6 +7,7 @@
 ### Changed
 
 - [#19](https://github.com/increments/qiita_marker/pull/19): Allow a custom block to contain any node type.
+- [#20](https://github.com/increments/qiita_marker/pull/20): Allow `data-metadata` to accept strings up to the end of the line.
 
 ## 0.23.2.1 - 2021-12-08
 
