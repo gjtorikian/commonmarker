@@ -1,5 +1,9 @@
 #include "autolink.h"
+#include "houdini.h"
+#include "qfm.h"
+#include "scanners.h"
 #include <parser.h>
+#include <render.h>
 #include <string.h>
 #include <utf8.h>
 
@@ -8,6 +12,11 @@
 #else
 #include <strings.h>
 #endif
+
+static void escape_html(cmark_strbuf *dest, const unsigned char *source,
+                        bufsize_t length) {
+  houdini_escape_html0(dest, source, length, 0);
+}
 
 static int is_valid_hostchar(const uint8_t *link, size_t link_len) {
   int32_t ch;
@@ -144,7 +153,8 @@ static size_t check_domain(uint8_t *data, size_t size, int allow_short) {
 }
 
 static cmark_node *www_match(cmark_parser *parser, cmark_node *parent,
-                             cmark_inline_parser *inline_parser) {
+                             cmark_inline_parser *inline_parser,
+                             cmark_syntax_extension *ext) {
   cmark_chunk *chunk = cmark_inline_parser_get_chunk(inline_parser);
   size_t max_rewind = cmark_inline_parser_get_offset(inline_parser);
   uint8_t *data = chunk->data + max_rewind;
@@ -176,6 +186,9 @@ static cmark_node *www_match(cmark_parser *parser, cmark_node *parent,
   cmark_inline_parser_set_offset(inline_parser, (int)(max_rewind + link_end));
 
   cmark_node *node = cmark_node_new_with_mem(CMARK_NODE_LINK, parser->mem);
+  if (parser->options & CMARK_OPT_AUTOLINK_CLASS_NAME) {
+    cmark_node_set_syntax_extension(node, ext);
+  }
 
   cmark_strbuf buf;
   cmark_strbuf_init(parser->mem, &buf, 10);
@@ -199,7 +212,8 @@ static cmark_node *www_match(cmark_parser *parser, cmark_node *parent,
 }
 
 static cmark_node *url_match(cmark_parser *parser, cmark_node *parent,
-                             cmark_inline_parser *inline_parser) {
+                             cmark_inline_parser *inline_parser,
+                             cmark_syntax_extension *ext) {
   size_t link_end, domain_len;
   int rewind = 0;
 
@@ -237,6 +251,9 @@ static cmark_node *url_match(cmark_parser *parser, cmark_node *parent,
   cmark_node_unput(parent, rewind);
 
   cmark_node *node = cmark_node_new_with_mem(CMARK_NODE_LINK, parser->mem);
+  if (parser->options & CMARK_OPT_AUTOLINK_CLASS_NAME) {
+    cmark_node_set_syntax_extension(node, ext);
+  }
 
   cmark_chunk url = cmark_chunk_dup(chunk, max_rewind - rewind,
                                     (bufsize_t)(link_end + rewind));
@@ -257,10 +274,10 @@ static cmark_node *match(cmark_syntax_extension *ext, cmark_parser *parser,
     return NULL;
 
   if (c == ':')
-    return url_match(parser, parent, inline_parser);
+    return url_match(parser, parent, inline_parser, ext);
 
   if (c == 'w')
-    return www_match(parser, parent, inline_parser);
+    return www_match(parser, parent, inline_parser, ext);
 
   return NULL;
 
@@ -269,7 +286,8 @@ static cmark_node *match(cmark_syntax_extension *ext, cmark_parser *parser,
   // inline was finished in inlines.c.
 }
 
-static void postprocess_text(cmark_parser *parser, cmark_node *text, int offset, int depth) {
+static void postprocess_text(cmark_parser *parser, cmark_node *text, int offset,
+                             int depth, cmark_syntax_extension *ext) {
   // postprocess_text can recurse very deeply if there is a very long line of
   // '@' only.  Stop at a reasonable depth to ensure it cannot crash.
   if (depth > 1000) return;
@@ -311,7 +329,7 @@ static void postprocess_text(cmark_parser *parser, cmark_node *text, int offset,
   }
 
   if (rewind == 0 || ns > 0) {
-    postprocess_text(parser, text, max_rewind + 1 + offset, depth + 1);
+    postprocess_text(parser, text, max_rewind + 1 + offset, depth + 1, ext);
     return;
   }
 
@@ -331,20 +349,23 @@ static void postprocess_text(cmark_parser *parser, cmark_node *text, int offset,
 
   if (link_end < 2 || nb != 1 || np == 0 ||
       (!cmark_isalpha(data[link_end - 1]) && data[link_end - 1] != '.')) {
-    postprocess_text(parser, text, max_rewind + 1 + offset, depth + 1);
+    postprocess_text(parser, text, max_rewind + 1 + offset, depth + 1, ext);
     return;
   }
 
   link_end = autolink_delim(data, link_end);
 
   if (link_end == 0) {
-    postprocess_text(parser, text, max_rewind + 1 + offset, depth + 1);
+    postprocess_text(parser, text, max_rewind + 1 + offset, depth + 1, ext);
     return;
   }
 
   cmark_chunk_to_cstr(parser->mem, &text->as.literal);
 
   cmark_node *link_node = cmark_node_new_with_mem(CMARK_NODE_LINK, parser->mem);
+  if (parser->options & CMARK_OPT_AUTOLINK_CLASS_NAME) {
+    cmark_node_set_syntax_extension(link_node, ext);
+  }
   cmark_strbuf buf;
   cmark_strbuf_init(parser->mem, &buf, 10);
   cmark_strbuf_puts(&buf, "mailto:");
@@ -373,7 +394,7 @@ static void postprocess_text(cmark_parser *parser, cmark_node *text, int offset,
   text->as.literal.len = offset + max_rewind - rewind;
   text->as.literal.data[text->as.literal.len] = 0;
 
-  postprocess_text(parser, post, 0, depth + 1);
+  postprocess_text(parser, post, 0, depth + 1, ext);
 }
 
 static cmark_node *postprocess(cmark_syntax_extension *ext, cmark_parser *parser, cmark_node *root) {
@@ -400,7 +421,7 @@ static cmark_node *postprocess(cmark_syntax_extension *ext, cmark_parser *parser
     }
 
     if (ev == CMARK_EVENT_ENTER && node->type == CMARK_NODE_TEXT) {
-      postprocess_text(parser, node, 0, /*depth*/0);
+      postprocess_text(parser, node, 0, /*depth*/ 0, ext);
     }
   }
 
@@ -409,12 +430,38 @@ static cmark_node *postprocess(cmark_syntax_extension *ext, cmark_parser *parser
   return root;
 }
 
+static void html_render(cmark_syntax_extension *extension,
+                        cmark_html_renderer *renderer, cmark_node *node,
+                        cmark_event_type ev_type, int options) {
+  bool entering = (ev_type == CMARK_EVENT_ENTER);
+  cmark_strbuf *html = renderer->html;
+
+  if (entering) {
+    cmark_strbuf_puts(html, "<a href=\"");
+    if ((options & CMARK_OPT_UNSAFE) ||
+        !(scan_dangerous_url(&node->as.link.url, 0))) {
+      houdini_escape_href(html, node->as.link.url.data, node->as.link.url.len);
+    }
+    if (node->as.link.title.len) {
+      cmark_strbuf_puts(html, "\" title=\"");
+      escape_html(html, node->as.link.title.data, node->as.link.title.len);
+    }
+    if (options & CMARK_OPT_AUTOLINK_CLASS_NAME) {
+      cmark_strbuf_puts(html, "\" class=\"autolink");
+    }
+    cmark_strbuf_puts(html, "\">");
+  } else {
+    cmark_strbuf_puts(html, "</a>");
+  }
+}
+
 cmark_syntax_extension *create_autolink_extension(void) {
   cmark_syntax_extension *ext = cmark_syntax_extension_new("autolink");
   cmark_llist *special_chars = NULL;
 
   cmark_syntax_extension_set_match_inline_func(ext, match);
   cmark_syntax_extension_set_postprocess_func(ext, postprocess);
+  cmark_syntax_extension_set_html_render_func(ext, html_render);
 
   cmark_mem *mem = cmark_get_default_mem_allocator();
   special_chars = cmark_llist_append(mem, special_chars, (void *)':');
