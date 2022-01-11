@@ -4,6 +4,12 @@
 
 ### Added
 
+### Changed
+
+## 0.23.2.2 - 2022-01-11
+
+### Added
+
 - [#21](https://github.com/increments/qiita_marker/pull/21): Add `AUTOLINK_CLASS_NAME` option for autolink extension.
 
 ### Changed
