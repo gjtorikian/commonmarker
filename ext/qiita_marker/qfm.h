@@ -12,6 +12,9 @@ extern "C" {
 /* Prevent parsing Qiita-style Mentions as emphasis. */
 #define CMARK_OPT_MENTION_NO_EMPHASIS (1 << 26)
 
+/* Render autolinks with class name  */
+#define CMARK_OPT_AUTOLINK_CLASS_NAME (1 << 27)
+
 #ifdef __cplusplus
 }
 #endif

@@ -14,7 +14,8 @@ module QiitaMarker
         LIBERAL_HTML_TAG: (1 << 12),
         FOOTNOTES: (1 << 13),
         STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
-        MENTION_NO_EMPHASIS: (1 << 26)
+        MENTION_NO_EMPHASIS: (1 << 26),
+        AUTOLINK_CLASS_NAME: (1 << 27)
       }.freeze,
       render: {
         DEFAULT: 0,
@@ -31,7 +32,8 @@ module QiitaMarker
         TABLE_PREFER_STYLE_ATTRIBUTES: (1 << 15),
         FULL_INFO_STRING: (1 << 16),
         CODE_DATA_METADATA: (1 << 25),
-        MENTION_NO_EMPHASIS: (1 << 26)
+        MENTION_NO_EMPHASIS: (1 << 26),
+        AUTOLINK_CLASS_NAME: (1 << 27)
       }.freeze,
       format: %i[html xml commonmark plaintext].freeze
     }.freeze

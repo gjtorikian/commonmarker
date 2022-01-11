@@ -20,6 +20,7 @@ In addition to CommonMarker's options and extensions, the following are availabl
 | Name | Description |
 | --- | --- |
 | `:MENTION_NO_EMPHASIS` | Prevent parsing mentions as emphasis. |
+| `:AUTOLINK_CLASS_NAME` | Append `class="autolink"` to extension's autolinks. |
 
 #### Render options
 
@@ -27,6 +28,7 @@ In addition to CommonMarker's options and extensions, the following are availabl
 | --- | --- |
 | `:CODE_DATA_METADATA` | Use `<code data-metadata>` for fenced code blocks. |
 | `:MENTION_NO_EMPHASIS` | Prevent parsing mentions as emphasis. |
+| `:AUTOLINK_CLASS_NAME` | Append `class="autolink"` to extension's autolinks. |
 
 ### Original extensions
 
