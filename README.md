@@ -2,7 +2,7 @@
 
 A parser and abstract syntax tree for Markdown documents (CommonMark compatible) in Ruby. Originally forked from [CommonMarker](https://github.com/gjtorikian/commonmarker). It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking. For more information on available extensions, see [the documentation below](#extensions).
 
-[![Development](https://github.com/ioquatix/markly/workflows/Development/badge.svg)](https://github.com/ioquatix/markly/actions?workflow=Development)
+[![Development Status](https://github.com/ioquatix/markly/workflows/Development/badge.svg)](https://github.com/ioquatix/markly/actions?workflow=Development)
 
 ## Installation
 
@@ -53,8 +53,10 @@ The second argument is optional--[see below](#options) for more information.
 
 You can use `walk` or `each` to iterate over nodes:
 
-- `walk` will iterate on a node and recursively iterate on a node's children.
-- `each` will iterate on a node and its children, but no further.
+  - `walk` will iterate on a node and recursively iterate on a node's children.
+  - `each` will iterate on a node and its children, but no further.
+
+<!-- end list -->
 
 ``` ruby
 require 'markly'
@@ -170,43 +172,39 @@ Both `render_html` and `parse` take an optional third argument defining the exte
 
 The available extensions are:
 
-* `:table` - This provides support for tables.
-* `:tasklist` - This provides support for task list items.
-* `:strikethrough` - This provides support for strikethroughs.
-* `:autolink` - This provides support for automatically converting URLs to anchor tags.
-* `:tagfilter` - This escapes [several "unsafe" HTML tags](https://github.github.com/gfm/#disallowed-raw-html-extension-), causing them to not have any effect.
+  - `:table` - This provides support for tables.
+  - `:tasklist` - This provides support for task list items.
+  - `:strikethrough` - This provides support for strikethroughs.
+  - `:autolink` - This provides support for automatically converting URLs to anchor tags.
+  - `:tagfilter` - This escapes [several "unsafe" HTML tags](https://github.github.com/gfm/#disallowed-raw-html-extension-), causing them to not have any effect.
 
 ## Developing locally
 
 After cloning the repo:
 
-```
-script/bootstrap
-bundle exec rake compile
-```
+    script/bootstrap
+    bundle exec rake compile
 
-If there were no errors, you're done! Otherwise, make sure to follow the CMark dependency instructions.
+If there were no errors, you're done\! Otherwise, make sure to follow the CMark dependency instructions.
 
 ## Benchmarks
 
 Some rough benchmarks:
 
-```
-$ bundle exec rake benchmark
-
-input size = 11063727 bytes
-
-redcarpet
-  0.070000   0.020000   0.090000 (  0.079641)
-github-markdown
-  0.070000   0.010000   0.080000 (  0.083535)
-markly with to_html
-  0.100000   0.010000   0.110000 (  0.111947)
-markly with ruby HtmlRenderer
-  1.830000   0.030000   1.860000 (  1.866203)
-kramdown
-  4.610000   0.070000   4.680000 (  4.678398)
-```
+    $ bundle exec rake benchmark
+    
+    input size = 11063727 bytes
+    
+    redcarpet
+      0.070000   0.020000   0.090000 (  0.079641)
+    github-markdown
+      0.070000   0.010000   0.080000 (  0.083535)
+    markly with to_html
+      0.100000   0.010000   0.110000 (  0.111947)
+    markly with ruby HtmlRenderer
+      1.830000   0.030000   1.860000 (  1.866203)
+    kramdown
+      4.610000   0.070000   4.680000 (  4.678398)
 
 ## License
 
@@ -214,7 +212,7 @@ Released under the MIT license.
 
 Copyright, 2015, by Garen J. Torikian.  
 Copyright, 2015, by Ashe Connor.  
-Copyright, 2020, by [Samuel G. D. Williams](http://www.codeotaku.com).  
+Copyright, 2020, by [Samuel G. D. Williams](http://www.codeotaku.com).
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

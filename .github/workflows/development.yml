@@ -4,48 +4,44 @@ on: [push, pull_request]
 
 jobs:
   test:
+    name: ${{matrix.ruby}} on ${{matrix.os}}
     runs-on: ${{matrix.os}}-latest
     continue-on-error: ${{matrix.experimental}}
     
     strategy:
       matrix:
-        experimental: [false]
-        
         os:
           - ubuntu
           - macos
         
         ruby:
-          - 2.5
-          - 2.6
-          - 2.7
+          - "2.6"
+          - "2.7"
+          - "3.0"
+        
+        experimental: [false]
+        env: [""]
         
         include:
-          # - experimental: true
-          #   os: ubuntu
-          #   ruby: truffleruby
-          # - experimental: true
-          #   os: ubuntu
-          #   ruby: jruby
-          - experimental: true
-            os: ubuntu
+          - os: ubuntu
+            ruby: truffleruby
+            experimental: true
+          - os: ubuntu
+            ruby: jruby
+            experimental: true
+          - os: ubuntu
             ruby: head
-          - experimental: true
-            os: ubuntu
-            ruby: 2.6
-            env: COVERAGE=PartialSummary,Coveralls
+            experimental: true
     
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         submodules: true
-    
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{matrix.ruby}}
-    
-    - name: Install dependencies
-      run: ${{matrix.env}} bundle install
+        bundler-cache: true
     
     - name: Run tests
-      run: ${{matrix.env}} bundle exec rake
+      timeout-minutes: 5
+      run: ${{matrix.env}} bundle exec rspec

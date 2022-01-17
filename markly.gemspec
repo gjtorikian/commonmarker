@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require_relative "lib/markly/version"
 
@@ -15,7 +16,8 @@ Gem::Specification.new do |spec|
 		"funding_uri" => "https://github.com/sponsors/ioquatix/",
 	}
 	
-	spec.files = Dir['{bin,ext,lib}/**/*', base: __dir__]
+	spec.files = Dir.glob('{bin,ext,lib}/**/*', File::FNM_DOTMATCH, base: __dir__)
+	spec.require_paths = ['lib']
 	
 	spec.executables = ["markly"]
 	
