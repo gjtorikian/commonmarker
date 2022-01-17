@@ -56,7 +56,7 @@ class TestNode < Minitest::Test
   end
 
   def test_html_renderer
-    renderer = HtmlRenderer.new
+    renderer = Renderer::HTML.new
     result = renderer.render(@doc)
     assert_equal "<p>Hi <em>there</em>, I am mostly text!</p>\n", result
   end
@@ -65,7 +65,7 @@ class TestNode < Minitest::Test
     @doc.walk do |node|
       node.string_content = 'world' if node.type == :text && node.string_content == 'there'
     end
-    result = HtmlRenderer.new.render(@doc)
+    result = Renderer::HTML.new.render(@doc)
     assert_equal "<p>Hi <em>world</em>, I am mostly text!</p>\n", result
   end
 

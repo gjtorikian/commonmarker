@@ -22,7 +22,7 @@ class TestSpec < Minitest::Test
     define_method("test_html_renderer_example_#{testcase[:example]}") do
       skip if ignore.include?(testcase[:example])
 
-      actual = HtmlRenderer.new(flags: Markly::UNSAFE, extensions: testcase[:extensions]).render(doc).rstrip
+      actual = Renderer::HTML.new(flags: Markly::UNSAFE, extensions: testcase[:extensions]).render(doc).rstrip
       assert_equal testcase[:html], actual, testcase[:markdown]
     end
 
@@ -30,7 +30,7 @@ class TestSpec < Minitest::Test
       skip if ignore.include?(testcase[:example])
 
       lhs = doc.to_html(flags: Markly::UNSAFE|Markly::SOURCE_POSITION, extensions: testcase[:extensions]).rstrip
-      rhs = HtmlRenderer.new(flags: Markly::UNSAFE|Markly::SOURCE_POSITION, extensions: testcase[:extensions]).render(doc).rstrip
+      rhs = Renderer::HTML.new(flags: Markly::UNSAFE|Markly::SOURCE_POSITION, extensions: testcase[:extensions]).render(doc).rstrip
       assert_equal lhs, rhs, testcase[:markdown]
     end
   end

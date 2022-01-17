@@ -45,14 +45,14 @@ class TestExtensions < Minitest::Test
       assert out.include?('~~hi~~')
     end
 
-    HtmlRenderer.new.render(doc).tap do |out|
+    Renderer::HTML.new.render(doc).tap do |out|
       refute out.include?('| a')
       %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert out.include?(html) }
       assert out.include?('~~hi~~')
     end
 
     doc = Markly.parse('~a~ ~~b~~ ~~~c~~~', flags: Markly::STRIKETHROUGH_DOUBLE_TILDE, extensions: [:strikethrough])
-    assert_equal HtmlRenderer.new.render(doc), "<p>~a~ <del>b</del> ~~~c~~~</p>\n"
+    assert_equal Renderer::HTML.new.render(doc), "<p>~a~ <del>b</del> ~~~c~~~</p>\n"
   end
 
   def test_bad_extension_specifications

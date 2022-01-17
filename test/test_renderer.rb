@@ -8,7 +8,7 @@ class TestRenderer < Minitest::Test
   end
 
   def test_html_renderer
-    renderer = HtmlRenderer.new
+    renderer = Renderer::HTML.new
     result = renderer.render(@doc)
     assert_equal <<~HTML, result
       <h1>Introduction</h1>
@@ -17,7 +17,7 @@ class TestRenderer < Minitest::Test
   end
 
   def test_html_renderer_with_ids
-    renderer = HtmlRenderer.new(ids: true)
+    renderer = Renderer::HTML.new(ids: true)
     result = renderer.render(@doc)
     assert_equal <<~HTML.chomp, result
       <section id="introduction"><h1>Introduction</h1>
@@ -37,7 +37,7 @@ class TestRenderer < Minitest::Test
       | Foo      | Bar  | Baz     |
     DOC
     doc = Markly.parse(content, extensions: %i[autolink table tagfilter])
-    results = Markly::HtmlRenderer.new.render(doc)
+    results = Markly::Renderer::HTML.new.render(doc)
     assert_equal 2, results.scan(/<tbody>/).size
   end
 end

@@ -22,7 +22,7 @@ class TestTasklists < Minitest::Test
   end
 
   def test_html_renderer
-    assert_equal @expected, Markly::HtmlRenderer.new.render(@doc)
+    assert_equal @expected, Markly::Renderer::HTML.new.render(@doc)
   end
 
   def test_tasklist_state

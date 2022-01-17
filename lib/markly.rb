@@ -6,8 +6,8 @@ require 'markly/markly'
 
 require_relative 'markly/flags'
 require_relative 'markly/node'
-require_relative 'markly/renderer'
-require_relative 'markly/renderer/html_renderer'
+require_relative 'markly/renderer/html'
+
 require_relative 'markly/version'
 
 module Markly

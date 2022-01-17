@@ -27,8 +27,8 @@ dobench('markly with to_html') do
   Markly.render_html(benchinput)
 end
 
-dobench('markly with ruby HtmlRenderer') do
-  Markly::HtmlRenderer.new.render(Markly.parse(benchinput))
+dobench('markly with ruby Renderer::HTML') do
+  Markly::Renderer::HTML.new.render(Markly.parse(benchinput))
 end
 
 dobench('kramdown') do
