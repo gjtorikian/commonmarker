@@ -295,7 +295,7 @@ static VALUE rb_node_new(VALUE self, VALUE type) {
 static VALUE rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len,
                                VALUE rb_options, VALUE rb_extensions) {
   char *text;
-  int len, options;
+  int len;
   cmark_parser *parser;
   cmark_node *doc;
   Check_Type(rb_text, T_STRING);
@@ -306,7 +306,6 @@ static VALUE rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len,
 
   text = (char *)RSTRING_PTR(rb_text);
   len = FIX2INT(rb_len);
-  options = FIX2INT(rb_options);
 
   cmark_parser_feed(parser, text, len);
   doc = cmark_parser_finish(parser);
@@ -601,7 +600,6 @@ static VALUE rb_render_html(VALUE self, VALUE rb_options, VALUE rb_extensions) {
  */
 static VALUE rb_render_xml(VALUE self, VALUE rb_options) {
   int options;
-  int i;
   cmark_node *node;
   Check_Type(rb_options, T_FIXNUM);
 
