@@ -183,33 +183,28 @@ static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VA
  *
  */
 static VALUE rb_markdown_to_xml(VALUE self, VALUE rb_text, VALUE rb_options, VALUE rb_extensions) {
-  char *str, *xml;
-  int len;
+  char *xml;
   cmark_parser *parser;
   cmark_node *doc;
+
   Check_Type(rb_text, T_STRING);
-  Check_Type(rb_options, T_FIXNUM);
 
   parser = prepare_parser(rb_options, rb_extensions);
 
-  str = (char *)RSTRING_PTR(rb_text);
-  len = RSTRING_LEN(rb_text);
-
-  cmark_parser_feed(parser, str, len);
+  cmark_parser_feed(parser, StringValuePtr(rb_text), RSTRING_LEN(rb_text));
   doc = cmark_parser_finish(parser);
+
   if (doc == NULL) {
     cmark_parser_free(parser);
     rb_raise(rb_eNodeError, "error parsing document");
   }
 
-  cmark_mem *default_mem = cmark_get_default_mem_allocator();
-  xml = cmark_render_xml_with_mem(doc, FIX2INT(rb_options), default_mem);
+  xml = cmark_render_xml(doc, parser->options);
+
   cmark_parser_free(parser);
+  cmark_node_free(doc);
 
-  VALUE ruby_xml = rb_str_new2(xml);
-  default_mem->free(xml);
-
-  return ruby_xml;
+  return rb_utf8_str_new_cstr(xml);
 }
 
 /*
