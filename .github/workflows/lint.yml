@@ -15,7 +15,6 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.0
-          bundler-cache: true
-      - run: bundle install
+          bundler-cache: true # 'bundle install' and cache
       - name: Rubocop
         run: bundle exec rake rubocop
