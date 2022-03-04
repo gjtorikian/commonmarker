@@ -6,6 +6,10 @@
 
 ### Changed
 
+## 0.23.2.3 - 2022-03-04
+
+### Changed
+
 - [#23](https://github.com/increments/qiita_marker/pull/23): Fixed unintentional license change issue
 
 ## 0.23.2.2 - 2022-01-11
