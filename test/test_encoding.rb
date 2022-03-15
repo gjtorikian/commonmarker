@@ -20,4 +20,19 @@ class TestEncoding < Minitest::Test
     assert_equal('there', text.string_content)
     assert_equal('UTF-8', text.string_content.encoding.name)
   end
+  focus
+  def test_handles_non_utf8_encoding
+    str = 'hello: <https://world.com<0x200b>>'
+    doc = CommonMarker.render_doc(str, :DEFAULT)
+    # ap doc.to_html
+
+    doc.walk do |node|
+      ap node
+      if node.type == :link
+        text_node = node
+        text_node = text_node.first_child until %i[text code].include? text_node.type
+        ap node.url if node.url.force_encoding('UTF-8').include?(text_node.string_content.force_encoding('UTF-8'))
+      end
+    end
+  end
 end
