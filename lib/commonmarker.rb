@@ -23,7 +23,8 @@ module CommonMarker
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
 
     opts = Config.process_options(options, :render)
-    Node.markdown_to_html(text.encode('UTF-8'), opts, extensions)
+    text = text.force_encoding('UTF-8') if text.encoding != Encoding::UTF_8
+    Node.markdown_to_html(text, opts, extensions)
   end
 
   # Public: Parses a Markdown string into a `document` node.
@@ -37,7 +38,7 @@ module CommonMarker
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
 
     opts = Config.process_options(options, :parse)
-    text = text.encode('UTF-8')
+    text = text.force_encoding('UTF-8') if text.encoding != Encoding::UTF_8
     Node.parse_document(text, text.bytesize, opts, extensions)
   end
 end

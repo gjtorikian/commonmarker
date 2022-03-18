@@ -28,16 +28,16 @@ class TestTasklists < Minitest::Test
   def test_tasklist_state
     list = @doc.first_child
     assert_equal 'checked', list.first_child.tasklist_state
-    assert list.first_child.tasklist_item_checked?
+    assert_predicate list.first_child, :tasklist_item_checked?
     assert_equal 'unchecked', list.first_child.next.tasklist_state
-    refute list.first_child.next.tasklist_item_checked?
+    refute_predicate list.first_child.next, :tasklist_item_checked?
   end
 
   def test_set_tasklist_state
     list = @doc.first_child
     list.first_child.tasklist_item_checked = false
-    refute list.first_child.tasklist_item_checked?
+    refute_predicate list.first_child, :tasklist_item_checked?
     list.first_child.next.tasklist_item_checked = true
-    assert list.first_child.next.tasklist_item_checked?
+    assert_predicate list.first_child.next, :tasklist_item_checked?
   end
 end
