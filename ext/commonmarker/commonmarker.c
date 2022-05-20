@@ -1255,6 +1255,7 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_singleton_method(module, "extensions", rb_extensions, 0);
   rb_eNodeError = rb_define_class_under(module, "NodeError", rb_eStandardError);
   rb_cNode = rb_define_class_under(module, "Node", rb_cObject);
+  rb_undef_alloc_func(rb_cNode);
   rb_define_singleton_method(rb_cNode, "markdown_to_html", rb_markdown_to_html,
                              3);
   rb_define_singleton_method(rb_cNode, "markdown_to_xml", rb_markdown_to_xml,
