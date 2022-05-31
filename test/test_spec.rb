@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'test_helper'
-require 'json'
+require "test_helper"
+require "json"
 
 class TestSpec < Minitest::Test
-  spec = open_spec_file('spec.txt')
+  spec = open_spec_file("spec.txt")
 
   spec.each do |testcase|
     next if testcase[:extensions].include?(:disabled)
@@ -22,8 +22,8 @@ class TestSpec < Minitest::Test
     end
 
     define_method("test_sourcepos_example_#{testcase[:example]}") do
-      lhs = doc.to_html(%i[UNSAFE SOURCEPOS], testcase[:extensions]).rstrip
-      rhs = HtmlRenderer.new(options: %i[UNSAFE SOURCEPOS], extensions: testcase[:extensions]).render(doc).rstrip
+      lhs = doc.to_html([:UNSAFE, :SOURCEPOS], testcase[:extensions]).rstrip
+      rhs = HtmlRenderer.new(options: [:UNSAFE, :SOURCEPOS], extensions: testcase[:extensions]).render(doc).rstrip
       assert_equal lhs, rhs, testcase[:markdown]
     end
   end

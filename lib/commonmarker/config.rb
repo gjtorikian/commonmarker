@@ -13,7 +13,7 @@ module CommonMarker
         SMART: (1 << 10),
         LIBERAL_HTML_TAG: (1 << 12),
         FOOTNOTES: (1 << 13),
-        STRIKETHROUGH_DOUBLE_TILDE: (1 << 14)
+        STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
       }.freeze,
       render: {
         DEFAULT: 0,
@@ -28,9 +28,9 @@ module CommonMarker
         FOOTNOTES: (1 << 13),
         STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
         TABLE_PREFER_STYLE_ATTRIBUTES: (1 << 15),
-        FULL_INFO_STRING: (1 << 16)
+        FULL_INFO_STRING: (1 << 16),
       }.freeze,
-      format: %i[html xml commonmark plaintext].freeze
+      format: [:html, :xml, :commonmark, :plaintext].freeze,
     }.freeze
 
     def self.process_options(option, type)

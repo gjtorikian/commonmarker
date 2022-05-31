@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'commonmarker/commonmarker'
-require 'commonmarker/config'
-require 'commonmarker/node'
-require 'commonmarker/renderer'
-require 'commonmarker/renderer/html_renderer'
-require 'commonmarker/version'
+require "commonmarker/commonmarker"
+require "commonmarker/config"
+require "commonmarker/node"
+require "commonmarker/renderer"
+require "commonmarker/renderer/html_renderer"
+require "commonmarker/version"
 
 begin
-  require 'awesome_print'
+  require "awesome_print"
 rescue LoadError; end # rubocop:disable Lint/SuppressedException
 module CommonMarker
   # Public:  Parses a Markdown string into an HTML string.
@@ -23,7 +23,7 @@ module CommonMarker
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
 
     opts = Config.process_options(options, :render)
-    Node.markdown_to_html(text.encode('UTF-8'), opts, extensions)
+    Node.markdown_to_html(text.encode("UTF-8"), opts, extensions)
   end
 
   # Public: Parses a Markdown string into a `document` node.
@@ -37,7 +37,7 @@ module CommonMarker
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
 
     opts = Config.process_options(options, :parse)
-    text = text.encode('UTF-8')
+    text = text.encode("UTF-8")
     Node.parse_document(text, text.bytesize, opts, extensions)
   end
 end

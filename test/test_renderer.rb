@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestRenderer < Minitest::Test
   def setup
-    @doc = CommonMarker.render_doc('Hi *there*')
+    @doc = CommonMarker.render_doc("Hi *there*")
   end
 
   def test_html_renderer
     renderer = HtmlRenderer.new
     result = renderer.render(@doc)
-    assert_equal "<p>Hi <em>there</em></p>\n", result
+    assert_equal("<p>Hi <em>there</em></p>\n", result)
   end
 
   def test_multiple_tables
@@ -23,9 +23,9 @@ class TestRenderer < Minitest::Test
       | :------: | ---: | :------ |
       | Foo      | Bar  | Baz     |
     DOC
-    doc = CommonMarker.render_doc(content, :DEFAULT, %i[autolink table tagfilter])
+    doc = CommonMarker.render_doc(content, :DEFAULT, [:autolink, :table, :tagfilter])
     results = CommonMarker::HtmlRenderer.new.render(doc)
-    assert_equal 2, results.scan(/<tbody>/).size
+    assert_equal(2, results.scan(/<tbody>/).size)
   end
 
   def test_escape_html_encoding
@@ -41,7 +41,7 @@ class TestRenderer < Minitest::Test
     end
 
     renderer = my_renderer.new
-    assert_equal Encoding::UTF_8, renderer.render(@doc).encoding
-    assert_equal renderer.input_encoding, renderer.output_encoding
+    assert_equal(Encoding::UTF_8, renderer.render(@doc).encoding)
+    assert_equal(renderer.input_encoding, renderer.output_encoding)
   end
 end

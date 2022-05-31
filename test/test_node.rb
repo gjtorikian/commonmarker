@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestNode < Minitest::Test
   def setup
-    @doc = CommonMarker.render_doc('Hi *there*, I am mostly text!')
+    @doc = CommonMarker.render_doc("Hi *there*, I am mostly text!")
   end
 
   def test_walk
@@ -12,7 +12,7 @@ class TestNode < Minitest::Test
     @doc.walk do |node|
       nodes << node.type
     end
-    assert_equal %i[document paragraph text emph text text], nodes
+    assert_equal([:document, :paragraph, :text, :emph, :text, :text], nodes)
   end
 
   def test_each
@@ -20,7 +20,7 @@ class TestNode < Minitest::Test
     @doc.first_child.each do |node|
       nodes << node.type
     end
-    assert_equal %i[text emph text], nodes
+    assert_equal([:text, :emph, :text], nodes)
   end
 
   def test_deprecated_each_child
@@ -30,43 +30,43 @@ class TestNode < Minitest::Test
         nodes << node.type
       end
     end
-    assert_equal %i[text emph text], nodes
+    assert_equal([:text, :emph, :text], nodes)
     assert_match(/`each_child` is deprecated/, err)
   end
 
   def test_select
     nodes = @doc.first_child.select { |node| node.type == :text }
-    assert_equal CommonMarker::Node, nodes.first.class
-    assert_equal %i[text text], nodes.map(&:type)
+    assert_equal(CommonMarker::Node, nodes.first.class)
+    assert_equal([:text, :text], nodes.map(&:type))
   end
 
   def test_map
     nodes = @doc.first_child.map(&:type)
-    assert_equal %i[text emph text], nodes
+    assert_equal([:text, :emph, :text], nodes)
   end
 
   def test_insert_illegal
-    assert_raises NodeError do
+    assert_raises(NodeError) do
       @doc.insert_before(@doc)
     end
   end
 
   def test_to_html
-    assert_equal "<p>Hi <em>there</em>, I am mostly text!</p>\n", @doc.to_html
+    assert_equal("<p>Hi <em>there</em>, I am mostly text!</p>\n", @doc.to_html)
   end
 
   def test_html_renderer
     renderer = HtmlRenderer.new
     result = renderer.render(@doc)
-    assert_equal "<p>Hi <em>there</em>, I am mostly text!</p>\n", result
+    assert_equal("<p>Hi <em>there</em>, I am mostly text!</p>\n", result)
   end
 
   def test_walk_and_set_string_content
     @doc.walk do |node|
-      node.string_content = 'world' if node.type == :text && node.string_content == 'there'
+      node.string_content = "world" if node.type == :text && node.string_content == "there"
     end
     result = HtmlRenderer.new.render(@doc)
-    assert_equal "<p>Hi <em>world</em>, I am mostly text!</p>\n", result
+    assert_equal("<p>Hi <em>world</em>, I am mostly text!</p>\n", result)
   end
 
   def test_walk_and_delete_node
@@ -76,7 +76,7 @@ class TestNode < Minitest::Test
         node.delete
       end
     end
-    assert_equal "<p>Hi there, I am mostly text!</p>\n", @doc.to_html
+    assert_equal("<p>Hi there, I am mostly text!</p>\n", @doc.to_html)
   end
 
   def test_inspect
@@ -84,6 +84,6 @@ class TestNode < Minitest::Test
   end
 
   def test_pretty_print
-    assert_match(/#<CommonMarker::Node\(document\):/, PP.pp(@doc, +''))
+    assert_match(/#<CommonMarker::Node\(document\):/, PP.pp(@doc, +""))
   end
 end

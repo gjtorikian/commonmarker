@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'set'
-require 'stringio'
+require "set"
+require "stringio"
 
 module CommonMarker
   class Renderer
@@ -9,9 +9,9 @@ module CommonMarker
 
     def initialize(options: :DEFAULT, extensions: [])
       @opts = Config.process_options(options, :render)
-      @stream = StringIO.new(+'')
+      @stream = StringIO.new(+"")
       @need_blocksep = false
-      @warnings = Set.new []
+      @warnings = Set.new([])
       @in_tight = false
       @in_plain = false
       @tagfilter = extensions.include?(:tagfilter)
@@ -121,7 +121,7 @@ module CommonMarker
     end
 
     def sourcepos(node)
-      return '' unless option_enabled?(:SOURCEPOS)
+      return "" unless option_enabled?(:SOURCEPOS)
 
       s = node.sourcepos
       " data-sourcepos=\"#{s[:start_line]}:#{s[:start_column]}-" \
