@@ -4,4 +4,4 @@ require 'mkmf'
 
 $CFLAGS << ' -std=c99'
 
-create_makefile('commonmarker/commonmarker')
+create_makefile('qiita_marker/qiita_marker')

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'benchmark/ips'
-require 'commonmarker'
+require 'qiita_marker'
 require 'redcarpet'
 require 'kramdown'
 require 'benchmark'
@@ -15,20 +15,20 @@ Benchmark.ips do |x|
     Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
   end
 
-  x.report('commonmarker with to_html') do
-    CommonMarker.render_html(benchinput)
+  x.report('qiita_marker with to_html') do
+    QiitaMarker.render_html(benchinput)
   end
 
-  x.report('commonmarker with to_xml') do
-    CommonMarker.render_html(benchinput)
+  x.report('qiita_marker with to_xml') do
+    QiitaMarker.render_html(benchinput)
   end
 
-  x.report('commonmarker with ruby HtmlRenderer') do
-    CommonMarker::HtmlRenderer.new.render(CommonMarker.render_doc(benchinput))
+  x.report('qiita_marker with ruby HtmlRenderer') do
+    QiitaMarker::HtmlRenderer.new.render(QiitaMarker.render_doc(benchinput))
   end
 
-  x.report('commonmarker with render_doc.to_html') do
-    CommonMarker.render_doc(benchinput, :DEFAULT, [:autolink]).to_html(:DEFAULT, [:autolink])
+  x.report('qiita_marker with render_doc.to_html') do
+    QiitaMarker.render_doc(benchinput, :DEFAULT, [:autolink]).to_html(:DEFAULT, [:autolink])
   end
 
   x.report('kramdown') do

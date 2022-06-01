@@ -2,30 +2,30 @@
 
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'commonmarker/version'
+require 'qiita_marker/version'
 
 Gem::Specification.new do |s|
-  s.name = 'commonmarker'
-  s.version = CommonMarker::VERSION
+  s.name = 'qiita_marker'
+  s.version = QiitaMarker::VERSION
   s.summary = 'CommonMark parser and renderer. Written in C, wrapped in Ruby.'
   s.description = 'A fast, safe, extensible parser for CommonMark. This wraps the official libcmark library.'
   s.authors = ['Garen Torikian', 'Ashe Connor']
-  s.homepage = 'https://github.com/gjtorikian/commonmarker'
+  s.homepage = 'https://github.com/gjtorikian/qiita_marker'
   s.license = 'MIT'
 
-  s.files         = %w[LICENSE.txt README.md Rakefile commonmarker.gemspec bin/commonmarker]
+  s.files         = %w[LICENSE.txt README.md Rakefile qiita_marker.gemspec bin/qiita_marker]
   s.files        += Dir.glob('lib/**/*.rb')
-  s.files        += Dir.glob('ext/commonmarker/*.*')
+  s.files        += Dir.glob('ext/qiita_marker/*.*')
   s.test_files    = Dir.glob('test/**/*').reject { |f| f == 'test/benchinput.md' || f.start_with?('test/progit/') }
-  s.extensions    = ['ext/commonmarker/extconf.rb']
+  s.extensions    = ['ext/qiita_marker/extconf.rb']
 
-  s.executables = ['commonmarker']
+  s.executables = ['qiita_marker']
   s.require_paths = %w[lib ext]
   s.required_ruby_version = ['>= 2.6', '< 4.0']
 
   s.metadata['rubygems_mfa_required'] = 'true'
 
-  s.rdoc_options += ['-x', 'ext/commonmarker/cmark/.*']
+  s.rdoc_options += ['-x', 'ext/qiita_marker/cmark/.*']
 
   s.add_development_dependency 'awesome_print'
   s.add_development_dependency 'json', '~> 2.3'

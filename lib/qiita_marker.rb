@@ -1,17 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'commonmarker/commonmarker'
-require 'commonmarker/config'
-require 'commonmarker/node'
-require 'commonmarker/renderer'
-require 'commonmarker/renderer/html_renderer'
-require 'commonmarker/version'
+require 'qiita_marker/qiita_marker'
+require 'qiita_marker/config'
+require 'qiita_marker/node'
+require 'qiita_marker/renderer'
+require 'qiita_marker/renderer/html_renderer'
+require 'qiita_marker/version'
 
 begin
   require 'awesome_print'
 rescue LoadError; end # rubocop:disable Lint/SuppressedException
-module CommonMarker
+module QiitaMarker
   # Public:  Parses a Markdown string into an HTML string.
   #
   # text - A {String} of text

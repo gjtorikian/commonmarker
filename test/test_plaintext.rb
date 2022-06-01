@@ -21,7 +21,7 @@ class TestPlaintext < Minitest::Test
   end
 
   def render_doc(doc)
-    CommonMarker.render_doc(doc, :DEFAULT, %i[table])
+    QiitaMarker.render_doc(doc, :DEFAULT, %i[table])
   end
 
   def test_to_commonmark
