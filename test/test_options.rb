@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestExtensions < Minitest::Test
   def test_full_info_string
@@ -11,7 +11,7 @@ class TestExtensions < Minitest::Test
     MD
 
     QiitaMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
-      assert_includes out, '<pre><code class="language-ruby">'
+      assert_includes(out, '<pre><code class="language-ruby">')
     end
 
     md = <<~MD
@@ -21,7 +21,7 @@ class TestExtensions < Minitest::Test
     MD
 
     QiitaMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
-      assert_includes out, '<pre><code class="language-ruby" data-meta="my info string">'
+      assert_includes(out, '<pre><code class="language-ruby" data-meta="my info string">')
     end
 
     md = <<~MD
@@ -31,7 +31,7 @@ class TestExtensions < Minitest::Test
     MD
 
     QiitaMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
-      assert_includes out, %(<pre><code class="language-ruby" data-meta="my � string">)
+      assert_includes(out, %(<pre><code class="language-ruby" data-meta="my � string">))
     end
   end
 end

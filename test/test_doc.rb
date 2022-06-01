@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestDocNode < Minitest::Test
   def setup
-    @doc = QiitaMarker.render_doc('Hi *there*. This has __many nodes__!')
+    @doc = QiitaMarker.render_doc("Hi *there*. This has __many nodes__!")
     @first_child = @doc.first_child
     @last_child = @doc.last_child
-    @link = QiitaMarker.render_doc('[GitHub](https://www.github.com)').first_child.first_child
+    @link = QiitaMarker.render_doc("[GitHub](https://www.github.com)").first_child.first_child
     @image = QiitaMarker.render_doc('![alt text](https://github.com/favicon.ico "Favicon")')
     @image = @image.first_child.first_child
-    @header = QiitaMarker.render_doc('### Header Three').first_child
+    @header = QiitaMarker.render_doc("### Header Three").first_child
     @ul_list = QiitaMarker.render_doc("* Bullet\n*Bullet").first_child
     @ol_list = QiitaMarker.render_doc("1. One\n2. Two").first_child
     @fence = QiitaMarker.render_doc("``` ruby\nputs 'wow'\n```").first_child
@@ -21,7 +21,7 @@ class TestDocNode < Minitest::Test
   end
 
   def test_get_type_string
-    assert_equal('document', @doc.type_string)
+    assert_equal("document", @doc.type_string)
   end
 
   def test_get_first_child
@@ -35,25 +35,25 @@ class TestDocNode < Minitest::Test
   def test_insert_before
     paragraph = Node.new(:paragraph)
     assert(@first_child.insert_before(paragraph))
-    assert_match "<p></p>\n<p>Hi <em>there</em>.", @doc.to_html
+    assert_match("<p></p>\n<p>Hi <em>there</em>.", @doc.to_html)
   end
 
   def test_insert_after
     paragraph = Node.new(:paragraph)
     assert(@first_child.insert_after(paragraph))
-    assert_match "<strong>many nodes</strong>!</p>\n<p></p>\n", @doc.to_html
+    assert_match("<strong>many nodes</strong>!</p>\n<p></p>\n", @doc.to_html)
   end
 
   def test_prepend_child
     code = Node.new(:code)
     assert(@first_child.prepend_child(code))
-    assert_match '<p><code></code>Hi <em>there</em>.', @doc.to_html
+    assert_match("<p><code></code>Hi <em>there</em>.", @doc.to_html)
   end
 
   def test_append_child
     strong = Node.new(:strong)
     assert(@first_child.append_child(strong))
-    assert_match "!<strong></strong></p>\n", @doc.to_html
+    assert_match("!<strong></strong></p>\n", @doc.to_html)
   end
 
   def test_get_last_child
@@ -69,19 +69,19 @@ class TestDocNode < Minitest::Test
   end
 
   def test_get_url
-    assert_equal('https://www.github.com', @link.url)
+    assert_equal("https://www.github.com", @link.url)
   end
 
   def test_set_url
-    assert_equal('https://www.mozilla.org', @link.url = 'https://www.mozilla.org')
+    assert_equal("https://www.mozilla.org", @link.url = "https://www.mozilla.org")
   end
 
   def test_get_title
-    assert_equal('Favicon', @image.title)
+    assert_equal("Favicon", @image.title)
   end
 
   def test_set_title
-    assert_equal('Octocat', @image.title = 'Octocat')
+    assert_equal("Octocat", @image.title = "Octocat")
   end
 
   def test_get_header_level
@@ -121,10 +121,10 @@ class TestDocNode < Minitest::Test
   end
 
   def test_get_fence_info
-    assert_equal('ruby', @fence.fence_info)
+    assert_equal("ruby", @fence.fence_info)
   end
 
   def test_set_fence_info
-    assert_equal('javascript', @fence.fence_info = 'javascript')
+    assert_equal("javascript", @fence.fence_info = "javascript")
   end
 end

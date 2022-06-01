@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestXml < Minitest::Test
   def setup
@@ -27,7 +27,7 @@ class TestXml < Minitest::Test
   def test_to_xml
     compare = render_doc(@markdown).to_xml(:SOURCEPOS)
 
-    assert_equal <<~XML, compare
+    assert_equal(<<~XML, compare)
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE document SYSTEM "CommonMark.dtd">
       <document sourcepos="1:1-12:13" xmlns="http://commonmark.org/xml/1.0">
@@ -94,7 +94,7 @@ class TestXml < Minitest::Test
   def test_to_xml_with_quotes
     compare = render_doc('"quotes" should be escaped').to_xml(:DEFAULT)
 
-    assert_equal <<~XML, compare
+    assert_equal(<<~XML, compare)
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE document SYSTEM "CommonMark.dtd">
       <document xmlns="http://commonmark.org/xml/1.0">

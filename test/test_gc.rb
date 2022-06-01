@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Lint/UselessAssignment
-require 'test_helper'
+require "test_helper"
 
 class TestNode < Minitest::Test
   # These tests are somewhat fragile. It would be better to allocate lots
@@ -9,26 +9,26 @@ class TestNode < Minitest::Test
   # isn't valid by accident.
 
   def test_drop_parent_reference
-    doc = QiitaMarker.render_doc('Hi *there*')
+    doc = QiitaMarker.render_doc("Hi *there*")
     text = doc.first_child.last_child.first_child
     doc = nil
     GC.start
     # Test that doc has not been freed.
-    assert_equal 'there', text.string_content
+    assert_equal("there", text.string_content)
   end
 
   def test_drop_child_reference
-    doc = QiitaMarker.render_doc('Hi *there*')
+    doc = QiitaMarker.render_doc("Hi *there*")
     text = doc.first_child.last_child.first_child
     text = nil
     GC.start
     # Test that the cached child object is still valid.
     text = doc.first_child.last_child.first_child
-    assert_equal 'there', text.string_content
+    assert_equal("there", text.string_content)
   end
 
   def test_remove_parent
-    doc = QiitaMarker.render_doc('Hi *there*')
+    doc = QiitaMarker.render_doc("Hi *there*")
     para = doc.first_child
     para.delete
     doc = nil

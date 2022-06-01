@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestPlaintext < Minitest::Test
   def setup
@@ -21,13 +21,13 @@ class TestPlaintext < Minitest::Test
   end
 
   def render_doc(doc)
-    QiitaMarker.render_doc(doc, :DEFAULT, %i[table])
+    QiitaMarker.render_doc(doc, :DEFAULT, [:table])
   end
 
   def test_to_commonmark
     compare = render_doc(@markdown).to_plaintext
 
-    assert_equal <<~PLAINTEXT, compare
+    assert_equal(<<~PLAINTEXT, compare)
       Hi there!
 
       1.  I am a numeric list.

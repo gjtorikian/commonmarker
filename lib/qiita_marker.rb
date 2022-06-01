@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'qiita_marker/qiita_marker'
-require 'qiita_marker/config'
-require 'qiita_marker/node'
-require 'qiita_marker/renderer'
-require 'qiita_marker/renderer/html_renderer'
-require 'qiita_marker/version'
+require "qiita_marker/qiita_marker"
+require "qiita_marker/config"
+require "qiita_marker/node"
+require "qiita_marker/renderer"
+require "qiita_marker/renderer/html_renderer"
+require "qiita_marker/version"
 
 begin
-  require 'awesome_print'
+  require "awesome_print"
 rescue LoadError; end # rubocop:disable Lint/SuppressedException
 module QiitaMarker
   # Public:  Parses a Markdown string into an HTML string.
@@ -23,9 +23,7 @@ module QiitaMarker
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
 
     opts = Config.process_options(options, :render)
-    text = text.encode('UTF-8')
-    html = Node.markdown_to_html(text, opts, extensions)
-    html.force_encoding('UTF-8')
+    Node.markdown_to_html(text.encode("UTF-8"), opts, extensions)
   end
 
   # Public: Parses a Markdown string into a `document` node.
@@ -39,7 +37,7 @@ module QiitaMarker
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
 
     opts = Config.process_options(options, :parse)
-    text = text.encode('UTF-8')
+    text = text.encode("UTF-8")
     Node.parse_document(text, text.bytesize, opts, extensions)
   end
 end

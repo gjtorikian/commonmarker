@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require('test_helper')
+require("test_helper")
 
 class TestQfmCustomBlock < Minitest::Test
   def setup
@@ -18,7 +18,7 @@ class TestQfmCustomBlock < Minitest::Test
       <div>html block</div>
       :::
     MD
-    @doc = QiitaMarker.render_doc(text, %i[UNSAFE], %i[custom_block])
+    @doc = QiitaMarker.render_doc(text, [:UNSAFE], [:custom_block])
     @expected = <<~HTML
       <div data-type="customblock" data-metadata="foo bar">
       <p>message</p>
@@ -34,6 +34,6 @@ class TestQfmCustomBlock < Minitest::Test
   end
 
   def test_to_html
-    assert_equal(@expected, @doc.to_html(%i[UNSAFE], %i[custom_block]))
+    assert_equal(@expected, @doc.to_html([:UNSAFE], [:custom_block]))
   end
 end

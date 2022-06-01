@@ -15,7 +15,7 @@ module QiitaMarker
         FOOTNOTES: (1 << 13),
         STRIKETHROUGH_DOUBLE_TILDE: (1 << 14),
         MENTION_NO_EMPHASIS: (1 << 26),
-        AUTOLINK_CLASS_NAME: (1 << 27)
+        AUTOLINK_CLASS_NAME: (1 << 27),
       }.freeze,
       render: {
         DEFAULT: 0,
@@ -33,9 +33,9 @@ module QiitaMarker
         FULL_INFO_STRING: (1 << 16),
         CODE_DATA_METADATA: (1 << 25),
         MENTION_NO_EMPHASIS: (1 << 26),
-        AUTOLINK_CLASS_NAME: (1 << 27)
+        AUTOLINK_CLASS_NAME: (1 << 27),
       }.freeze,
-      format: %i[html xml commonmark plaintext].freeze
+      format: [:html, :xml, :commonmark, :plaintext].freeze,
     }.freeze
 
     def self.process_options(option, type)

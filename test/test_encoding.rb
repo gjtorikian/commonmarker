@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestEncoding < Minitest::Test
   # see http://git.io/vq4FR
   def test_encoding
-    contents = fixtures_file('curly.md')
+    contents = fixtures_file("curly.md")
     doc = QiitaMarker.render_doc(contents, :SMART)
     render = doc.to_html
-    assert_equal('<p>This curly quote “makes qiita_marker throw an exception”.</p>', render.rstrip)
+    assert_equal("<p>This curly quote “makes qiita_marker throw an exception”.</p>", render.rstrip)
 
     render = doc.to_xml
     assert_includes(render, '<text xml:space="preserve">This curly quote “makes qiita_marker throw an exception”.</text>')
   end
 
   def test_string_content_is_utf8
-    doc = QiitaMarker.render_doc('Hi *there*')
+    doc = QiitaMarker.render_doc("Hi *there*")
     text = doc.first_child.last_child.first_child
-    assert_equal('there', text.string_content)
-    assert_equal('UTF-8', text.string_content.encoding.name)
+    assert_equal("there", text.string_content)
+    assert_equal("UTF-8", text.string_content.encoding.name)
   end
 end
