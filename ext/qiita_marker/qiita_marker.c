@@ -115,25 +115,23 @@ static void rb_parent_removed(VALUE val) {
   RDATA(val)->dfree = rb_free_c_struct;
 }
 
-static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions, cmark_mem *mem) {
+static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions) {
   int options;
-  int extensions_len;
   VALUE rb_ext_name;
   int i;
 
-  Check_Type(rb_options, T_FIXNUM);
+  FIXNUM_P(rb_options);
+  options = FIX2INT(rb_options);
+
   Check_Type(rb_extensions, T_ARRAY);
 
-  options = FIX2INT(rb_options);
-  extensions_len = RARRAY_LEN(rb_extensions);
+  cmark_parser *parser = cmark_parser_new(options);
 
-  cmark_parser *parser = cmark_parser_new_with_mem(options, mem);
-  for (i = 0; i < extensions_len; ++i) {
-    rb_ext_name = RARRAY_PTR(rb_extensions)[i];
+  for (i = 0; i < RARRAY_LEN(rb_extensions); ++i) {
+    rb_ext_name = rb_ary_entry(rb_extensions, i);
 
     if (!SYMBOL_P(rb_ext_name)) {
       cmark_parser_free(parser);
-      cmark_arena_reset();
       rb_raise(rb_eTypeError, "extension names should be Symbols; got a %"PRIsVALUE"", rb_obj_class(rb_ext_name));
     }
 
@@ -142,7 +140,6 @@ static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions, cmark
 
     if (!syntax_extension) {
       cmark_parser_free(parser);
-      cmark_arena_reset();
       rb_raise(rb_eArgError, "extension %s not found", rb_id2name(SYM2ID(rb_ext_name)));
     }
 
@@ -157,33 +154,28 @@ static cmark_parser *prepare_parser(VALUE rb_options, VALUE rb_extensions, cmark
  *
  */
 static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VALUE rb_extensions) {
-  char *str, *html;
-  int len;
+  char *html;
   cmark_parser *parser;
   cmark_node *doc;
+
   Check_Type(rb_text, T_STRING);
-  Check_Type(rb_options, T_FIXNUM);
 
-  parser = prepare_parser(rb_options, rb_extensions, cmark_get_arena_mem_allocator());
+  parser = prepare_parser(rb_options, rb_extensions);
 
-  str = (char *)RSTRING_PTR(rb_text);
-  len = RSTRING_LEN(rb_text);
-
-  cmark_parser_feed(parser, str, len);
+  cmark_parser_feed(parser, StringValuePtr(rb_text), RSTRING_LEN(rb_text));
   doc = cmark_parser_finish(parser);
+
   if (doc == NULL) {
-    cmark_arena_reset();
+    cmark_parser_free(parser);
     rb_raise(rb_eNodeError, "error parsing document");
   }
 
-  cmark_mem *default_mem = cmark_get_default_mem_allocator();
-  html = cmark_render_html_with_mem(doc, FIX2INT(rb_options), parser->syntax_extensions, default_mem);
-  cmark_arena_reset();
+  html = cmark_render_html(doc, parser->options, parser->syntax_extensions);
 
-  VALUE ruby_html = rb_str_new2(html);
-  default_mem->free(html);
+  cmark_parser_free(parser);
+  cmark_node_free(doc);
 
-  return ruby_html;
+  return rb_utf8_str_new_cstr(html);
 }
 
 /*
@@ -191,33 +183,28 @@ static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VA
  *
  */
 static VALUE rb_markdown_to_xml(VALUE self, VALUE rb_text, VALUE rb_options, VALUE rb_extensions) {
-  char *str, *xml;
-  int len;
+  char *xml;
   cmark_parser *parser;
   cmark_node *doc;
+
   Check_Type(rb_text, T_STRING);
-  Check_Type(rb_options, T_FIXNUM);
 
-  parser = prepare_parser(rb_options, rb_extensions, cmark_get_arena_mem_allocator());
+  parser = prepare_parser(rb_options, rb_extensions);
 
-  str = (char *)RSTRING_PTR(rb_text);
-  len = RSTRING_LEN(rb_text);
-
-  cmark_parser_feed(parser, str, len);
+  cmark_parser_feed(parser, StringValuePtr(rb_text), RSTRING_LEN(rb_text));
   doc = cmark_parser_finish(parser);
+
   if (doc == NULL) {
-    cmark_arena_reset();
+    cmark_parser_free(parser);
     rb_raise(rb_eNodeError, "error parsing document");
   }
 
-  cmark_mem *default_mem = cmark_get_default_mem_allocator();
-  xml = cmark_render_xml_with_mem(doc, FIX2INT(rb_options), default_mem);
-  cmark_arena_reset();
+  xml = cmark_render_xml(doc, parser->options);
 
-  VALUE ruby_xml = rb_str_new2(xml);
-  default_mem->free(xml);
+  cmark_parser_free(parser);
+  cmark_node_free(doc);
 
-  return ruby_xml;
+  return rb_utf8_str_new_cstr(xml);
 }
 
 /*
@@ -308,18 +295,17 @@ static VALUE rb_node_new(VALUE self, VALUE type) {
 static VALUE rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len,
                                VALUE rb_options, VALUE rb_extensions) {
   char *text;
-  int len, options;
+  int len;
   cmark_parser *parser;
   cmark_node *doc;
   Check_Type(rb_text, T_STRING);
   Check_Type(rb_len, T_FIXNUM);
   Check_Type(rb_options, T_FIXNUM);
 
-  parser = prepare_parser(rb_options, rb_extensions, cmark_get_default_mem_allocator());
+  parser = prepare_parser(rb_options, rb_extensions);
 
   text = (char *)RSTRING_PTR(rb_text);
   len = FIX2INT(rb_len);
-  options = FIX2INT(rb_options);
 
   cmark_parser_feed(parser, text, len);
   doc = cmark_parser_finish(parser);
@@ -614,7 +600,6 @@ static VALUE rb_render_html(VALUE self, VALUE rb_options, VALUE rb_extensions) {
  */
 static VALUE rb_render_xml(VALUE self, VALUE rb_options) {
   int options;
-  int i;
   cmark_node *node;
   Check_Type(rb_options, T_FIXNUM);
 

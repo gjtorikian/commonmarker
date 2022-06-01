@@ -23,9 +23,7 @@ module QiitaMarker
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
 
     opts = Config.process_options(options, :render)
-    text = text.encode('UTF-8')
-    html = Node.markdown_to_html(text, opts, extensions)
-    html.force_encoding('UTF-8')
+    Node.markdown_to_html(text.encode('UTF-8'), opts, extensions)
   end
 
   # Public: Parses a Markdown string into a `document` node.

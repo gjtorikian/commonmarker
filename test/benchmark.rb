@@ -1,32 +1,39 @@
 # frozen_string_literal: true
 
+require 'benchmark/ips'
 require 'qiita_marker'
-require 'github/markdown'
 require 'redcarpet'
 require 'kramdown'
 require 'benchmark'
 
-def dobench(name, &blk)
-  puts name
-  puts Benchmark.measure(&blk)
-end
+benchinput = File.read('test/benchinput.md').freeze
 
-benchinput = File.open('test/benchinput.md', 'r').read
+printf("input size = %<bytes>d bytes\n\n", { bytes: benchinput.bytesize })
 
-printf("input size = %<bytes>d bytes\n\n", benchinput.bytesize)
+Benchmark.ips do |x|
+  x.report('redcarpet') do
+    Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
+  end
 
-dobench('redcarpet') do
-  Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
-end
+  x.report('qiita_marker with to_html') do
+    QiitaMarker.render_html(benchinput)
+  end
 
-dobench('qiita_marker with to_html') do
-  QiitaMarker.render_html(benchinput)
-end
+  x.report('qiita_marker with to_xml') do
+    QiitaMarker.render_html(benchinput)
+  end
 
-dobench('qiita_marker with ruby HtmlRenderer') do
-  QiitaMarker::HtmlRenderer.new.render(QiitaMarker.render_doc(benchinput))
-end
+  x.report('qiita_marker with ruby HtmlRenderer') do
+    QiitaMarker::HtmlRenderer.new.render(QiitaMarker.render_doc(benchinput))
+  end
 
-dobench('kramdown') do
-  Kramdown::Document.new(benchinput).to_html(benchinput)
+  x.report('qiita_marker with render_doc.to_html') do
+    QiitaMarker.render_doc(benchinput, :DEFAULT, [:autolink]).to_html(:DEFAULT, [:autolink])
+  end
+
+  x.report('kramdown') do
+    Kramdown::Document.new(benchinput).to_html(benchinput)
+  end
+
+  x.compare!
 end
