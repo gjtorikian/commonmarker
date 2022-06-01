@@ -2,10 +2,10 @@
 
 require "test_helper"
 
-module CommonMarker
+module QiitaMarker
   class TestMaliciousness < Minitest::Test
     def setup
-      @doc = CommonMarker.render_doc("Hi *there*")
+      @doc = QiitaMarker.render_doc("Hi *there*")
     end
 
     def test_init_with_bad_type
@@ -32,80 +32,80 @@ module CommonMarker
 
     def test_rendering_with_bad_type
       assert_raises(TypeError) do
-        CommonMarker.render_html("foo \n baz", 123)
+        QiitaMarker.render_html("foo \n baz", 123)
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_html("foo \n baz", :totes_fake)
+        QiitaMarker.render_html("foo \n baz", :totes_fake)
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_html("foo \n baz", [])
+        QiitaMarker.render_html("foo \n baz", [])
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_html("foo \n baz", [23])
+        QiitaMarker.render_html("foo \n baz", [23])
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_html("foo \n baz", nil)
+        QiitaMarker.render_html("foo \n baz", nil)
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_html("foo \n baz", [:SMART, "totes_fake"])
+        QiitaMarker.render_html("foo \n baz", [:SMART, "totes_fake"])
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_html(123)
+        QiitaMarker.render_html(123)
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_html([123])
+        QiitaMarker.render_html([123])
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_html(nil)
+        QiitaMarker.render_html(nil)
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_doc("foo \n baz", 123)
+        QiitaMarker.render_doc("foo \n baz", 123)
       end
 
       err = assert_raises(TypeError) do
-        CommonMarker.render_doc("foo \n baz", :safe)
+        QiitaMarker.render_doc("foo \n baz", :safe)
       end
-      assert_equal("option ':safe' does not exist for CommonMarker::Config::OPTS[:parse]", err.message)
+      assert_equal("option ':safe' does not exist for QiitaMarker::Config::OPTS[:parse]", err.message)
 
       assert_raises(TypeError) do
-        CommonMarker.render_doc("foo \n baz", :totes_fake)
-      end
-
-      assert_raises(TypeError) do
-        CommonMarker.render_doc("foo \n baz", [])
+        QiitaMarker.render_doc("foo \n baz", :totes_fake)
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_doc("foo \n baz", [23])
+        QiitaMarker.render_doc("foo \n baz", [])
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_doc("foo \n baz", nil)
+        QiitaMarker.render_doc("foo \n baz", [23])
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_doc("foo \n baz", [:SMART, "totes_fake"])
+        QiitaMarker.render_doc("foo \n baz", nil)
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_doc(123)
+        QiitaMarker.render_doc("foo \n baz", [:SMART, "totes_fake"])
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_doc([123])
+        QiitaMarker.render_doc(123)
       end
 
       assert_raises(TypeError) do
-        CommonMarker.render_doc(nil)
+        QiitaMarker.render_doc([123])
+      end
+
+      assert_raises(TypeError) do
+        QiitaMarker.render_doc(nil)
       end
     end
 
@@ -152,7 +152,7 @@ module CommonMarker
         @doc.url = "123"
       end
 
-      link = CommonMarker.render_doc("[GitHub](https://www.github.com)").first_child.first_child
+      link = QiitaMarker.render_doc("[GitHub](https://www.github.com)").first_child.first_child
       assert_raises(TypeError) do
         link.url = 123
       end
@@ -169,7 +169,7 @@ module CommonMarker
         @doc.title = "123"
       end
 
-      image = CommonMarker.render_doc('![alt text](https://github.com/favicon.ico "Favicon")')
+      image = QiitaMarker.render_doc('![alt text](https://github.com/favicon.ico "Favicon")')
       image = image.first_child.first_child
       assert_raises(TypeError) do
         image.title = 123
@@ -187,7 +187,7 @@ module CommonMarker
         @doc.header_level = 1
       end
 
-      header = CommonMarker.render_doc("### Header Three").first_child
+      header = QiitaMarker.render_doc("### Header Three").first_child
       assert_raises(TypeError) do
         header.header_level = "123"
       end
@@ -204,7 +204,7 @@ module CommonMarker
         @doc.list_type = :bullet_list
       end
 
-      ul_list = CommonMarker.render_doc("* Bullet\n*Bullet").first_child
+      ul_list = QiitaMarker.render_doc("* Bullet\n*Bullet").first_child
       assert_raises(NodeError) do
         ul_list.list_type = :fake
       end
@@ -224,7 +224,7 @@ module CommonMarker
         @doc.list_start = 12
       end
 
-      ol_list = CommonMarker.render_doc("1. One\n2. Two").first_child
+      ol_list = QiitaMarker.render_doc("1. One\n2. Two").first_child
       assert_raises(TypeError) do
         ol_list.list_start = :fake
       end
@@ -253,7 +253,7 @@ module CommonMarker
         @doc.fence_info = "ruby"
       end
 
-      fence = CommonMarker.render_doc("``` ruby\nputs 'wow'\n```").first_child
+      fence = QiitaMarker.render_doc("``` ruby\nputs 'wow'\n```").first_child
       assert_raises(TypeError) do
         fence.fence_info = 123
       end

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "commonmarker"
+require "qiita_marker"
 require "minitest/autorun"
 require "minitest/pride"
 require "minitest/focus"
 
-include CommonMarker
+include QiitaMarker
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), "fixtures")
 
@@ -14,7 +14,7 @@ def fixtures_file(file)
 end
 
 def make_bin(file, args = "")
-  %x(ruby bin/commonmarker #{File.join(FIXTURES_DIR, file)} #{args}).chomp
+  %x(ruby bin/qiita_marker #{File.join(FIXTURES_DIR, file)} #{args}).chomp
 end
 
 def open_spec_file(filename)
@@ -30,7 +30,7 @@ def open_spec_file(filename)
   extensions = []
 
   header_re = Regexp.new("#+ ")
-  filepath = File.join("ext", "commonmarker", "cmark-upstream", "test", filename)
+  filepath = File.join("ext", "qiita_marker", "cmark-upstream", "test", filename)
 
   File.readlines(filepath, encoding: "utf-8").each do |line|
     line_number += 1

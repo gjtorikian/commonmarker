@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "commonmarker/node/inspect"
+require "qiita_marker/node/inspect"
 
-module CommonMarker
+module QiitaMarker
   class Node
     include Enumerable
     include Inspect

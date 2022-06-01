@@ -11,11 +11,11 @@ require "devkit" if host_os == "mingw32"
 task default: [:test]
 
 # Gem Spec
-gem_spec = Gem::Specification.load("commonmarker.gemspec")
+gem_spec = Gem::Specification.load("qiita_marker.gemspec")
 
 # Ruby Extension
-Rake::ExtensionTask.new("commonmarker", gem_spec) do |ext|
-  ext.lib_dir = File.join("lib", "commonmarker")
+Rake::ExtensionTask.new("qiita_marker", gem_spec) do |ext|
+  ext.lib_dir = File.join("lib", "qiita_marker")
 end
 
 # Packaging
@@ -58,7 +58,7 @@ end
 
 desc "Match C style of cmark"
 task :format do
-  sh "clang-format -style llvm -i ext/commonmarker/*.c ext/commonmarker/*.h"
+  sh "clang-format -style llvm -i ext/qiita_marker/*.c ext/qiita_marker/*.h"
 end
 
 # Documentation
@@ -68,7 +68,7 @@ desc "Generate API documentation"
 RDoc::Task.new do |rd|
   rd.rdoc_dir = "docs"
   rd.main     = "README.md"
-  rd.rdoc_files.include("README.md", "lib/**/*.rb", "ext/commonmarker/commonmarker.c")
+  rd.rdoc_files.include("README.md", "lib/**/*.rb", "ext/qiita_marker/qiita_marker.c")
 
   rd.options << "--markup tomdoc"
   rd.options << "--inline-source"

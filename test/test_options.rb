@@ -10,7 +10,7 @@ class TestExtensions < Minitest::Test
       ```
     MD
 
-    CommonMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
+    QiitaMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
       assert_includes(out, '<pre><code class="language-ruby">')
     end
 
@@ -20,7 +20,7 @@ class TestExtensions < Minitest::Test
       ```
     MD
 
-    CommonMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
+    QiitaMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
       assert_includes(out, '<pre><code class="language-ruby" data-meta="my info string">')
     end
 
@@ -30,7 +30,7 @@ class TestExtensions < Minitest::Test
       ```
     MD
 
-    CommonMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
+    QiitaMarker.render_html(md, :FULL_INFO_STRING).tap do |out|
       assert_includes(out, %(<pre><code class="language-ruby" data-meta="my � string">))
     end
   end

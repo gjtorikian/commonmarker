@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module CommonMarker
+module QiitaMarker
   # For Ruby::Enum, these must be classes, not modules
   module Config
     # See https://github.com/github/cmark-gfm/blob/master/src/cmark-gfm.h#L673

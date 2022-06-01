@@ -4,7 +4,7 @@ require "test_helper"
 
 class TestRenderer < Minitest::Test
   def setup
-    @doc = CommonMarker.render_doc("Hi *there*")
+    @doc = QiitaMarker.render_doc("Hi *there*")
   end
 
   def test_html_renderer
@@ -23,8 +23,8 @@ class TestRenderer < Minitest::Test
       | :------: | ---: | :------ |
       | Foo      | Bar  | Baz     |
     DOC
-    doc = CommonMarker.render_doc(content, :DEFAULT, [:autolink, :table, :tagfilter])
-    results = CommonMarker::HtmlRenderer.new.render(doc)
+    doc = QiitaMarker.render_doc(content, :DEFAULT, [:autolink, :table, :tagfilter])
+    results = QiitaMarker::HtmlRenderer.new.render(doc)
     assert_equal(2, results.scan(/<tbody>/).size)
   end
 

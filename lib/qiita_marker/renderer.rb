@@ -3,7 +3,7 @@
 require "set"
 require "stringio"
 
-module CommonMarker
+module QiitaMarker
   class Renderer
     attr_accessor :in_tight, :warnings, :in_plain
 
@@ -129,7 +129,7 @@ module CommonMarker
     end
 
     def option_enabled?(opt)
-      (@opts & CommonMarker::Config::OPTS.dig(:render, opt)) != 0
+      (@opts & QiitaMarker::Config::OPTS.dig(:render, opt)) != 0
     end
   end
 end

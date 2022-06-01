@@ -6,8 +6,8 @@ class SmartPunctTest < Minitest::Test
   smart_punct = open_spec_file("smart_punct.txt")
 
   smart_punct.each do |testcase|
-    doc = CommonMarker.render_doc(testcase[:markdown], :SMART)
-    html = CommonMarker.render_html(testcase[:markdown], :SMART)
+    doc = QiitaMarker.render_doc(testcase[:markdown], :SMART)
+    html = QiitaMarker.render_html(testcase[:markdown], :SMART)
 
     define_method("test_smart_punct_example_#{testcase[:example]}") do
       doc_rendered = doc.to_html.strip
@@ -21,7 +21,7 @@ class SmartPunctTest < Minitest::Test
   def test_smart_hardbreak_no_spaces_render_doc
     markdown = "\"foo\"\nbaz"
     result = "<p>“foo”<br />\nbaz</p>\n"
-    doc = CommonMarker.render_doc(markdown, :SMART)
+    doc = QiitaMarker.render_doc(markdown, :SMART)
     assert_equal(result, doc.to_html([:HARDBREAKS]))
   end
 end
