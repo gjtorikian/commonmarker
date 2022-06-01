@@ -6,6 +6,10 @@
 
 ### Changed
 
+## 0.23.5.0 - 2022-06-01
+
+### Changed
+
 - [#26](https://github.com/increments/qiita_marker/pull/26): Update base CommonMarker version to `v0.23.5`.
 
 ## 0.23.2.3 - 2022-03-04
