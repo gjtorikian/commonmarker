@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require 'ostruct'
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'qiita_marker'
@@ -11,16 +10,12 @@ root = File.expand_path('..', __dir__)
 $LOAD_PATH.unshift File.expand_path('lib', root)
 
 def parse_options
-  options = OpenStruct.new
+  options = Struct.new(:active_extensions, :active_parse_options, :active_render_options, :output_format, :renderer)
+                  .new([], [:DEFAULT], [:DEFAULT], :html)
   extensions = QiitaMarker.extensions
   parse_options = QiitaMarker::Config::OPTS.fetch(:parse)
   render_options = QiitaMarker::Config::OPTS.fetch(:render)
   format_options = QiitaMarker::Config::OPTS.fetch(:format)
-
-  options.active_extensions = []
-  options.active_parse_options = [:DEFAULT]
-  options.active_render_options = [:DEFAULT]
-  options.output_format = :html
 
   option_parser = OptionParser.new do |opts|
     opts.banner = 'Usage: qiita_marker [--html-renderer] [--extension=EXTENSION]'

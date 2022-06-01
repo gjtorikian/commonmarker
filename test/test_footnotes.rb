@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestFootnotes < Minitest::Test
   def setup
@@ -19,7 +19,7 @@ class TestFootnotes < Minitest::Test
       </section>
     HTML
 
-    assert_equal expected, @doc.to_html
+    assert_equal(expected, @doc.to_html)
   end
 
   def test_html_renderer
@@ -34,7 +34,7 @@ class TestFootnotes < Minitest::Test
       </section>
     HTML
 
-    assert_equal expected, QiitaMarker::HtmlRenderer.new.render(@doc)
+    assert_equal(expected, QiitaMarker::HtmlRenderer.new.render(@doc))
   end
 
   def test_render_html
@@ -55,6 +55,6 @@ class TestFootnotes < Minitest::Test
       </ol>
       </section>
     HTML
-    assert_equal expected, QiitaMarker.render_html(md, :FOOTNOTES)
+    assert_equal(expected, QiitaMarker.render_html(md, :FOOTNOTES))
   end
 end

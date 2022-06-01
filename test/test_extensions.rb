@@ -1,76 +1,76 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestExtensions < Minitest::Test
   def setup
-    @markdown = fixtures_file('table.md')
+    @markdown = fixtures_file("table.md")
   end
 
   def test_uses_specified_extensions
-    QiitaMarker.render_html(@markdown, :DEFAULT, %i[]).tap do |out|
-      assert_includes out, '| a'
-      assert_includes out, '| <strong>x</strong>'
-      assert_includes out, '~~hi~~'
+    QiitaMarker.render_html(@markdown, :DEFAULT, []).tap do |out|
+      assert_includes(out, "| a")
+      assert_includes(out, "| <strong>x</strong>")
+      assert_includes(out, "~~hi~~")
     end
 
-    QiitaMarker.render_html(@markdown, :DEFAULT, %i[table]).tap do |out|
-      refute_includes out, '| a'
-      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert_includes out, html }
-      assert_includes out, '~~hi~~'
+    QiitaMarker.render_html(@markdown, :DEFAULT, [:table]).tap do |out|
+      refute_includes(out, "| a")
+      ["<table>", "<tr>", "<th>", "a", "</th>", "<td>", "c", "</td>", "<strong>x</strong>"].each { |html| assert_includes(out, html) }
+      assert_includes(out, "~~hi~~")
     end
 
-    QiitaMarker.render_html(@markdown, :DEFAULT, %i[strikethrough]).tap do |out|
-      assert_includes out, '| a'
-      refute_includes out, '~~hi~~'
-      assert_includes out, '<del>hi</del>'
+    QiitaMarker.render_html(@markdown, :DEFAULT, [:strikethrough]).tap do |out|
+      assert_includes(out, "| a")
+      refute_includes(out, "~~hi~~")
+      assert_includes(out, "<del>hi</del>")
     end
 
-    doc = QiitaMarker.render_doc('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
+    doc = QiitaMarker.render_doc("~a~ ~~b~~ ~~~c~~~", :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
     assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", doc.to_html)
 
-    html = QiitaMarker.render_html('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
+    html = QiitaMarker.render_html("~a~ ~~b~~ ~~~c~~~", :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
     assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", html)
 
-    QiitaMarker.render_html(@markdown, :DEFAULT, %i[table strikethrough]).tap do |out|
-      refute_includes out, '| a'
-      refute_includes out, '| <strong>x</strong>'
-      refute_includes out, '~~hi~~'
+    QiitaMarker.render_html(@markdown, :DEFAULT, [:table, :strikethrough]).tap do |out|
+      refute_includes(out, "| a")
+      refute_includes(out, "| <strong>x</strong>")
+      refute_includes(out, "~~hi~~")
     end
   end
 
   def test_extensions_with_renderers
-    doc = QiitaMarker.render_doc(@markdown, :DEFAULT, %i[table])
+    doc = QiitaMarker.render_doc(@markdown, :DEFAULT, [:table])
 
     doc.to_html.tap do |out|
-      refute_includes out, '| a'
-      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert_includes out, html }
-      assert_includes out, '~~hi~~'
+      refute_includes(out, "| a")
+      ["<table>", "<tr>", "<th>", "a", "</th>", "<td>", "c", "</td>", "<strong>x</strong>"].each { |html| assert_includes(out, html) }
+      assert_includes(out, "~~hi~~")
     end
 
     HtmlRenderer.new.render(doc).tap do |out|
-      refute_includes out, '| a'
-      %w[<table> <tr> <th> a </th> <td> c </td> <strong>x</strong>].each { |html| assert_includes out, html }
-      assert_includes out, '~~hi~~'
+      refute_includes(out, "| a")
+      ["<table>", "<tr>", "<th>", "a", "</th>", "<td>", "c", "</td>", "<strong>x</strong>"].each { |html| assert_includes(out, html) }
+      assert_includes(out, "~~hi~~")
     end
 
-    doc = QiitaMarker.render_doc('~a~ ~~b~~ ~~~c~~~', :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
+    doc = QiitaMarker.render_doc("~a~ ~~b~~ ~~~c~~~", :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
     assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", HtmlRenderer.new.render(doc))
   end
 
   def test_bad_extension_specifications
-    assert_raises(TypeError) { QiitaMarker.render_html(@markdown, :DEFAULT, 'nope') }
-    assert_raises(TypeError) { QiitaMarker.render_html(@markdown, :DEFAULT, ['table']) }
-    assert_raises(ArgumentError) { QiitaMarker.render_html(@markdown, :DEFAULT, %i[table bad]) }
+    assert_raises(TypeError) { QiitaMarker.render_html(@markdown, :DEFAULT, "nope") }
+    assert_raises(TypeError) { QiitaMarker.render_html(@markdown, :DEFAULT, ["table"]) }
+    assert_raises(ArgumentError) { QiitaMarker.render_html(@markdown, :DEFAULT, [:table, :bad]) }
   end
 
   def test_comments_are_kept_as_expected
-    assert_equal "<!--hello--> <blah> &lt;xmp>\n",
-                 QiitaMarker.render_html("<!--hello--> <blah> <xmp>\n", :UNSAFE, %i[tagfilter])
+    assert_equal("<!--hello--> <blah> &lt;xmp>\n",
+      QiitaMarker.render_html("<!--hello--> <blah> <xmp>\n", :UNSAFE, [:tagfilter]))
   end
 
   def test_table_prefer_style_attributes
-    assert_equal(<<~HTML, QiitaMarker.render_html(<<~MD, :TABLE_PREFER_STYLE_ATTRIBUTES, %i[table]))
+    assert_equal(<<~HTML, QiitaMarker.render_html(<<~MD, :TABLE_PREFER_STYLE_ATTRIBUTES, [:table]))
       <table>
       <thead>
       <tr>
@@ -99,7 +99,7 @@ class TestExtensions < Minitest::Test
   end
 
   def test_plaintext
-    assert_equal(<<~HTML, QiitaMarker.render_doc(<<~MD, :DEFAULT, %i[table strikethrough]).to_plaintext)
+    assert_equal(<<~HTML, QiitaMarker.render_doc(<<~MD, :DEFAULT, [:table, :strikethrough]).to_plaintext)
       Hello ~there~.
 
       | a |

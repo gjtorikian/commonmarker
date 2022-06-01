@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helper'
+require "test_helper"
 
 class TestCommonmark < Minitest::Test
   HTML_COMMENT = /<!--.*?-->\s?/.freeze
@@ -23,14 +23,15 @@ class TestCommonmark < Minitest::Test
   end
 
   def render_doc(doc)
-    QiitaMarker.render_doc(doc, :DEFAULT, %i[table])
+    QiitaMarker.render_doc(doc, :DEFAULT, [:table])
   end
 
   def test_to_commonmark
     compare = render_doc(@markdown).to_commonmark
 
-    assert_equal \
-      render_doc(@markdown).to_html.squeeze(' ').gsub(HTML_COMMENT, ''),
-      render_doc(compare).to_html.squeeze(' ').gsub(HTML_COMMENT, '')
+    assert_equal(\
+      render_doc(@markdown).to_html.squeeze(" ").gsub(HTML_COMMENT, ""),
+      render_doc(compare).to_html.squeeze(" ").gsub(HTML_COMMENT, "")
+    )
   end
 end
