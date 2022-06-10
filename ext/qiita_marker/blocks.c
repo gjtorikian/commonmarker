@@ -22,6 +22,7 @@
 #include "houdini.h"
 #include "buffer.h"
 #include "footnotes.h"
+#include "qfm_custom_block.h"
 
 #define CODE_INDENT 4
 #define TAB_STOP 4
@@ -289,7 +290,9 @@ static cmark_node *finalize(cmark_parser *parser, cmark_node *b) {
     b->end_column = parser->last_line_length;
   } else if (S_type(b) == CMARK_NODE_DOCUMENT ||
              (S_type(b) == CMARK_NODE_CODE_BLOCK && b->as.code.fenced) ||
-             (S_type(b) == CMARK_NODE_HEADING && b->as.heading.setext)) {
+             (S_type(b) == CMARK_NODE_HEADING && b->as.heading.setext) ||
+             /* For make the sourcepos of the `qfm_custom_block` accurate */
+             (cmark_node_get_type(b) == CMARK_NODE_QFM_CUSTOM_BLOCK)) {
     b->end_line = parser->line_number;
     b->end_column = parser->curline.size;
     if (b->end_column && parser->curline.ptr[b->end_column - 1] == '\n')
