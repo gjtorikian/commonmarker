@@ -92,10 +92,11 @@ static cmark_node *try_opening_qfm_custom_block_block(
         1, sizeof(node_qfm_custom_block));
 
     cmark_strbuf *info = parser->mem->calloc(1, sizeof(cmark_strbuf));
+    bufsize_t info_startpos = cmark_parser_get_first_nonspace(parser) + matched;
 
     /* Length from after opening custom block fence to before newline character.
      */
-    bufsize_t info_len = len - matched;
+    bufsize_t info_len = len - info_startpos;
     if (info_len > 0 && input[len - 1] == '\n') {
       info_len -= 1;
     }
@@ -104,7 +105,7 @@ static cmark_node *try_opening_qfm_custom_block_block(
     }
 
     cmark_strbuf_init(parser->mem, info, info_len);
-    cmark_strbuf_put(info, input + matched, info_len);
+    cmark_strbuf_put(info, input + info_startpos, info_len);
     cmark_strbuf_trim(info);
     set_qfm_custom_block_info(custom_block_node, (char *)info->ptr);
 
