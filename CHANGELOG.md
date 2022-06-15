@@ -6,6 +6,8 @@
 
 ### Changed
 
+- [#28](https://github.com/increments/qiita_marker/pull/28): Fix a bug that sourcepos of custom_block is wrong.
+
 ## 0.23.5.0 - 2022-06-01
 
 ### Changed
