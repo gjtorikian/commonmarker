@@ -21,6 +21,10 @@ class TestQfmCustomBlock < Minitest::Test
       :::fizz buzz
       second custom block
       :::
+
+      > :::hoge fuga
+      > custom block in blockquote
+      > :::
     MD
     @doc = QiitaMarker.render_doc(text, [:UNSAFE], [:custom_block])
   end
@@ -40,6 +44,11 @@ class TestQfmCustomBlock < Minitest::Test
       <div data-type="customblock" data-metadata="fizz buzz">
       <p>second custom block</p>
       </div>
+      <blockquote>
+      <div data-type="customblock" data-metadata="hoge fuga">
+      <p>custom block in blockquote</p>
+      </div>
+      </blockquote>
     HTML
 
     assert_equal(@expected, @doc.to_html([:UNSAFE], [:custom_block]))
@@ -60,6 +69,11 @@ class TestQfmCustomBlock < Minitest::Test
       <div data-type="customblock" data-metadata="fizz buzz" data-sourcepos="14:1-16:3">
       <p data-sourcepos="15:1-15:19">second custom block</p>
       </div>
+      <blockquote data-sourcepos="18:1-20:5">
+      <div data-type="customblock" data-metadata="hoge fuga" data-sourcepos="18:3-20:5">
+      <p data-sourcepos="19:3-19:28">custom block in blockquote</p>
+      </div>
+      </blockquote>
     HTML
 
     assert_equal(@expected, @doc.to_html([:UNSAFE, :SOURCEPOS], [:custom_block]))

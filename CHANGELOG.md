@@ -7,6 +7,7 @@
 ### Changed
 
 - [#28](https://github.com/increments/qiita_marker/pull/28): Fix a bug that sourcepos of custom_block is wrong.
+- [#30](https://github.com/increments/qiita_marker/pull/30): Fix a bug that contains custom block fence in `data-metadata` when custom block is used in backquote.
 
 ## 0.23.5.0 - 2022-06-01
 
