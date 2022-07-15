@@ -8,12 +8,13 @@
 /InstalledFiles
 /pkg/
 /spec/reports/
-/test/tmp/
 /test/version_tmp/
-/tmp/
+tmp/
 /vendor/gems
 /vendor/cache
 Gemfile.lock
+*.log
+ports/
 
 ## Specific to RubyMotion:
 .dat*

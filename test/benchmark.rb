@@ -16,11 +16,11 @@ Benchmark.ips do |x|
   end
 
   x.report("commonmarker with to_html") do
-    CommonMarker.render_html(benchinput)
+    Commonmarker.render_html(benchinput)
   end
 
   x.report("commonmarker with to_xml") do
-    CommonMarker.render_html(benchinput)
+    Commonmarker.render_html(benchinput)
   end
 
   x.report("commonmarker with ruby HtmlRenderer") do

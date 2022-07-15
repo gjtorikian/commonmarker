@@ -187,7 +187,7 @@ The available extensions are:
 
 ## Output formats
 
-Like CMark, CommonMarker can generate output in several formats: HTML, XML, plaintext, and commonmark are currently supported.
+Like CMark, CommonMarker can generate output in several formats: HTML, XML, plaintext, and CommonMark are currently supported.
 
 ### HTML
 
