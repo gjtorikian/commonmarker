@@ -17,7 +17,7 @@ def make_bin(file, args = "")
   %x(ruby bin/commonmarker #{File.join(FIXTURES_DIR, file)} #{args}).chomp
 end
 
-def open_spec_file(filename)
+def load_spec_file(filename)
   line_number = 0
   start_line = 0
   end_line = 0

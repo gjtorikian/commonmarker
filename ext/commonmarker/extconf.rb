@@ -4,7 +4,8 @@ require "mini_portile2"
 PACKAGE_ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", ".."))
 EXT_DIR = File.join(PACKAGE_ROOT_DIR, "ext", "commonmarker")
 CROSS_BUILD_P = enable_config("cross-build")
-COMRAK_VERSION = "0.14.0"
+# COMRAK_VERSION = "0.14.0"
+COMRAK_VERSION = "fix-missing-smart-option"
 
 RbConfig::CONFIG["CC"] = RbConfig::MAKEFILE_CONFIG["CC"] = ENV["CC"] if ENV["CC"]
 ENV["CC"] = RbConfig::CONFIG["CC"]
@@ -13,15 +14,16 @@ def darwin?
   RbConfig::CONFIG["target_os"].include?("darwin")
 end
 
-# what follows is pretty miuch an abuse of miniportile2, but it works for now
+# what follows is pretty much an abuse of miniportile2, but it works for now
 # i just need something to download files and run a cargo build; one day this should
 # be replaced with actual prepacked binaries.
-TARBALL_URL = "https://github.com/kivikakk/comrak/archive/refs/tags/#{COMRAK_VERSION}.tar.gz"
+# TARBALL_URL = "https://github.com/kivikakk/comrak/archive/refs/tags/#{COMRAK_VERSION}.tar.gz"
+TARBALL_URL = "https://github.com/kivikakk/comrak/archive/refs/heads/#{COMRAK_VERSION}.tar.gz"
 MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
   recipe.target = File.join(PACKAGE_ROOT_DIR, "ports")
   recipe.files = [{
     url: TARBALL_URL,
-    sha256: "055fa44ef002a1a07853d3a4dd2a8c553a1dc58ff3809b4fa530ed35694d8571",
+    # sha256: "055fa44ef002a1a07853d3a4dd2a8c553a1dc58ff3809b4fa530ed35694d8571",
   }]
 
   # configure the environment that MiniPortile will use for subshells
@@ -64,8 +66,8 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
   $LIBS << ' -lcomrak_ffi'
 end
 
-unless find_header("comrak.h")
-  abort("\nERROR: *** could not find comrak.h ***\n\n")
+unless find_header("comrak_ffi.h")
+  abort("\nERROR: *** could not find comrak_ffi.h ***\n\n")
 end
 
 create_makefile("commonmarker/commonmarker")

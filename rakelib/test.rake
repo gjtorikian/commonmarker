@@ -5,7 +5,7 @@ require "rake/testtask"
 Rake::TestTask.new("test:unit") do |t|
   t.libs << "lib"
   t.libs << "test"
-  t.pattern = "test/test_basics.rb"
+  t.pattern = "test/test_*.rb"
   t.verbose = true
   t.warning = false
 end

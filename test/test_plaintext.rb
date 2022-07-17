@@ -21,7 +21,7 @@ class TestPlaintext < Minitest::Test
   end
 
   def render_doc(doc)
-    CommonMarker.render_doc(doc, :DEFAULT, [:table])
+    Commonmarker.to_html(doc, :DEFAULT, [:table])
   end
 
   def test_to_commonmark

@@ -4,27 +4,27 @@ require "test_helper"
 require "json"
 
 class TestSpec < Minitest::Test
-  spec = open_spec_file("spec.txt")
+  spec = load_spec_file("spec.txt")
 
   spec.each do |testcase|
-    next if testcase[:extensions].include?(:disabled)
-
-    doc = CommonMarker.render_doc(testcase[:markdown], :DEFAULT, testcase[:extensions])
-
+    html = Commonmarker.to_html(testcase[:markdown])
+    focus
     define_method("test_to_html_example_#{testcase[:example]}") do
-      actual = doc.to_html(:UNSAFE, testcase[:extensions]).rstrip
-      assert_equal testcase[:html], actual, testcase[:markdown]
-    end
+      opts = {
+        render: {
+          unsafe_: true,
+        },
+        extension: testcase[:extensions].each_with_object({}) do |ext, hash|
+          hash[ext] = true
+        end
+      }
 
-    define_method("test_html_renderer_example_#{testcase[:example]}") do
-      actual = HtmlRenderer.new(options: :UNSAFE, extensions: testcase[:extensions]).render(doc).rstrip
+      options = Commonmarker::Config.merged_with_defaults(opts)
+      options[:extension].delete(:header_ids) # this interefers with the spec.txt extension-less capability
+      actual = Commonmarker.to_html(testcase[:markdown].strip, options: options).rstrip
+      # debugger if actual != testcase[:html]
+      Commonmarker.to_html(testcase[:markdown].strip, options: options).rstrip
       assert_equal testcase[:html], actual, testcase[:markdown]
-    end
-
-    define_method("test_sourcepos_example_#{testcase[:example]}") do
-      lhs = doc.to_html([:UNSAFE, :SOURCEPOS], testcase[:extensions]).rstrip
-      rhs = HtmlRenderer.new(options: [:UNSAFE, :SOURCEPOS], extensions: testcase[:extensions]).render(doc).rstrip
-      assert_equal lhs, rhs, testcase[:markdown]
     end
   end
 end

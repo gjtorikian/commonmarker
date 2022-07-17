@@ -4,7 +4,7 @@ require "test_helper"
 require "minitest/benchmark" if ENV["BENCH"]
 
 def markdown(str)
-  CommonMarker.render_doc(str).to_html
+  Commonmarker.to_html(str).to_html
 end
 
 # list of pairs consisting of input and a regex that must match the output.
@@ -44,15 +44,15 @@ pathological = {
                 Regexp.compile('abc\ufffd?de\ufffd?'),],
 }
 
-pathological.each_pair do |name, description|
-  define_method("test_#{name}") do
-    input, = description
-    assert markdown(input)
-  end
-end
-
 if ENV["BENCH"]
   class PathologicalInputsPerformanceTest < Minitest::Benchmark
+    pathological.each_pair do |name, description|
+      define_method("test_#{name}") do
+        input, = description
+        assert markdown(input)
+      end
+    end
+
     def test_bench_pathological_one
       assert_performance_linear(0.99) do |n|
         star = "*" * (n * 10)

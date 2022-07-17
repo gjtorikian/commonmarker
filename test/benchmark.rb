@@ -20,15 +20,7 @@ Benchmark.ips do |x|
   end
 
   x.report("commonmarker with to_xml") do
-    Commonmarker.render_html(benchinput)
-  end
-
-  x.report("commonmarker with ruby HtmlRenderer") do
-    CommonMarker::HtmlRenderer.new.render(CommonMarker.render_doc(benchinput))
-  end
-
-  x.report("commonmarker with render_doc.to_html") do
-    CommonMarker.render_doc(benchinput, :DEFAULT, [:autolink]).to_html(:DEFAULT, [:autolink])
+    Commonmarker.to_html(benchinput)
   end
 
   x.report("kramdown") do
