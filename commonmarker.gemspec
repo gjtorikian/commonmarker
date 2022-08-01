@@ -21,7 +21,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib", "ext"]
   spec.required_ruby_version = [">= 3.0", "< 4.0"]
 
-  spec.metadata["rubygems_mfa_required"] = "true"
+  spec.metadata = {
+    "funding_uri" => "https://github.com/sponsors/gjtorikian/",
+    "rubygems_mfa_required" => "true",
+  }
 
   spec.add_development_dependency("awesome_print")
   spec.add_development_dependency("debug") if "#{RbConfig::CONFIG["MAJOR"]}.#{RbConfig::CONFIG["MINOR"]}".to_f >= 3.1
