@@ -5,6 +5,8 @@ require "minitest/autorun"
 require "minitest/pride"
 require "minitest/focus"
 
+require "nokogiri"
+
 include Commonmarker
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), "fixtures")

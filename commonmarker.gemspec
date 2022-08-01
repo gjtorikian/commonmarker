@@ -13,12 +13,11 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/gjtorikian/commonmarker"
   spec.license = "MIT"
 
-  spec.files         = ["LICENSE.txt", "README.md", "Rakefile", "commonmarker.gemspec", "bin/commonmarker"]
+  spec.files         = ["LICENSE.txt", "README.md", "Rakefile", "commonmarker.gemspec"]
   spec.files        += Dir.glob("lib/**/*.rb")
   spec.files        += Dir.glob("ext/commonmarker/*.*")
   spec.extensions    = ["ext/commonmarker/extconf.rb"]
 
-  spec.executables = ["commonmarker"]
   spec.require_paths = ["lib", "ext"]
   spec.required_ruby_version = [">= 2.7", "< 4.0"]
 
@@ -29,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency("json", "~> 2.3")
   spec.add_development_dependency("minitest", "~> 5.6")
   spec.add_development_dependency("minitest-focus", "~> 1.1")
+  spec.add_development_dependency("nokogiri", "~> 1.13")
   spec.add_development_dependency("rake")
   spec.add_development_dependency("rake-compiler", "~> 0.9")
   spec.add_development_dependency("rdoc", "~> 6.2")

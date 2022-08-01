@@ -39,7 +39,7 @@ namespace "gem" do
     end
 
     namespace platform do
-      # this runs in the rake-compiler-dock docker container
+      desc "builds gem within the rake-compiler-dock docker container"
       task "buildit" do
         # use Task#invoke because the pkg/*gem task is defined at runtime
         Rake::Task["native:#{platform}"].invoke

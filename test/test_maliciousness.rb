@@ -40,25 +40,13 @@ module CommonMarker
       assert_raises(TypeError) do
         Commonmarker.to_html("foo \n baz", options: [:SMART, "totes_fake"])
       end
-
     end
 
     def test_bad_options_value
       err = assert_raises(TypeError) do
-        Commonmarker.to_html("foo \n baz", options: { parse: { smart: 111 }})
+        Commonmarker.to_html("foo \n baz", options: { parse: { smart: 111 } })
       end
-      assert_equal("smart must be a FalseClass got a Number", err.message)
-    end
-
-    def test_bad_fence_info_set
-      assert_raises(NodeError) do
-        @doc.fence_info = "ruby"
-      end
-
-      fence = Commonmarker.to_html("``` ruby\nputs 'wow'\n```").first_child
-      assert_raises(TypeError) do
-        fence.fence_info = 123
-      end
+      assert_equal("parse_options[:smart] must be a Boolean; got Integer", err.message)
     end
   end
 end

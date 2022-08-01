@@ -12,7 +12,7 @@ class TestBasics < Minitest::Test
   def test_to_html_accept_default_options
     text = "Hello **world** -- how are _you_ today? I'm ~~fine~~, ~yourself~?"
 
-    html = Commonmarker.to_html(text, options: Commonmarker::Config::OPTS)
-    assert_equal("<p>Hello <strong>world</strong> -- how are <em>you</em> today? I’m <del>fine</del>, ~yourself~?</p>\n", html)
+    html = Commonmarker.to_html(text, options: Commonmarker::Config::OPTS).rstrip
+    assert_equal("<p>Hello <strong>world</strong> -- how are <em>you</em> today? I'm <del>fine</del>, <del>yourself</del>?</p>", html)
   end
 end

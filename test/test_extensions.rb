@@ -8,106 +8,32 @@ class TestExtensions < Minitest::Test
   end
 
   def test_uses_specified_extensions
-    Commonmarker.to_html(@markdown, :DEFAULT, []).tap do |out|
+    Commonmarker.to_html(@markdown, options: { extension: {} }).tap do |out|
       assert_includes(out, "| a")
       assert_includes(out, "| <strong>x</strong>")
       assert_includes(out, "~~hi~~")
     end
 
-    Commonmarker.to_html(@markdown, :DEFAULT, [:table]).tap do |out|
+    Commonmarker.to_html(@markdown, options: { extension: { table: true } }).tap do |out|
       refute_includes(out, "| a")
       ["<table>", "<tr>", "<th>", "a", "</th>", "<td>", "c", "</td>", "<strong>x</strong>"].each { |html| assert_includes(out, html) }
       assert_includes(out, "~~hi~~")
     end
 
-    Commonmarker.to_html(@markdown, :DEFAULT, [:strikethrough]).tap do |out|
+    Commonmarker.to_html(@markdown, options: { extension: { strikethrough: true } }).tap do |out|
       assert_includes(out, "| a")
       refute_includes(out, "~~hi~~")
       assert_includes(out, "<del>hi</del>")
     end
-
-    html = Commonmarker.to_html("~a~ ~~b~~ ~~~c~~~", :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
-    assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", html)
-
-    Commonmarker.to_html(@markdown, :DEFAULT, [:table, :strikethrough]).tap do |out|
-      refute_includes(out, "| a")
-      refute_includes(out, "| <strong>x</strong>")
-      refute_includes(out, "~~hi~~")
-    end
-  end
-
-  def test_extensions_with_renderers
-    doc = Commonmarker.to_html(@markdown, :DEFAULT, [:table])
-
-    doc.to_html.tap do |out|
-      refute_includes(out, "| a")
-      ["<table>", "<tr>", "<th>", "a", "</th>", "<td>", "c", "</td>", "<strong>x</strong>"].each { |html| assert_includes(out, html) }
-      assert_includes(out, "~~hi~~")
-    end
-
-    HtmlRenderer.new.render(doc).tap do |out|
-      refute_includes(out, "| a")
-      ["<table>", "<tr>", "<th>", "a", "</th>", "<td>", "c", "</td>", "<strong>x</strong>"].each { |html| assert_includes(out, html) }
-      assert_includes(out, "~~hi~~")
-    end
-
-    doc = Commonmarker.to_html("~a~ ~~b~~ ~~~c~~~", :STRIKETHROUGH_DOUBLE_TILDE, [:strikethrough])
-    assert_equal("<p>~a~ <del>b</del> ~~~c~~~</p>\n", HtmlRenderer.new.render(doc))
   end
 
   def test_bad_extension_specifications
-    assert_raises(TypeError) { Commonmarker.to_html(@markdown, :DEFAULT, "nope") }
-    assert_raises(TypeError) { Commonmarker.to_html(@markdown, :DEFAULT, ["table"]) }
-    assert_raises(ArgumentError) { Commonmarker.to_html(@markdown, :DEFAULT, [:table, :bad]) }
+    assert_raises(TypeError) { Commonmarker.to_html(@markdown, options: "nope") }
   end
 
   def test_comments_are_kept_as_expected
+    options = { render: { unsafe_: true }, extension: { tagfilter: true } }
     assert_equal("<!--hello--> <blah> &lt;xmp>\n",
-      Commonmarker.to_html("<!--hello--> <blah> <xmp>\n", :UNSAFE, [:tagfilter]))
-  end
-
-  def test_table_prefer_style_attributes
-    assert_equal(<<~HTML, Commonmarker.to_html(<<~MD, :TABLE_PREFER_STYLE_ATTRIBUTES, [:table]))
-      <table>
-      <thead>
-      <tr>
-      <th style="text-align: left">aaa</th>
-      <th>bbb</th>
-      <th style="text-align: center">ccc</th>
-      <th>ddd</th>
-      <th style="text-align: right">eee</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-      <td style="text-align: left">fff</td>
-      <td>ggg</td>
-      <td style="text-align: center">hhh</td>
-      <td>iii</td>
-      <td style="text-align: right">jjj</td>
-      </tr>
-      </tbody>
-      </table>
-    HTML
-      aaa | bbb | ccc | ddd | eee
-      :-- | --- | :-: | --- | --:
-      fff | ggg | hhh | iii | jjj
-    MD
-  end
-
-  def test_plaintext
-    assert_equal(<<~HTML, Commonmarker.to_html(<<~MD, :DEFAULT, [:table, :strikethrough]).to_plaintext)
-      Hello ~there~.
-
-      | a |
-      | --- |
-      | b |
-    HTML
-      Hello ~~there~~.
-
-      | a |
-      | - |
-      | b |
-    MD
+      Commonmarker.to_html("<!--hello--> <blah> <xmp>\n", options: options))
   end
 end

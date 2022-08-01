@@ -10,10 +10,13 @@ class SmartPunctTest < Minitest::Test
       parse: {
         smart: true,
       },
+      render: {
+        hardbreaks: false,
+      },
     }
 
     define_method("test_smart_punct_example_#{testcase[:example]}") do
-      html = Commonmarker.to_html(testcase[:markdown], opts).strip
+      html = Commonmarker.to_html(testcase[:markdown], options: opts).strip
 
       assert_equal testcase[:html], html, testcase[:markdown]
     end
@@ -30,7 +33,7 @@ class SmartPunctTest < Minitest::Test
         hardbreaks: true,
       },
     }
-    html = Commonmarker.commonmark_to_html(markdown, opts)
+    html = Commonmarker.to_html(markdown, options: opts)
     assert_equal(result, html)
   end
 end

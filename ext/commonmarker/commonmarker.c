@@ -1,5 +1,7 @@
 #include "ruby.h"
+
 #include "commonmarker.h"
+
 #include "comrak_ffi.h"
 
 int iterate_extension_options(VALUE key, VALUE val, comrak_options_t *config) {
@@ -31,7 +33,6 @@ int iterate_extension_options(VALUE key, VALUE val, comrak_options_t *config) {
     Check_Type(val, T_STRING);
     comrak_set_extension_option_header_ids(config, StringValuePtr(val),
                                            RSTRING_LEN(val));
-
   } else if (key == ID2SYM(rb_intern("footnotes"))) {
     if (TYPE(val) == T_TRUE || TYPE(val) == T_FALSE) {
       comrak_set_extension_option_footnotes(config, val);
@@ -45,6 +46,7 @@ int iterate_extension_options(VALUE key, VALUE val, comrak_options_t *config) {
     comrak_set_extension_option_front_matter_delimiter(
         config, StringValuePtr(val), RSTRING_LEN(val));
   }
+
   return ST_CONTINUE;
 }
 
@@ -76,7 +78,7 @@ int iterate_render_options(VALUE key, VALUE val, comrak_options_t *config) {
 }
 
 int iterate_parse_options(VALUE key, VALUE val, comrak_options_t *config) {
-  if (key == ID2SYM(rb_intern("superscript"))) {
+  if (key == ID2SYM(rb_intern("smart"))) {
     if (TYPE(val) == T_TRUE || TYPE(val) == T_FALSE) {
       comrak_set_parse_option_smart(config, val);
     }
@@ -90,19 +92,23 @@ int iterate_parse_options(VALUE key, VALUE val, comrak_options_t *config) {
   return ST_CONTINUE;
 }
 
-int iterate_options_hash(VALUE key, VALUE val, comrak_options_t *config) {
-  Check_Type(key, T_SYMBOL);
+int iterate_options_hash(VALUE rb_option_key, VALUE rb_option_val, comrak_options_t *config) {
+  Check_Type(rb_option_key, T_SYMBOL);
 
   // which options are we dealing with?
-  if (key == ID2SYM(rb_intern("parse"))) {
-    Check_Type(val, T_HASH);
-    rb_hash_foreach(val, iterate_parse_options, config);
-  } else if (key == ID2SYM(rb_intern("render"))) {
-    Check_Type(val, T_HASH);
-    rb_hash_foreach(val, iterate_render_options, config);
-  } else if (key == ID2SYM(rb_intern("extension"))) {
-    Check_Type(val, T_HASH);
-    rb_hash_foreach(val, iterate_extension_options, config);
+  if (rb_option_key == ID2SYM(rb_intern("parse"))) {
+    Check_Type(rb_option_val, T_HASH);
+    rb_hash_foreach(rb_option_val, iterate_parse_options, config);
+  } else if (rb_option_key == ID2SYM(rb_intern("render"))) {
+    Check_Type(rb_option_val, T_HASH);
+    rb_hash_foreach(rb_option_val, iterate_render_options, config);
+  } else if (rb_option_key == ID2SYM(rb_intern("extension"))) {
+    Check_Type(rb_option_val, T_HASH);
+    if (rb_hash_aref(rb_option_val, ID2SYM(rb_intern("header_ids"))) == Qnil) {
+      comrak_set_extension_option_header_ids(config, NULL, 0);
+    }
+    rb_hash_foreach(rb_option_val, iterate_extension_options, config);
+
   }
 
   return ST_CONTINUE;

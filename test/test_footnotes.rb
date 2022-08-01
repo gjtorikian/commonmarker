@@ -12,15 +12,16 @@ class TestFootnotes < Minitest::Test
     MARKDOWN
     expected = <<~HTML
       <h1>footnotes</h1>
-      <p>Let's render some footnotes<sup class="footnote-ref"><a href="#fn-1" id="fnref-1" data-footnote-ref>1</a></sup></p>
-      <section class="footnotes" data-footnotes>
+      <p>Let's render some footnotes<sup class="footnote-ref"><a href="#fn1" id="fnref1">1</a></sup></p>
+      <section class="footnotes">
       <ol>
-      <li id="fn-1">
-      <p>This is a footnote <a href="#fnref-1" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩</a></p>
+      <li id="fn1">
+      <p>This is a footnote <a href="#fnref1" class="footnote-backref">↩</a></p>
       </li>
       </ol>
       </section>
     HTML
-    assert_equal(expected, Commonmarker.to_html(md, :FOOTNOTES))
+
+    assert_equal(expected, Commonmarker.to_html(md, options: { extension: { footnotes: true } }))
   end
 end

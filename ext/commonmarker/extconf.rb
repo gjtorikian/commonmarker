@@ -4,8 +4,6 @@ require "mini_portile2"
 PACKAGE_ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", ".."))
 EXT_DIR = File.join(PACKAGE_ROOT_DIR, "ext", "commonmarker")
 CROSS_BUILD_P = enable_config("cross-build")
-# COMRAK_VERSION = "0.14.0"
-COMRAK_VERSION = "fix-missing-smart-option"
 
 RbConfig::CONFIG["CC"] = RbConfig::MAKEFILE_CONFIG["CC"] = ENV["CC"] if ENV["CC"]
 ENV["CC"] = RbConfig::CONFIG["CC"]
@@ -17,8 +15,12 @@ end
 # what follows is pretty much an abuse of miniportile2, but it works for now
 # i just need something to download files and run a cargo build; one day this should
 # be replaced with actual prepacked binaries.
-# TARBALL_URL = "https://github.com/kivikakk/comrak/archive/refs/tags/#{COMRAK_VERSION}.tar.gz"
-TARBALL_URL = "https://github.com/kivikakk/comrak/archive/refs/heads/#{COMRAK_VERSION}.tar.gz"
+USER = "kivikakk"
+# COMRAK_VERSION = "0.14.0"
+COMRAK_VERSION = "main"
+# TARBALL_URL = "https://github.com/#{USER}/comrak/archive/refs/tags/#{COMRAK_VERSION}.tar.gz"
+TARBALL_URL = "https://github.com/#{USER}/comrak/archive/refs/heads/#{COMRAK_VERSION}.tar.gz"
+
 MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
   recipe.target = File.join(PACKAGE_ROOT_DIR, "ports")
   recipe.files = [{

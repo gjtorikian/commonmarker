@@ -47,19 +47,21 @@ module Commonmarker
     ["parse", "render", "extension"].each do |type|
       define_singleton_method :"process_#{type}_options" do |options|
         Commonmarker::Config::OPTS[type.to_sym].each_with_object({}) do |(key, value), hash|
-          hash[key] = value && next if options.nil? # option not provided, go for the default
-
-          if options.nil? || options[key].nil? # option not provided, go for the defaul
+          if options.nil? # option not provided, go for the default
             hash[key] = value
-          else
-            value_klass = value.class
-            if value_klass.is_a?(TrueClass) || value_klass.is_a?(FalseClass)
-              hash[key] = value if BOOLS.include?(value)
-            else
-              raise TypeError, "#{type}_options[:#{key}] must be a #{value.class}; got a #{options[key].class}" unless value.is_a?(value.class)
+            next
+          end
 
-              hash[key] = options[key]
-            end
+          next if options[key].nil?
+
+          value_klass = value.class
+          if BOOLS.include?(value) && BOOLS.include?(options[key])
+            hash[key] = options[key]
+          elsif options[key].is_a?(value_klass)
+            hash[key] = options[key]
+          else
+            expected_type = BOOLS.include?(value) ? "Boolean" : value_klass.to_s
+            raise TypeError, "#{type}_options[:#{key}] must be a #{expected_type}; got #{options[key].class}"
           end
         end
       end
