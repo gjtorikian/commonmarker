@@ -1,8 +1,18 @@
 require "mkmf"
 require "mini_portile2"
 
-PACKAGE_ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", ".."))
-EXT_DIR = File.join(PACKAGE_ROOT_DIR, "ext", "commonmarker")
+
+windows = RUBY_PLATFORM =~ /mingw|mswin/
+windows_ucrt = RUBY_PLATFORM =~ /(mingw|mswin).*ucrt/
+bsd = RUBY_PLATFORM =~ /bsd/
+darwin = RUBY_PLATFORM =~ /darwin/
+linux = RUBY_PLATFORM =~ /linux/
+cross_compiling = ENV['RCD_HOST_RUBY_VERSION'] # set by rake-compiler-dock in build containers
+# TruffleRuby uses the Sulong LLVM runtime, which is different from Apple's.
+apple_toolchain = darwin && RUBY_ENGINE != 'truffleruby'
+
+GEM_ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), "..", ".."))
+EXT_DIR = File.join(GEM_ROOT_DIR, "ext", "commonmarker")
 CROSS_BUILD_P = enable_config("cross-build")
 
 RbConfig::CONFIG["CC"] = RbConfig::MAKEFILE_CONFIG["CC"] = ENV["CC"] if ENV["CC"]
@@ -22,7 +32,7 @@ COMRAK_VERSION = "main"
 TARBALL_URL = "https://github.com/#{USER}/comrak/archive/refs/heads/#{COMRAK_VERSION}.tar.gz"
 
 MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
-  recipe.target = File.join(PACKAGE_ROOT_DIR, "ports")
+  recipe.target = File.join(GEM_ROOT_DIR, "ports")
   recipe.files = [{
     url: TARBALL_URL,
     # sha256: "055fa44ef002a1a07853d3a4dd2a8c553a1dc58ff3809b4fa530ed35694d8571",
@@ -50,7 +60,8 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     end
 
     # Why is this so long?
-    tarball_extract_path = File.join(PACKAGE_ROOT_DIR, "tmp", host, "commonmarker", RUBY_VERSION, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
+    tarball_extract_path = File.join(GEM_ROOT_DIR, "tmp", host, "commonmarker", RUBY_VERSION, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
+    puts `ls -LR`
     Dir.chdir(tarball_extract_path) do
       puts `cargo build --manifest-path=./c-api/Cargo.toml --release`
     end
