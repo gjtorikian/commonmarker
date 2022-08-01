@@ -1,7 +1,6 @@
 require "mkmf"
 require "mini_portile2"
 
-
 windows = RUBY_PLATFORM =~ /mingw|mswin/
 windows_ucrt = RUBY_PLATFORM =~ /(mingw|mswin).*ucrt/
 bsd = RUBY_PLATFORM =~ /bsd/
@@ -52,16 +51,15 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     recipe.download unless recipe.downloaded?
     recipe.extract
 
-    host = if darwin?
+    tarball_extract_path = if darwin?
       recipe.host =~ /arm64-apple-darwin(\d+)\.\d+\.0/
-      "arm64-darwin#{$1}"
+      host = "arm64-darwin#{$1}"
+      File.join(GEM_ROOT_DIR, "tmp", host, "commonmarker", RUBY_VERSION, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
     else
-      recipe.host
+      File.join(GEM_ROOT_DIR, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
     end
 
     # Why is this so long?
-    tarball_extract_path = File.join(GEM_ROOT_DIR, "tmp", host, "commonmarker", RUBY_VERSION, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
-    puts `ls -LR`
     Dir.chdir(tarball_extract_path) do
       puts `cargo build --manifest-path=./c-api/Cargo.toml --release`
     end
