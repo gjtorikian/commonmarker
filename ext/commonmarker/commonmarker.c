@@ -116,7 +116,6 @@ int iterate_options_hash(VALUE rb_option_key, VALUE rb_option_val, VALUE arg) {
       comrak_set_extension_option_header_ids(config, NULL, 0);
     }
     rb_hash_foreach(rb_option_val, iterate_extension_options, (VALUE)config);
-
   }
 
   return ST_CONTINUE;

@@ -4,7 +4,7 @@ require "benchmark/ips"
 require "commonmarker"
 require "redcarpet"
 require "kramdown"
-require 'kramdown-parser-gfm'
+require "kramdown-parser-gfm"
 require "benchmark"
 
 benchinput = File.read("test/benchinput.md").freeze
@@ -21,7 +21,7 @@ Benchmark.ips do |x|
   end
 
   x.report("kramdown") do
-    Kramdown::Document.new(benchinput, input: 'GFM').to_html
+    Kramdown::Document.new(benchinput, input: "GFM").to_html
   end
 
   x.compare!
