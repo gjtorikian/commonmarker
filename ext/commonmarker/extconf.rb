@@ -53,13 +53,7 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
 
     puts "tmp_path: #{recipe.send(:tmp_path)}"
     system "find ."
-    tarball_extract_path = if darwin?
-      recipe.host =~ /arm64-apple-darwin(\d+)\.\d+\.0/
-      host = "arm64-darwin#{$1}"
-      File.join(GEM_ROOT_DIR, "tmp", host, "commonmarker", RUBY_VERSION, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
-    else
-      File.join(GEM_ROOT_DIR, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
-    end
+    tarball_extract_path = File.join("tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
 
     # Why is this so long?
     Dir.chdir(tarball_extract_path) do
