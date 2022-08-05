@@ -62,7 +62,13 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
 
   recipe.activate
 
-  $LIBS << ' -lcomrak_ffi -lbcrypt'
+  $LIBS << ' -lcomrak_ffi'
+
+  if windows
+    # https://github.com/gjtorikian/commonmarker/runs/7686516209?check_suite_focus=true#step:5:299
+    # Not sure 100% why we need to link this ourselves.
+    $LIBS << ' -lbcrypt'
+  end
 end
 
 unless find_header("comrak_ffi.h")
