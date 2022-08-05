@@ -68,6 +68,7 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     dir_config('commonmarker', HEADER_DIRS, LIB_DIRS)
   end
 
+  system "find ."
   recipe.activate
 
   $LIBS << ' -lcomrak_ffi'
