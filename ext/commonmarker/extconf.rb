@@ -50,9 +50,6 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     tarball_extract_path = File.join("tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
     Dir.chdir(tarball_extract_path) do
       system "cargo build --manifest-path=./c-api/Cargo.toml --release"
-
-      system "rm -f ./c-api/target/release/libcomrak_ffi.so"
-      system "rm -f ./c-api/target/release/libcomrak_ffi.dll.a"
     end
     lib_header_path = File.join(tarball_extract_path, "c-api", "include")
     lib_build_path = File.join(tarball_extract_path, "c-api", "target", "release")
