@@ -3,5 +3,4 @@
 set -e
 
 bundle
-bundle exec rake clean
-bundle exec rake test
+bundle exec rake clean compile test

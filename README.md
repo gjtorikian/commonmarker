@@ -109,22 +109,26 @@ If there were no errors, you're done! Otherwise, make sure to follow the comrak 
 
 ## Benchmarks
 
-See [BENCHMARKS.md](BENCHMARKS.md)
 Some rough benchmarks:
 
 ```
 $ bundle exec rake benchmark
 
-input size = 11063727 bytes
+input size = 11064832 bytes
 
-redcarpet
-  0.070000   0.020000   0.090000 (  0.079641)
-github-markdown
-  0.070000   0.010000   0.080000 (  0.083535)
+Warming up --------------------------------------
+           redcarpet     2.000  i/100ms
 commonmarker with to_html
-  0.100000   0.010000   0.110000 (  0.111947)
-commonmarker with ruby HtmlRenderer
-  1.830000   0.030000   1.860000 (  1.866203)
-kramdown
-  4.610000   0.070000   4.680000 (  4.678398)
+                         1.000  i/100ms
+            kramdown     1.000  i/100ms
+Calculating -------------------------------------
+           redcarpet     22.634  (± 4.4%) i/s -    114.000  in   5.054490s
+commonmarker with to_html
+                          7.340  (± 0.0%) i/s -     37.000  in   5.058352s
+            kramdown      0.343  (± 0.0%) i/s -      2.000  in   5.834208s
+
+Comparison:
+           redcarpet:       22.6 i/s
+commonmarker with to_html:        7.3 i/s - 3.08x  (± 0.00) slower
+            kramdown:        0.3 i/s - 66.02x  (± 0.00) slower
 ```

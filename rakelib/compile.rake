@@ -3,7 +3,7 @@
 require "rake/clean"
 require "rake/extensiontask"
 
-CROSS_RUBIES = ["3.1.0", "3.0.0", "2.7.0"]
+CROSS_RUBIES = ["3.1.0", "3.0.0"]
 CROSS_PLATFORMS = [
   "x64-mingw32",
   "x64-mingw-ucrt",

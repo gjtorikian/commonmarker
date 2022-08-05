@@ -52,6 +52,7 @@ module Commonmarker
             next
           end
 
+          # option explicitly not included, remove it
           next if options[key].nil?
 
           value_klass = value.class
