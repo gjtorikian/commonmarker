@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened]
   push:
     branches:
-      - production
+      - main
 
 jobs:
   test:
@@ -16,7 +16,7 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-        ruby-version: [3.1, 3.0.0, 2.7.2, 2.6.6]
+        ruby-version: [3.1, 3.0]
 
     runs-on: ${{ matrix.os }}
 
@@ -30,6 +30,11 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true # 'bundle install' and cache
+
+      - name: Set Cargo triple
+        if: runner.os == 'Windows'
+        shell: bash
+        run: rustup default stable-x86_64-pc-windows-gnu
 
       - name: Run ${{ matrix.os }} tests
         shell: bash

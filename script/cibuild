@@ -2,8 +2,5 @@
 
 set -e
 
-git submodule sync
-git submodule update --init
 bundle
-bundle exec rake clean
-bundle exec rake test
+bundle exec rake clean compile test

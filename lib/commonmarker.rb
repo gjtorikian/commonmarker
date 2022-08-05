@@ -1,43 +1,35 @@
-#!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "commonmarker/commonmarker"
+begin
+  # load the precompiled extension file
+  ruby_version = /(\d+\.\d+)/.match(::RUBY_VERSION)
+  require_relative "commonmarker/#{ruby_version}/commonmarker"
+rescue LoadError
+  # fall back to the extension compiled upon installation.
+  require "commonmarker/commonmarker"
+end
+
 require "commonmarker/config"
-require "commonmarker/node"
 require "commonmarker/renderer"
-require "commonmarker/renderer/html_renderer"
 require "commonmarker/version"
 
-begin
+if ENV.fetch("DEBUG", false)
   require "awesome_print"
-rescue LoadError; end # rubocop:disable Lint/SuppressedException
-module CommonMarker
-  # Public:  Parses a Markdown string into an HTML string.
+  require "debug"
+end
+
+module Commonmarker
+  # Public: Parses a CommonMark string into an HTML string.
   #
   # text - A {String} of text
-  # option - Either a {Symbol} or {Array of Symbol}s indicating the render options
-  # extensions - An {Array of Symbol}s indicating the extensions to use
+  # option - A {Hash} of render, parse, and extension options to transform the text.
   #
   # Returns a {String} of converted HTML.
-  def self.render_html(text, options = :DEFAULT, extensions = [])
+  def self.to_html(text, options: Commonmarker::Config::OPTS)
     raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
+    raise TypeError, "options must be a Hash; got a #{options.class}!" unless options.is_a?(Hash)
 
-    opts = Config.process_options(options, :render)
-    Node.markdown_to_html(text.encode("UTF-8"), opts, extensions)
-  end
-
-  # Public: Parses a Markdown string into a `document` node.
-  #
-  # string - {String} to be parsed
-  # option - A {Symbol} or {Array of Symbol}s indicating the parse options
-  # extensions - An {Array of Symbol}s indicating the extensions to use
-  #
-  # Returns the `document` node.
-  def self.render_doc(text, options = :DEFAULT, extensions = [])
-    raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
-
-    opts = Config.process_options(options, :parse)
-    text = text.encode("UTF-8")
-    Node.parse_document(text, text.bytesize, opts, extensions)
+    opts = Config.process_options(options)
+    commonmark_to_html(text.encode("UTF-8"), opts)
   end
 end
