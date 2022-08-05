@@ -62,7 +62,7 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
 
   recipe.activate
 
-  $LIBS << ' -lcomrak_ffi'
+  $LIBS << ' -lcomrak_ffi -lbcrypt'
 end
 
 unless find_header("comrak_ffi.h")
