@@ -31,6 +31,11 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true # 'bundle install' and cache
 
+      - name: Set Cargo triple
+        if: runner.os == 'Windows'
+        shell: bash
+        run: rustup default stable-x86_64-pc-windows-gnu
+
       - name: Run ${{ matrix.os }} tests
         shell: bash
         run: script/cibuild

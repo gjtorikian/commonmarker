@@ -17,10 +17,6 @@ CROSS_BUILD_P = enable_config("cross-build")
 RbConfig::CONFIG["CC"] = RbConfig::MAKEFILE_CONFIG["CC"] = ENV["CC"] if ENV["CC"]
 ENV["CC"] = RbConfig::CONFIG["CC"]
 
-def darwin?
-  RbConfig::CONFIG["target_os"].include?("darwin")
-end
-
 # what follows is pretty much an abuse of miniportile2, but it works for now
 # i just need something to download files and run a cargo build; one day this should
 # be replaced with actual prepacked binaries.
@@ -51,17 +47,9 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     recipe.download unless recipe.downloaded?
     recipe.extract
 
-    tarball_extract_path = if darwin?
-      recipe.host =~ /arm64-apple-darwin(\d+)\.\d+\.0/
-      host = "arm64-darwin#{$1}"
-      File.join(GEM_ROOT_DIR, "tmp", host, "commonmarker", RUBY_VERSION, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
-    else
-      File.join(GEM_ROOT_DIR, "tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
-    end
-
-    # Why is this so long?
+    tarball_extract_path = File.join("tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
     Dir.chdir(tarball_extract_path) do
-      puts `cargo build --manifest-path=./c-api/Cargo.toml --release`
+      system "cargo build --manifest-path=./c-api/Cargo.toml --release"
     end
     lib_header_path = File.join(tarball_extract_path, "c-api", "include")
     lib_build_path = File.join(tarball_extract_path, "c-api", "target", "release")
@@ -75,6 +63,7 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
   recipe.activate
 
   $LIBS << ' -lcomrak_ffi'
+  $LIBS << ' -lbcrypt' if windows
 end
 
 unless find_header("comrak_ffi.h")
