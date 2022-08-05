@@ -51,7 +51,8 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     recipe.download unless recipe.downloaded?
     recipe.extract
 
-    system "find #{GEM_ROOT_DIR}"
+    puts "tmp_path: #{recipe.send(:tmp_path)}"
+    system "find ."
     tarball_extract_path = if darwin?
       recipe.host =~ /arm64-apple-darwin(\d+)\.\d+\.0/
       host = "arm64-darwin#{$1}"
