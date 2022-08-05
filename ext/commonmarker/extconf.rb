@@ -26,7 +26,7 @@ end
 # be replaced with actual prepacked binaries.
 USER = "kivikakk"
 # COMRAK_VERSION = "0.14.0"
-COMRAK_VERSION = "main"
+COMRAK_VERSION = "c-api-staticlib"
 # TARBALL_URL = "https://github.com/#{USER}/comrak/archive/refs/tags/#{COMRAK_VERSION}.tar.gz"
 TARBALL_URL = "https://github.com/#{USER}/comrak/archive/refs/heads/#{COMRAK_VERSION}.tar.gz"
 
