@@ -34,7 +34,7 @@ jobs:
       - name: Set Cargo host triple
         if: runner.os == 'Windows'
         shell: bash
-        run: rustup set default-host x86_64-pc-windows-gnu
+        run: rustup default stable-x86_64-pc-windows-gnu
 
       - name: Run ${{ matrix.os }} tests
         shell: bash
