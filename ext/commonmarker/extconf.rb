@@ -17,10 +17,6 @@ CROSS_BUILD_P = enable_config("cross-build")
 RbConfig::CONFIG["CC"] = RbConfig::MAKEFILE_CONFIG["CC"] = ENV["CC"] if ENV["CC"]
 ENV["CC"] = RbConfig::CONFIG["CC"]
 
-def darwin?
-  RbConfig::CONFIG["target_os"].include?("darwin")
-end
-
 # what follows is pretty much an abuse of miniportile2, but it works for now
 # i just need something to download files and run a cargo build; one day this should
 # be replaced with actual prepacked binaries.

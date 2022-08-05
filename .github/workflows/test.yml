@@ -31,6 +31,11 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true # 'bundle install' and cache
 
+      - name: Set Cargo host triple
+        if: runner.os == 'Windows'
+        shell: bash
+        run: rustup set default-host x86_64-pc-windows-gnu
+
       - name: Run ${{ matrix.os }} tests
         shell: bash
         run: script/cibuild
