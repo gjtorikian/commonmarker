@@ -51,11 +51,7 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     recipe.download unless recipe.downloaded?
     recipe.extract
 
-    puts "tmp_path: #{recipe.send(:tmp_path)}"
-    system "find ."
     tarball_extract_path = File.join("tmp", recipe.host, "ports", recipe.name, recipe.version, "#{recipe.name}-#{recipe.version}")
-
-    # Why is this so long?
     Dir.chdir(tarball_extract_path) do
       puts `cargo build --manifest-path=./c-api/Cargo.toml --release`
     end
@@ -68,7 +64,6 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     dir_config('commonmarker', HEADER_DIRS, LIB_DIRS)
   end
 
-  system "find ."
   recipe.activate
 
   $LIBS << ' -lcomrak_ffi'
