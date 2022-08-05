@@ -51,9 +51,12 @@ MiniPortile.new("comrak", COMRAK_VERSION).tap do |recipe|
     Dir.chdir(tarball_extract_path) do
       system "cargo build --manifest-path=./c-api/Cargo.toml --release"
 
-      system "find ./c-api/target/release"
-      # We only want the static lib.
-      system "rm -f ./c-api/target/release/libcomrak_ffi.so"
+      # We only want libcomrak_ffi.a to remain.  libcomrak_ffi.so,
+      # libcomrak_ffi.dll.a (!) etc. are unwanted.
+      Dir["./c-api/target/release/libcomrak_ffi.*"].each do |f|
+        next if f.end_with?("/libcomrak_ffi.a")
+        system "rm", "-f", f
+      end
     end
     lib_header_path = File.join(tarball_extract_path, "c-api", "include")
     lib_build_path = File.join(tarball_extract_path, "c-api", "target", "release")
