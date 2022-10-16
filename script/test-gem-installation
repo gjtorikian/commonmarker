@@ -1,0 +1,74 @@
+#! /usr/bin/env ruby
+# frozen_string_literal: true
+
+#
+#  this script is intended to run as part of the CI test suite.
+#
+#  it inspects the filesystem of a commonmarker gem installation to ensure it's complete, and
+#  doesn't install anything we don't expect.
+#
+#  this file isn't in the `test/` subdirectory because it's intended to be run standalone against an
+#  installed gem (and not against the source code or behavior of the gem itself).
+#
+
+# this line needs to come before the bundler bit, to assert that we're running against an
+# already-installed version (and not some other version that bundler/inline might install if it came
+# first)
+gemspec = Gem::Specification.find_all_by_name("commonmarker").sort_by(&:version).last
+raise "could not find installed gem" unless gemspec
+
+require "bundler/inline"
+
+gemfile do
+  source "https://rubygems.org"
+  gem "minitest"
+  gem "minitest-reporters"
+  gem "commonmarker"
+end
+
+require "commonmarker"
+require "yaml"
+
+if ARGV.include?("-v")
+  puts "---------- Commonmarker version info ----------"
+  puts Commonmarker::VERSION
+  puts
+  puts "---------- Commonmarker installed gemspec ----------"
+  puts gemspec.to_ruby
+  puts
+end
+
+require "minitest/autorun"
+require "minitest/reporters"
+Minitest::Reporters.use!([Minitest::Reporters::SpecReporter.new])
+
+puts "Testing #{gemspec.full_name} installed in #{gemspec.base_dir}"
+describe gemspec.full_name do
+  let(:ruby_maj_min) { Gem::Version.new(::RUBY_VERSION).segments[0..1].join(".") }
+  let(:commonmarker_lib_dir) { File.join(gemspec.gem_dir, "lib/commonmarker") }
+  let(:commonmarker_ext_dir) { File.join(gemspec.gem_dir, "ext/commonmarker") }
+  let(:commonmarker_include_dir) { File.join(commonmarker_ext_dir, "include") }
+
+  # representative sample of the files
+  let(:commonmarker_header_files) { ["commonmarker.h"] }
+  let(:packaged_library_header_files) { ["comrak_ffi.h"] }
+
+  it "loads the same version as the spec we've loaded" do
+    assert_equal(Commonmarker::VERSION, gemspec.version.to_s)
+  end
+
+  describe "cruby" do
+    it "installs commonmarker headers" do
+      commonmarker_header_files.each do |header|
+        assert(File.file?(File.join(commonmarker_ext_dir, header)),
+          "expected #{header} to be installed in #{commonmarker_ext_dir}")
+
+        found = false
+        headers_dirs.each do |header_dir|
+          found = true if File.file?(File.join(header_dir, "commonmarker.h"))
+        end
+        assert(found, "expected to find commonmarker.h in one of: #{headers_dirs.inspect}")
+      end
+    end
+  end
+end

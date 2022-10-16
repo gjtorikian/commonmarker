@@ -1,0 +1,52 @@
+#! /usr/bin/env bash
+#
+#  run as part of CI, see gem-install.yml
+#
+if [[ $# -lt 2 ]] ; then
+  echo "usage: $(basename $0) <output_dir> <platform>"
+  exit 1
+fi
+
+set -e
+
+OUTPUT_DIR=$1
+BUILD_NATIVE_GEM=$2
+
+test -e /etc/os-release && cat /etc/os-release
+
+echo "Building ${BUILD_NATIVE_GEM} gem"
+
+set -u -x
+
+./script/test-has-rust
+
+. $HOME/.cargo/env
+
+ruby --version
+bundler -v
+rustc -Vv
+
+export BUNDLE_WITHOUT=lint:benchmark:debug:test
+bundle
+
+bundle exec rake set-version-to-timestamp
+
+if [[ "${BUILD_NATIVE_GEM}" == "ruby" ]] ; then
+  echo "Building ruby gem..."
+  bundle exec rake clean compile
+  bundle exec rake gem
+else
+  if [[ $BUILD_NATIVE_GEM == *"mingw"* ]]; then
+    echo "Downloading Rust tooling for Windows..."
+    rustup target add x86_64-pc-windows-gnu
+    rustup target add i686-pc-windows-msvc
+  fi
+  echo "Building native gem..."
+  bundle exec rake gem:${BUILD_NATIVE_GEM}:builder
+fi
+
+./script/test-gem-file-contents pkg/commonmarker*.gem
+
+mkdir -p ${OUTPUT_DIR}
+cp -v pkg/commonmarker*.gem ${OUTPUT_DIR}
+ls -l ${OUTPUT_DIR}/*

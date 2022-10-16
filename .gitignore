@@ -1,0 +1,38 @@
+# bundler
+/.bundle/
+/Gemfile*lock
+/vendor/
+
+# building and packaging
+/ext/commonmarker/**/commonmarker.dll
+/ext/commonmarker/include
+/gems/
+/lib/commonmarker/**/commonmarker.bundle
+/lib/commonmarker/**/commonmarker.so
+/lib/commonmarker/commonmarker.jar
+/pkg/
+/ports/
+/tmp/
+commonmarker-*/**
+*.gem
+
+# code coverage
+/coverage/
+
+# documentation
+/html/
+
+# mac
+.DS_Store/
+
+# Vagrant
+/.vagrant/
+
+actual.txt
+test.txt
+test/progit
+test/benchinput.md
+
+.vscode
+rustup.sh
+/*.log

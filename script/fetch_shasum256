@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+t=$(mktemp)
+wget "$1" -qO "$t"
+shasum -a 256 "$t" | grep -Eo '^\w+'
+rm "$t"

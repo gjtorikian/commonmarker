@@ -1,0 +1,280 @@
+name: Test gem installation
+concurrency:
+  group: "${{github.workflow}}-${{github.ref}}"
+  cancel-in-progress: true
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  rcd_image_version:
+    runs-on: ubuntu-latest
+    outputs:
+      rcd_image_version: ${{steps.rcd_image_version.outputs.rcd_image_version}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true
+          bundler: latest
+      - id: rcd_image_version
+        run: bundle exec ruby -e 'require "rake_compiler_dock"; puts "::set-output name=rcd_image_version::#{RakeCompilerDock::IMAGE_VERSION}"'
+
+  cruby-package:
+    needs: ["rcd_image_version"]
+    name: "cruby-package"
+    runs-on: ubuntu-latest
+    container:
+      image: "larskanis/rake-compiler-dock-mri-x86_64-linux:${{needs.rcd_image_version.outputs.rcd_image_version}}"
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            /var/cache/apt/archives/
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ports/archives
+          key: tarballs-ubuntu-${{ hashFiles('dependencies.yml') }}
+
+      - run: ./script/test-gem-build gems ruby
+      - uses: actions/upload-artifact@v2
+        with:
+          name: cruby-gem
+          path: gems
+          retention-days: 1
+
+  cruby-linux-install:
+    needs: ["cruby-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        sys: ["enable"]
+        ruby: ["3.1"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: ruby/setup-ruby-pkgs@v1
+        with:
+          ruby-version: "${{matrix.ruby}}"
+          apt-get: "pkg-config build-essential cargo"
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-gem
+          path: gems
+      - run: ./script/test-gem-install gems --${{matrix.sys}}-system-libraries
+
+  cruby-osx-install:
+    needs: ["cruby-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        sys: ["enable"]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-gem
+          path: gems
+      - run: ./script/test-gem-install gems --${{matrix.sys}}-system-libraries
+
+  cruby-windows-install-ucrt:
+    needs: ["cruby-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        sys: ["enable", "disable"]
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: ruby/setup-ruby-pkgs@v1
+        with:
+          ruby-version: "3.1"
+          mingw: "cargo"
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-gem
+          path: gems
+      - run: |
+          gem install --verbose --no-document gems/*.gem -- --${{matrix.sys}}-system-libraries
+          gem list -d commonmarker
+
+  cruby-native-package:
+    needs: ["rcd_image_version"]
+    name: "cruby-native-package"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - "aarch64-linux"
+          - "arm-linux"
+          - "arm64-darwin"
+          - "x64-mingw-ucrt"
+          - "x86-linux"
+          - "x86-mingw32"
+          - "x86_64-darwin"
+          - "x86_64-linux"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ports/archives
+          key: tarballs-ubuntu-${{ hashFiles('dependencies.yml') }}
+
+      - run: |
+          docker run --rm -v "$(pwd):/commonmarker" -w /commonmarker \
+            larskanis/rake-compiler-dock-mri-${{matrix.platform}}:${{needs.rcd_image_version.outputs.rcd_image_version}} \
+            ./script/test-gem-build gems ${{matrix.platform}}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: "cruby-${{matrix.platform}}-gem"
+          path: gems
+          retention-days: 1
+
+  cruby-x86-linux-install:
+    needs: ["cruby-native-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-x86-linux-gem
+          path: gems
+      - run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker run --rm -v "$(pwd):/commonmarker" -w /commonmarker \
+            --platform=linux/386 \
+            ruby:${{matrix.ruby}} \
+            ./script/test-gem-install gems
+
+  cruby-aarch64-linux-install:
+    needs: ["cruby-native-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-aarch64-linux-gem
+          path: gems
+      - run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker run --rm -v "$(pwd):/commonmarker" -w /commonmarker \
+            --platform=linux/arm64/v8 \
+            ruby:${{matrix.ruby}} \
+            ./script/test-gem-install gems
+
+  cruby-arm-linux-install:
+    needs: ["cruby-native-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-arm-linux-gem
+          path: gems
+      - run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker run --rm -v "$(pwd):/commonmarker" -w /commonmarker \
+            --platform=linux/arm/v7 \
+            ruby:${{matrix.ruby}} \
+            ./script/test-gem-install gems
+
+  cruby-x86_64-linux-install:
+    needs: ["cruby-native-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "${{matrix.ruby}}"
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-x86_64-linux-gem
+          path: gems
+      - run: ./script/test-gem-install gems
+
+  cruby-x86_64-darwin-install:
+    needs: ["cruby-native-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1"]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "${{matrix.ruby}}"
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-x86_64-darwin-gem
+          path: gems
+      - run: ./script/test-gem-install gems
+
+  cruby-x64-mingw-ucrt-install:
+    needs: ["cruby-native-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1"]
+    runs-on: windows-2022
+    steps:
+      - uses: ruby/setup-ruby-pkgs@v1
+        with:
+          ruby-version: "${{matrix.ruby}}"
+      - uses: actions/download-artifact@v2
+        with:
+          name: cruby-x64-mingw-ucrt-gem
+          path: gems
+      - run: |
+          gem install --verbose --no-document gems/*.gem
+          gem list -d commonmarker
