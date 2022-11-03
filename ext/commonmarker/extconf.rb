@@ -1,7 +1,6 @@
-# frozen_string_literal: true
+require "mkmf"
+require "rb_sys/mkmf"
 
-require 'mkmf'
+require_relative "_util"
 
-$CFLAGS << ' -std=c99'
-
-create_makefile('commonmarker/commonmarker')
+create_rust_makefile("commonmarker")

@@ -5,7 +5,7 @@ require "minitest/autorun"
 require "minitest/pride"
 require "minitest/focus"
 
-include CommonMarker
+include Commonmarker
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), "fixtures")
 
@@ -17,7 +17,7 @@ def make_bin(file, args = "")
   %x(ruby bin/commonmarker #{File.join(FIXTURES_DIR, file)} #{args}).chomp
 end
 
-def open_spec_file(filename)
+def load_spec_file(filename)
   line_number = 0
   start_line = 0
   end_line = 0
@@ -30,7 +30,7 @@ def open_spec_file(filename)
   extensions = []
 
   header_re = Regexp.new("#+ ")
-  filepath = File.join("ext", "commonmarker", "cmark-upstream", "test", filename)
+  filepath = File.join(FIXTURES_DIR, "upstream", filename)
 
   File.readlines(filepath, encoding: "utf-8").each do |line|
     line_number += 1

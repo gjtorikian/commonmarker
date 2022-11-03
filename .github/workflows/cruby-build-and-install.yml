@@ -1,0 +1,147 @@
+name: Test cruby build and installation
+concurrency:
+  group: "${{github.workflow}}-${{github.ref}}"
+  cancel-in-progress: true
+
+on:
+  pull_request:
+
+jobs:
+  cruby-package:
+    name: Compile native gem
+    runs-on: ubuntu-latest
+    strategy:
+      # fail-fast: false
+      matrix:
+        platform:
+          - x86_64-linux
+          - aarch64-linux
+
+          - x86_64-darwin
+          # github actions does not support this runner, which is why it's
+          # missing below
+          - arm64-darwin
+
+          - x64-mingw-ucrt
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: oxidize-rb/actions/setup-ruby-and-rust@main
+        with:
+          ruby-version: "3.1"
+          rubygems: latest
+          bundler-cache: false
+          cargo-cache: true
+          cargo-vendor: true
+
+      - uses: oxidize-rb/cross-gem-action@main
+        with:
+          platform: ${{ matrix.platform }}
+          env: |
+            RUBY_CC_VERSION=3.1.0
+
+      - name: "Test gem build"
+        run: |
+          ./script/test-gem-build gems ${{matrix.platform}}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: "cruby-${{matrix.platform}}-gem"
+          path: gems
+          retention-days: 1
+
+  cruby-x86_64-linux-install:
+     needs: ["cruby-package"]
+     strategy:
+       fail-fast: false
+       matrix:
+         ruby: ["3.1"]
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v3
+
+       - uses: ruby/setup-ruby@v1
+         with:
+           rubygems: latest
+           ruby-version: "${{matrix.ruby}}"
+
+       - uses: actions/download-artifact@v3
+         with:
+           name: cruby-x86_64-linux-gem
+           path: gems
+       - run: ./script/test-gem-install gems
+
+  cruby-aarch64-linux-install:
+    needs: ["cruby-package"]
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: ["3.1"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          rubygems: latest
+          ruby-version: "${{matrix.ruby}}"
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: cruby-aarch64-linux-gem
+          path: gems
+
+      - run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker run --rm -v "$(pwd):/commonmarker" -w /commonmarker \
+            --platform=linux/arm64/v8 \
+            ruby:${{matrix.ruby}} \
+            ./script/test-gem-install gems
+
+  cruby-x86_64-darwin-install:
+     needs: ["cruby-package"]
+     strategy:
+       fail-fast: false
+       matrix:
+         ruby: ["3.1"]
+     runs-on: macos-latest
+     steps:
+       - uses: actions/checkout@v3
+
+       - uses: ruby/setup-ruby@v1
+         with:
+           rubygems: latest
+           ruby-version: "${{matrix.ruby}}"
+
+       - uses: actions/download-artifact@v3
+         with:
+           name: cruby-x86_64-darwin-gem
+           path: gems
+
+       - run: ./script/test-gem-install gems
+
+  # FIXME: does not seem to work
+  # cruby-x64-mingw-ucrt-install:
+  #   needs: ["cruby-package"]
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       ruby: ["3.1"]
+  #   runs-on: windows-latest
+  #   steps:
+  #     - uses: ruby/setup-ruby@v1
+
+  #       with:
+  #         ruby-version: "${{matrix.ruby}}"
+
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: cruby-x64-mingw-ucrt-gem
+  #         path: gems
+
+  #     - run: |
+  #         gem update --system 3.3.22 --no-document
+  #         gem install --verbose --no-document gems/*.gem
+  #         gem list -d commonmarker
+  #         bundle exec ruby -e 'require "commonmarker"; puts Commonmarker.to_html("Hello, _world_")'

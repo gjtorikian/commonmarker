@@ -8,12 +8,15 @@
 /InstalledFiles
 /pkg/
 /spec/reports/
-/test/tmp/
 /test/version_tmp/
-/tmp/
+tmp/
 /vendor/gems
 /vendor/cache
 Gemfile.lock
+*.log
+ports/
+target/
+/gems/
 
 ## Specific to RubyMotion:
 .dat*
@@ -37,9 +40,10 @@ build/
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
 
+# Vagrant
+/.vagrant/
+
 actual.txt
 test.txt
 test/progit
 test/benchinput.md
-
-.vscode
