@@ -34,6 +34,7 @@ class SmartPunctTest < Minitest::Test
       },
     }
     html = Commonmarker.to_html(markdown, options: opts)
+
     assert_equal(result, html)
   end
 end

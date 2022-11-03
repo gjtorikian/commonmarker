@@ -48,6 +48,7 @@ class PathologicalInputsPerformanceTest < Minitest::Benchmark
   pathological.each_pair do |name, description|
     define_method("test_#{name}") do
       input, = description
+
       assert markdown(input)
     end
   end

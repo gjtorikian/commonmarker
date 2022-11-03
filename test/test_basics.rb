@@ -5,6 +5,7 @@ require "test_helper"
 class TestBasics < Minitest::Test
   def test_to_html
     html = Commonmarker.to_html("Hi *there*")
+
     assert_equal("<p>Hi <em>there</em></p>\n", html)
   end
 
@@ -13,6 +14,7 @@ class TestBasics < Minitest::Test
     text = "Hello **world** -- how are _you_ today? I'm ~~fine~~, ~yourself~?"
 
     html = Commonmarker.to_html(text, options: Commonmarker::Config::OPTS).rstrip
+
     assert_equal("<p>Hello <strong>world</strong> -- how are <em>you</em> today? I'm <del>fine</del>, <del>yourself</del>?</p>", html)
   end
 end

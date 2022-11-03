@@ -31,17 +31,19 @@ module Commonmarker
       format: [:html].freeze,
     }.freeze
 
-    def self.merged_with_defaults(options)
-      Commonmarker::Config::OPTS.merge(process_options(options))
-    end
+    class << self
+      def merged_with_defaults(options)
+        Commonmarker::Config::OPTS.merge(process_options(options))
+      end
 
-    def self.process_options(options)
-      {
-        parse: process_parse_options(options[:parse]),
-        render: process_render_options(options[:render]),
-        extension: process_extension_options(options[:extension]),
-      }
-    end
+      def process_options(options)
+        {
+          parse: process_parse_options(options[:parse]),
+          render: process_render_options(options[:render]),
+          extension: process_extension_options(options[:extension]),
+        }
+      end
+  end
 
     BOOLS = [true, false]
     ["parse", "render", "extension"].each do |type|
@@ -66,7 +68,6 @@ module Commonmarker
           end
         end
       end
-      # private :"process_#{type}_options"
     end
   end
 end
