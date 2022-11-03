@@ -1,5 +1,8 @@
 # Commonmarker
 
+> **Note**
+> This README refers to the behavior in the new 1.0.0.pre gem.
+
 Ruby wrapper for Rust's [comrak](https://github.com/kivikakk/comrak) crate.
 
 It passes all of the CommonMark test suite, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
@@ -41,7 +44,10 @@ The second argument is optional--[see below](#options) for more information.
 Commonmarker accepts the same options that comrak does, as a hash dictionary with symbol keys:
 
 ```ruby
-Commonmarker.to_html('"Hi *there*"', options: {parse: { smart: true }, render: { hardbreaks: false}})
+Commonmarker.to_html('"Hi *there*"', options:{
+  parse: { smart: true },
+  render: { hardbreaks: false}
+})
 ```
 
 Note that there is a distinction in comrak for "parse" options and "render" options, which are represented in the tables below.
@@ -51,7 +57,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | Name                  | Description                                                                          | Default |
 | --------------------- | ------------------------------------------------------------------------------------ | ------- |
 | `smart`               | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation. | `false` |
-| `default_info_string` | The default info string for fenced code blocks.                                      |
+| `default_info_string` | The default info string for fenced code blocks.                                      | `""`    |
 
 ### Render options
 

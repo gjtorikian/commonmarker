@@ -22,7 +22,7 @@ jobs:
           # missing below
           - arm64-darwin
 
-          - "x64-mingw-ucrt"
+          - x64-mingw-ucrt
 
     steps:
       - uses: actions/checkout@v3
@@ -37,7 +37,6 @@ jobs:
 
       - uses: oxidize-rb/cross-gem-action@main
         with:
-          ruby-versions: '3.1'
           platform: ${{ matrix.platform }}
           env: |
             RUBY_CC_VERSION=3.1.0
