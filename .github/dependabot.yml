@@ -4,19 +4,27 @@ updates:
     directory: "/"
     schedule:
       interval: daily
-      time: "11:00"
+      time: "09:00"
+      timezone: "Etc/UTC"
     open-pull-requests-limit: 10
 
   - package-ecosystem: bundler
     directory: "/"
     schedule:
       interval: daily
-      time: "11:00"
+      time: "09:00"
+      timezone: "Etc/UTC"
     open-pull-requests-limit: 10
+    allow:
+      - dependency-name: "*"
+        dependency-type: "production"
+      - dependency-name: "sorbet*"
+        dependency-type: "all"
 
   - package-ecosystem: cargo
     directory: "/"
     schedule:
       interval: daily
-      time: "11:00"
+      time: "09:00"
+      timezone: "Etc/UTC"
     open-pull-requests-limit: 10

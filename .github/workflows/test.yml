@@ -1,41 +1,33 @@
-name: CI
+name: Test
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
   push:
     branches:
       - main
 
 jobs:
   test:
+    runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-        ruby-version: [3.1, 3.0]
-
-    runs-on: ${{ matrix.os }}
+        ruby:
+          - 3.1
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
-          submodules: recursive
+          ruby-version: ${{ matrix.ruby }}
+          rubygems: latest
+          bundler-cache: true
+          cargo-cache: true
+          cache-version: v1
 
-      - name: Set up Ruby ${{ matrix.ruby-version }}
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby-version }}
-          bundler-cache: true # 'bundle install' and cache
-
-      - name: Set Cargo triple
-        if: runner.os == 'Windows'
-        shell: bash
-        run: rustup default stable-x86_64-pc-windows-gnu
-
-      - name: Run ${{ matrix.os }} tests
-        shell: bash
-        run: script/cibuild
+      - name: Run Ruby tests
+        run: bundle exec rake compile test

@@ -17,6 +17,7 @@ class TestExtensions < Minitest::Test
     Commonmarker.to_html(@markdown, options: { extension: { table: true } }).tap do |out|
       refute_includes(out, "| a")
       ["<table>", "<tr>", "<th>", "a", "</th>", "<td>", "c", "</td>", "<strong>x</strong>"].each { |html| assert_includes(out, html) }
+
       assert_includes(out, "~~hi~~")
     end
 
@@ -33,6 +34,7 @@ class TestExtensions < Minitest::Test
 
   def test_comments_are_kept_as_expected
     options = { render: { unsafe_: true }, extension: { tagfilter: true } }
+
     assert_equal("<!--hello--> <blah> &lt;xmp>\n",
       Commonmarker.to_html("<!--hello--> <blah> <xmp>\n", options: options))
   end

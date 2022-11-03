@@ -5,6 +5,7 @@ inherit_gem:
 
 AllCops:
   Exclude:
+    - "pkg/**/*"
     - "ext/**/*"
     - "vendor/**/*"
     - "tmp/**/*"

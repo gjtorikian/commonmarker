@@ -13,6 +13,7 @@ class TestEncoding < Minitest::Test
 
   def test_string_content_is_utf8
     html = Commonmarker.to_html("Hi *there*")
+
     assert_equal("<p>Hi <em>there</em></p>", html.rstrip)
     assert_equal("UTF-8", html.encoding.name)
   end

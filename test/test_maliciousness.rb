@@ -45,6 +45,7 @@ class TestMaliciousness < Minitest::Test
     err = assert_raises(TypeError) do
       Commonmarker.to_html("foo \n baz", options: { parse: { smart: 111 } })
     end
+
     assert_equal("parse_options[:smart] must be a Boolean; got Integer", err.message)
   end
 end

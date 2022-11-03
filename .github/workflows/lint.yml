@@ -2,19 +2,33 @@ name: Linting
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
-  push:
-    branches:
-      - main
 
 jobs:
-  test:
+  rubocop:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0
+          ruby-version: 3.1
+          rubygems: latest
           bundler-cache: true # 'bundle install' and cache
       - name: Rubocop
         run: bundle exec rake rubocop
+
+  clippy_format:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: Obtain Rust
+      run: rustup override set ${{ matrix.rust }}
+    - name: Check clippy
+      run: rustup component add clippy && cargo clippy
+    - name: Check formatting
+      run: rustup component add rustfmt && cargo fmt -- --check
