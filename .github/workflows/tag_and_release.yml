@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "lib/commonmarker/version.rb"
+  workflow_dispatch:
 
 jobs:
   native_gem:
@@ -65,12 +66,15 @@ jobs:
           done
 
   release:
-    needs: ["native_gem"]
+    # needs: ["native_gem"]
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Update RubyGems
+        run: gem update --system 3.3.22 --no-document
 
       - name: Set up Ruby 3.1
         uses: ruby/setup-ruby@v1
