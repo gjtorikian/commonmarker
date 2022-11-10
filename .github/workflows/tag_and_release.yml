@@ -1,0 +1,85 @@
+name: Tag and Release
+
+on:
+  push:
+    branches:
+      - c-api-stable
+    paths:
+      - "lib/commonmarker/version.rb"
+
+jobs:
+  c_gem:
+    name: Compile C gem
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+          bundler-cache: true
+
+      - name: Compile gem
+        run: bundle exec rake compile
+
+      - name: Build gem
+        run: bundle exec rake build
+
+      - name: Display structure of built gems
+        run: ls -R
+        working-directory: pkg/
+
+      - name: Publish to RubyGems
+        working-directory: pkg/
+        env:
+          GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_API_BOT_KEY}}
+        run: |
+          mkdir -p $HOME/.gem
+          touch $HOME/.gem/credentials
+          chmod 0600 $HOME/.gem/credentials
+          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+          for i in *.gem; do
+            if [ -f "$i" ]
+            then
+              gem push "$i" || true
+            fi
+          done
+
+  # release:
+  #   needs: ["c_gem"]
+  #   env:
+  #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     - name: Set up Ruby 3.1
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         rubygems: latest
+  #         ruby-version: 3.1
+  #         bundler-cache: true
+
+  #     - name: Configure Git
+  #       run: |
+  #         git config --local user.email "actions@github.com"
+  #         git config --local user.name "Actions Auto Build"
+
+  #     - name: Get current version
+  #       id: version-label
+  #       run: |
+  #         VERSION=$(grep VERSION lib/commonmarker/version.rb | head -n 1 | cut -d'"' -f2)
+  #         echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+  #     - name: Create tag
+  #       run: |
+  #         git tag -a v${{ steps.version-label.outputs.version }} -m "Release v${{ steps.version-label.outputs.version }}"
+  #         git push origin --tags
+
+  #     - name: Publish release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: |
+  #         gh release create v${{ steps.version-label.outputs.version }} --generate-notes
