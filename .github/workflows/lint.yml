@@ -2,6 +2,9 @@ name: Linting
 
 on:
   pull_request:
+    paths:
+      - "**/*.rb"
+      - "**/*.rs"
 
 jobs:
   rubocop:
@@ -24,11 +27,12 @@ jobs:
           - stable
     steps:
     - uses: actions/checkout@v3
-      with:
-        submodules: true
+
     - name: Obtain Rust
       run: rustup override set ${{ matrix.rust }}
+
     - name: Check clippy
       run: rustup component add clippy && cargo clippy
+
     - name: Check formatting
       run: rustup component add rustfmt && cargo fmt -- --check

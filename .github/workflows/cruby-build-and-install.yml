@@ -5,6 +5,8 @@ concurrency:
 
 on:
   pull_request:
+    paths:
+      - "lib/commonmarker/version.rb"
 
 jobs:
   cruby-package:
