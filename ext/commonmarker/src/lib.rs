@@ -9,10 +9,12 @@ use comrak_options::iterate_options_hash;
 fn commonmark_to_html(rb_commonmark: String, rb_options: magnus::RHash) -> String {
     let mut comrak_options = ComrakOptions::default();
 
-    rb_options.foreach(|key: Symbol, value: RHash| {
-        iterate_options_hash(&mut comrak_options, key, value);
-        Ok(ForEach::Continue)
-    });
+    rb_options
+        .foreach(|key: Symbol, value: RHash| {
+            iterate_options_hash(&mut comrak_options, key, value).unwrap();
+            Ok(ForEach::Continue)
+        })
+        .unwrap();
 
     markdown_to_html(&rb_commonmark, &comrak_options)
 }
