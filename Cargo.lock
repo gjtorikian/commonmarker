@@ -415,27 +415,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0717cef1bc8b636c6e1c1bbdefc09e6322da8a9321966e8928ef80d20f7f770f"
 
 [[package]]
-name = "linkify"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96dd5884008358112bc66093362197c7248ece00d46624e2cf71e50029f8cff5"
-dependencies = [
- "memchr",
-]
-
-[[package]]
 name = "magnus"
 version = "0.3.2"
-source = "git+https://github.com/gjtorikian/magnus?branch=main#467157e008ab807792795f05ed441e5f53c261ca"
+source = "git+https://github.com/ianks/magnus?branch=rb-sys-env#9c048c69f3a60c71939cf5845fad74a222a4dc0b"
 dependencies = [
  "magnus-macros",
  "rb-sys",
+ "rb-sys-env",
 ]
 
 [[package]]
 name = "magnus-macros"
 version = "0.1.0"
-source = "git+https://github.com/gjtorikian/magnus?branch=main#467157e008ab807792795f05ed441e5f53c261ca"
+source = "git+https://github.com/ianks/magnus?branch=rb-sys-env#9c048c69f3a60c71939cf5845fad74a222a4dc0b"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -601,24 +593,29 @@ dependencies = [
 
 [[package]]
 name = "rb-sys"
-version = "0.9.34"
+version = "0.9.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24ff8b3a4d418f3604ac3781aee54a094f3f9d732fb9a2458f73a3937a9ea918"
+checksum = "31bb5cd8565cd4dd97dcf7a04e3b4e5401ce379d34496c34e866ce806277a408"
 dependencies = [
  "rb-sys-build",
 ]
 
 [[package]]
 name = "rb-sys-build"
-version = "0.9.34"
+version = "0.9.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2921dcd727615d4af5a6d39cc3c1c8c9dc8e37bf2b42d44b3e101a6da2bce17"
+checksum = "de4bbf05b48f0c01b9b8e3b26f02769b097185b8d649831c652cb8a9946494a2"
 dependencies = [
  "bindgen",
- "linkify",
  "regex",
  "shell-words",
 ]
+
+[[package]]
+name = "rb-sys-env"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74c38752410925faeb82c400c06ba2fd9ee6aa8f719dd33994c9e53f5242d25f"
 
 [[package]]
 name = "redox_syscall"
