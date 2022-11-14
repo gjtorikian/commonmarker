@@ -74,6 +74,7 @@ module CommonMarker
       err = assert_raises(TypeError) do
         CommonMarker.render_doc("foo \n baz", :safe)
       end
+
       assert_equal("option ':safe' does not exist for CommonMarker::Config::OPTS[:parse]", err.message)
 
       assert_raises(TypeError) do

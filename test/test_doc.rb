@@ -34,24 +34,28 @@ class TestDocNode < Minitest::Test
 
   def test_insert_before
     paragraph = Node.new(:paragraph)
+
     assert(@first_child.insert_before(paragraph))
     assert_match("<p></p>\n<p>Hi <em>there</em>.", @doc.to_html)
   end
 
   def test_insert_after
     paragraph = Node.new(:paragraph)
+
     assert(@first_child.insert_after(paragraph))
     assert_match("<strong>many nodes</strong>!</p>\n<p></p>\n", @doc.to_html)
   end
 
   def test_prepend_child
     code = Node.new(:code)
+
     assert(@first_child.prepend_child(code))
     assert_match("<p><code></code>Hi <em>there</em>.", @doc.to_html)
   end
 
   def test_append_child
     strong = Node.new(:strong)
+
     assert(@first_child.append_child(strong))
     assert_match("!<strong></strong></p>\n", @doc.to_html)
   end
