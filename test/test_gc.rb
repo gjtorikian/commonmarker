@@ -24,6 +24,7 @@ class TestNode < Minitest::Test
     GC.start
     # Test that the cached child object is still valid.
     text = doc.first_child.last_child.first_child
+
     assert_equal("there", text.string_content)
   end
 

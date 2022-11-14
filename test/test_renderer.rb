@@ -10,6 +10,7 @@ class TestRenderer < Minitest::Test
   def test_html_renderer
     renderer = HtmlRenderer.new
     result = renderer.render(@doc)
+
     assert_equal("<p>Hi <em>there</em></p>\n", result)
   end
 
@@ -25,6 +26,7 @@ class TestRenderer < Minitest::Test
     DOC
     doc = CommonMarker.render_doc(content, :DEFAULT, [:autolink, :table, :tagfilter])
     results = CommonMarker::HtmlRenderer.new.render(doc)
+
     assert_equal(2, results.scan(/<tbody>/).size)
   end
 
@@ -41,6 +43,7 @@ class TestRenderer < Minitest::Test
     end
 
     renderer = my_renderer.new
+
     assert_equal(Encoding::UTF_8, renderer.render(@doc).encoding)
     assert_equal(renderer.input_encoding, renderer.output_encoding)
   end

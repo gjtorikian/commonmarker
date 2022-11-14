@@ -113,7 +113,7 @@ module CommonMarker
             )
             (?=\s|>|/>)
           }xi,
-          '&lt;\1'
+          '&lt;\1',
         )
       else
         str

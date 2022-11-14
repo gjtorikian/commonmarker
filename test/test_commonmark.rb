@@ -31,7 +31,7 @@ class TestCommonmark < Minitest::Test
 
     assert_equal(\
       render_doc(@markdown).to_html.squeeze(" ").gsub(HTML_COMMENT, ""),
-      render_doc(compare).to_html.squeeze(" ").gsub(HTML_COMMENT, "")
+      render_doc(compare).to_html.squeeze(" ").gsub(HTML_COMMENT, ""),
     )
   end
 end

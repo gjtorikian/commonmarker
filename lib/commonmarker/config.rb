@@ -33,20 +33,22 @@ module CommonMarker
       format: [:html, :xml, :commonmark, :plaintext].freeze,
     }.freeze
 
-    def self.process_options(option, type)
-      case option
-      when Symbol
-        OPTS.fetch(type).fetch(option)
-      when Array
-        raise TypeError if option.none?
+    class << self
+      def process_options(option, type)
+        case option
+        when Symbol
+          OPTS.fetch(type).fetch(option)
+        when Array
+          raise TypeError if option.none?
 
-        # neckbearding around. the map will both check the opts and then bitwise-OR it
-        OPTS.fetch(type).fetch_values(*option).inject(0, :|)
-      else
-        raise TypeError, "option type must be a valid symbol or array of symbols within the #{name}::OPTS[:#{type}] context"
+          # neckbearding around. the map will both check the opts and then bitwise-OR it
+          OPTS.fetch(type).fetch_values(*option).inject(0, :|)
+        else
+          raise TypeError, "option type must be a valid symbol or array of symbols within the #{name}::OPTS[:#{type}] context"
+        end
+      rescue KeyError => e
+        raise TypeError, "option ':#{e.key}' does not exist for #{name}::OPTS[:#{type}]"
       end
-    rescue KeyError => e
-      raise TypeError, "option ':#{e.key}' does not exist for #{name}::OPTS[:#{type}]"
-    end
+  end
   end
 end
