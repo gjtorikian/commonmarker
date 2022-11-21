@@ -26,7 +26,7 @@ module Commonmarker
         header_ids: "",
         footnotes: false,
         description_lists: false,
-        front_matter_delimiter: "",
+        front_matter_delimiter: nil,
       },
       format: [:html].freeze,
     }.freeze
