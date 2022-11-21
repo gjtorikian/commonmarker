@@ -26,5 +26,8 @@ jobs:
           cargo-cache: true
           cache-version: v1
 
+      - name: Compile comrak
+        run: bundle exec rake compile
+
       - name: Run Ruby tests
-        run: bundle exec rake compile test
+        run: bundle exec rake test
