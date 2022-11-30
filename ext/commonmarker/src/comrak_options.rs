@@ -15,8 +15,7 @@ fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash
                     comrak_options.parse.smart = value.try_convert::<bool>()?;
                 }
                 Ok(Cow::Borrowed(PARSE_DEFAULT_INFO_STRING)) => {
-                    comrak_options.parse.default_info_string =
-                        Some(value.try_convert::<String>().unwrap());
+                    comrak_options.parse.default_info_string = try_convert_string(value);
                 }
                 _ => {}
             }
@@ -91,8 +90,7 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                     comrak_options.extension.superscript = value.try_convert::<bool>()?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_HEADER_IDS)) => {
-                    comrak_options.extension.header_ids =
-                        Some(value.try_convert::<String>().unwrap());
+                    comrak_options.extension.header_ids = try_convert_string(value);
                 }
                 Ok(Cow::Borrowed(EXTENSION_FOOTNOTES)) => {
                     comrak_options.extension.footnotes = value.try_convert::<bool>()?;
@@ -101,8 +99,7 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                     comrak_options.extension.description_lists = value.try_convert::<bool>()?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_FRONT_MATTER_DELIMITER)) => {
-                    comrak_options.extension.front_matter_delimiter =
-                        Some(value.try_convert::<String>().unwrap());
+                    comrak_options.extension.front_matter_delimiter = try_convert_string(value);
                 }
                 _ => {}
             }
@@ -128,4 +125,12 @@ pub fn iterate_options_hash(
         iterate_extension_options(comrak_options, value);
     }
     Ok(ForEach::Continue)
+}
+
+fn try_convert_string(value: Value) -> Option<String> {
+    if value.is_kind_of(class::string()) {
+        Some(value.try_convert::<String>().unwrap())
+    } else {
+        None
+    }
 }

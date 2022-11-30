@@ -1,8 +1,104 @@
 # Changelog
 
+## [Unreleased](https://github.com/gjtorikian/commonmarker/tree/HEAD)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre.2...HEAD)
+
+**Closed issues:**
+
+- Code block incorrectly parsed in commonmarker 1.0.0.pre [\#202](https://github.com/gjtorikian/commonmarker/issues/202)
+
+## [v1.0.0.pre.2](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre.2) (2022-11-21)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.7.pre1...v1.0.0.pre.2)
+
+**Closed issues:**
+
+- test/ directory missing in gem [\#200](https://github.com/gjtorikian/commonmarker/issues/200)
+
+**Merged pull requests:**
+
+- Frontmatter parse tweak [\#203](https://github.com/gjtorikian/commonmarker/pull/203) ([gjtorikian](https://github.com/gjtorikian))
+- Bump comrak from 0.14.0 to 0.15.0 [\#198](https://github.com/gjtorikian/commonmarker/pull/198) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Clippy and cleanup [\#196](https://github.com/gjtorikian/commonmarker/pull/196) ([gjtorikian](https://github.com/gjtorikian))
+- Migrate to magnus/rb\_sys [\#194](https://github.com/gjtorikian/commonmarker/pull/194) ([gjtorikian](https://github.com/gjtorikian))
+- Update rake-compiler requirement from ~\> 0.9 to ~\> 1.2 [\#193](https://github.com/gjtorikian/commonmarker/pull/193) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump actions/checkout from 2 to 3 [\#192](https://github.com/gjtorikian/commonmarker/pull/192) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Release v1 [\#186](https://github.com/gjtorikian/commonmarker/pull/186) ([gjtorikian](https://github.com/gjtorikian))
+- Migrate to comrak/Rust [\#185](https://github.com/gjtorikian/commonmarker/pull/185) ([gjtorikian](https://github.com/gjtorikian))
+
+## [v0.23.7.pre1](https://github.com/gjtorikian/commonmarker/tree/v0.23.7.pre1) (2022-11-14)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre...v0.23.7.pre1)
+
+**Breaking changes:**
+
+- Rename `render_doc` to `parse_doc` [\#104](https://github.com/gjtorikian/commonmarker/issues/104)
+
+**Closed issues:**
+
+- AST in 1.0 [\#199](https://github.com/gjtorikian/commonmarker/issues/199)
+- Too many nested blockquotes cause error: SystemStackError: stack level too deep [\#147](https://github.com/gjtorikian/commonmarker/issues/147)
+- Matching tags with namespaces. [\#122](https://github.com/gjtorikian/commonmarker/issues/122)
+- Request: Allow custom renderers to use C code for any methods they don't overwrite [\#112](https://github.com/gjtorikian/commonmarker/issues/112)
+- Should this move to be Rust-backed? [\#107](https://github.com/gjtorikian/commonmarker/issues/107)
+- Add more docs on how to write a custom renderer [\#105](https://github.com/gjtorikian/commonmarker/issues/105)
+- Error "incompatible character encodings: UTF-8 and ASCII-8BIT" when combined with a rails app [\#9](https://github.com/gjtorikian/commonmarker/issues/9)
+
+## [v1.0.0.pre](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre) (2022-11-03)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.6...v1.0.0.pre)
+
+**Closed issues:**
+
+- Does this work for relative path? [\#195](https://github.com/gjtorikian/commonmarker/issues/195)
+
+## [v0.23.6](https://github.com/gjtorikian/commonmarker/tree/v0.23.6) (2022-09-21)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.5...v0.23.6)
+
+**Closed issues:**
+
+- Strikethrough and CommonMarker::Node initialization [\#191](https://github.com/gjtorikian/commonmarker/issues/191)
+- latex bug with multiple $ in a line [\#183](https://github.com/gjtorikian/commonmarker/issues/183)
+
+**Merged pull requests:**
+
+- Update to 0290gfm6 [\#190](https://github.com/gjtorikian/commonmarker/pull/190) ([anticomputer](https://github.com/anticomputer))
+- Update to 0290gfm5 [\#188](https://github.com/gjtorikian/commonmarker/pull/188) ([stevenlaidlaw](https://github.com/stevenlaidlaw))
+
+## [v0.23.5](https://github.com/gjtorikian/commonmarker/tree/v0.23.5) (2022-05-31)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.4...v0.23.5)
+
+**Closed issues:**
+
+- Site [\#178](https://github.com/gjtorikian/commonmarker/issues/178)
+- High security affected by Integer overflow in cmark-gfm table parsing extension leads to heap memory corruption  [\#175](https://github.com/gjtorikian/commonmarker/issues/175)
+
+**Merged pull requests:**
+
+- Update cmark-upstream to 0.29.0.gfm.4 [\#180](https://github.com/gjtorikian/commonmarker/pull/180) ([lumaxis](https://github.com/lumaxis))
+- Add rb\_undef\_alloc\_func for Node [\#179](https://github.com/gjtorikian/commonmarker/pull/179) ([dorkrawk](https://github.com/dorkrawk))
+- Add Ruby 3.1 to the CI matrix [\#174](https://github.com/gjtorikian/commonmarker/pull/174) ([petergoldstein](https://github.com/petergoldstein))
+
 ## [v0.23.4](https://github.com/gjtorikian/commonmarker/tree/v0.23.4) (2022-03-03)
 
-[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.2...v0.23.4)
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.17.14...v0.23.4)
+
+**Merged pull requests:**
+
+- CI: Drop a duplicate 'bundle install' [\#173](https://github.com/gjtorikian/commonmarker/pull/173) ([olleolleolle](https://github.com/olleolleolle))
+- CI: Drop duplicate bundle install [\#172](https://github.com/gjtorikian/commonmarker/pull/172) ([olleolleolle](https://github.com/olleolleolle))
+- Fixup benchmark and speedup a little, fixes \#141 [\#171](https://github.com/gjtorikian/commonmarker/pull/171) ([ojab](https://github.com/ojab))
+
+## [v0.17.14](https://github.com/gjtorikian/commonmarker/tree/v0.17.14) (2022-03-02)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.18.3...v0.17.14)
+
+## [v0.18.3](https://github.com/gjtorikian/commonmarker/tree/v0.18.3) (2022-03-02)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.2...v0.18.3)
 
 **Fixed bugs:**
 
@@ -14,12 +110,6 @@
 - STRIKETHROUGH\_DOUBLE\_TILDE not working [\#168](https://github.com/gjtorikian/commonmarker/issues/168)
 - Allow disabling 4-space code blocks [\#167](https://github.com/gjtorikian/commonmarker/issues/167)
 - tables with escaped pipes are not recognized [\#166](https://github.com/gjtorikian/commonmarker/issues/166)
-
-**Merged pull requests:**
-
-- CI: Drop a duplicate 'bundle install' [\#173](https://github.com/gjtorikian/commonmarker/pull/173) ([olleolleolle](https://github.com/olleolleolle))
-- CI: Drop duplicate bundle install [\#172](https://github.com/gjtorikian/commonmarker/pull/172) ([olleolleolle](https://github.com/olleolleolle))
-- Fixup benchmark and speedup a little, fixes \#141 [\#171](https://github.com/gjtorikian/commonmarker/pull/171) ([ojab](https://github.com/ojab))
 
 ## [v0.23.2](https://github.com/gjtorikian/commonmarker/tree/v0.23.2) (2021-09-17)
 
@@ -673,10 +763,6 @@
 ## [v0.2.1](https://github.com/gjtorikian/commonmarker/tree/v0.2.1) (2015-07-07)
 
 [Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.2.0...v0.2.1)
-
-**Closed issues:**
-
-- Error "incompatible character encodings: UTF-8 and ASCII-8BIT" when combined with a rails app [\#9](https://github.com/gjtorikian/commonmarker/issues/9)
 
 **Merged pull requests:**
 
