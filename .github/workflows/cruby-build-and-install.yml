@@ -8,9 +8,6 @@ on:
   pull_request:
     paths:
       - "lib/commonmarker/version.rb"
-  push:
-    branches:
-      - "windows-build"
 
 jobs:
   cruby-package:
