@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [dependencies]
-magnus = { git = "https://github.com/ianks/magnus", branch = "rb-sys-env" } # waiting for release with full rb-sys backend
+magnus =  "0.4"
 comrak = "0.14"
 
 [lib]
