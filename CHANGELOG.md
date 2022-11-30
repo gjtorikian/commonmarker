@@ -1,12 +1,16 @@
 # Changelog
 
-## [Unreleased](https://github.com/gjtorikian/commonmarker/tree/HEAD)
+## [v1.0.0.pre3](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre3) (2022-11-30)
 
-[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre.2...HEAD)
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre.2...v1.0.0.pre3)
 
 **Closed issues:**
 
 - Code block incorrectly parsed in commonmarker 1.0.0.pre [\#202](https://github.com/gjtorikian/commonmarker/issues/202)
+
+**Merged pull requests:**
+
+- Windows build [\#197](https://github.com/gjtorikian/commonmarker/pull/197) ([gjtorikian](https://github.com/gjtorikian))
 
 ## [v1.0.0.pre.2](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre.2) (2022-11-21)
 
