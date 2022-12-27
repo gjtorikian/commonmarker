@@ -102,8 +102,7 @@ Commonmarker can currently only generate output in one format: HTML.
 ### HTML
 
 ```ruby
-html = CommonMarker.to_html('*Hello* world!', :DEFAULT)
-puts(html)
+puts Commonmarker.to_html('*Hello* world!')
 
 # <p><em>Hello</em> world!</p>
 ```
