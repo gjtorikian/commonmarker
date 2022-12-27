@@ -21,10 +21,11 @@ module Commonmarker
     # Returns a {String} of converted HTML.
     def to_html(text, options: Commonmarker::Config::OPTS)
       raise TypeError, "text must be a String; got a #{text.class}!" unless text.is_a?(String)
+      raise TypeError, "text must be UTF-8 encoded; got #{text.encoding}!" unless text.encoding.name == "UTF-8"
       raise TypeError, "options must be a Hash; got a #{options.class}!" unless options.is_a?(Hash)
 
       opts = Config.process_options(options)
-      commonmark_to_html(text.encode("UTF-8"), opts)
+      commonmark_to_html(text, opts)
     end
   end
 end
