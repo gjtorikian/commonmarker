@@ -3,7 +3,7 @@
 begin
   # native precompiled gems package shared libraries in <gem_dir>/lib/commonmarker/<ruby_version>
   # load the precompiled extension file
-  ruby_version = /\d+\.\d+/.match(::RUBY_VERSION)
+  ruby_version = /\d+\.\d+/.match(RUBY_VERSION)
   require_relative "#{ruby_version}/commonmarker"
 rescue LoadError
   # fall back to the extension compiled upon installation.

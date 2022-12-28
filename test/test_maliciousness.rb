@@ -46,6 +46,14 @@ class TestMaliciousness < Minitest::Test
       Commonmarker.to_html("foo \n baz", options: { parse: { smart: 111 } })
     end
 
-    assert_equal("parse_options[:smart] must be a Boolean; got Integer", err.message)
+    assert_equal("parse option `:smart` must be Boolean; got Integer", err.message)
+  end
+
+  def test_non_utf8
+    err = assert_raises(TypeError) do
+      Commonmarker.to_html("foo \n baz".encode("US-ASCII"))
+    end
+
+    assert_equal("text must be UTF-8 encoded; got US-ASCII!", err.message)
   end
 end

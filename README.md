@@ -39,9 +39,11 @@ Commonmarker.to_html('"Hi *there*"', options: {
 
 The second argument is optional--[see below](#options) for more information.
 
-## Parse and Render Options
+## Options and plugins
 
-Commonmarker accepts the same options that comrak does, as a hash dictionary with symbol keys:
+### Options
+
+Commonmarker accepts the same parse, render, and extensions options that comrak does, as a hash dictionary with symbol keys:
 
 ```ruby
 Commonmarker.to_html('"Hi *there*"', options:{
@@ -95,6 +97,36 @@ Commonmarker.to_html('"Hi *there*"', options: {
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 
+### Plugins
+
+In addition to the possibilities provided by generic CommonMark rendering, Commonmarker also supports plugins as a means of
+providing further niceties. For example:
+
+    code = <<~CODE
+        ```ruby
+        def hello
+        puts "hello"
+        end
+
+        CODE
+
+    Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Inspired GitHub" } })
+
+    # <pre style="background-color:#ffffff;" lang="ruby"><code>
+    # <span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
+    # </span><span style="color:#323232;"> </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
+    # </span><span style="font-weight:bold;color:#a71d5d;">end
+    # </span>
+    # </code></pre>
+
+You can disable plugins just the same as with options, by passing `nil`:
+
+```ruby
+Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
+# or
+Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
+```
+
 ## Output formats
 
 Commonmarker can currently only generate output in one format: HTML.
@@ -102,8 +134,7 @@ Commonmarker can currently only generate output in one format: HTML.
 ### HTML
 
 ```ruby
-html = CommonMarker.to_html('*Hello* world!', :DEFAULT)
-puts(html)
+puts Commonmarker.to_html('*Hello* world!')
 
 # <p><em>Hello</em> world!</p>
 ```

@@ -20,7 +20,7 @@ class TestSpec < Minitest::Test
       options = Commonmarker::Config.merged_with_defaults(opts)
       options[:extension].delete(:header_ids) # this interefers with the spec.txt extension-less capability
       options[:extension][:tasklist] = true
-      actual = Commonmarker.to_html(testcase[:markdown], options: options).rstrip
+      actual = Commonmarker.to_html(testcase[:markdown], options: options, plugins: nil).rstrip
 
       assert_equal testcase[:html], actual, testcase[:markdown]
     end
