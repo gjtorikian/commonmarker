@@ -38,7 +38,7 @@ module Commonmarker
     }
 
     class << self
-    include Commonmarker::Utils
+      include Commonmarker::Utils
 
       def merged_with_defaults(options)
         Commonmarker::Config::OPTIONS.merge(process_options(options))
@@ -78,6 +78,7 @@ module Commonmarker
     [:syntax_highlighter].each do |type|
       define_singleton_method :"process_#{type}_plugin" do |plugin|
         return nil if plugin.nil? # plugin explicitly nil, remove it
+
         Commonmarker::Config::PLUGINS[type].each_with_object({}) do |(key, value), hash|
           if plugin.nil? # option not provided, go for the default
             hash[key] = value

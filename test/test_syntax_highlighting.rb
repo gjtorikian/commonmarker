@@ -24,6 +24,7 @@ class TestSyntaxHighlighting < Minitest::Test
 
     lang = %(lang="ruby")
     background = %(style="background-color:#2b303b;")
+
     assert_match(result, html)
     # doing this because sometimes comrak returns <pre lang="ruby" style="...">
     # and other times <pre style="..." lang="ruby" >
@@ -43,10 +44,10 @@ class TestSyntaxHighlighting < Minitest::Test
     html = Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 
     result = <<~CODE
-    <pre lang="ruby"><code>def hello
-      puts &quot;hello&quot;
-    end
-    </code></pre>
+      <pre lang="ruby"><code>def hello
+        puts &quot;hello&quot;
+      end
+      </code></pre>
     CODE
 
     assert_equal(result, html)
@@ -64,10 +65,10 @@ class TestSyntaxHighlighting < Minitest::Test
     html = Commonmarker.to_html(code, plugins: { syntax_highlighter: {} })
 
     result = <<~CODE
-    <pre lang="ruby"><code>def hello
-      puts &quot;hello&quot;
-    end
-    </code></pre>
+      <pre lang="ruby"><code>def hello
+        puts &quot;hello&quot;
+      end
+      </code></pre>
     CODE
 
     assert_match(result, html)
@@ -82,13 +83,13 @@ class TestSyntaxHighlighting < Minitest::Test
       ```
     CODE
 
-    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: {theme: nil} })
+    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
 
     result = <<~CODE
-    <pre lang="ruby"><code>def hello
-      puts &quot;hello&quot;
-    end
-    </code></pre>
+      <pre lang="ruby"><code>def hello
+        puts &quot;hello&quot;
+      end
+      </code></pre>
     CODE
 
     assert_equal(result, html)
@@ -103,13 +104,13 @@ class TestSyntaxHighlighting < Minitest::Test
       ```
     CODE
 
-    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: ""} })
+    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "" } })
 
     result = <<~CODE
-    <pre lang="ruby"><code>def hello
-      puts &quot;hello&quot;
-    end
-    </code></pre>
+      <pre lang="ruby"><code>def hello
+        puts &quot;hello&quot;
+      end
+      </code></pre>
     CODE
 
     assert_equal(result, html)
@@ -124,7 +125,7 @@ class TestSyntaxHighlighting < Minitest::Test
       ```
     CODE
 
-    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub"} })
+    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
     result = <<~HTML
       <span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
       </span><span style="color:#323232;">  </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
@@ -135,6 +136,7 @@ class TestSyntaxHighlighting < Minitest::Test
 
     lang = %(lang="ruby")
     background = %(style="background-color:#ffffff;")
+
     assert_match(result, html)
     # doing this because sometimes comrak returns <pre lang="ruby" style="...">
     # and other times <pre style="..." lang="ruby" >

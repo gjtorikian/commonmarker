@@ -10,9 +10,9 @@ module Commonmarker
       value_klass = value.class
 
       if Constants::BOOLS.include?(value) && BOOLS.include?(option[key])
-        return option[key]
+        option[key]
       elsif option[key].is_a?(value_klass)
-        return option[key]
+        option[key]
       else
         expected_type = Constants::BOOLS.include?(value) ? "Boolean" : value_klass.to_s
         raise TypeError, "#{type} option `:#{key}` must be #{expected_type}; got #{option[key].class}"
