@@ -4,6 +4,8 @@ use comrak::ComrakOptions;
 
 use magnus::{class, r_hash::ForEach, Error, RHash, Symbol, Value};
 
+use crate::utils::try_convert_string;
+
 const PARSE_SMART: &str = "smart";
 const PARSE_DEFAULT_INFO_STRING: &str = "default_info_string";
 
@@ -125,12 +127,4 @@ pub fn iterate_options_hash(
         iterate_extension_options(comrak_options, value);
     }
     Ok(ForEach::Continue)
-}
-
-fn try_convert_string(value: Value) -> Option<String> {
-    if value.is_kind_of(class::string()) {
-        Some(value.try_convert::<String>().unwrap())
-    } else {
-        None
-    }
 }
