@@ -54,14 +54,14 @@ module Commonmarker
 
       def process_plugins(plugins)
         {
-          syntax_highlighter: process_syntax_highlighter_plugin(plugins[:syntax_highlighter]),
+          syntax_highlighter: process_syntax_highlighter_plugin(plugins&.fetch(:syntax_highlighter, nil)),
         }
       end
     end
 
-    ["parse", "render", "extension"].each do |type|
+    [:parse, :render, :extension].each do |type|
       define_singleton_method :"process_#{type}_options" do |option|
-        Commonmarker::Config::OPTIONS[type.to_sym].each_with_object({}) do |(key, value), hash|
+        Commonmarker::Config::OPTIONS[type].each_with_object({}) do |(key, value), hash|
           if option.nil? # option not provided, go for the default
             hash[key] = value
             next
@@ -70,14 +70,15 @@ module Commonmarker
           # option explicitly not included, remove it
           next if option[key].nil?
 
-          hash[key] = fetch_kv(option, key, value)
+          hash[key] = fetch_kv(option, key, value, type)
         end
       end
     end
 
-    ["syntax_highlighter"].each do |type|
+    [:syntax_highlighter].each do |type|
       define_singleton_method :"process_#{type}_plugin" do |plugin|
-        Commonmarker::Config::PLUGINS[type.to_sym].each_with_object({}) do |(key, value), hash|
+        return nil if plugin.nil? # plugin explicitly nil, remove it
+        Commonmarker::Config::PLUGINS[type].each_with_object({}) do |(key, value), hash|
           if plugin.nil? # option not provided, go for the default
             hash[key] = value
             next
@@ -86,7 +87,7 @@ module Commonmarker
           # option explicitly not included, remove it
           next if plugin[key].nil?
 
-          hash[key] = fetch_kv(plugin, key, value)
+          hash[key] = fetch_kv(plugin, key, value, type)
         end
       end
     end

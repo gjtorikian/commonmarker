@@ -12,6 +12,6 @@ class TestFrontmatter < Minitest::Test
       </code></pre>
     HTML
 
-    assert_equal(expected, Commonmarker.to_html(md))
+    assert_equal(expected, Commonmarker.to_html(md, plugins: nil))
   end
 end

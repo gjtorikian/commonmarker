@@ -1,12 +1,5 @@
 extern crate core;
 
-use std::{
-    any::Any,
-    borrow::Borrow,
-    cell::{RefCell, RefMut},
-    rc::Rc,
-};
-
 use comrak::{
     adapters::SyntaxHighlighterAdapter, markdown_to_html, markdown_to_html_with_plugins,
     plugins::syntect::SyntectAdapter, ComrakOptions, ComrakPlugins,
@@ -18,11 +11,15 @@ use options::iterate_options_hash;
 
 mod plugins;
 use plugins::{
-    syntax_highlighting::fetch_syntax_highlighter_theme, SYNTAX_HIGHLIGHTER_PLUGIN,
-    SYNTAX_HIGHLIGHTER_PLUGIN_DEFAULT_THEME,
+    syntax_highlighting::{
+        fetch_syntax_highlighter_theme, SYNTAX_HIGHLIGHTER_PLUGIN_DEFAULT_THEME,
+    },
+    SYNTAX_HIGHLIGHTER_PLUGIN,
 };
 
 mod utils;
+
+pub const EMPTY_STR: &str = "";
 
 fn commonmark_to_html<'a>(args: &[Value]) -> Result<String, magnus::Error> {
     let args = scan_args::scan_args(args)?;
@@ -51,33 +48,22 @@ fn commonmark_to_html<'a>(args: &[Value]) -> Result<String, magnus::Error> {
     if let Some(rb_plugins) = rb_plugins {
         let mut comrak_plugins = ComrakPlugins::default();
 
-        let mut adapter: Option<Box<dyn Any>> = None;
+        let syntax_highlighter: Option<&dyn SyntaxHighlighterAdapter>;
+        let adapter: SyntectAdapter;
 
-        match rb_plugins.get(Symbol::new(SYNTAX_HIGHLIGHTER_PLUGIN)) {
-            Some(theme_val) => {
-                let theme_val = fetch_syntax_highlighter_theme(theme_val)?;
+        let theme = match rb_plugins.get(Symbol::new(SYNTAX_HIGHLIGHTER_PLUGIN)) {
+            Some(theme_val) => fetch_syntax_highlighter_theme(theme_val)?,
+            None => SYNTAX_HIGHLIGHTER_PLUGIN_DEFAULT_THEME.to_string(), // no `syntax_highlighter:` defined
+        };
 
-                if theme_val.is_none() || theme_val.as_ref().unwrap() == "none" {
-                    adapter = None;
-                } else {
-                    let t = theme_val.as_ref().to_owned();
-                    // let theme: &str = theme_val.to_owned().unwrap().as_ref();
-                    adapter = Some(Box::new(SyntectAdapter::new(
-                        SYNTAX_HIGHLIGHTER_PLUGIN_DEFAULT_THEME,
-                    )));
-                }
-            }
-            None => (),
+        if theme.is_empty() || theme == "none" {
+            syntax_highlighter = None;
+        } else {
+            adapter = SyntectAdapter::new(&theme);
+            syntax_highlighter = Some(&adapter);
         }
 
-        let x = adapter.unwrap();
-        match x.downcast_ref::<SyntectAdapter>() {
-            Some(a) => {
-                let adapter = Box::new(a);
-                comrak_plugins.render.codefence_syntax_highlighter = Some(a);
-            }
-            None => (),
-        }
+        comrak_plugins.render.codefence_syntax_highlighter = syntax_highlighter;
 
         Ok(markdown_to_html_with_plugins(
             &rb_commonmark,
