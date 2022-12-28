@@ -1,5 +1,21 @@
 # Changelog
 
+## [v1.0.0.pre4](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre4) (2022-12-28)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre3...v1.0.0.pre4)
+
+**Closed issues:**
+
+- Will the cmark-gfm branch continue to be maintained for awhile? [\#207](https://github.com/gjtorikian/commonmarker/issues/207)
+
+**Merged pull requests:**
+
+- Implement native syntax highlighting [\#209](https://github.com/gjtorikian/commonmarker/pull/209) ([gjtorikian](https://github.com/gjtorikian))
+- Bump magnus from 0.4.3 to 0.4.4 [\#208](https://github.com/gjtorikian/commonmarker/pull/208) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump magnus from 0.4.2 to 0.4.3 [\#206](https://github.com/gjtorikian/commonmarker/pull/206) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump comrak from 0.14.0 to 0.15.0 [\#205](https://github.com/gjtorikian/commonmarker/pull/205) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump magnus from 0.4.1 to 0.4.2 [\#204](https://github.com/gjtorikian/commonmarker/pull/204) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [v1.0.0.pre3](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre3) (2022-11-30)
 
 [Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre.2...v1.0.0.pre3)
