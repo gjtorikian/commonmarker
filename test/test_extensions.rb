@@ -28,14 +28,22 @@ class TestExtensions < Minitest::Test
     end
   end
 
-  def test_bad_extension_specifications
-    assert_raises(TypeError) { Commonmarker.to_html(@markdown, options: "nope") }
-  end
-
   def test_comments_are_kept_as_expected
     options = { render: { unsafe_: true }, extension: { tagfilter: true } }
 
     assert_equal("<!--hello--> <blah> &lt;xmp>\n",
       Commonmarker.to_html("<!--hello--> <blah> <xmp>\n", options: options))
+  end
+
+  def test_emoji_renders_by_default
+    assert_equal("<p>Happy Friday! 😄</p>\n",
+      Commonmarker.to_html("Happy Friday! :smile:"))
+  end
+
+  def test_can_disable_emoji_renders
+    options = { extension: { shortcodes: false } }
+
+    assert_equal("<p>Happy Friday! :smile:</p>\n",
+      Commonmarker.to_html("Happy Friday! :smile:", options: options))
   end
 end

@@ -27,6 +27,7 @@ module Commonmarker
         footnotes: false,
         description_lists: false,
         front_matter_delimiter: nil,
+        shortcodes: true,
       },
       format: [:html].freeze,
     }.freeze
