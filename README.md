@@ -39,7 +39,7 @@ You can also parse a string to receive a `Document` node. You can then print tha
 ``` ruby
 require 'markly'
 
-doc = Markly.parse('*Hello* world', :DEFAULT)
+doc = Markly.parse('*Hello* world', flags: Markly::DEFAULT)
 puts(doc.to_html) # <p>Hi <em>there</em></p>\n
 
 doc.walk do |node|
@@ -122,46 +122,46 @@ end
 
 ## Options
 
-Markly accepts the same options that CMark does, as symbols. Note that there is a distinction in CMark for "parse" options and "render" options, which are represented in the tables below.
+Markly accepts the same options that CMark does, as integer flags. Note that there is a distinction in CMark for "parse" options and "render" options, which are represented in the tables below.
 
 ### Parse options
 
-| Name                          | Description
-| ----------------------------- | -----------
-| `:DEFAULT`                    | The default parsing system.
-| `:UNSAFE`                     | Allow raw/custom HTML and unsafe links.
-| `:FOOTNOTES`                  | Parse footnotes.
-| `:LIBERAL_HTML_TAG`           | Support liberal parsing of inline HTML tags.
-| `:SMART`                      | Use smart punctuation (curly quotes, etc.).
-| `:STRIKETHROUGH_DOUBLE_TILDE` | Parse strikethroughs by double tildes (compatibility with [redcarpet](https://github.com/vmg/redcarpet))
-| `:VALIDATE_UTF8`              | Replace illegal sequences with the replacement character `U+FFFD`.
+| Name                                 | Description
+| ------------------------------------ | -----------
+| `Markly::DEFAULT`                    | The default parsing system.
+| `Markly::UNSAFE`                     | Allow raw/custom HTML and unsafe links.
+| `Markly::FOOTNOTES`                  | Parse footnotes.
+| `Markly::LIBERAL_HTML_TAG`           | Support liberal parsing of inline HTML tags.
+| `Markly::SMART`                      | Use smart punctuation (curly quotes, etc.).
+| `Markly::STRIKETHROUGH_DOUBLE_TILDE` | Parse strikethroughs by double tildes (compatibility with [redcarpet](https://github.com/vmg/redcarpet))
+| `Markly::VALIDATE_UTF8`              | Replace illegal sequences with the replacement character `U+FFFD`.
 
 ### Render options
 
-| Name                             | Description                                                    |
-| ------------------               | -----------                                                    |
-| `:DEFAULT`                       | The default rendering system.                                  |
-| `:UNSAFE`                        | Allow raw/custom HTML and unsafe links.                        |
-| `:GITHUB_PRE_LANG`               | Use GitHub-style `<pre lang>` for fenced code blocks.          |
-| `:HARDBREAKS`                    | Treat `\n` as hardbreaks (by adding `<br/>`).                  |
-| `:NOBREAKS`                      | Translate `\n` in the source to a single whitespace.           |
-| `:SOURCEPOS`                     | Include source position in rendered HTML.                      |
-| `:TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells                  |
-| `:FULL_INFO_STRING`              | Include full info strings of code blocks in separate attribute |
+| Name                                    | Description                                                     |
+| --------------------------------------- | --------------------------------------------------------------- |
+| `Markly::DEFAULT`                       | The default rendering system.                                   |
+| `Markly::UNSAFE`                        | Allow raw/custom HTML and unsafe links.                         |
+| `Markly::GITHUB_PRE_LANG`               | Use GitHub-style `<pre lang>` for fenced code blocks.           |
+| `Markly::HARD_BREAKS`                   | Treat `\n` as hardbreaks (by adding `<br/>`).                   |
+| `Markly::NO_BREAKS`                     | Translate `\n` in the source to a single whitespace.            |
+| `Markly::SOURCE_POSITION`               | Include source position in rendered HTML.                       |
+| `Markly::TABLE_PREFER_STYLE_ATTRIBUTES` | Use `style` insted of `align` for table cells.                  |
+| `Markly::FULL_INFO_STRING`              | Include full info strings of code blocks in separate attribute. |
 
 ### Passing options
 
-To apply a single option, pass it in as a symbol argument:
+To apply a single option, pass it in as a flags option:
 
 ``` ruby
-Markly.parse("\"Hello,\" said the spider.", :SMART)
+Markly.parse("\"Hello,\" said the spider.", flags: Markly::SMART)
 # <p>“Hello,” said the spider.</p>\n
 ```
 
-To have multiple options applied, pass in an array of symbols:
+To have multiple options applied, `|` (or) the flags together:
 
 ``` ruby
-Markly.render_html("\"'Shelob' is my name.\"", [:HARDBREAKS, :SOURCEPOS])
+Markly.render_html("\"'Shelob' is my name.\"", flags: Markly::HARD_BREAKS|Markly::SOURCE_POSITION)
 ```
 
 For more information on these options, see [the CMark documentation](https://git.io/v7nh1).
