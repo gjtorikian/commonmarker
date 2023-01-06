@@ -1,35 +1,6 @@
 # frozen_string_literal: true
 
 require "rake/extensiontask"
-
-# FIXME: remove this hack if multiple versions of Ruby are supported...
-module Rake
-  class ExtensionTask < BaseExtensionTask
-    def define_cross_platform_tasks(for_platform)
-      ruby_vers = ENV["RUBY_CC_VERSION"].split(":")
-
-      old_multi = ruby_vers.size > 1 ? true : false
-      multi = true
-      puts "DEBUG: multi = #{multi} (was: #{old_multi})"
-      ruby_vers.each do |version|
-        # save original lib_dir
-        orig_lib_dir = @lib_dir
-
-        # tweak lib directory only when targeting multiple versions
-        if multi
-          version =~ /(\d+\.\d+)/
-          @lib_dir = "#{@lib_dir}/#{::Regexp.last_match(1)}"
-        end
-
-        define_cross_platform_tasks_with_version(for_platform, version)
-
-        # restore lib_dir
-        @lib_dir = orig_lib_dir
-      end
-    end
-  end
-end
-
 require_relative "extension/cross_rubies"
 
 Rake::ExtensionTask.new("commonmarker", COMMONMARKER_SPEC) do |ext|
