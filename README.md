@@ -26,11 +26,9 @@ Call `render_html` on a string to convert it to HTML:
 
 ``` ruby
 require 'markly'
-Markly.render_html('Hi *there*', :DEFAULT)
+Markly.render_html('Hi *there*')
 # <p>Hi <em>there</em></p>\n
 ```
-
-The second argument is optional--[see below](#options) for more information.
 
 ### Generating a document
 
