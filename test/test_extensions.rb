@@ -38,14 +38,18 @@ class TestExtensions < Minitest::Test
   end
 
   def test_emoji_renders_by_default
-    assert_equal("<p>Happy Friday! 😄</p>\n",
-      Commonmarker.to_html("Happy Friday! :smile:"))
+    assert_equal(
+      "<p>Happy Friday! 😄</p>\n",
+      Commonmarker.to_html("Happy Friday! :smile:"),
+    )
   end
 
   def test_can_disable_emoji_renders
     options = { extension: { shortcodes: false } }
 
-    assert_equal("<p>Happy Friday! :smile:</p>\n",
-      Commonmarker.to_html("Happy Friday! :smile:", options: options))
+    assert_equal(
+      "<p>Happy Friday! :smile:</p>\n",
+      Commonmarker.to_html("Happy Friday! :smile:", options: options),
+    )
   end
 end
