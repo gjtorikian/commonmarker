@@ -19,7 +19,7 @@ jobs:
 
       - uses: oxidize-rb/actions/setup-ruby-and-rust@main
         with:
-          ruby-version: "3.1"
+          ruby-version: "3.2"
           rubygems: latest
           bundler-cache: false
           cargo-cache: true
@@ -28,8 +28,7 @@ jobs:
       - uses: oxidize-rb/cross-gem-action@main
         with:
           platform: x86_64-linux
-          env: |
-            RUBY_CC_VERSION=3.1.0:3.2.0
+          ruby-versions: '3.1, 3.2'
 
       - run: ./script/test-gem-build gems ruby
 
