@@ -31,8 +31,10 @@ class TestExtensions < Minitest::Test
   def test_comments_are_kept_as_expected
     options = { render: { unsafe_: true }, extension: { tagfilter: true } }
 
-    assert_equal("<!--hello--> <blah> &lt;xmp>\n",
-      Commonmarker.to_html("<!--hello--> <blah> <xmp>\n", options: options))
+    assert_equal(
+      "<!--hello--> <blah> &lt;xmp>\n",
+      Commonmarker.to_html("<!--hello--> <blah> <xmp>\n", options: options),
+    )
   end
 
   def test_emoji_renders_by_default
