@@ -59,8 +59,10 @@ describe gemspec.full_name do
   describe "cruby" do
     it "installs commonmarker files" do
       commonmarker_files.each do |file|
-        assert(File.file?(File.join(commonmarker_ext_dir, file)),
-          "expected #{file} to be installed in #{commonmarker_ext_dir}")
+        assert(
+          File.file?(File.join(commonmarker_ext_dir, file)),
+          "expected #{file} to be installed in #{commonmarker_ext_dir}",
+        )
       end
     end
   end
