@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
 
   spec.require_paths = ["lib"]
-  spec.extensions = ["ext/commonmarker/Cargo.toml"]
+  spec.extensions = ["ext/commonmarker/extconf.rb"]
 
   spec.metadata = {
     "allowed_push_host" => "https://rubygems.org",
