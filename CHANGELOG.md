@@ -1,12 +1,16 @@
 # Changelog
 
-## [Unreleased](https://github.com/gjtorikian/commonmarker/tree/HEAD)
+## [v1.0.0.pre6](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre6) (2023-01-09)
 
-[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre5...HEAD)
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre5...v1.0.0.pre6)
 
 **Closed issues:**
 
 - Cargo.lock prevents Ruby 3.2.0 from installing commonmarker v1.0.0.pre4 [\#211](https://github.com/gjtorikian/commonmarker/issues/211)
+
+**Merged pull requests:**
+
+- always use rb\_sys \(don't use Ruby's emerging cargo tooling where available\) [\#213](https://github.com/gjtorikian/commonmarker/pull/213) ([kivikakk](https://github.com/kivikakk))
 
 ## [v1.0.0.pre5](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre5) (2023-01-08)
 
