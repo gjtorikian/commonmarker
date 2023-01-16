@@ -27,7 +27,7 @@ Or install it yourself as:
 
 ### Converting to HTML
 
-Call `render_html` on a string to convert it to HTML:
+Call `to_html` on a string to convert it to HTML:
 
 ```ruby
 require 'commonmarker'
@@ -75,7 +75,7 @@ As well, there are several extensions which you can toggle in the same manner:
 
 ```ruby
 Commonmarker.to_html('"Hi *there*"', options: {
-    extensions: { footnotes: true, description_lists: true },
+    extension: { footnotes: true, description_lists: true },
     render: { hardbreaks: false}
 })
 ```
@@ -92,7 +92,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `superscript`            | Enables the superscript Comrak extension.                                                                           | `false` |
 | `header_ids`             | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
 | `footnotes`              | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
-| `description_lists`      | Enables the description lists extension..                                                                           | `false` |
+| `description_lists`      | Enables the description lists extension.                                                                            | `false` |
 | `front_matter_delimiter` | Enables the front matter extension.                                                                                 | `""`    |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
