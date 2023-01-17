@@ -40,4 +40,28 @@ class TestExtensions < Minitest::Test
       Commonmarker.to_html("<!--hello--> <blah> <xmp>\n", options: options),
     )
   end
+
+  def test_definition_lists
+    markdown = <<~MARKDOWN
+      ~strikethrogh disabled to ensure options accepted~
+
+      Commonmark Definition
+
+      : Ruby wrapper for comrak (CommonMark parser)
+    MARKDOWN
+
+    extensions = { strikethrough: false,  description_lists: true }
+    options = { extension: extensions, render: { hardbreaks: false } }
+    output = Commonmarker.to_html(markdown, options: options)
+
+    html = <<~HTML
+      <p>~strikethrogh disabled to ensure options accepted~</p>
+      <dl><dt>Commonmark Definition</dt>
+      <dd>
+      <p>Ruby wrapper for comrak (CommonMark parser)</p>
+      </dd>
+      </dl>
+    HTML
+    assert_equal(output, html)
+  end
 end
