@@ -68,7 +68,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `hardbreaks`      | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
 | `github_pre_lang` | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
 | `width`           | The wrap column when outputting CommonMark.                                                            | `80`    |
-| `unsafe_`         | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
+| `unsafe`          | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
 | `escape`          | Escape raw HTML instead of clobbering it.                                                              | `false` |
 
 As well, there are several extensions which you can toggle in the same manner:
@@ -100,18 +100,18 @@ For more information on these options, see [the comrak documentation](https://gi
 ### Plugins
 
 In addition to the possibilities provided by generic CommonMark rendering, Commonmarker also supports plugins as a means of
-providing further niceties. 
+providing further niceties.
 
 #### Syntax Highlighter Plugin
 
-```ruby
+````ruby
 code = <<~CODE
   ```ruby
   def hello
   puts "hello"
   end
 CODE
-  
+
 puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
 
 # <pre style="background-color:#ffffff;" lang="ruby"><code>
@@ -120,7 +120,7 @@ puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Inspire
 # </span><span style="font-weight:bold;color:#a71d5d;">end
 # </span>
 # </code></pre>
-```
+````
 
 To disable this plugin, pass `nil`:
 

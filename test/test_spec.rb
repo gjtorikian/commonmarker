@@ -10,7 +10,7 @@ class TestSpec < Minitest::Test
     define_method("test_to_html_example_#{testcase[:example]}") do
       opts = {
         render: {
-          unsafe_: true,
+          unsafe: true,
         },
         extension: testcase[:extensions].each_with_object({}) do |ext, hash|
           hash[ext] = true

@@ -33,7 +33,7 @@ class TestExtensions < Minitest::Test
   end
 
   def test_comments_are_kept_as_expected
-    options = { render: { unsafe_: true }, extension: { tagfilter: true } }
+    options = { render: { unsafe: true }, extension: { tagfilter: true } }
 
     assert_equal(
       "<!--hello--> <blah> &lt;xmp>\n",
@@ -43,7 +43,7 @@ class TestExtensions < Minitest::Test
 
   def test_definition_lists
     markdown = <<~MARKDOWN
-      ~strikethrogh disabled to ensure options accepted~
+      ~strikethrough disabled to ensure options accepted~
 
       Commonmark Definition
 
@@ -55,7 +55,7 @@ class TestExtensions < Minitest::Test
     output = Commonmarker.to_html(markdown, options: options)
 
     html = <<~HTML
-      <p>~strikethrogh disabled to ensure options accepted~</p>
+      <p>~strikethrough disabled to ensure options accepted~</p>
       <dl><dt>Commonmark Definition</dt>
       <dd>
       <p>Ruby wrapper for comrak (CommonMark parser)</p>
