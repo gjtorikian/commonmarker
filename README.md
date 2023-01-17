@@ -100,32 +100,45 @@ For more information on these options, see [the comrak documentation](https://gi
 ### Plugins
 
 In addition to the possibilities provided by generic CommonMark rendering, Commonmarker also supports plugins as a means of
-providing further niceties. For example:
+providing further niceties. 
 
-    code = <<~CODE
-        ```ruby
-        def hello
-        puts "hello"
-        end
+#### Syntax Highlighter Plugin
 
-        CODE
+```ruby
+code = <<~CODE
+  ```ruby
+  def hello
+  puts "hello"
+  end
+CODE
+  
+puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
 
-    Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Inspired GitHub" } })
+# <pre style="background-color:#ffffff;" lang="ruby"><code>
+# <span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
+# </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
+# </span><span style="font-weight:bold;color:#a71d5d;">end
+# </span>
+# </code></pre>
+```
 
-    # <pre style="background-color:#ffffff;" lang="ruby"><code>
-    # <span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
-    # </span><span style="color:#323232;"> </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
-    # </span><span style="font-weight:bold;color:#a71d5d;">end
-    # </span>
-    # </code></pre>
-
-You can disable plugins just the same as with options, by passing `nil`:
+To disable this plugin, pass `nil`:
 
 ```ruby
 Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 # or
 Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
 ```
+
+Available themes ([source](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations)):
+
+- base16-ocean.dark
+- base16-eighties.dark
+- base16-mocha.dark
+- base16-ocean.light
+- InspiredGitHub
+- Solarized (dark)
+- Solarized (light)
 
 ## Output formats
 
