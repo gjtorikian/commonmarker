@@ -29,7 +29,7 @@ fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash
 const RENDER_HARDBREAKS: &str = "hardbreaks";
 const RENDER_GITHUB_PRE_LANG: &str = "github_pre_lang";
 const RENDER_WIDTH: &str = "width";
-const RENDER_UNSAFE: &str = "unsafe_";
+const RENDER_UNSAFE: &str = "unsafe";
 const RENDER_ESCAPE: &str = "escape";
 
 fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
