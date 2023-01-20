@@ -7,7 +7,7 @@ Ruby wrapper for Rust's [comrak](https://github.com/kivikakk/comrak) crate.
 
 It passes all of the CommonMark test suite, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
 
-For more information on available extensions, see [the documentation below](#extensions).
+For more information on available extensions, see [the documentation below](#extension-options).
 
 ## Installation
 
