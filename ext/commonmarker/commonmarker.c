@@ -1304,4 +1304,5 @@ __attribute__((visibility("default"))) void Init_commonmarker() {
   rb_define_method(rb_cNode, "html_escape_html", rb_html_escape_html, 1);
 
   cmark_gfm_core_extensions_ensure_registered();
+  cmark_init_standard_node_flags();
 }
