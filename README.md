@@ -131,15 +131,17 @@ Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
 ```
 
-Available themes ([source](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations)):
+##### Available themes
 
-- base16-ocean.dark
-- base16-eighties.dark
-- base16-mocha.dark
-- base16-ocean.light
-- InspiredGitHub
-- Solarized (dark)
-- Solarized (light)
+Here's [a list of available themes](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations):
+
+- `"base16-ocean.dark"`
+- `"base16-eighties.dark"`
+- `"base16-mocha.dark"`
+- `"base16-ocean.light"`
+- `"InspiredGitHub"`
+- `"Solarized (dark)"`
+- `"Solarized (light)"`
 
 ## Output formats
 
