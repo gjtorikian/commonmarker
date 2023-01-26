@@ -13,7 +13,7 @@ module Commonmarker
         hardbreaks: true,
         github_pre_lang: true,
         width: 80,
-        unsafe_: false,
+        unsafe: false,
         escape: false,
       }.freeze,
       extension: {

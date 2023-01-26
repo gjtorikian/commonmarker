@@ -7,7 +7,7 @@ Ruby wrapper for Rust's [comrak](https://github.com/kivikakk/comrak) crate.
 
 It passes all of the CommonMark test suite, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
 
-For more information on available extensions, see [the documentation below](#extensions).
+For more information on available extensions, see [the documentation below](#extension-options).
 
 ## Installation
 
@@ -27,7 +27,7 @@ Or install it yourself as:
 
 ### Converting to HTML
 
-Call `render_html` on a string to convert it to HTML:
+Call `to_html` on a string to convert it to HTML:
 
 ```ruby
 require 'commonmarker'
@@ -68,14 +68,14 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `hardbreaks`      | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
 | `github_pre_lang` | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
 | `width`           | The wrap column when outputting CommonMark.                                                            | `80`    |
-| `unsafe_`         | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
+| `unsafe`          | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
 | `escape`          | Escape raw HTML instead of clobbering it.                                                              | `false` |
 
 As well, there are several extensions which you can toggle in the same manner:
 
 ```ruby
 Commonmarker.to_html('"Hi *there*"', options: {
-    extensions: { footnotes: true, description_lists: true },
+    extension: { footnotes: true, description_lists: true },
     render: { hardbreaks: false}
 })
 ```
@@ -92,7 +92,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `superscript`            | Enables the superscript Comrak extension.                                                                           | `false` |
 | `header_ids`             | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
 | `footnotes`              | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
-| `description_lists`      | Enables the description lists extension..                                                                           | `false` |
+| `description_lists`      | Enables the description lists extension.                                                                            | `false` |
 | `front_matter_delimiter` | Enables the front matter extension.                                                                                 | `""`    |
 | `shortcodes`             | Enables the shortcodes extension.                                                                                   | `true`  |
 
@@ -101,32 +101,45 @@ For more information on these options, see [the comrak documentation](https://gi
 ### Plugins
 
 In addition to the possibilities provided by generic CommonMark rendering, Commonmarker also supports plugins as a means of
-providing further niceties. For example:
+providing further niceties.
 
-    code = <<~CODE
-        ```ruby
-        def hello
-        puts "hello"
-        end
+#### Syntax Highlighter Plugin
 
-        CODE
+````ruby
+code = <<~CODE
+  ```ruby
+  def hello
+  puts "hello"
+  end
+CODE
 
-    Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Inspired GitHub" } })
+puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
 
-    # <pre style="background-color:#ffffff;" lang="ruby"><code>
-    # <span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
-    # </span><span style="color:#323232;"> </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
-    # </span><span style="font-weight:bold;color:#a71d5d;">end
-    # </span>
-    # </code></pre>
+# <pre style="background-color:#ffffff;" lang="ruby"><code>
+# <span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
+# </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
+# </span><span style="font-weight:bold;color:#a71d5d;">end
+# </span>
+# </code></pre>
+````
 
-You can disable plugins just the same as with options, by passing `nil`:
+To disable this plugin, pass `nil`:
 
 ```ruby
 Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 # or
 Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
 ```
+
+Available themes ([source](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations)):
+
+- base16-ocean.dark
+- base16-eighties.dark
+- base16-mocha.dark
+- base16-ocean.light
+- InspiredGitHub
+- Solarized (dark)
+- Solarized (light)
 
 ## Output formats
 
