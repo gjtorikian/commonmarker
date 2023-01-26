@@ -5,8 +5,7 @@ edition = "2021"
 
 [dependencies]
 magnus =  "0.4"
-# ref until `shortcodes` is released
-comrak = { git = "https://github.com/kivikakk/comrak", ref = "7be2585180087bdb188b829e73e1617c5670505d", features = ["shortcodes"] }
+comrak = { version = "^0.16", features = ["shortcodes"] }
 
 [lib]
 name = "commonmarker"
