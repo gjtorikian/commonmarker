@@ -94,6 +94,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `footnotes`              | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
 | `description_lists`      | Enables the description lists extension.                                                                            | `false` |
 | `front_matter_delimiter` | Enables the front matter extension.                                                                                 | `""`    |
+| `shortcodes`             | Enables the shortcodes extension.                                                                                   | `true`  |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 
@@ -130,15 +131,17 @@ Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
 ```
 
-Available themes ([source](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations)):
+##### Available themes
 
-- base16-ocean.dark
-- base16-eighties.dark
-- base16-mocha.dark
-- base16-ocean.light
-- InspiredGitHub
-- Solarized (dark)
-- Solarized (light)
+Here's [a list of available themes](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations):
+
+- `"base16-ocean.dark"`
+- `"base16-eighties.dark"`
+- `"base16-mocha.dark"`
+- `"base16-ocean.light"`
+- `"InspiredGitHub"`
+- `"Solarized (dark)"`
+- `"Solarized (light)"`
 
 ## Output formats
 

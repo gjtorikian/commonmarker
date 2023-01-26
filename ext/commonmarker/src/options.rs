@@ -68,6 +68,7 @@ const EXTENSION_HEADER_IDS: &str = "header_ids";
 const EXTENSION_FOOTNOTES: &str = "footnotes";
 const EXTENSION_DESCRIPTION_LISTS: &str = "description_lists";
 const EXTENSION_FRONT_MATTER_DELIMITER: &str = "front_matter_delimiter";
+const EXTENSION_SHORTCODES: &str = "shortcodes";
 
 fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -102,6 +103,9 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 }
                 Ok(Cow::Borrowed(EXTENSION_FRONT_MATTER_DELIMITER)) => {
                     comrak_options.extension.front_matter_delimiter = try_convert_string(value);
+                }
+                Ok(Cow::Borrowed(EXTENSION_SHORTCODES)) => {
+                    comrak_options.extension.shortcodes = value.try_convert::<bool>()?;
                 }
                 _ => {}
             }
