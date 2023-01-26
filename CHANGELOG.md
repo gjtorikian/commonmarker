@@ -1,5 +1,30 @@
 # Changelog
 
+## [v1.0.0.pre7](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre7) (2023-01-26)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.7...v1.0.0.pre7)
+
+**Merged pull requests:**
+
+- Bump comrak from 0.15.0 to 0.16.0 [\#225](https://github.com/gjtorikian/commonmarker/pull/225) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Change `unsafe_` to `unsafe` [\#220](https://github.com/gjtorikian/commonmarker/pull/220) ([gjtorikian](https://github.com/gjtorikian))
+- Clarify syntax highlighter plugin usage in README [\#218](https://github.com/gjtorikian/commonmarker/pull/218) ([DannyBen](https://github.com/DannyBen))
+- Fix a couple of misleading README points [\#215](https://github.com/gjtorikian/commonmarker/pull/215) ([DannyBen](https://github.com/DannyBen))
+- remove gemspec [\#214](https://github.com/gjtorikian/commonmarker/pull/214) ([gjtorikian](https://github.com/gjtorikian))
+- Add shortcodes/emoji [\#210](https://github.com/gjtorikian/commonmarker/pull/210) ([gjtorikian](https://github.com/gjtorikian))
+
+## [v0.23.7](https://github.com/gjtorikian/commonmarker/tree/v0.23.7) (2023-01-24)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre6...v0.23.7)
+
+**Closed issues:**
+
+- Ruby 3.1 required? [\#222](https://github.com/gjtorikian/commonmarker/issues/222)
+- README \#extensions link has broken [\#221](https://github.com/gjtorikian/commonmarker/issues/221)
+- Why is the render option called `unsafe_` and not `unsafe`? [\#219](https://github.com/gjtorikian/commonmarker/issues/219)
+- The `footnotes` extension does not work when the `superscript` extension is enabled [\#217](https://github.com/gjtorikian/commonmarker/issues/217)
+- Description lists not working [\#216](https://github.com/gjtorikian/commonmarker/issues/216)
+
 ## [v1.0.0.pre6](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre6) (2023-01-09)
 
 [Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre5...v1.0.0.pre6)
