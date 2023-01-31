@@ -111,13 +111,13 @@ typedef struct cmark_mem {
  * realloc and free.
  */
 CMARK_GFM_EXPORT
-cmark_mem *cmark_get_default_mem_allocator();
+cmark_mem *cmark_get_default_mem_allocator(void);
 
 /** An arena allocator; uses system calloc to allocate large
  * slabs of memory.  Memory in these slabs is not reused at all.
  */
 CMARK_GFM_EXPORT
-cmark_mem *cmark_get_arena_mem_allocator();
+cmark_mem *cmark_get_arena_mem_allocator(void);
 
 /** Resets the arena allocator, quickly returning all used memory
  * to the operating system.
@@ -224,6 +224,11 @@ CMARK_GFM_EXPORT cmark_node *cmark_node_first_child(cmark_node *node);
 /** Returns the last child of 'node', or NULL if 'node' has no children.
  */
 CMARK_GFM_EXPORT cmark_node *cmark_node_last_child(cmark_node *node);
+
+/** Returns the footnote reference of 'node', or NULL if 'node' doesn't have a
+ * footnote reference.
+ */
+CMARK_GFM_EXPORT cmark_node *cmark_node_parent_footnote_def(cmark_node *node);
 
 /**
  * ## Iterator
