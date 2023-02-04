@@ -128,10 +128,6 @@ describe File.basename(gemfile) do
       refute(gemspec.dependencies.find { |d| d.name == "rb-sys" })
     end
 
-    it "contains ext/commonmarker Cargo TOML" do
-      assert_equal(gemfile_contents.grep(%r{^ext/commonmarker/Cargo\.toml}).length, 1)
-    end
-
     it "contains expected shared library files" do
       platform_supported_ruby_versions.each do |version|
         actual = gemfile_contents.find do |file|

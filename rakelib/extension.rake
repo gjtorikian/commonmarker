@@ -1,23 +1,10 @@
 # frozen_string_literal: true
 
-require "rake/extensiontask"
+require "rb_sys/extensiontask"
 require_relative "extension/cross_rubies"
 
-Rake::ExtensionTask.new("commonmarker", COMMONMARKER_SPEC) do |ext|
-  ext.source_pattern = "*.{rs,toml}"
-
+RbSys::ExtensionTask.new("commonmarker", COMMONMARKER_SPEC) do |ext|
   ext.lib_dir = File.join("lib", "commonmarker")
-
-  ext.cross_compile = true
-  ext.cross_platform = CROSS_PLATFORMS
-
-  ext.config_script = ENV["ALTERNATE_CONFIG_SCRIPT"] || "extconf.rb"
-
-  # remove things not needed for precompiled gems
-  ext.cross_compiling do |spec|
-    spec.files.reject! { |file| File.fnmatch?("*.tar.gz", file) }
-    spec.dependencies.reject! { |dep| dep.name == "rb-sys" }
-  end
 end
 
 task :setup do # rubocop:disable Rake/Desc
