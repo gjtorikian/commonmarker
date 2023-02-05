@@ -39,6 +39,8 @@ else
   bundle exec rake gem:${BUILD_NATIVE_GEM}
 fi
 
+gem install minitest
+gem install minitest-reporters
 ./script/test-gem-file-contents pkg/commonmarker*.gem
 
 mkdir -p ${OUTPUT_DIR}
