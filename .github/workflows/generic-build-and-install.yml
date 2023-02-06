@@ -24,6 +24,7 @@ jobs:
           bundler-cache: false
           cargo-cache: true
           cargo-vendor: true
+          cache-version: v1-x86_64-linux
 
       - uses: oxidize-rb/cross-gem-action@main
         with:

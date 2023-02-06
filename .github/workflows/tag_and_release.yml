@@ -32,6 +32,7 @@ jobs:
           bundler-cache: false
           cargo-cache: true
           cargo-vendor: true
+          cache-version: v1-${{ matrix.platform }}
 
       - uses: oxidize-rb/cross-gem-action@main
         with:

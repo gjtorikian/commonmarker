@@ -37,6 +37,7 @@ jobs:
           bundler-cache: false
           cargo-cache: true
           cargo-vendor: true
+          cache-version: v1-${{ matrix.platform }}
 
       - uses: oxidize-rb/cross-gem-action@main
         with:
@@ -49,7 +50,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: "cruby-${{matrix.platform}}-gem"
+          name: "cruby-v1-${{matrix.platform}}-gem"
           path: gems
           retention-days: 1
 
@@ -91,7 +92,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: cruby-aarch64-linux-gem
+          name: cruby-v1-aarch64-linux-gem
           path: gems
 
       - run: |
