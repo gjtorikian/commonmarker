@@ -38,10 +38,6 @@ fi
 gem install bundler -v "~> 2.3"
 bundle install --local || bundle install
 
-rm -rf lib ext # ensure we don't use the local files
 rake test
 
 ./script/test-gem-installation
-
-# delete the Gemfile because that's confusing to older versions of rubygems (e.g., bionic32)
-rm -f Gemfile Gemfile.lock

@@ -21,26 +21,13 @@ namespace "gem" do
   CROSS_RUBIES.find_all { |cr| cr.windows? || cr.linux? || cr.darwin? }.map(&:platform).uniq.each do |platform|
     desc "build native gem for #{platform} platform"
     task platform do
-      puts "Invoking RakeCompilerDock for #{platform} ..."
-      require "rake_compiler_dock"
-      RakeCompilerDock.sh(<<~EOT, verbose: true)
-        gem update --system 3.3.22 --no-document &&
-        bundle
-      EOT
+      args = ["--platform", platform, "--ruby-versions", "3.2", "--build"]
+      puts "Invoking rb-sys-dock with args: #{args.join(" ")}"
+      stdout, stderr, status = Open3.capture3("rb-sys-dock", *args)
+      puts stdout
+      puts stderr unless status.success?
     rescue => e
       warn(e.message)
-    end
-
-    namespace platform do
-      desc "build native gem for #{platform} platform (guest container)"
-      task "builder" do
-        puts "Invoking native:#{platform} ..."
-        # use Task#invoke because the pkg/*gem task is defined at runtime
-        Rake::Task["native:#{platform}"].invoke
-        puts "Invoking #{"pkg/#{COMMONMARKER_SPEC.full_name}-#{Gem::Platform.new(platform)}.gem"}  ..."
-
-        Rake::Task["pkg/#{COMMONMARKER_SPEC.full_name}-#{Gem::Platform.new(platform)}.gem"].invoke
-      end
     end
   end
 

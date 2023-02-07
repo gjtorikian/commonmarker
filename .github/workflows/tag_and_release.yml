@@ -7,6 +7,13 @@ on:
     paths:
       - "lib/commonmarker/version.rb"
 
+env:
+  CACHE_KEY_PREFIX: "cruby-v1-"
+
+# "3.1, 3.2" # SUPPORTED_RUBY_VERSIONS
+# ["3.1", "3.2"] # SUPPORTED_RUBY_MATRIX
+# "3.2" # LATEST_RUBY_VERSION
+
 jobs:
   native_gem:
     name: Compile native gem
@@ -25,31 +32,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: oxidize-rb/actions/setup-ruby-and-rust@main
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2"
-          rubygems: latest
-          bundler-cache: false
-          cargo-cache: true
-          cargo-vendor: true
-          cache-version: v1-${{ matrix.platform }}
+          ruby-version: "3.2" # LATEST_RUBY_VERSION
 
-      - uses: oxidize-rb/cross-gem-action@main
+      - uses: oxidize-rb/actions/cross-gem@v1
+        id: cross-gem
         with:
           platform: ${{ matrix.platform }}
-          ruby-versions: '3.1, 3.2'
-
-      - uses: actions/download-artifact@v3
-        with:
-          name: cross-gem
-          path: pkg/
-
-      - name: Display structure of built gems
-        run: ls -R
-        working-directory: pkg/
+          ruby-versions: "3.1, 3.2" # SUPPORTED_RUBY_VERSIONS
 
       - name: Publish to RubyGems
-        working-directory: pkg/
+        working-directory: ${{ steps.cross-gem.outputs.gem-path }}/
         env:
           GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_API_BOT_KEY}}
         run: |
@@ -76,7 +70,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           rubygems: latest
-          ruby-version: 3.2
+          ruby-version: "3.2" # LATEST_RUBY_VERSION
           bundler-cache: true
 
       - name: Configure Git
@@ -106,6 +100,7 @@ jobs:
           git add -f CHANGELOG.md
           git commit -m "docs: update changelog" || true
           git push
+
       - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

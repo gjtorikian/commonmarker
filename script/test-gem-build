@@ -21,23 +21,10 @@ set -u -x
 echo "Updating RubyGems system ..."
 echo "gem: --no-ri --no-rdoc" > ~/.gemrc
 
-gem update --system 3.3.22
+gem update --system --no-document
 
 ruby --version
 bundler -v
-
-export BUNDLE_WITHOUT=lint:benchmark:debug:test
-bundle
-
-bundle exec rake set-version-to-timestamp
-
-if [[ "${BUILD_NATIVE_GEM}" == "ruby" ]] ; then
-  echo "Building ruby gem..."
-  bundle exec rake gem
-else
-  echo "Building native gem..."
-  bundle exec rake gem:${BUILD_NATIVE_GEM}
-fi
 
 gem install minitest
 gem install minitest-reporters
