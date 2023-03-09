@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   # https://github.com/rubygems/rubygems/pull/5852#issuecomment-1231118509
   spec.required_rubygems_version = ">= 3.3.22"
 
-  spec.files = ["LICENSE.txt", "README.md", "Cargo.lock"]
+  spec.files = ["LICENSE.txt", "README.md", "Cargo.lock", "Cargo.toml"]
   spec.files += Dir.glob("lib/**/*.rb")
   spec.files += Dir.glob("ext/**/*.{rs,toml,lock,rb}")
   spec.bindir = "exe"
@@ -37,5 +37,4 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency("rake", "~> 13.0")
   spec.add_development_dependency("rake-compiler", "~> 1.2")
-  spec.add_development_dependency("rake-compiler-dock", "~> 1.2")
 end
