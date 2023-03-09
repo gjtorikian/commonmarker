@@ -131,9 +131,16 @@ Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
 ```
 
+You can also provide a `path` to a directory containing `.tmtheme` files to load:
+
+```ruby
+
+Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: "./themes" } })
+```
+
 ##### Available themes
 
-Here's [a list of available themes](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations):
+Here's [a list of themes available by default](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations):
 
 - `"base16-ocean.dark"`
 - `"base16-eighties.dark"`
