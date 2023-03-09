@@ -44,20 +44,16 @@ jobs:
           ruby-versions: "3.1,3.2" # SUPPORTED_RUBY_VERSIONS
 
       - name: Publish to RubyGems
-        working-directory: ${{ steps.cross-gem.outputs.gem-path }}/
         env:
           GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_API_BOT_KEY}}
+          GEM_OUTPUT_PATH: ${{ steps.cross-gem.outputs.gem-path }}
         run: |
           mkdir -p $HOME/.gem
           touch $HOME/.gem/credentials
           chmod 0600 $HOME/.gem/credentials
           printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-          for i in *.gem; do
-            if [ -f "$i" ]
-            then
-              gem push "$i" || true
-            fi
-          done
+          gem push "${GEM_OUTPUT_PATH}" || true
+          echo "Pushed ${GEM_OUTPUT_PATH}"
 
   release:
     needs: ["native_gem"]
