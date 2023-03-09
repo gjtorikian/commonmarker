@@ -71,7 +71,7 @@ class TestSyntaxHighlighting < Minitest::Test
       </code></pre>
     CODE
 
-    assert_match(result, html)
+    assert_equal(result, html)
   end
 
   def test_nil_theme_removes_highlighting
@@ -142,5 +142,75 @@ class TestSyntaxHighlighting < Minitest::Test
     # and other times <pre style="..." lang="ruby" >
     assert_match(lang, html)
     assert_match(background, html)
+  end
+
+  def test_dislikes_missing_theme
+    code = <<~CODE
+      ```ruby
+      def hello
+        puts "hello"
+      end
+      ```
+    CODE
+
+    assert_raises(ArgumentError) do
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: { path: "test/fixtures" } })
+    end
+  end
+
+  def test_accepts_legit_path
+    code = <<~CODE
+      ```ruby
+      def hello
+        puts "hello"
+      end
+      ```
+    CODE
+
+    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: FIXTURES_DIR } })
+    result = <<~HTML
+      <span style="color:#99ff99;">def </span><span style="color:#a6e22e;">hello
+      </span><span style="color:#ccccff;">  </span><span style="color:#ffcc66;">puts </span><span style="color:#e6db74;">&quot;hello&quot;
+      </span><span style="color:#99ff99;">end
+      </span>
+      </code></pre>
+    HTML
+
+    lang = %(lang="ruby")
+    background = %(style="background-color:#323232;")
+
+    assert_match(result, html)
+    # doing this because sometimes comrak returns <pre lang="ruby" style="...">
+    # and other times <pre style="..." lang="ruby" >
+    assert_match(lang, html)
+    assert_match(background, html)
+  end
+
+  def test_raises_on_bad_path
+    code = <<~CODE
+      ```ruby
+      def hello
+        puts "hello"
+      end
+      ```
+    CODE
+
+    assert_raises(ArgumentError) do
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: "blerp" } })
+    end
+  end
+
+  def test_raises_on_bad_key
+    code = <<~CODE
+      ```ruby
+      def hello
+        puts "hello"
+      end
+      ```
+    CODE
+
+    assert_raises(ArgumentError) do
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai" } })
+    end
   end
 end

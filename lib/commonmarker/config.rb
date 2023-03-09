@@ -35,6 +35,7 @@ module Commonmarker
     PLUGINS = {
       syntax_highlighter: {
         theme: "base16-ocean.dark",
+        path: "",
       },
     }
 

@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 magnus =  "0.5"
 comrak = { version = "0.16", features = ["shortcodes"] }
+syntect = { version = "5.0", features = ["plist-load"] }
 
 [lib]
 name = "commonmarker"
