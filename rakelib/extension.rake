@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "rb_sys/extensiontask"
-require_relative "extension/cross_rubies"
 
 RbSys::ExtensionTask.new("commonmarker", COMMONMARKER_SPEC) do |ext|
   ext.lib_dir = File.join("lib", "commonmarker")
