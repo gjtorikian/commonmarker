@@ -1,5 +1,32 @@
 # Changelog
 
+## [v1.0.0.pre9](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre9) (2023-03-28)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre8...v1.0.0.pre9)
+
+**Merged pull requests:**
+
+- Updates from upstream [\#235](https://github.com/gjtorikian/commonmarker/pull/235) ([gjtorikian](https://github.com/gjtorikian))
+- Bump comrak from 0.16.0 to 0.17.1 [\#234](https://github.com/gjtorikian/commonmarker/pull/234) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump magnus from 0.5.1 to 0.5.2 [\#233](https://github.com/gjtorikian/commonmarker/pull/233) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add ability to load `tmtheme`s from a folder [\#232](https://github.com/gjtorikian/commonmarker/pull/232) ([gjtorikian](https://github.com/gjtorikian))
+- Bump magnus from 0.5.0 to 0.5.1 [\#231](https://github.com/gjtorikian/commonmarker/pull/231) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump magnus from 0.4.4 to 0.5.0 [\#230](https://github.com/gjtorikian/commonmarker/pull/230) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Test the new integrated rb-sys [\#228](https://github.com/gjtorikian/commonmarker/pull/228) ([gjtorikian](https://github.com/gjtorikian))
+
+## [v1.0.0.pre8](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre8) (2023-03-09)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.8...v1.0.0.pre8)
+
+**Closed issues:**
+
+- Something changed in how header anchors are named in the output HTML [\#229](https://github.com/gjtorikian/commonmarker/issues/229)
+- Problem with CommonMarker on an Azure VM [\#226](https://github.com/gjtorikian/commonmarker/issues/226)
+
+## [v0.23.8](https://github.com/gjtorikian/commonmarker/tree/v0.23.8) (2023-01-31)
+
+[Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre7...v0.23.8)
+
 ## [v1.0.0.pre7](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre7) (2023-01-26)
 
 [Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.7...v1.0.0.pre7)
