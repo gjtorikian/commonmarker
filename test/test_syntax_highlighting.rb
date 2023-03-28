@@ -18,8 +18,7 @@ class TestSyntaxHighlighting < Minitest::Test
       <span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">hello
       </span><span style="color:#c0c5ce;">  </span><span style="color:#96b5b4;">puts </span><span style="color:#c0c5ce;">&quot;</span><span style="color:#a3be8c;">hello</span><span style="color:#c0c5ce;">&quot;
       </span><span style="color:#b48ead;">end
-      </span>
-      </code></pre>
+      </span></code></pre>
     HTML
 
     lang = %(lang="ruby")
@@ -130,8 +129,7 @@ class TestSyntaxHighlighting < Minitest::Test
       <span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
       </span><span style="color:#323232;">  </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
       </span><span style="font-weight:bold;color:#a71d5d;">end
-      </span>
-      </code></pre>
+      </span></code></pre>
     HTML
 
     lang = %(lang="ruby")
@@ -172,8 +170,7 @@ class TestSyntaxHighlighting < Minitest::Test
       <span style="color:#99ff99;">def </span><span style="color:#a6e22e;">hello
       </span><span style="color:#ccccff;">  </span><span style="color:#ffcc66;">puts </span><span style="color:#e6db74;">&quot;hello&quot;
       </span><span style="color:#99ff99;">end
-      </span>
-      </code></pre>
+      </span></code></pre>
     HTML
 
     lang = %(lang="ruby")
