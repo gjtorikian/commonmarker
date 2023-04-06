@@ -37,16 +37,6 @@ char *cmark_markdown_to_html(const char *text, size_t len, int options);
 #define CMARK_NODE_TYPE_MASK (0xc000)
 #define CMARK_NODE_VALUE_MASK (0x3fff)
 
-/**
- * This is the maximum number of block types (CMARK_NODE_DOCUMENT,
- * CMARK_NODE_HEADING, ...). It needs to be bigger than the number of
- * hardcoded block types (below) to allow for extensions (see
- * cmark_syntax_extension_add_node). But it also determines the size of the
- * open_block_counts array in the cmark_parser struct, so we don't want it
- * to be excessively large.
- */
-#define CMARK_NODE_TYPE_BLOCK_LIMIT 0x20
-
 typedef enum {
   /* Error status */
   CMARK_NODE_NONE = 0x0000,
@@ -422,6 +412,17 @@ CMARK_GFM_EXPORT int cmark_node_get_list_tight(cmark_node *node);
 /** Sets the "tightness" of a list.  Returns 1 on success, 0 on failure.
  */
 CMARK_GFM_EXPORT int cmark_node_set_list_tight(cmark_node *node, int tight);
+
+/**
+ * Returns item index of 'node'. This is only used when rendering output
+ * formats such as commonmark, which need to output the index. It is not
+ * required for formats such as html or latex.
+ */
+CMARK_GFM_EXPORT int cmark_node_get_item_index(cmark_node *node);
+
+/** Sets item index of 'node'. Returns 1 on success, 0 on failure.
+ */
+CMARK_GFM_EXPORT int cmark_node_set_item_index(cmark_node *node, int idx);
 
 /** Returns the info string from a fenced code block.
  */
