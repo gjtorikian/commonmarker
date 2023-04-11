@@ -129,8 +129,12 @@ module CommonMarker
       out("<em>", :children, "</em>")
     end
 
-    def strong(_)
-      out("<strong>", :children, "</strong>")
+    def strong(node)
+      if node.parent&.type == :strong
+        out(:children)
+      else
+        out("<strong>", :children, "</strong>")
+      end
     end
 
     def link(node)

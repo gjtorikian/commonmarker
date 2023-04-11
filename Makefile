@@ -21,6 +21,3 @@ ext/commonmarker/cmark-gfm_export.h: ext/commonmarker/cmark-upstream/build/src/c
 
 ext/commonmarker/cmark-gfm_version.h: ext/commonmarker/cmark-upstream/build/src/cmark-gfm_version.h
 	cp $< $@
-
-ext/commonmarker/cmark-gfm-extensions_export.h: ext/commonmarker/cmark-upstream/build/extensions/cmark-gfm-extensions_export.h
-	cp $< $@
