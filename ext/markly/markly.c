@@ -1154,7 +1154,7 @@ VALUE rb_Markly_extensions(VALUE self) {
   return ary;
 }
 
-__attribute__((visibility("default"))) void Init_markly() {
+__attribute__((visibility("default"))) void Init_markly(void) {
   sym_document = ID2SYM(rb_intern("document"));
   sym_blockquote = ID2SYM(rb_intern("blockquote"));
   sym_list = ID2SYM(rb_intern("list"));
