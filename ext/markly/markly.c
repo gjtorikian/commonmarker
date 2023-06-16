@@ -515,7 +515,6 @@ static VALUE rb_node_insert_before(VALUE self, VALUE sibling) {
  * Returns a {String}.
  */
 static VALUE rb_render_html(VALUE self, VALUE rb_options, VALUE rb_extensions) {
-  int options, extensions_len;
   VALUE rb_ext_name;
   int i;
   cmark_node *node;
@@ -524,8 +523,8 @@ static VALUE rb_render_html(VALUE self, VALUE rb_options, VALUE rb_extensions) {
   Check_Type(rb_options, T_FIXNUM);
   Check_Type(rb_extensions, T_ARRAY);
 
-  options = FIX2INT(rb_options);
-  extensions_len = RARRAY_LEN(rb_extensions);
+  int options = FIX2INT(rb_options);
+  long extensions_len = RARRAY_LEN(rb_extensions);
 
   TypedData_Get_Struct(self, cmark_node, &rb_Markly_Node_Type, node);
 
@@ -1196,6 +1195,7 @@ __attribute__((visibility("default"))) void Init_markly(void) {
 	rb_define_method(rb_Markly_Parser, "parse", rb_Markly_Parser_parse, 1);
 	
   rb_Markly_Node = rb_define_class_under(rb_Markly, "Node", rb_cObject);
+	rb_undef_alloc_func(rb_Markly_Node);
   rb_define_singleton_method(rb_Markly_Node, "new", rb_node_new, 1);
 
 	rb_define_method(rb_Markly_Node, "replace", rb_node_replace, 1);
