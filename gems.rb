@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+# Released under the MIT License.
+# Copyright, 2014, by John MacFarlane.
+# Copyright, 2015-2019, by Garen Torikian.
+# Copyright, 2019, by Garen J. Torikian.
+# Copyright, 2020-2022, by Samuel Williams.
+
 source 'https://rubygems.org/'
 
 gemspec

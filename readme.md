@@ -2,7 +2,7 @@
 
 A parser and abstract syntax tree for Markdown documents (CommonMark compatible) in Ruby. Originally forked from [CommonMarker](https://github.com/gjtorikian/commonmarker). It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking. For more information on available extensions, see [the documentation below](#extensions).
 
-[![Development Status](https://github.com/ioquatix/markly/workflows/Development/badge.svg)](https://github.com/ioquatix/markly/actions?workflow=Development)
+[![Development Status](https://github.com/ioquatix/markly/workflows/Test/badge.svg)](https://github.com/ioquatix/markly/actions?workflow=Test)
 
 ## Installation
 
@@ -203,29 +203,3 @@ Some rough benchmarks:
       1.830000   0.030000   1.860000 (  1.866203)
     kramdown
       4.610000   0.070000   4.680000 (  4.678398)
-
-## License
-
-Released under the MIT license.
-
-Copyright, 2015, by Garen J. Torikian.  
-Copyright, 2015, by Ashe Connor.  
-Copyright, 2020, by [Samuel G. D. Williams](http://www.codeotaku.com).
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
