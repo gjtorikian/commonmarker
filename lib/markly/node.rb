@@ -65,9 +65,75 @@ module Markly
 
 			child = first_child
 			while child
-				nextchild = child.next
+				next_child = child.next
 				yield child
-				child = nextchild
+				child = next_child
+			end
+		end
+		
+		def find_header(title)
+			each do |child|
+				if child.type == :header && child.first_child.string_content == title
+					return child
+				end
+			end
+		end
+		
+		# Delete all nodes until the block returns true.
+		#
+		# @returns [Markly::Node] the node that returned true.
+		def delete_until
+			current = self
+			while current
+				return current if yield(current)
+				next_node = current.next
+				current.delete
+				current = next_node
+			end
+		end
+		
+		# Replace a section (header + content) with a new node.
+		#
+		# @parameter title [String] the title of the section to replace.
+		# @parameter new_node [Markly::Node] the node to replace the section with.
+		# @parameter replace_header [Boolean] whether to replace the header itself or not.
+		# @parameter remove_subsections [Boolean] whether to remove subsections or not.
+		def replace_section(new_node, replace_header: true, remove_subsections: true)
+			# Delete until the next heading:
+			self.next&.delete_until do |node|
+				node.type == :heading && (!remove_subsections || node.header_level <= self.header_level)
+			end
+			
+			self.append_after(new_node) if new_node
+			self.delete if replace_header
+		end
+		
+		def next_heading
+			current = self.next
+			while current
+				if current.type == :heading
+					return current
+				end
+				current = current.next
+			end
+		end
+		
+		# Append the given node after the current node.
+		#
+		# It's okay to provide a document node, it's children will be appended.
+		#
+		# @parameter node [Markly::Node] the node to append.
+		def append_after(node)
+			if node.type == :document
+				node = node.first_child
+			end
+			
+			current = self
+			while node
+				next_node = node.next
+				current.insert_after(node)
+				current = node
+				node = next_node
 			end
 		end
 	end

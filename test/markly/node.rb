@@ -192,4 +192,28 @@ describe Markly::Node do
 			expect(document.to_html).to be =~ /<pre><code class="language-perl">puts 'wow'\n<\/code><\/pre>/
 		end
 	end
+	
+	with '#find_header' do
+		let(:document) {Markly.parse("# Heading\n\n## Subheading")}
+		
+		it "can find a heading" do
+			expect(document.find_header("Heading")).to be == document.first_child
+			expect(document.find_header("Subheading")).to be == document.first_child.next
+		end
+	end
+	
+	with '#replace_section' do
+		let(:document) {Markly.parse("# Heading\n\n## Subheading")}
+		let(:new_document) {Markly.parse("### New Heading")}
+		
+		it "can replace a section" do
+			document.find_header("Heading").replace_section(new_document.first_child, remove_subsections: true)
+			expect(document.to_html).to be == "<h3>New Heading</h3>\n"
+		end
+		
+		it "can replace a section and subsections" do
+			document.find_header("Heading").replace_section(new_document.first_child, remove_subsections: false)
+			expect(document.to_html).to be == "<h3>New Heading</h3>\n"
+		end
+	end
 end
