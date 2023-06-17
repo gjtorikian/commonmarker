@@ -1053,19 +1053,14 @@ static VALUE rb_node_set_tasklist_item_checked(VALUE self, VALUE item_checked) {
   }
 }
 
-// TODO: remove this, superseded by the above method
-static VALUE rb_node_get_tasklist_state(VALUE self) {
-  int tasklist_state;
-  cmark_node *node;
-  TypedData_Get_Struct(self, cmark_node, &rb_Markly_Node_Type, node);
+static VALUE rb_node_get_parent_footnote_def(VALUE self) {
+	cmark_node *node;
+	cmark_node *parent;
+	TypedData_Get_Struct(self, cmark_node, &rb_Markly_Node_Type, node);
 
-  tasklist_state = cmark_gfm_extensions_get_tasklist_item_checked(node);
+	parent = cmark_node_parent_footnote_def(node);
 
-  if (tasklist_state == 1) {
-    return rb_str_new2("checked");
-  } else {
-    return rb_str_new2("unchecked");
-  }
+	return rb_Markly_Node_wrap(parent);
 }
 
 static VALUE rb_node_get_table_alignments(VALUE self) {
@@ -1233,9 +1228,10 @@ __attribute__((visibility("default"))) void Init_markly(void) {
   rb_define_method(rb_Markly_Node, "fence_info", rb_node_get_fence_info, 0);
   rb_define_method(rb_Markly_Node, "fence_info=", rb_node_set_fence_info, 1);
   rb_define_method(rb_Markly_Node, "table_alignments", rb_node_get_table_alignments, 0);
-  rb_define_method(rb_Markly_Node, "tasklist_state", rb_node_get_tasklist_state, 0);
   rb_define_method(rb_Markly_Node, "tasklist_item_checked?", rb_node_get_tasklist_item_checked, 0);
   rb_define_method(rb_Markly_Node, "tasklist_item_checked=", rb_node_set_tasklist_item_checked, 1);
+
+	rb_define_method(rb_Markly_Node, "parent_footnote_def", rb_node_get_parent_footnote_def, 0);
 
   rb_define_method(rb_Markly_Node, "html_escape_href", rb_html_escape_href, 1);
   rb_define_method(rb_Markly_Node, "html_escape_html", rb_html_escape_html, 1);

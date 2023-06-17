@@ -1,6 +1,0 @@
-#!/bin/sh
-
-set -e
-
-bundle exec rake compile
-bundle exec rake test TEST=test/$1
