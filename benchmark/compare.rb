@@ -1,36 +1,37 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'benchmark/ips'
+
+$LOAD_PATH << ::File.expand_path("../ext", __dir__)
+
 require 'markly'
-require 'github/markdown'
-require 'redcarpet'
+require 'commonmarker'
 require 'kramdown'
-require 'benchmark'
 
-def dobench(name, &blk)
-  puts name
-  puts Benchmark.measure(&blk)
-end
+MARKDOWN = File.open('sample.md', 'r').read
 
-benchinput = File.open('test/benchinput.md', 'r').read
+Benchmark.ips do |x|
+	x.report("Markly.render_html") do
+		Markly.render_html(MARKDOWN)
+	end
 
-printf("input size = %<bytes>d bytes\n\n", benchinput.bytesize)
+	x.report("Markly::Node#to_html") do
+		Markly.parse(MARKDOWN).to_html
+	end
 
-dobench('redcarpet') do
-  Redcarpet::Markdown.new(Redcarpet::Render::HTML, autolink: false, tables: false).render(benchinput)
-end
+	x.report("Markly::Renderer::HTML") do
+		Markly::Renderer::HTML.new.render(Markly.parse(MARKDOWN))
+	end
 
-dobench('github-markdown') do
-  GitHub::Markdown.render(benchinput)
-end
+	x.report("Commonmarker.render_html") do
+		CommonMarker.render_html(MARKDOWN)
+	end
 
-dobench('markly with to_html') do
-  Markly.render_html(benchinput)
-end
+	x.report("Kramdown::Document#to_html") do
+		Kramdown::Document.new(MARKDOWN).to_html
+	end
 
-dobench('markly with ruby Renderer::HTML') do
-  Markly::Renderer::HTML.new.render(Markly.parse(benchinput))
-end
-
-dobench('kramdown') do
-  Kramdown::Document.new(benchinput).to_html(benchinput)
+	# Compare the iterations per second of the various reports!
+	x.compare!
 end
