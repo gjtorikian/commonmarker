@@ -5,6 +5,11 @@ require "minitest/autorun"
 require "minitest/pride"
 require "minitest/focus"
 
+if ENV.fetch("DEBUG", false)
+  require "amazing_print"
+  require "debug"
+end
+
 include Commonmarker
 
 FIXTURES_DIR = File.join(File.dirname(__FILE__), "fixtures")

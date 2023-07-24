@@ -46,7 +46,7 @@ class TestExtensions < Minitest::Test
       : Ruby wrapper for comrak (CommonMark parser)
     MARKDOWN
 
-    extensions = { strikethrough: false,  description_lists: true }
+    extensions = { strikethrough: false, description_lists: true }
     options = { extension: extensions, render: { hardbreaks: false } }
     output = Commonmarker.to_html(markdown, options: options)
 

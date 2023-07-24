@@ -79,7 +79,7 @@ module Commonmarker
 
     [:syntax_highlighter].each do |type|
       define_singleton_method :"process_#{type}_plugin" do |plugin|
-        return nil if plugin.nil? # plugin explicitly nil, remove it
+        return if plugin.nil? # plugin explicitly nil, remove it
 
         Commonmarker::Config::PLUGINS[type].each_with_object({}) do |(key, value), hash|
           if plugin.nil? # option not provided, go for the default
