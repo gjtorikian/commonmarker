@@ -7,11 +7,6 @@ require "commonmarker/config"
 require "commonmarker/renderer"
 require "commonmarker/version"
 
-if ENV.fetch("DEBUG", false)
-  require "awesome_print"
-  require "debug"
-end
-
 module Commonmarker
   class << self
     # Public: Parses a CommonMark string into an HTML string.
