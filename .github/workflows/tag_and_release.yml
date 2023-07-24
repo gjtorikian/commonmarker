@@ -11,95 +11,13 @@ on:
 env:
   CACHE_KEY_PREFIX: "cruby-v1-"
 
-# "3.1,3.2" # SUPPORTED_RUBY_VERSIONS
-# ["3.1", "3.2"] # SUPPORTED_RUBY_MATRIX
-# "3.2" # LATEST_RUBY_VERSION
-
 jobs:
-  native_gem:
-    name: Compile native gem
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform:
-          - x86_64-linux
-          - aarch64-linux
-
-          - x86_64-darwin
-          - arm64-darwin
-
-          - x64-mingw-ucrt
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "3.2" # LATEST_RUBY_VERSION
-
-      - uses: oxidize-rb/actions/cross-gem@v1
-        id: cross-gem
-        with:
-          platform: ${{ matrix.platform }}
-          ruby-versions: "3.1,3.2" # SUPPORTED_RUBY_VERSIONS
-
-      - name: Publish to RubyGems
-        env:
-          GEM_HOST_API_KEY: ${{secrets.RUBYGEMS_API_BOT_KEY}}
-          GEM_OUTPUT_PATH: ${{ steps.cross-gem.outputs.gem-path }}
-        run: |
-          mkdir -p $HOME/.gem
-          touch $HOME/.gem/credentials
-          chmod 0600 $HOME/.gem/credentials
-          printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
-          gem push "${GEM_OUTPUT_PATH}" || true
-          echo "Pushed ${GEM_OUTPUT_PATH}"
-
-  release:
-    needs: ["native_gem"]
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Ruby 3.2
-        uses: ruby/setup-ruby@v1
-        with:
-          rubygems: latest
-          ruby-version: "3.2" # LATEST_RUBY_VERSION
-          bundler-cache: true
-
-      - name: Configure Git
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "Actions Auto Build"
-
-      - name: Get current version
-        id: version-label
-        run: |
-          VERSION=$(grep VERSION lib/commonmarker/version.rb | head -n 1 | cut -d'"' -f2)
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-
-      - name: Create tag
-        run: |
-          git tag -a v${{ steps.version-label.outputs.version }} -m "Release v${{ steps.version-label.outputs.version }}"
-          git push origin --tags
-
-      - name: Generate CHANGELOG.md
-        id: changelog
-        run: script/generate_changelog
-
-      - name: Commit & Push Changelog
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "Actions Auto Build"
-          git add -f CHANGELOG.md
-          git commit -m "docs: update changelog" || true
-          git push
-
-      - name: Publish release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create v${{ steps.version-label.outputs.version }} --generate-notes
+  ruby:
+    uses: yettoapp/actions/.github/workflows/ruby_gem_release.yml@main
+    secrets:
+      rubygems_api_key: ${{ secrets.RUBYGEMS_API_BOT_KEY }}
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      gem_name: commonmarker
+      version_filepath: lib/commonmarker/version.rb
+      oxidized: true
