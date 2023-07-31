@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
 if [ -z "$1" ]; then
   BRANCH="main"
@@ -14,7 +14,10 @@ echo "Checking out cmark-upstream"
 echo "---------------------"
 cd ext/commonmarker/cmark-upstream
 git fetch origin
-git checkout $BRANCH && git pull
+# when checking out a tag, for whatever reason the git pull step fails
+# so we comment it out for now:
+# git checkout $BRANCH && git pull
+git checkout $BRANCH
 sha=`git rev-parse HEAD`
 cd ../../..
 make
