@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.23.10] (2023-07-31)
+
+- Update GFM release to [`0.29.0.gfm.12`](https://github.com/github/cmark-gfm/releases/tag/0.29.0.gfm.12) and [`0.29.0.gfm.13`](https://github.com/github/cmark-gfm/releases/tag/0.29.0.gfm.13), thereby [fixing a polynomial time complexity security vulnerability](https://github.com/github/cmark-gfm/security/advisories/GHSA-w4qg-3vf7-m9x5).
+- Of note to users of this library, GFM releases `0.29.0.gfm.12` and `0.29.0.gfm.13` also:
+  - Normalized marker row vs. delimiter row nomenclature ([#273](https://github.com/github/cmark-gfm/pull/273))
+  - Exposed CMARK_NODE_FOOTNOTE_DEFINITION literal value ([#336](https://github.com/github/cmark-gfm/pull/336))
+
+
 ## [v0.23.4](https://github.com/gjtorikian/commonmarker/tree/v0.23.4) (2022-03-03)
 
 [Full Changelog](https://github.com/gjtorikian/commonmarker/compare/v0.23.2...v0.23.4)
