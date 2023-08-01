@@ -4,7 +4,7 @@ version = "1.0.0"
 edition = "2021"
 
 [dependencies]
-magnus =  "0.5"
+magnus =  "0.6"
 comrak = { version = "0.18", features = ["shortcodes"] }
 syntect = { version = "5.1", features = ["plist-load"] }
 
