@@ -10,7 +10,7 @@ jobs:
   rubocop:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2
@@ -26,7 +26,7 @@ jobs:
         rust:
           - stable
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Obtain Rust
       run: rustup override set ${{ matrix.rust }}
