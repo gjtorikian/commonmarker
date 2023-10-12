@@ -11,7 +11,7 @@ class TestTasklists < Minitest::Test
     html = Commonmarker.to_html(text, options: { extension: { tasklist: true } })
     expected = <<~HTML
       <ul>
-      <li><input type="checkbox" disabled="" checked="" /> Add task list</li>
+      <li><input type="checkbox" checked="" disabled="" /> Add task list</li>
       <li><input type="checkbox" disabled="" /> Define task list</li>
       </ul>
     HTML
