@@ -29,13 +29,9 @@ mod utils;
 
 pub const EMPTY_STR: &str = "";
 
-fn commonmark_to_html<'a>(args: &[Value]) -> Result<String, magnus::Error> {
-    let args = scan_args::scan_args(args)?;
+fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
+    let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
     let (rb_commonmark,): (String,) = args.required;
-    let _: () = args.optional;
-    let _: () = args.splat;
-    let _: () = args.trailing;
-    let _: () = args.block;
 
     let kwargs = scan_args::get_kwargs::<_, (), (Option<RHash>, Option<RHash>), ()>(
         args.keywords,
@@ -76,7 +72,7 @@ fn commonmark_to_html<'a>(args: &[Value]) -> Result<String, magnus::Error> {
         if !path.eq(&PathBuf::from("".to_string())) && !path.exists() {
             return Err(Error::new(
                 exception::arg_error(),
-                format!("path does not exist"),
+                "path does not exist".to_string(),
             ));
         }
 
