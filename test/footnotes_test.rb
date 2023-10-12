@@ -16,7 +16,7 @@ class TestFootnotes < Minitest::Test
       <section class="footnotes" data-footnotes>
       <ol>
       <li id="fn-1">
-      <p>This is a footnote <a href="#fnref-1" class="footnote-backref" data-footnote-backref aria-label="Back to content">↩</a></p>
+      <p>This is a footnote <a href="#fnref-1" class="footnote-backref" data-footnote-backref data-footnote-backref-idx="1" aria-label="Back to reference 1">↩</a></p>
       </li>
       </ol>
       </section>
