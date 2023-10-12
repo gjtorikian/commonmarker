@@ -1,3 +1,15 @@
+## [v1.0.0.pre11] - 12-10-2023
+## What's Changed
+* Bump syntect from 5.0.0 to 5.1.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/248
+* Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/252
+* Bump magnus from 0.5.4 to 0.6.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/254
+* Bump comrak from 0.18.0 to 0.19.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/255
+* fix front_matter_delimiter type by @noraj in https://github.com/gjtorikian/commonmarker/pull/257
+
+## New Contributors
+* @noraj made their first contribution in https://github.com/gjtorikian/commonmarker/pull/257
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre10...v1.0.0.pre11
 ## [v1.0.0.pre10] - 24-07-2023
 null
 # Changelog
