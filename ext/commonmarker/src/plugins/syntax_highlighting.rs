@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
-use magnus::{RHash, Symbol, Value};
+use magnus::value::ReprValue;
+use magnus::{RHash, Symbol, TryConvert, Value};
 
 use crate::EMPTY_STR;
 
@@ -14,7 +15,7 @@ pub fn fetch_syntax_highlighter_theme(value: Value) -> Result<String, magnus::Er
         return Ok(EMPTY_STR.to_string());
     }
 
-    let syntax_highlighter_plugin = value.try_convert::<RHash>()?;
+    let syntax_highlighter_plugin: RHash = TryConvert::try_convert(value)?;
     let theme_key = Symbol::new(SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY);
 
     match syntax_highlighter_plugin.get(theme_key) {
@@ -38,7 +39,7 @@ pub fn fetch_syntax_highlighter_path(value: Value) -> Result<PathBuf, magnus::Er
         return Ok(PathBuf::from(EMPTY_STR));
     }
 
-    let syntax_highlighter_plugin = value.try_convert::<RHash>()?;
+    let syntax_highlighter_plugin: RHash = TryConvert::try_convert(value)?;
     let path_key = Symbol::new(SYNTAX_HIGHLIGHTER_PLUGIN_PATH_KEY);
 
     match syntax_highlighter_plugin.get(path_key) {
@@ -47,8 +48,8 @@ pub fn fetch_syntax_highlighter_path(value: Value) -> Result<PathBuf, magnus::Er
                 // `syntax_highlighter: { path: nil }`
                 return Ok(PathBuf::from(EMPTY_STR));
             }
-
-            Ok(PathBuf::from(path.try_convert::<String>()?))
+            let val: String = TryConvert::try_convert(path)?;
+            Ok(PathBuf::from(val))
         }
         None => {
             // `syntax_highlighter: {  }`

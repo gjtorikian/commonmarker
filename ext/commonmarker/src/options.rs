@@ -2,6 +2,8 @@ use std::borrow::Cow;
 
 use comrak::ComrakOptions;
 
+use magnus::value::ReprValue;
+use magnus::TryConvert;
 use magnus::{class, r_hash::ForEach, Error, RHash, Symbol, Value};
 
 use crate::utils::try_convert_string;
@@ -14,7 +16,7 @@ fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash
         .foreach(|key: Symbol, value: Value| {
             match key.name() {
                 Ok(Cow::Borrowed(PARSE_SMART)) => {
-                    comrak_options.parse.smart = value.try_convert::<bool>()?;
+                    comrak_options.parse.smart = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(PARSE_DEFAULT_INFO_STRING)) => {
                     comrak_options.parse.default_info_string = try_convert_string(value);
@@ -37,19 +39,19 @@ fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHas
         .foreach(|key: Symbol, value: Value| {
             match key.name() {
                 Ok(Cow::Borrowed(RENDER_HARDBREAKS)) => {
-                    comrak_options.render.hardbreaks = value.try_convert::<bool>()?;
+                    comrak_options.render.hardbreaks = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(RENDER_GITHUB_PRE_LANG)) => {
-                    comrak_options.render.github_pre_lang = value.try_convert::<bool>()?;
+                    comrak_options.render.github_pre_lang = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(RENDER_WIDTH)) => {
-                    comrak_options.render.width = value.try_convert::<usize>()?;
+                    comrak_options.render.width = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(RENDER_UNSAFE)) => {
-                    comrak_options.render.unsafe_ = value.try_convert::<bool>()?;
+                    comrak_options.render.unsafe_ = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(RENDER_ESCAPE)) => {
-                    comrak_options.render.escape = value.try_convert::<bool>()?;
+                    comrak_options.render.escape = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
@@ -75,37 +77,37 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
         .foreach(|key: Symbol, value: Value| {
             match key.name() {
                 Ok(Cow::Borrowed(EXTENSION_STRIKETHROUGH)) => {
-                    comrak_options.extension.strikethrough = value.try_convert::<bool>()?;
+                    comrak_options.extension.strikethrough = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_TAGFILTER)) => {
-                    comrak_options.extension.tagfilter = value.try_convert::<bool>()?;
+                    comrak_options.extension.tagfilter = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_TABLE)) => {
-                    comrak_options.extension.table = value.try_convert::<bool>()?;
+                    comrak_options.extension.table = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_AUTOLINK)) => {
-                    comrak_options.extension.autolink = value.try_convert::<bool>()?;
+                    comrak_options.extension.autolink = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_TASKLIST)) => {
-                    comrak_options.extension.tasklist = value.try_convert::<bool>()?;
+                    comrak_options.extension.tasklist = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_SUPERSCRIPT)) => {
-                    comrak_options.extension.superscript = value.try_convert::<bool>()?;
+                    comrak_options.extension.superscript = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_HEADER_IDS)) => {
                     comrak_options.extension.header_ids = try_convert_string(value);
                 }
                 Ok(Cow::Borrowed(EXTENSION_FOOTNOTES)) => {
-                    comrak_options.extension.footnotes = value.try_convert::<bool>()?;
+                    comrak_options.extension.footnotes = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_DESCRIPTION_LISTS)) => {
-                    comrak_options.extension.description_lists = value.try_convert::<bool>()?;
+                    comrak_options.extension.description_lists = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_FRONT_MATTER_DELIMITER)) => {
                     comrak_options.extension.front_matter_delimiter = try_convert_string(value);
                 }
                 Ok(Cow::Borrowed(EXTENSION_SHORTCODES)) => {
-                    comrak_options.extension.shortcodes = value.try_convert::<bool>()?;
+                    comrak_options.extension.shortcodes = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
