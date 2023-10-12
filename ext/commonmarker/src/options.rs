@@ -104,7 +104,11 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                     comrak_options.extension.description_lists = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(EXTENSION_FRONT_MATTER_DELIMITER)) => {
-                    comrak_options.extension.front_matter_delimiter = try_convert_string(value);
+                    if let Some(option) = try_convert_string(value) {
+                        if !option.is_empty() {
+                            comrak_options.extension.front_matter_delimiter = Some(option);
+                        }
+                    }
                 }
                 Ok(Cow::Borrowed(EXTENSION_SHORTCODES)) => {
                     comrak_options.extension.shortcodes = TryConvert::try_convert(value)?;

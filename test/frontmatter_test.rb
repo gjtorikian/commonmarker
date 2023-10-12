@@ -14,4 +14,13 @@ class TestFrontmatter < Minitest::Test
 
     assert_equal(expected, Commonmarker.to_html(md, plugins: nil))
   end
+
+  def test_frontmatter_custom_delimiter
+    md = "---\nyaml: true\nage: 42\n---\n# Title 1"
+    expected = <<~HTML
+      <h1>Title 1</h1>
+    HTML
+
+    assert_equal(expected, Commonmarker.to_html(md, options: { extension: { front_matter_delimiter: "---" } }))
+  end
 end
