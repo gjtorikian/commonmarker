@@ -1,7 +1,7 @@
 {
     "recommendations": [
         "rust-lang.rust-analyzer",
-        "bungcip.better-toml",
+        "tamasfe.even-better-toml",
         "Shopify.ruby-lsp",
     ]
 }
