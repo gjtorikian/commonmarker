@@ -125,7 +125,7 @@ fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
                         format!("theme `{}` does not exist", theme),
                     )
                 })?;
-            adapter = SyntectAdapter::new(&theme);
+            adapter = SyntectAdapter::new(Some(&theme));
             syntax_highlighter = Some(&adapter);
         }
 
