@@ -52,7 +52,7 @@ class TestSyntaxHighlighting < Minitest::Test
     assert_equal(result, html)
   end
 
-  def test_lack_of_theme_has_no_highlighting
+  def test_non_hash_value_is_an_error
     code = <<~CODE
       ```ruby
       def hello
@@ -61,19 +61,12 @@ class TestSyntaxHighlighting < Minitest::Test
       ```
     CODE
 
-    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: {} })
-
-    result = <<~CODE
-      <pre lang="ruby"><code>def hello
-        puts &quot;hello&quot;
-      end
-      </code></pre>
-    CODE
-
-    assert_equal(result, html)
+    assert_raises(TypeError) do
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: "wow!" })
+    end
   end
 
-  def test_nil_theme_removes_highlighting
+  def test_lack_of_theme_is_an_error
     code = <<~CODE
       ```ruby
       def hello
@@ -82,19 +75,26 @@ class TestSyntaxHighlighting < Minitest::Test
       ```
     CODE
 
-    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
-
-    result = <<~CODE
-      <pre lang="ruby"><code>def hello
-        puts &quot;hello&quot;
-      end
-      </code></pre>
-    CODE
-
-    assert_equal(result, html)
+    assert_raises(TypeError) do
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: {} })
+    end
   end
 
-  def test_empty_theme_is_no_highlighting
+  def test_nil_theme_is_an_error
+    code = <<~CODE
+      ```ruby
+      def hello
+        puts "hello"
+      end
+      ```
+    CODE
+
+    assert_raises(TypeError) do
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
+    end
+  end
+
+  def test_empty_theme_provides_class_highlighting
     code = <<~CODE
       ```ruby
       def hello
@@ -106,10 +106,10 @@ class TestSyntaxHighlighting < Minitest::Test
     html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "" } })
 
     result = <<~CODE
-      <pre lang="ruby"><code>def hello
-        puts &quot;hello&quot;
-      end
-      </code></pre>
+      <pre class="syntax-highlighting"><code><span class="source ruby"><span class="meta function ruby"><span class="keyword control def ruby">def</span></span><span class="meta function ruby"> <span class="entity name function ruby">hello</span></span>
+        <span class="support function builtin ruby">puts</span> <span class="string quoted double ruby"><span class="punctuation definition string begin ruby">&quot;</span>hello<span class="punctuation definition string end ruby">&quot;</span></span>
+      <span class="keyword control ruby">end</span>
+      </span></code></pre>
     CODE
 
     assert_equal(result, html)
@@ -152,7 +152,7 @@ class TestSyntaxHighlighting < Minitest::Test
     CODE
 
     assert_raises(ArgumentError) do
-      Commonmarker.to_html(code, plugins: { syntax_highlighter: { path: "test/fixtures" } })
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "WowieZowie", path: "test/fixtures" } })
     end
   end
 

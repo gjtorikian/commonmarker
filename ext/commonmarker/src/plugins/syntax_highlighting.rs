@@ -7,28 +7,43 @@ use crate::EMPTY_STR;
 
 pub const SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY: &str = "theme";
 pub const SYNTAX_HIGHLIGHTER_PLUGIN_PATH_KEY: &str = "path";
-pub const SYNTAX_HIGHLIGHTER_PLUGIN_DEFAULT_THEME: &str = "base16-ocean.dark";
 
-pub fn fetch_syntax_highlighter_theme(value: Value) -> Result<String, magnus::Error> {
+pub fn fetch_syntax_highlighter_theme(value: Value) -> Result<Option<String>, magnus::Error> {
     if value.is_nil() {
         // `syntax_highlighter: nil`
-        return Ok(EMPTY_STR.to_string());
+        return Ok(None);
     }
 
-    let syntax_highlighter_plugin: RHash = TryConvert::try_convert(value)?;
+    let syntax_highlighter_plugin: RHash = match TryConvert::try_convert(value) {
+        Ok(plugin) => plugin, // `syntax_highlighter: { theme: "<something>" }`
+        Err(e) => {
+            // not a hash!
+            return Err(e);
+        }
+    };
+
+    if syntax_highlighter_plugin.is_nil() || syntax_highlighter_plugin.is_empty() {
+        return Err(magnus::Error::new(
+            magnus::exception::type_error(),
+            "theme cannot be blank hash",
+        ));
+    }
+
     let theme_key = Symbol::new(SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY);
 
     match syntax_highlighter_plugin.get(theme_key) {
         Some(theme) => {
             if theme.is_nil() {
-                // `syntax_highlighter: { theme: nil }`
-                return Ok(EMPTY_STR.to_string());
+                return Err(magnus::Error::new(
+                    magnus::exception::type_error(),
+                    "theme cannot be nil",
+                ));
             }
             Ok(TryConvert::try_convert(theme)?)
         }
         None => {
-            // `syntax_highlighter: {  }`
-            Ok(EMPTY_STR.to_string())
+            // `syntax_highlighter: { theme: nil }`
+            Ok(None)
         }
     }
 }
