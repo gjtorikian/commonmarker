@@ -105,14 +105,26 @@ providing further niceties.
 
 #### Syntax Highlighter Plugin
 
+The library comes with [a set of pre-existing themes](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations) for highlighting code:
+
+- `"base16-ocean.dark"`
+- `"base16-eighties.dark"`
+- `"base16-mocha.dark"`
+- `"base16-ocean.light"`
+- `"InspiredGitHub"`
+- `"Solarized (dark)"`
+- `"Solarized (light)"`
+
 ````ruby
 code = <<~CODE
   ```ruby
   def hello
-  puts "hello"
+    puts "hello"
   end
+  ```
 CODE
 
+# pass in a theme name from a pre-existing set
 puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
 
 # <pre style="background-color:#ffffff;" lang="ruby"><code>
@@ -123,32 +135,49 @@ puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Inspire
 # </code></pre>
 ````
 
-To disable this plugin, pass `nil`:
+By default, the plugin uses the `"base16-ocean.dark"` theme to syntax highlight code.
 
-```ruby
+To disable this plugin, set the value to `nil`:
+
+````ruby
+code = <<~CODE
+  ```ruby
+  def hello
+    puts "hello"
+  end
+  ```
+CODE
+
 Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
-# or
-Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: nil } })
-```
 
-You can also provide a `path` to a directory containing `.tmtheme` files to load:
+# <pre lang="ruby"><code>def hello
+#   puts &quot;hello&quot;
+# end
+# </code></pre>
+````
+
+To output CSS classes instead of `style` attributes, set the `theme` key to `""`:
+
+````ruby
+code = <<~CODE
+  ```ruby
+  def hello
+    puts "hello"
+  end
+CODE
+
+Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "" } })
+
+# <pre class="syntax-highlighting"><code><span class="source ruby"><span class="meta function ruby"><span class="keyword control def ruby">def</span></span><span class="meta function ruby"> # <span class="entity name function ruby">hello</span></span>
+#   <span class="support function builtin ruby">puts</span> <span class="string quoted double ruby"><span class="punctuation definition string begin ruby">&quot;</span>hello<span class="punctuation definition string end ruby">&quot;</span></span>
+# <span class="keyword control ruby">end</span>\n</span></code></pre>
+````
+
+To use a custom theme, you can provide a `path` to a directory containing `.tmtheme` files to load:
 
 ```ruby
-
 Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: "./themes" } })
 ```
-
-##### Available themes
-
-Here's [a list of themes available by default](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations):
-
-- `"base16-ocean.dark"`
-- `"base16-eighties.dark"`
-- `"base16-mocha.dark"`
-- `"base16-ocean.light"`
-- `"InspiredGitHub"`
-- `"Solarized (dark)"`
-- `"Solarized (light)"`
 
 ## Output formats
 
