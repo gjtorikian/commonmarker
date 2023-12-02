@@ -18,10 +18,7 @@ use options::iterate_options_hash;
 
 mod plugins;
 use plugins::{
-    syntax_highlighting::{
-        fetch_syntax_highlighter_path, fetch_syntax_highlighter_theme,
-        SYNTAX_HIGHLIGHTER_PLUGIN_DEFAULT_THEME,
-    },
+    syntax_highlighting::{fetch_syntax_highlighter_path, fetch_syntax_highlighter_theme},
     SYNTAX_HIGHLIGHTER_PLUGIN,
 };
 
@@ -57,78 +54,83 @@ fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
 
         let theme = match rb_plugins.get(Symbol::new(SYNTAX_HIGHLIGHTER_PLUGIN)) {
             Some(syntax_highlighter_options) => {
-                fetch_syntax_highlighter_theme(syntax_highlighter_options)?
-            }
-            None => SYNTAX_HIGHLIGHTER_PLUGIN_DEFAULT_THEME.to_string(), // no `syntax_highlighter:` defined
-        };
-
-        let path = match rb_plugins.get(Symbol::new(SYNTAX_HIGHLIGHTER_PLUGIN)) {
-            Some(syntax_highlighter_options) => {
-                fetch_syntax_highlighter_path(syntax_highlighter_options)?
-            }
-            None => PathBuf::from("".to_string()), // no `syntax_highlighter:` defined
-        };
-
-        if !path.eq(&PathBuf::from("".to_string())) && !path.exists() {
-            return Err(Error::new(
-                exception::arg_error(),
-                "path does not exist".to_string(),
-            ));
-        }
-
-        if theme.is_empty() && path.exists() {
-            return Err(Error::new(
-                exception::arg_error(),
-                "`path` also needs `theme` passed into the `syntax_highlighter`",
-            ));
-        }
-        if path.exists() && !path.is_dir() {
-            return Err(Error::new(
-                exception::arg_error(),
-                "`path` needs to be a directory",
-            ));
-        }
-
-        if path.exists() {
-            let builder = SyntectAdapterBuilder::new();
-            let mut ts = ThemeSet::load_defaults();
-
-            match ts.add_from_folder(&path) {
-                Ok(_) => {}
-                Err(e) => {
-                    return Err(Error::new(
-                        exception::arg_error(),
-                        format!("failed to load theme set from path: {e}"),
-                    ));
+                match fetch_syntax_highlighter_theme(syntax_highlighter_options) {
+                    Ok(theme) => theme,
+                    Err(e) => {
+                        return Err(e);
+                    }
                 }
             }
+            None => None, // no `syntax_highlighter:` defined
+        };
 
-            ts.themes.get(&theme).ok_or_else(|| {
-                Error::new(
-                    exception::arg_error(),
-                    format!("theme `{}` does not exist", theme),
-                )
-            })?;
+        match theme {
+            None => syntax_highlighter = None,
+            Some(theme) => {
+                if theme.is_empty() {
+                    // no theme? uss css classes
+                    adapter = SyntectAdapter::new(None);
+                    syntax_highlighter = Some(&adapter);
+                } else {
+                    let path = match rb_plugins.get(Symbol::new(SYNTAX_HIGHLIGHTER_PLUGIN)) {
+                        Some(syntax_highlighter_options) => {
+                            fetch_syntax_highlighter_path(syntax_highlighter_options)?
+                        }
+                        None => PathBuf::from("".to_string()), // no `syntax_highlighter:` defined
+                    };
 
-            adapter = builder.theme_set(ts).theme(&theme).build();
+                    if path.exists() {
+                        if !path.is_dir() {
+                            return Err(Error::new(
+                                exception::arg_error(),
+                                "`path` needs to be a directory",
+                            ));
+                        }
 
-            syntax_highlighter = Some(&adapter);
-        } else if theme.is_empty() || theme == "none" {
-            syntax_highlighter = None;
-        } else {
-            ThemeSet::load_defaults()
-                .themes
-                .get(&theme)
-                .ok_or_else(|| {
-                    Error::new(
-                        exception::arg_error(),
-                        format!("theme `{}` does not exist", theme),
-                    )
-                })?;
-            adapter = SyntectAdapter::new(Some(&theme));
-            syntax_highlighter = Some(&adapter);
+                        let builder = SyntectAdapterBuilder::new();
+                        let mut ts = ThemeSet::load_defaults();
+
+                        match ts.add_from_folder(&path) {
+                            Ok(_) => {}
+                            Err(e) => {
+                                return Err(Error::new(
+                                    exception::arg_error(),
+                                    format!("failed to load theme set from path: {e}"),
+                                ));
+                            }
+                        }
+
+                        // check if the theme exists in the dir
+                        match ts.themes.get(&theme) {
+                            Some(theme) => theme,
+                            None => {
+                                return Err(Error::new(
+                                    exception::arg_error(),
+                                    format!("theme `{}` does not exist", theme),
+                                ));
+                            }
+                        };
+
+                        adapter = builder.theme_set(ts).theme(&theme).build();
+
+                        syntax_highlighter = Some(&adapter);
+                    } else {
+                        // no path? default theme lookup
+                        ThemeSet::load_defaults()
+                            .themes
+                            .get(&theme)
+                            .ok_or_else(|| {
+                                Error::new(
+                                    exception::arg_error(),
+                                    format!("theme `{}` does not exist", theme),
+                                )
+                            })?;
+                        adapter = SyntectAdapter::new(Some(&theme));
+                        syntax_highlighter = Some(&adapter);
+                    }
+                }
+            }
         }
-
         comrak_plugins.render.codefence_syntax_highlighter = syntax_highlighter;
 
         Ok(markdown_to_html_with_plugins(
