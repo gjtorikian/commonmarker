@@ -24,7 +24,7 @@ pub fn fetch_syntax_highlighter_theme(value: Value) -> Result<String, magnus::Er
                 // `syntax_highlighter: { theme: nil }`
                 return Ok(EMPTY_STR.to_string());
             }
-            Ok(theme.try_convert::<String>()?)
+            Ok(TryConvert::try_convert(theme)?)
         }
         None => {
             // `syntax_highlighter: {  }`
