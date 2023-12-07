@@ -1,3 +1,11 @@
+## [v1.0.0.pre12] - 07-12-2023
+## What's Changed
+* Reintroduce  platform releases by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/260
+* Bump comrak from 0.19.0 to 0.20.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/261
+* Classy highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/262
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre11...v1.0.0.pre12
 ## [v1.0.0.pre11] - 12-10-2023
 ## What's Changed
 * Bump syntect from 5.0.0 to 5.1.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/248
