@@ -1,3 +1,54 @@
+## [v1.0.0] - 24-12-2023
+## What's Changed
+* Migrate to comrak/Rust by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/185
+* Bump actions/checkout from 2 to 3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/192
+* Update rake-compiler requirement from ~> 0.9 to ~> 1.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/193
+* Migrate to magnus/rb_sys by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/194
+* Release v1 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/186
+* Clippy and cleanup by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/196
+* Bump comrak from 0.14.0 to 0.15.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/198
+* Frontmatter parse tweak by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/203
+* Windows build by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/197
+* Bump magnus from 0.4.1 to 0.4.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/204
+* Bump comrak from 0.14.0 to 0.15.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/205
+* Bump magnus from 0.4.2 to 0.4.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/206
+* Bump magnus from 0.4.3 to 0.4.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/208
+* Implement native syntax highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/209
+* Provide 3.2 build support by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/212
+* always use rb_sys (don't use Ruby's emerging cargo tooling where available) by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/213
+* remove gemspec by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/214
+* Fix a couple of misleading README points by @DannyBen in https://github.com/gjtorikian/commonmarker/pull/215
+* Clarify syntax highlighter plugin usage in README by @DannyBen in https://github.com/gjtorikian/commonmarker/pull/218
+* Change  to  by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/220
+* Bump comrak from 0.15.0 to 0.16.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/225
+* Add shortcodes/emoji by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/210
+* Bump magnus from 0.4.4 to 0.5.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/230
+* Bump magnus from 0.5.0 to 0.5.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/231
+* Add ability to load s from a folder by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/232
+* Test the new integrated rb-sys by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/228
+* Bump magnus from 0.5.1 to 0.5.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/233
+* Bump comrak from 0.16.0 to 0.17.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/234
+* Updates from upstream by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/235
+* Bump comrak from 0.17.1 to 0.18.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/237
+* Bump magnus from 0.5.2 to 0.5.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/238
+* Bump magnus from 0.5.3 to 0.5.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/242
+* Move debug gems into test env by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/245
+* Bump syntect from 5.0.0 to 5.1.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/248
+* Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/252
+* Bump magnus from 0.5.4 to 0.6.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/254
+* Bump comrak from 0.18.0 to 0.19.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/255
+* fix front_matter_delimiter type by @noraj in https://github.com/gjtorikian/commonmarker/pull/257
+* Reintroduce  platform releases by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/260
+* Bump comrak from 0.19.0 to 0.20.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/261
+* Classy highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/262
+* :gem: 1.0.0 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/264
+
+## New Contributors
+* @dependabot made their first contribution in https://github.com/gjtorikian/commonmarker/pull/192
+* @DannyBen made their first contribution in https://github.com/gjtorikian/commonmarker/pull/215
+* @noraj made their first contribution in https://github.com/gjtorikian/commonmarker/pull/257
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v0.23.6...v1.0.0
 ## [v1.0.0.pre12] - 07-12-2023
 ## What's Changed
 * Reintroduce  platform releases by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/260
