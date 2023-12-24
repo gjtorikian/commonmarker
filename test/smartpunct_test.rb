@@ -15,7 +15,7 @@ class SmartPunctTest < Minitest::Test
       },
     }
 
-    define_method("test_smart_punct_example_#{testcase[:example]}") do
+    define_method(:"test_smart_punct_example_#{testcase[:example]}") do
       html = Commonmarker.to_html(testcase[:markdown], options: opts).strip
 
       assert_equal testcase[:html], html, testcase[:markdown]

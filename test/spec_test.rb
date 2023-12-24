@@ -7,7 +7,7 @@ class TestSpec < Minitest::Test
   spec = load_spec_file("spec.txt")
 
   spec.each do |testcase|
-    define_method("test_to_html_example_#{testcase[:example]}") do
+    define_method(:"test_to_html_example_#{testcase[:example]}") do
       opts = {
         render: {
           unsafe: true,
