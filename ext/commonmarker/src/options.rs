@@ -33,6 +33,7 @@ const RENDER_GITHUB_PRE_LANG: &str = "github_pre_lang";
 const RENDER_WIDTH: &str = "width";
 const RENDER_UNSAFE: &str = "unsafe";
 const RENDER_ESCAPE: &str = "escape";
+const RENDER_SOURCEPOS: &str = "sourcepos";
 
 fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -52,6 +53,9 @@ fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHas
                 }
                 Ok(Cow::Borrowed(RENDER_ESCAPE)) => {
                     comrak_options.render.escape = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(RENDER_SOURCEPOS)) => {
+                    comrak_options.render.sourcepos = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }

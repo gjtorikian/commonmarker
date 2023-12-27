@@ -15,6 +15,7 @@ module Commonmarker
         width: 80,
         unsafe: false,
         escape: false,
+        sourcepos: false,
       }.freeze,
       extension: {
         strikethrough: true,
