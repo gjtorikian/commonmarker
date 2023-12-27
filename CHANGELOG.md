@@ -1,3 +1,11 @@
+## [v1.0.1] - 27-12-2023
+## What's Changed
+* Add sourcepos option by @ppworks in https://github.com/gjtorikian/commonmarker/pull/265
+
+## New Contributors
+* @ppworks made their first contribution in https://github.com/gjtorikian/commonmarker/pull/265
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.0...v1.0.1
 ## [v1.0.0] - 24-12-2023
 ## What's Changed
 * Migrate to comrak/Rust by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/185
