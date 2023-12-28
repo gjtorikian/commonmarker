@@ -1,3 +1,9 @@
+## [v1.0.2] - 28-12-2023
+## What's Changed
+* Support Ruby 3.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/267
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.1...v1.0.2
 ## [v1.0.1] - 27-12-2023
 ## What's Changed
 * Add sourcepos option by @ppworks in https://github.com/gjtorikian/commonmarker/pull/265
