@@ -12,15 +12,13 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-        ruby:
-          - 3.3
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: oxidize-rb/actions/setup-ruby-and-rust@main
         with:
-          ruby-version: ${{ matrix.ruby }}
+          ruby-version: 3.3
           rubygems: latest
           bundler-cache: true
           cargo-cache: true
