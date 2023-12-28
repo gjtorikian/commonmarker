@@ -1,3 +1,5 @@
+## [v1.0.3] - 28-12-2023
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.2...v1.0.3
 ## [v1.0.2] - 28-12-2023
 ## What's Changed
 * Support Ruby 3.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/267
