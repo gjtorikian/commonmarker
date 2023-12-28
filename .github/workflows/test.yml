@@ -13,7 +13,7 @@ jobs:
           - macos-latest
           - windows-latest
         ruby:
-          - 3.2
+          - 3.3
 
     steps:
       - uses: actions/checkout@v4
