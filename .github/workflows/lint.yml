@@ -21,18 +21,31 @@ jobs:
 
   clippy_format:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        rust:
-          - stable
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
-      - name: Obtain Rust
-        run: rustup override set ${{ matrix.rust }}
+      - name: Set up Rust
+        id: toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            tmp/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}-v1
 
       - name: Check clippy
-        run: rustup component add clippy && cargo clippy
+        run: cargo clippy
 
       - name: Check formatting
-        run: rustup component add rustfmt && cargo fmt -- --check
+        run: cargo fmt -- --check

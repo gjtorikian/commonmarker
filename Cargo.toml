@@ -4,3 +4,4 @@
 
 [workspace]
 members = ["ext/commonmarker"]
+resolver = "2"
