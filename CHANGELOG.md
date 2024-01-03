@@ -1,3 +1,9 @@
+## [v1.0.4] - 03-01-2024
+## What's Changed
+* Builds on behalf of Ruby 3.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/271
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.3...v1.0.4
 ## [v1.0.3] - 28-12-2023
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.2...v1.0.3
 ## [v1.0.2] - 28-12-2023
