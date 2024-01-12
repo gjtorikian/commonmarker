@@ -9,6 +9,7 @@ publish = false
 magnus = "0.6"
 comrak = { version = "0.20", features = ["shortcodes"] }
 syntect = { version = "5.1", features = ["plist-load"] }
+typed-arena = "2.0"
 
 [lib]
 name = "commonmarker"

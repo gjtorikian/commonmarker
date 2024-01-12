@@ -222,6 +222,7 @@ dependencies = [
  "comrak",
  "magnus",
  "syntect",
+ "typed-arena",
 ]
 
 [[package]]
