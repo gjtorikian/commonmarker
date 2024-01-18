@@ -22,9 +22,9 @@ use plugins::{
     syntax_highlighting::{fetch_syntax_highlighter_path, fetch_syntax_highlighter_theme},
     SYNTAX_HIGHLIGHTER_PLUGIN,
 };
+use typed_arena::Arena;
 
 mod node;
-
 mod utils;
 
 pub const EMPTY_STR: &str = "";
@@ -46,10 +46,10 @@ fn commonmark_parse(args: &[Value]) -> Result<CommonmarkerNode, magnus::Error> {
         })?;
     }
 
-    let arena = typed_arena::Arena::new();
-    let node = parse_document(&arena, &rb_commonmark, &comrak_options);
+    let arena = Arena::new();
+    let root = parse_document(&arena, &rb_commonmark, &comrak_options);
 
-    CommonmarkerNode::new(node.data.to_owned().into_inner().value)
+    CommonmarkerNode::new_from_comrak_node(root)
 }
 
 fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
