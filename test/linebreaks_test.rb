@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestLinebreaks < Minitest::Test
+class LinebreaksTest < Minitest::Test
   def setup
     @options = { parse: { hardbreaks: true } }
   end

@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestExtensions < Minitest::Test
+class ExtensionsTest < Minitest::Test
   def setup
     @markdown = fixtures_file("table.md")
   end

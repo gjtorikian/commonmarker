@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestEncoding < Minitest::Test
+class EncodingTest < Minitest::Test
   # see http://git.io/vq4FR
   def test_encoding
     contents = fixtures_file("curly.md")

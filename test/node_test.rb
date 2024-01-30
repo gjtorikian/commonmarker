@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestNode < Minitest::Test
+class NodeTest < Minitest::Test
   def setup
     @document = Commonmarker.parse("Hi *there*. This has __many nodes__!")
   end

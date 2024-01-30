@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestBasics < Minitest::Test
+class BasicsTest < Minitest::Test
   def test_to_html
     html = Commonmarker.to_html("Hi *there*")
 

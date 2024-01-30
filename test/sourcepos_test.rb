@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestSourcepos < Minitest::Test
+class SourceposTest < Minitest::Test
   def test_to_html
     md = <<~MARKDOWN
       # heading
