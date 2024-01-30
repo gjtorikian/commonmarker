@@ -195,31 +195,42 @@ impl CommonmarkerNode {
     }
 
     fn prepend_child_node(&self, new_child: &CommonmarkerNode) -> Result<bool, magnus::Error> {
-        self.inner.prepend(new_child.inner.clone());
+        let node = new_child.inner.clone();
+        node.detach();
+        self.inner.prepend(node);
 
         Ok(true)
     }
 
     fn append_child_node(&self, new_child: &CommonmarkerNode) -> Result<bool, magnus::Error> {
-        self.inner.append(new_child.inner.clone());
+        let node = new_child.inner.clone();
+        node.detach();
+        self.inner.append(node);
 
         Ok(true)
     }
 
-    fn detach_node(&self) -> Result<bool, magnus::Error> {
+    fn detach_node(&self) -> Result<CommonmarkerNode, magnus::Error> {
+        let node = self.inner.make_copy().borrow().data.clone();
         self.inner.detach();
 
-        Ok(true)
+        Ok(CommonmarkerNode {
+            inner: Node::new(CommonmarkerAst { data: node }),
+        })
     }
 
     fn insert_node_before(&self, new_sibling: &CommonmarkerNode) -> Result<bool, magnus::Error> {
-        self.inner.insert_before(new_sibling.inner.clone());
+        let node = new_sibling.inner.clone();
+        node.detach();
+        self.inner.insert_before(node);
 
         Ok(true)
     }
 
     fn insert_node_after(&self, new_sibling: &CommonmarkerNode) -> Result<bool, magnus::Error> {
-        self.inner.insert_after(new_sibling.inner.clone());
+        let node = new_sibling.inner.clone();
+        node.detach();
+        self.inner.insert_after(node);
 
         Ok(true)
     }
@@ -423,6 +434,7 @@ impl CommonmarkerNode {
             )),
         }
     }
+
     fn to_html(&self, args: &[Value]) -> Result<String, magnus::Error> {
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 

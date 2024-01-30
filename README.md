@@ -37,7 +37,75 @@ Commonmarker.to_html('"Hi *there*"', options: {
 # <p>“Hi <em>there</em>”</p>\n
 ```
 
-The second argument is optional--[see below](#options) for more information.
+(The second argument is optional--[see below](#options-and-plugins) for more information.)
+
+### Generating a document
+
+You can also parse a string to receive a `:document` node. You can then print that node to HTML, iterate over the children, and do other fun node stuff. For example:
+
+```ruby
+require 'commonmarker'
+
+doc = Commonmarker.parse("*Hello* world", options: {
+    parse: { smart: true }
+})
+puts(doc.to_html) # <p><em>Hello</em> world</p>\n
+
+doc.walk do |node|
+  puts node.type # [:document, :paragraph, :emph, :text, :text]
+end
+```
+
+(The second argument is optional--[see below](#options-and-plugins) for more information.)
+
+When it comes to modifying the document, you can perform the following operations:
+
+- `insert_before`
+- `insert_after`
+- `prepend_child`
+- `append_child`
+- `detach`
+
+You can also modify the following attributes:
+
+- `url`
+- `title`
+- `header_level`
+- `list_type`
+- `list_start`
+- `list_tight`
+- `fence_info`
+
+#### Example: Walking the AST
+
+You can use `walk` or `each` to iterate over nodes:
+
+- `walk` will iterate on a node and recursively iterate on a node's children.
+- `each` will iterate on a node and its children, but no further.
+
+```ruby
+require 'commonmarker'
+
+# parse some string
+doc = Commonmarker.parse("# The site\n\n [GitHub](https://www.github.com)")
+
+# Walk tree and print out URLs for links
+doc.walk do |node|
+  if node.type == :link
+    printf("URL = %s\n", node.url)
+  end
+end
+# => URL = https://www.github.com
+
+# Transform links to regular text
+doc.walk do |node|
+  if node.type == :link
+    node.insert_before(node.first_child)
+    node.detach
+  end
+end
+# => <h1><a href=\"#the-site\"></a>The site</h1>\n<p>GitHub</p>\n
+```
 
 ## Options and plugins
 
