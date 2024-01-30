@@ -34,7 +34,7 @@ require 'commonmarker'
 Commonmarker.to_html('"Hi *there*"', options: {
     parse: { smart: true }
 })
-# <p>“Hi <em>there</em>”</p>\n
+# => <p>“Hi <em>there</em>”</p>\n
 ```
 
 (The second argument is optional--[see below](#options-and-plugins) for more information.)
@@ -49,10 +49,10 @@ require 'commonmarker'
 doc = Commonmarker.parse("*Hello* world", options: {
     parse: { smart: true }
 })
-puts(doc.to_html) # <p><em>Hello</em> world</p>\n
+puts(doc.to_html) # => <p><em>Hello</em> world</p>\n
 
 doc.walk do |node|
-  puts node.type # [:document, :paragraph, :emph, :text, :text]
+  puts node.type # => [:document, :paragraph, :emph, :text, :text]
 end
 ```
 
@@ -65,6 +65,14 @@ When it comes to modifying the document, you can perform the following operation
 - `prepend_child`
 - `append_child`
 - `detach`
+
+You can also get the source position of a node by calling `source_position`:
+
+```ruby
+doc = Commonmarker.parse("*Hello* world")
+puts doc.first_child.first_child.source_position
+# => {:start_line=>1, :start_column=>1, :end_line=>1, :end_column=>7}
+```
 
 You can also modify the following attributes:
 

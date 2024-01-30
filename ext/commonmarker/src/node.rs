@@ -219,6 +219,21 @@ impl CommonmarkerNode {
         })
     }
 
+    fn get_sourcepos(&self) -> Result<RHash, magnus::Error> {
+        let node = self.inner.borrow();
+
+        let result = RHash::new();
+        result.aset(Symbol::new("start_line"), node.data.sourcepos.start.line)?;
+        result.aset(
+            Symbol::new("start_column"),
+            node.data.sourcepos.start.column,
+        )?;
+        result.aset(Symbol::new("end_line"), node.data.sourcepos.end.line)?;
+        result.aset(Symbol::new("end_column"), node.data.sourcepos.end.column)?;
+
+        Ok(result)
+    }
+
     fn insert_node_before(&self, new_sibling: &CommonmarkerNode) -> Result<bool, magnus::Error> {
         let node = new_sibling.inner.clone();
         node.detach();
@@ -545,6 +560,11 @@ pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
     )?;
 
     c_node.define_method("detach", method!(CommonmarkerNode::detach_node, 0))?;
+
+    c_node.define_method(
+        "source_position",
+        method!(CommonmarkerNode::get_sourcepos, 0),
+    )?;
 
     c_node.define_method("url", method!(CommonmarkerNode::get_url, 0))?;
     c_node.define_method("url=", method!(CommonmarkerNode::set_url, 1))?;
