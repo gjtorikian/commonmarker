@@ -206,6 +206,12 @@ impl CommonmarkerNode {
         Ok(true)
     }
 
+    fn detach_node(&self) -> Result<bool, magnus::Error> {
+        self.inner.detach();
+
+        Ok(true)
+    }
+
     fn insert_node_before(&self, new_sibling: &CommonmarkerNode) -> Result<bool, magnus::Error> {
         self.inner.insert_before(new_sibling.inner.clone());
 
@@ -525,6 +531,8 @@ pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
         "append_child",
         method!(CommonmarkerNode::append_child_node, 1),
     )?;
+
+    c_node.define_method("detach", method!(CommonmarkerNode::detach_node, 0))?;
 
     c_node.define_method("url", method!(CommonmarkerNode::get_url, 0))?;
     c_node.define_method("url=", method!(CommonmarkerNode::set_url, 1))?;

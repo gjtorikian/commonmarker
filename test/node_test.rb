@@ -81,6 +81,13 @@ class TestNode < Minitest::Test
     assert_equal(:text, @document.first_child.first_child.next_sibling.previous_sibling.type)
   end
 
+  def test_detach
+    emph = @document.first_child.first_child.next_sibling
+    emph.detach
+
+    assert_match(%r{<p>Hi . This has <strong>many nodes</strong>!</p>\n}, @document.to_html)
+  end
+
   class UrlTest < Minitest::Test
     def setup
       @document = Commonmarker.parse("[GitHub](https://www.github.com)")
