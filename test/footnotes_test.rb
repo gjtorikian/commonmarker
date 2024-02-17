@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestFootnotes < Minitest::Test
+class FootnotesTest < Minitest::Test
   def test_to_html
     md = <<~MARKDOWN
       # footnotes

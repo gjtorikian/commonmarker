@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestFrontmatter < Minitest::Test
+class FrontmatterTest < Minitest::Test
   def test_frontmatter_does_not_interfere_with_codeblock
     md = "\n```\n\nx\n\n```\n"
     expected = <<~HTML

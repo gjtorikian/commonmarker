@@ -3,7 +3,7 @@
 require "test_helper"
 require "json"
 
-class TestSpec < Minitest::Test
+class SpecTest < Minitest::Test
   spec = load_spec_file("spec.txt")
 
   spec.each do |testcase|

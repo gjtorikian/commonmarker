@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestMaliciousness < Minitest::Test
+class MaliciousnessTest < Minitest::Test
   def test_rendering_with_bad_type
     assert_raises(TypeError) do
       Commonmarker.to_html(nil)

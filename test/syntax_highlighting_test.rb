@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestSyntaxHighlighting < Minitest::Test
+class SyntaxHighlightingTest < Minitest::Test
   def test_default_is_to_highlight
     code = <<~CODE
       ```ruby

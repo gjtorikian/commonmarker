@@ -20,6 +20,7 @@ end
 
 group :benchmark do
   gem "benchmark-ips"
+  gem "markly"
   gem "kramdown"
   gem "kramdown-parser-gfm"
   gem "redcarpet"
