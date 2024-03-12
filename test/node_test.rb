@@ -88,6 +88,36 @@ class NodeTest < Minitest::Test
     assert_match(%r{<p>Hi . This has <strong>many nodes</strong>!</p>\n}, @document.to_html)
   end
 
+  class StringContentTest < Minitest::Test
+    def setup
+      @document = Commonmarker.parse("**HELLO!** \n***\n This has nodes!")
+      @paragraph = @document.first_child
+      @emph = @paragraph.first_child
+    end
+
+    def test_node_can_get_string_content
+      assert_equal("HELLO!", @emph.first_child.string_content)
+    end
+
+    def test_node_can_set_string_content
+      @emph.first_child.string_content = "HOWDY!"
+
+      assert_match(%r{<strong>HOWDY!</strong>}, @document.to_html)
+    end
+
+    def test_node_can_protect_against_nodes_without_string_content
+      assert_raises(TypeError) do
+        @emph.string_content
+      end
+
+      assert_raises(TypeError) do
+        @emph.string_content = "HOWDY!"
+      end
+
+      assert_match(%r{<strong>HELLO!</strong>}, @document.to_html)
+    end
+  end
+
   class UrlTest < Minitest::Test
     def setup
       @document = Commonmarker.parse("[GitHub](https://www.github.com)")
@@ -120,6 +150,7 @@ class NodeTest < Minitest::Test
       @title_node.title = "Google"
 
       assert_equal("Google", @title_node.title)
+      assert_equal("alt text", @title_node.first_child.string_content)
       assert_match(%r{<img src="https:\/\/github.com\/favicon.ico" alt="alt text" title="Google" \/>}, @document.to_html)
     end
   end

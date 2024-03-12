@@ -234,6 +234,16 @@ impl CommonmarkerNode {
         Ok(result)
     }
 
+    fn replace_node(&self, new_node: &CommonmarkerNode) -> Result<bool, magnus::Error> {
+        let node = new_node.inner.clone();
+
+        self.insert_node_after(&new_node)?;
+        match self.detach_node() {
+            Ok(_) => Ok(true),
+            Err(e) => Err(e),
+        }
+    }
+
     fn insert_node_before(&self, new_sibling: &CommonmarkerNode) -> Result<bool, magnus::Error> {
         let node = new_sibling.inner.clone();
         node.detach();
@@ -256,7 +266,10 @@ impl CommonmarkerNode {
         match &node.data.value {
             ComrakNodeValue::Link(link) => Ok(link.url.to_string()),
             ComrakNodeValue::Image(image) => Ok(image.url.to_string()),
-            _ => Ok("".to_string()),
+            _ => Err(magnus::Error::new(
+                magnus::exception::type_error(),
+                "node is not an image or link node",
+            )),
         }
     }
 
@@ -272,7 +285,37 @@ impl CommonmarkerNode {
                 image.url = new_url;
                 Ok(true)
             }
-            _ => Ok(false),
+            _ => Err(magnus::Error::new(
+                magnus::exception::type_error(),
+                "node is not an image or link node",
+            )),
+        }
+    }
+
+    fn get_string_content(&self) -> Result<String, magnus::Error> {
+        let node = self.inner.borrow();
+
+        match node.data.value.text() {
+            Some(s) => Ok(s.to_string()),
+            None => Err(magnus::Error::new(
+                magnus::exception::type_error(),
+                "node does not have string content",
+            )),
+        }
+    }
+
+    fn set_string_content(&self, new_content: String) -> Result<bool, magnus::Error> {
+        let mut node = self.inner.borrow_mut();
+
+        match node.data.value.text_mut() {
+            Some(s) => {
+                *s = new_content;
+                Ok(true)
+            }
+            None => Err(magnus::Error::new(
+                magnus::exception::type_error(),
+                "node does not have string content",
+            )),
         }
     }
 
@@ -541,6 +584,8 @@ pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
 
     c_node.define_method("node_to_html", method!(CommonmarkerNode::to_html, -1))?;
 
+    c_node.define_method("replace", method!(CommonmarkerNode::replace_node, 1))?;
+
     c_node.define_method(
         "insert_before",
         method!(CommonmarkerNode::insert_node_before, 1),
@@ -559,17 +604,27 @@ pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
         method!(CommonmarkerNode::append_child_node, 1),
     )?;
 
-    c_node.define_method("detach", method!(CommonmarkerNode::detach_node, 0))?;
+    c_node.define_method("delete", method!(CommonmarkerNode::detach_node, 0))?;
 
     c_node.define_method(
         "source_position",
         method!(CommonmarkerNode::get_sourcepos, 0),
     )?;
 
+    c_node.define_method(
+        "string_content",
+        method!(CommonmarkerNode::get_string_content, 0),
+    )?;
+    c_node.define_method(
+        "string_content=",
+        method!(CommonmarkerNode::set_string_content, 1),
+    )?;
+
     c_node.define_method("url", method!(CommonmarkerNode::get_url, 0))?;
     c_node.define_method("url=", method!(CommonmarkerNode::set_url, 1))?;
     c_node.define_method("title", method!(CommonmarkerNode::get_title, 0))?;
     c_node.define_method("title=", method!(CommonmarkerNode::set_title, 1))?;
+
     c_node.define_method(
         "header_level",
         method!(CommonmarkerNode::get_header_level, 0),
@@ -584,6 +639,24 @@ pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method("list_start=", method!(CommonmarkerNode::set_list_start, 1))?;
     c_node.define_method("list_tight", method!(CommonmarkerNode::get_list_tight, 0))?;
     c_node.define_method("list_tight=", method!(CommonmarkerNode::set_list_tight, 1))?;
+    c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
+    c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
+
+    c_node.define_method(
+        "table_alignments",
+        method!(CommonmarkerNode::get_table_alignments, 0),
+    )?;
+
+    c_node.define_method(
+        "tasklist_item_checked?",
+        method!(CommonmarkerNode::get_tasklist_item_checked, 0),
+    )?;
+
+    c_node.define_method(
+        "tasklist_item_checked=",
+        method!(CommonmarkerNode::set_tasklist_item_checked, 1),
+    )?;
+
     c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
 
