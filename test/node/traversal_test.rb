@@ -63,7 +63,7 @@ class NodeTraversalTest < Minitest::Test
     @document.walk do |node|
       if node.type == :emph
         node.insert_before(node.first_child)
-        node.detach
+        node.delete
       end
     end
 

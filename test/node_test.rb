@@ -65,6 +65,18 @@ class NodeTest < Minitest::Test
     assert_match(%r{!<strong><\/strong><\/p>\n}, @document.to_html)
   end
 
+  def test_can_render_back_to_commonmark
+    strikethrough_node = Commonmarker::Node.new(:strikethrough)
+    text_node = Commonmarker::Node.new(:text)
+    text_node.string_content = "bazinga"
+
+    strikethrough_node.append_child(text_node)
+
+    assert(@document.first_child.first_child.replace(strikethrough_node))
+
+    assert_match(/~bazinga~\*there\*/, @document.to_commonmark)
+  end
+
   def test_last_child
     assert_equal(:paragraph, @document.last_child.type)
   end
@@ -81,9 +93,9 @@ class NodeTest < Minitest::Test
     assert_equal(:text, @document.first_child.first_child.next_sibling.previous_sibling.type)
   end
 
-  def test_detach
+  def test_delete
     emph = @document.first_child.first_child.next_sibling
-    emph.detach
+    emph.delete
 
     assert_match(%r{<p>Hi . This has <strong>many nodes</strong>!</p>\n}, @document.to_html)
   end

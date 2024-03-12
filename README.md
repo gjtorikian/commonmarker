@@ -64,7 +64,7 @@ When it comes to modifying the document, you can perform the following operation
 - `insert_after`
 - `prepend_child`
 - `append_child`
-- `detach`
+- `delete`
 
 You can also get the source position of a node by calling `source_position`:
 
@@ -109,10 +109,32 @@ end
 doc.walk do |node|
   if node.type == :link
     node.insert_before(node.first_child)
-    node.detach
+    node.delete
   end
 end
 # => <h1><a href=\"#the-site\"></a>The site</h1>\n<p>GitHub</p>\n
+```
+
+#### Example: Converting a document back into raw CommonMark
+
+You can use `to_commonmark` on a node to render it as raw text:
+
+```ruby
+require 'commonmarker'
+
+# parse some string
+doc = Commonmarker.parse("# The site\n\n [GitHub](https://www.github.com)")
+
+# Transform links to regular text
+doc.walk do |node|
+  if node.type == :link
+    node.insert_before(node.first_child)
+    node.delete
+  end
+end
+
+doc.to_commonmark
+# => # The site\n\nGitHub\n
 ```
 
 ## Options and plugins

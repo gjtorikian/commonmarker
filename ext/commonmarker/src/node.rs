@@ -235,9 +235,7 @@ impl CommonmarkerNode {
     }
 
     fn replace_node(&self, new_node: &CommonmarkerNode) -> Result<bool, magnus::Error> {
-        let node = new_node.inner.clone();
-
-        self.insert_node_after(&new_node)?;
+        self.insert_node_after(new_node)?;
         match self.detach_node() {
             Ok(_) => Ok(true),
             Err(e) => Err(e),
@@ -560,6 +558,74 @@ impl CommonmarkerNode {
             )),
         }
     }
+
+    fn to_commonmark(&self, args: &[Value]) -> Result<String, magnus::Error> {
+        let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
+
+        let kwargs = scan_args::get_kwargs::<_, (), (Option<RHash>, Option<RHash>), ()>(
+            args.keywords,
+            &[],
+            &["options", "plugins"],
+        )?;
+        let (rb_options, _rb_plugins) = kwargs.optional;
+
+        let mut comrak_options = ComrakOptions::default();
+
+        if let Some(rb_options) = rb_options {
+            rb_options.foreach(|key: Symbol, value: RHash| {
+                iterate_options_hash(&mut comrak_options, key, value)?;
+                Ok(ForEach::Continue)
+            })?;
+        }
+
+        let arena: Arena<ComrakAstNode> = Arena::new();
+        fn iter_nodes<'a>(
+            arena: &'a Arena<comrak::arena_tree::Node<'a, RefCell<ComrakAst>>>,
+            node: &CommonmarkerNode,
+        ) -> &'a comrak::arena_tree::Node<'a, std::cell::RefCell<comrak::nodes::Ast>> {
+            let comrak_node: &'a mut ComrakAstNode = arena.alloc(ComrakNode::new(RefCell::new(
+                node.inner.borrow().data.clone(),
+            )));
+
+            for c in node.inner.children() {
+                let child = CommonmarkerNode { inner: c };
+                let child_node = iter_nodes(arena, &child);
+                comrak_node.append(child_node);
+            }
+
+            comrak_node
+        }
+
+        let comrak_root_node: ComrakNode<RefCell<ComrakAst>> =
+            ComrakNode::new(RefCell::new(self.inner.borrow().data.clone()));
+
+        for c in self.inner.children() {
+            let child = CommonmarkerNode { inner: c };
+
+            let new_child = iter_nodes(&arena, &child);
+
+            comrak_root_node.append(new_child);
+        }
+
+        let mut output = vec![];
+        match comrak::format_commonmark(&comrak_root_node, &comrak_options, &mut output) {
+            Ok(_) => {}
+            Err(e) => {
+                return Err(magnus::Error::new(
+                    magnus::exception::runtime_error(),
+                    format!("cannot convert into html: {}", e),
+                ));
+            }
+        }
+
+        match std::str::from_utf8(&output) {
+            Ok(s) => Ok(s.to_string()),
+            Err(_e) => Err(magnus::Error::new(
+                magnus::exception::runtime_error(),
+                "cannot convert into utf-8",
+            )),
+        }
+    }
 }
 
 pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
@@ -583,6 +649,10 @@ pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
     )?;
 
     c_node.define_method("node_to_html", method!(CommonmarkerNode::to_html, -1))?;
+    c_node.define_method(
+        "node_to_commonmark",
+        method!(CommonmarkerNode::to_commonmark, -1),
+    )?;
 
     c_node.define_method("replace", method!(CommonmarkerNode::replace_node, 1))?;
 
@@ -641,21 +711,6 @@ pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method("list_tight=", method!(CommonmarkerNode::set_list_tight, 1))?;
     c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
-
-    c_node.define_method(
-        "table_alignments",
-        method!(CommonmarkerNode::get_table_alignments, 0),
-    )?;
-
-    c_node.define_method(
-        "tasklist_item_checked?",
-        method!(CommonmarkerNode::get_tasklist_item_checked, 0),
-    )?;
-
-    c_node.define_method(
-        "tasklist_item_checked=",
-        method!(CommonmarkerNode::set_tasklist_item_checked, 1),
-    )?;
 
     c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
