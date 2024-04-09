@@ -7,7 +7,7 @@ publish = false
 
 [dependencies]
 magnus = "0.6"
-comrak = { version = "0.21", features = ["shortcodes"] }
+comrak = { version = "0.22", features = ["shortcodes"] }
 syntect = { version = "5.2", features = ["plist-load"] }
 
 [lib]
