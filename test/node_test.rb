@@ -52,7 +52,7 @@ class NodeTest < Minitest::Test
   end
 
   def test_can_prepend_child
-    code = Commonmarker::Node.new(:code, num_backticks: 1, text: "")
+    code = Commonmarker::Node.new(:code, num_backticks: 1, literal: "")
 
     assert(@document.first_child.prepend_child(code))
     assert_match(%r{<p><code><\/code>Hi <em>there<\/em>}, @document.to_html)

@@ -1,7 +1,11 @@
 use comrak::nodes::{
-    Ast as ComrakAst, AstNode as ComrakAstNode, NodeCode, NodeValue as ComrakNodeValue,
+    Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, ListType, NodeCode, NodeCodeBlock,
+    NodeDescriptionItem, NodeFootnoteDefinition, NodeFootnoteReference, NodeHeading, NodeHtmlBlock,
+    NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote, NodeShortCode, NodeTable,
+    NodeValue as ComrakNodeValue, TableAlignment,
 };
 use comrak::{arena_tree::Node as ComrakNode, ComrakOptions};
+use magnus::RArray;
 use magnus::{
     function, method, r_hash::ForEach, scan_args, Module, Object, RHash, RModule, Symbol, Value,
 };
@@ -35,52 +39,421 @@ impl CommonmarkerNode {
         let node = match node_type.to_string().as_str() {
             "document" => ComrakNodeValue::Document,
             "block_quote" => ComrakNodeValue::BlockQuote,
-            // "footnote_definition" => ComrakNodeValue::FootnoteDefinition,
-            // "list" => NodeValue::List,
-            "description_list" => ComrakNodeValue::DescriptionList,
-            // "description_item" => NodeValue::DescriptionItem(String::new()),
-            "description_term" => ComrakNodeValue::DescriptionTerm,
-            "description_details" => ComrakNodeValue::DescriptionDetails,
-            // "item" => NodeValue::Item(0),
-            "code" => {
-                let kwargs = scan_args::get_kwargs::<_, (usize, String), (), ()>(
+            "footnote_definition" => {
+                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<u32>,), ()>(
                     args.keywords,
-                    &["num_backticks", "text"],
-                    &[],
+                    &["name"],
+                    &["total_references"],
                 )?;
-                let (num_backticks, text) = kwargs.required;
+                let (name,) = kwargs.required;
+                let (total_reference,) = kwargs.optional;
 
-                ComrakNodeValue::Code(NodeCode {
-                    num_backticks,
-                    literal: text,
+                ComrakNodeValue::FootnoteDefinition(NodeFootnoteDefinition {
+                    // The name of the footnote.
+                    name,
+                    // Total number of references to this footnote
+                    total_references: total_reference.unwrap_or(1),
                 })
             }
-            // "html_block" => NodeValue::HtmlBlock(String::new()),
+            "list" => {
+                let kwargs = scan_args::get_kwargs::<
+                    _,
+                    (Symbol,),
+                    (
+                        Option<usize>,
+                        Option<usize>,
+                        Option<usize>,
+                        Option<String>,
+                        Option<u8>,
+                        Option<bool>,
+                    ),
+                    (),
+                >(
+                    args.keywords,
+                    &["type"],
+                    &[
+                        "marker_offset",
+                        "padding",
+                        "start",
+                        "delimiter",
+                        "bullet_char",
+                        "tight",
+                    ],
+                )?;
+
+                let (list_type,) = kwargs.required;
+                let (marker_offset, padding, start, delimiter, bullet_char, tight) =
+                    kwargs.optional;
+
+                let commonmark_list_type = list_type.to_string();
+
+                if commonmark_list_type != "bullet" && commonmark_list_type != "ordered" {
+                    return Err(magnus::Error::new(
+                        magnus::exception::arg_error(),
+                        "list type must be `bullet` or `ordered`",
+                    ));
+                }
+
+                let comrak_list_type = if commonmark_list_type == "ordered" {
+                    ListType::Ordered
+                } else {
+                    ListType::Bullet
+                };
+
+                let comrak_delimiter = match delimiter.unwrap_or("".to_string()).as_str() {
+                    ")" => ListDelimType::Paren,
+                    _ => ListDelimType::Period,
+                };
+
+                ComrakNodeValue::List(NodeList {
+                    // The kind of list (bullet (unordered) or ordered).
+                    list_type: comrak_list_type,
+                    // Number of spaces before the list marker.
+                    marker_offset: marker_offset.unwrap_or(0),
+                    // Number of characters between the start of the list marker and the item text (including the list marker(s)).
+                    padding: padding.unwrap_or(0),
+                    // For ordered lists, the ordinal the list starts at.
+                    start: start.unwrap_or(0),
+                    // For ordered lists, the delimiter after each number.
+                    delimiter: comrak_delimiter,
+                    // For bullet lists, the character used for each bullet.
+                    bullet_char: bullet_char.unwrap_or(0),
+                    // Whether the list is [tight](https://github.github.com/gfm/#tight), i.e. whether the
+                    // paragraphs are wrapped in `<p>` tags when formatted as HTML.
+                    tight: tight.unwrap_or(false),
+                })
+            }
+            "description_list" => ComrakNodeValue::DescriptionList,
+            "description_item" => {
+                let kwargs = scan_args::get_kwargs::<_, (), (Option<usize>, Option<usize>), ()>(
+                    args.keywords,
+                    &[],
+                    &["marker_offset", "padding"],
+                )?;
+
+                let (marker_offset, padding) = kwargs.optional;
+
+                ComrakNodeValue::DescriptionItem(NodeDescriptionItem {
+                    // Number of spaces before the list marker.
+                    marker_offset: marker_offset.unwrap_or(0),
+                    // Number of characters between the start of the list marker and the item text (including the list marker(s)).
+                    padding: padding.unwrap_or(0),
+                })
+            }
+            "description_term" => ComrakNodeValue::DescriptionTerm,
+            "description_details" => ComrakNodeValue::DescriptionDetails,
+            "code_block" => {
+                let kwargs = scan_args::get_kwargs::<
+                    _,
+                    (bool,),
+                    (
+                        Option<u8>,
+                        Option<usize>,
+                        Option<usize>,
+                        Option<String>,
+                        Option<String>,
+                    ),
+                    (),
+                >(
+                    args.keywords,
+                    &["fenced"],
+                    &[
+                        "fence_char",
+                        "fence_length",
+                        "fence_offset",
+                        "info",
+                        "literal",
+                    ],
+                )?;
+                let (fenced,) = kwargs.required;
+                let (fence_char, fence_length, fence_offset, info, literal) = kwargs.optional;
+
+                ComrakNodeValue::CodeBlock(NodeCodeBlock {
+                    // Whether the code block is fenced.
+                    fenced,
+                    // For fenced code blocks, the fence character itself (`` ` `` or `~`).
+                    fence_char: fence_char.unwrap_or(b'`'),
+                    // For fenced code blocks, the length of the fence.
+                    fence_length: fence_length.unwrap_or(0),
+                    // For fenced code blocks, the indentation level of the code within the block.
+                    fence_offset: fence_offset.unwrap_or(0),
+
+                    // For fenced code blocks, the [info string](https://github.github.com/gfm/#info-string) after
+                    // the opening fence, if any.
+                    info: info.unwrap_or(String::with_capacity(10)),
+
+                    // The literal contents of the code block.  As the contents are not interpreted as Markdown at
+                    // all, they are contained within this structure, rather than inserted into a child inline of
+                    // any kind.
+                    literal: literal.unwrap_or(String::new()),
+                })
+            }
+            "html_block" => {
+                let kwargs = scan_args::get_kwargs::<_, (), (Option<u8>, Option<String>), ()>(
+                    args.keywords,
+                    &[],
+                    &["block_type", "literal"],
+                )?;
+
+                let (block_type, literal) = kwargs.optional;
+
+                ComrakNodeValue::HtmlBlock(NodeHtmlBlock {
+                    // Number of spaces before the list marker.
+                    block_type: block_type.unwrap_or(0),
+                    // Number of characters between the start of the list marker and the item text (including the list marker(s)).
+                    literal: literal.unwrap_or(String::new()),
+                })
+            }
             "paragraph" => ComrakNodeValue::Paragraph,
-            // "heading" => NodeValue::Heading(0),
+            "heading" => {
+                let kwargs = scan_args::get_kwargs::<_, (u8,), (Option<bool>,), ()>(
+                    args.keywords,
+                    &["level"],
+                    &["setext"],
+                )?;
+
+                let (level,) = kwargs.required;
+                let (setext,) = kwargs.optional;
+
+                ComrakNodeValue::Heading(NodeHeading {
+                    // Number of spaces before the list marker.
+                    level,
+                    // Number of characters between the start of the list marker and the item text (including the list marker(s)).
+                    setext: setext.unwrap_or(false),
+                })
+            }
             "thematic_break" => ComrakNodeValue::ThematicBreak,
-            // "table" => NodeValue::Table(0),
-            // "table_row" => NodeValue::TableRow,
+            "table" => {
+                let kwargs = scan_args::get_kwargs::<_, (RArray, usize, usize, usize), (), ()>(
+                    args.keywords,
+                    &[
+                        "alignments",
+                        "num_columns",
+                        "num_rows",
+                        "num_nonempty_cells",
+                    ],
+                    &[],
+                )?;
+
+                let (alignments, num_columns, num_rows, num_nonempty_cells) = kwargs.required;
+
+                let mut comrak_alignments = vec![];
+                alignments.each().for_each(|alignment| {
+                    match alignment.unwrap().to_string().as_str() {
+                        "left" => {
+                            comrak_alignments.push(TableAlignment::Left);
+                        }
+                        "right" => {
+                            comrak_alignments.push(TableAlignment::Right);
+                        }
+                        "center" => {
+                            comrak_alignments.push(TableAlignment::Center);
+                        }
+                        _ => {
+                            comrak_alignments.push(TableAlignment::None);
+                        }
+                    }
+                });
+                ComrakNodeValue::Table(NodeTable {
+                    // The table alignments
+                    alignments: comrak_alignments,
+
+                    // Number of columns of the table
+                    num_columns,
+
+                    // Number of rows of the table
+                    num_rows,
+
+                    // Number of non-empty, non-autocompleted cells
+                    num_nonempty_cells,
+                })
+            }
+            "table_row" => {
+                let kwargs =
+                    scan_args::get_kwargs::<_, (bool,), (), ()>(args.keywords, &["header"], &[])?;
+
+                let (header,) = kwargs.required;
+
+                ComrakNodeValue::TableRow(header)
+            }
             "table_cell" => ComrakNodeValue::TableCell,
-            "text" => ComrakNodeValue::Text(String::new()),
+            "text" => {
+                let kwargs = scan_args::get_kwargs::<_, (), (Option<String>,), ()>(
+                    args.keywords,
+                    &[],
+                    &["content"],
+                )?;
+
+                let (content,) = kwargs.optional;
+
+                ComrakNodeValue::Text(content.unwrap_or("".to_string()))
+            }
+            "taskitem" => {
+                let kwargs = scan_args::get_kwargs::<_, (), (Option<char>,), ()>(
+                    args.keywords,
+                    &[],
+                    &["mark"],
+                )?;
+
+                let (mark,) = kwargs.optional;
+
+                ComrakNodeValue::TaskItem(mark)
+            }
             "softbreak" => ComrakNodeValue::SoftBreak,
             "linebreak" => ComrakNodeValue::LineBreak,
-            // "image" => NodeValue::Image,
-            // "link" => NodeValue::Link(String::new(), String::new(), None),
+            "code" => {
+                let kwargs = scan_args::get_kwargs::<_, (), (Option<usize>, Option<String>), ()>(
+                    args.keywords,
+                    &[],
+                    &["num_backticks", "literal"],
+                )?;
+
+                let (num_backticks, literal) = kwargs.optional;
+
+                ComrakNodeValue::Code(NodeCode {
+                    // The number of backticks
+                    num_backticks: num_backticks.unwrap_or(1),
+                    // The content of the inline code span.
+                    // As the contents are not interpreted as Markdown at all,
+                    // they are contained within this structure,
+                    // rather than inserted into a child inline of any kind
+                    literal: literal.unwrap_or_default(),
+                })
+            }
+            "html_inline" => {
+                let kwargs = scan_args::get_kwargs::<_, (), (Option<String>,), ()>(
+                    args.keywords,
+                    &[],
+                    &["content"],
+                )?;
+
+                let (content,) = kwargs.optional;
+
+                ComrakNodeValue::HtmlInline(content.unwrap_or_default())
+            }
             "emph" => ComrakNodeValue::Emph,
             "strong" => ComrakNodeValue::Strong,
-            // "code" => NodeValue::Code(String::new(), None),
-            "html_inline" => ComrakNodeValue::HtmlInline(String::new()),
             "strikethrough" => ComrakNodeValue::Strikethrough,
-            "frontmatter" => ComrakNodeValue::FrontMatter(String::new()),
-            // "taskitem" => NodeValue::TaskItem {
-            //     checked: false,
-            //     position: 0,
-            // },
             "superscript" => ComrakNodeValue::Superscript,
-            // "footnote_reference" => NodeValue::FootnoteReference(String::new()),
-            // "shortcode" => NodeValue::ShortCode(String::new()),
-            _ => panic!("unknown node type"),
+            "link" => {
+                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<String>,), ()>(
+                    args.keywords,
+                    &["url"],
+                    &["title"],
+                )?;
+
+                let (url,) = kwargs.required;
+                let (title,) = kwargs.optional;
+
+                ComrakNodeValue::Link(NodeLink {
+                    // The URL for the link destination or image source.
+                    url,
+                    // The title for the link or image.
+                    //
+                    // Note this field is used for the `title` attribute by the HTML formatter even for images;
+                    // `alt` text is supplied in the image inline text.
+                    title: title.unwrap_or_default(),
+                })
+            }
+            "image" => {
+                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<String>,), ()>(
+                    args.keywords,
+                    &["url"],
+                    &["title"],
+                )?;
+
+                let (url,) = kwargs.required;
+                let (title,) = kwargs.optional;
+
+                ComrakNodeValue::Image(NodeLink {
+                    // The URL for the link destination or image source.
+                    url,
+                    // The title for the link or image.
+                    //
+                    // Note this field is used for the `title` attribute by the HTML formatter even for images;
+                    // `alt` text is supplied in the image inline text.
+                    title: title.unwrap_or_default(),
+                })
+            }
+            "footnote_reference" => {
+                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<u32>, Option<u32>), ()>(
+                    args.keywords,
+                    &["name"],
+                    &["ref_num", "ix"],
+                )?;
+
+                let (name,) = kwargs.required;
+                let (ref_num, ix) = kwargs.optional;
+
+                ComrakNodeValue::FootnoteReference(NodeFootnoteReference {
+                    // The name of the footnote.
+                    name,
+                    // The index of reference to the same footnote
+                    ref_num: ref_num.unwrap_or(0),
+                    // The index of the footnote in the document.
+                    ix: ix.unwrap_or(0),
+                })
+            }
+            // #[cfg(feature = "shortcodes")]
+            "shortcode" => {
+                let kwargs =
+                    scan_args::get_kwargs::<_, (String,), (), ()>(args.keywords, &["code"], &[])?;
+
+                let (code,) = kwargs.required;
+
+                match NodeShortCode::try_from(code.as_str()) {
+                    Ok(shortcode) => ComrakNodeValue::ShortCode(shortcode),
+                    _ => {
+                        return Err(magnus::Error::new(
+                            magnus::exception::arg_error(),
+                            "list type must be `bullet` or `ordered`",
+                        ));
+                    }
+                }
+            }
+            "math" => {
+                let kwargs = scan_args::get_kwargs::<_, (bool, bool, String), (), ()>(
+                    args.keywords,
+                    &["dollar_math", "display_math", "literal"],
+                    &[],
+                )?;
+
+                let (dollar_math, display_math, literal) = kwargs.required;
+
+                ComrakNodeValue::Math(NodeMath {
+                    // Whether this is dollar math (`$` or `$$`).
+                    // `false` indicates it is code math
+                    dollar_math,
+
+                    // Whether this is display math (using `$$`)
+                    display_math,
+
+                    // The literal contents of the math span.
+                    // As the contents are not interpreted as Markdown at all,
+                    // they are contained within this structure,
+                    // rather than inserted into a child inline of any kind.
+                    literal,
+                })
+            }
+            "multiline_block_quote" => {
+                let kwargs = scan_args::get_kwargs::<_, (usize, usize), (), ()>(
+                    args.keywords,
+                    &["fence_length", "fence_offset"],
+                    &[],
+                )?;
+
+                let (fence_length, fence_offset) = kwargs.required;
+
+                ComrakNodeValue::MultilineBlockQuote(NodeMultilineBlockQuote {
+                    // The length of the fence.
+                    fence_length,
+                    // The indentation level of the fence marker.
+                    fence_offset,
+                })
+            }
+
+            "escaped" => ComrakNodeValue::Escaped,
+            _ => panic!("unknown node type {}", node_type),
         };
 
         Ok(CommonmarkerNode {
@@ -163,6 +536,9 @@ impl CommonmarkerNode {
             ComrakNodeValue::Superscript => Symbol::new("superscript"),
             ComrakNodeValue::FootnoteReference(..) => Symbol::new("footnote_reference"),
             ComrakNodeValue::ShortCode(_) => Symbol::new("shortcode"),
+            ComrakNodeValue::MultilineBlockQuote(_) => Symbol::new("multiline_block_quote"),
+            ComrakNodeValue::Escaped => Symbol::new("escaped"),
+            ComrakNodeValue::Math(..) => Symbol::new("math"),
         }
     }
 
