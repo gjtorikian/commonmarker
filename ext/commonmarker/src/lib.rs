@@ -5,13 +5,14 @@ use std::path::PathBuf;
 use ::syntect::highlighting::ThemeSet;
 use comrak::{
     adapters::SyntaxHighlighterAdapter,
-    markdown_to_html, markdown_to_html_with_plugins,
+    markdown_to_html, markdown_to_html_with_plugins, parse_document,
     plugins::syntect::{SyntectAdapter, SyntectAdapterBuilder},
     ComrakOptions, ComrakPlugins,
 };
 use magnus::{
     define_module, exception, function, r_hash::ForEach, scan_args, Error, RHash, Symbol, Value,
 };
+use node::CommonmarkerNode;
 
 mod options;
 use options::iterate_options_hash;
@@ -21,10 +22,35 @@ use plugins::{
     syntax_highlighting::{fetch_syntax_highlighter_path, fetch_syntax_highlighter_theme},
     SYNTAX_HIGHLIGHTER_PLUGIN,
 };
+use typed_arena::Arena;
 
+mod node;
 mod utils;
 
 pub const EMPTY_STR: &str = "";
+
+fn commonmark_parse(args: &[Value]) -> Result<CommonmarkerNode, magnus::Error> {
+    let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
+    let (rb_commonmark,): (String,) = args.required;
+
+    let kwargs =
+        scan_args::get_kwargs::<_, (), (Option<RHash>,), ()>(args.keywords, &[], &["options"])?;
+    let (rb_options,) = kwargs.optional;
+
+    let mut comrak_options = ComrakOptions::default();
+
+    if let Some(rb_options) = rb_options {
+        rb_options.foreach(|key: Symbol, value: RHash| {
+            iterate_options_hash(&mut comrak_options, key, value)?;
+            Ok(ForEach::Continue)
+        })?;
+    }
+
+    let arena = Arena::new();
+    let root = parse_document(&arena, &rb_commonmark, &comrak_options);
+
+    CommonmarkerNode::new_from_comrak_node(root)
+}
 
 fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
     let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
@@ -145,9 +171,13 @@ fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
 
 #[magnus::init]
 fn init() -> Result<(), Error> {
-    let module = define_module("Commonmarker")?;
+    let m_commonmarker = define_module("Commonmarker")?;
 
-    module.define_module_function("commonmark_to_html", function!(commonmark_to_html, -1))?;
+    m_commonmarker.define_module_function("commonmark_parse", function!(commonmark_parse, -1))?;
+    m_commonmarker
+        .define_module_function("commonmark_to_html", function!(commonmark_to_html, -1))?;
+
+    node::init(m_commonmarker).expect("cannot define Commonmarker::Node class");
 
     Ok(())
 }

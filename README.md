@@ -31,10 +31,108 @@ require 'commonmarker'
 Commonmarker.to_html('"Hi *there*"', options: {
     parse: { smart: true }
 })
-# <p>“Hi <em>there</em>”</p>\n
+# => <p>“Hi <em>there</em>”</p>\n
 ```
 
-The second argument is optional--[see below](#options) for more information.
+(The second argument is optional--[see below](#options-and-plugins) for more information.)
+
+### Generating a document
+
+You can also parse a string to receive a `:document` node. You can then print that node to HTML, iterate over the children, and do other fun node stuff. For example:
+
+```ruby
+require 'commonmarker'
+
+doc = Commonmarker.parse("*Hello* world", options: {
+    parse: { smart: true }
+})
+puts(doc.to_html) # => <p><em>Hello</em> world</p>\n
+
+doc.walk do |node|
+  puts node.type # => [:document, :paragraph, :emph, :text, :text]
+end
+```
+
+(The second argument is optional--[see below](#options-and-plugins) for more information.)
+
+When it comes to modifying the document, you can perform the following operations:
+
+- `insert_before`
+- `insert_after`
+- `prepend_child`
+- `append_child`
+- `delete`
+
+You can also get the source position of a node by calling `source_position`:
+
+```ruby
+doc = Commonmarker.parse("*Hello* world")
+puts doc.first_child.first_child.source_position
+# => {:start_line=>1, :start_column=>1, :end_line=>1, :end_column=>7}
+```
+
+You can also modify the following attributes:
+
+- `url`
+- `title`
+- `header_level`
+- `list_type`
+- `list_start`
+- `list_tight`
+- `fence_info`
+
+#### Example: Walking the AST
+
+You can use `walk` or `each` to iterate over nodes:
+
+- `walk` will iterate on a node and recursively iterate on a node's children.
+- `each` will iterate on a node and its children, but no further.
+
+```ruby
+require 'commonmarker'
+
+# parse some string
+doc = Commonmarker.parse("# The site\n\n [GitHub](https://www.github.com)")
+
+# Walk tree and print out URLs for links
+doc.walk do |node|
+  if node.type == :link
+    printf("URL = %s\n", node.url)
+  end
+end
+# => URL = https://www.github.com
+
+# Transform links to regular text
+doc.walk do |node|
+  if node.type == :link
+    node.insert_before(node.first_child)
+    node.delete
+  end
+end
+# => <h1><a href=\"#the-site\"></a>The site</h1>\n<p>GitHub</p>\n
+```
+
+#### Example: Converting a document back into raw CommonMark
+
+You can use `to_commonmark` on a node to render it as raw text:
+
+```ruby
+require 'commonmarker'
+
+# parse some string
+doc = Commonmarker.parse("# The site\n\n [GitHub](https://www.github.com)")
+
+# Transform links to regular text
+doc.walk do |node|
+  if node.type == :link
+    node.insert_before(node.first_child)
+    node.delete
+  end
+end
+
+doc.to_commonmark
+# => # The site\n\nGitHub\n
+```
 
 ## Options and plugins
 
@@ -53,21 +151,23 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 
 ### Parse options
 
-| Name                  | Description                                                                          | Default |
-| --------------------- | ------------------------------------------------------------------------------------ | ------- |
-| `smart`               | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation. | `false` |
-| `default_info_string` | The default info string for fenced code blocks.                                      | `""`    |
+| Name                  | Description                                                                                                                                | Default |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| `smart`               | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                       | `false` |
+| `default_info_string` | The default info string for fenced code blocks.                                                                                            | `""`    |
+| `relaxed_autolinks`   | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme. | `false` |
 
 ### Render options
 
-| Name              | Description                                                                                            | Default |
-| ----------------- | ------------------------------------------------------------------------------------------------------ | ------- |
-| `hardbreaks`      | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
-| `github_pre_lang` | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
-| `width`           | The wrap column when outputting CommonMark.                                                            | `80`    |
-| `unsafe`          | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
-| `escape`          | Escape raw HTML instead of clobbering it.                                                              | `false` |
-| `sourcepos`       | Include source position attribute in HTML and XML output.                                              | `false` |
+| Name                 | Description                                                                                            | Default |
+| -------------------- | ------------------------------------------------------------------------------------------------------ | ------- |
+| `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
+| `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
+| `width`              | The wrap column when outputting CommonMark.                                                            | `80`    |
+| `unsafe`             | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
+| `escape`             | Escape raw HTML instead of clobbering it.                                                              | `false` |
+| `sourcepos`          | Include source position attribute in HTML and XML output.                                              | `false` |
+| `escaped_char_spans` | Wrap escaped characters in span tags                                                                   | `true`  |
 
 As well, there are several extensions which you can toggle in the same manner:
 
@@ -80,19 +180,21 @@ Commonmarker.to_html('"Hi *there*"', options: {
 
 ### Extension options
 
-| Name                     | Description                                                                                                         | Default |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------- | ------- |
-| `strikethrough`          | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
-| `tagfilter`              | Enables the [tagfilter extension](https://github.github.com/gfm/#disallowed-raw-html-extension-) from the GFM spec. | `true`  |
-| `table`                  | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
-| `autolink`               | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `true`  |
-| `tasklist`               | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
-| `superscript`            | Enables the superscript Comrak extension.                                                                           | `false` |
-| `header_ids`             | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
-| `footnotes`              | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
-| `description_lists`      | Enables the description lists extension.                                                                            | `false` |
-| `front_matter_delimiter` | Enables the front matter extension.                                                                                 | `""`    |
-| `shortcodes`             | Enables the shortcodes extension.                                                                                   | `true`  |
+| Name                        | Description                                                                                                         | Default |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------- |
+| `strikethrough`             | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
+| `tagfilter`                 | Enables the [tagfilter extension](https://github.github.com/gfm/#disallowed-raw-html-extension-) from the GFM spec. | `true`  |
+| `table`                     | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
+| `autolink`                  | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `true`  |
+| `tasklist`                  | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
+| `superscript`               | Enables the superscript Comrak extension.                                                                           | `false` |
+| `header_ids`                | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
+| `footnotes`                 | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
+| `description_lists`         | Enables the description lists extension.                                                                            | `false` |
+| `front_matter_delimiter`    | Enables the front matter extension.                                                                                 | `""`    |
+| `shortcodes`                | Enables the shortcodes extension.                                                                                   | `true`  |
+| `multiline_block_quotes`    | Enables the multiline block quotes extension.                                                                       | `false` |
+| `math_dollars`, `math_code` | Enables the math extension.                                                                                         | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 
@@ -202,26 +304,32 @@ If there were no errors, you're done! Otherwise, make sure to follow the comrak 
 
 ## Benchmarks
 
-Some rough benchmarks:
-
 ```
-$ bundle exec rake benchmark
-
+❯ bundle exec rake benchmark
 input size = 11064832 bytes
 
+ruby 3.3.0 (2023-12-25 revision 5124f9ac75) [arm64-darwin23]
 Warming up --------------------------------------
-           redcarpet     2.000  i/100ms
-commonmarker with to_html
-                         1.000  i/100ms
-            kramdown     1.000  i/100ms
+  Markly.render_html     1.000 i/100ms
+Markly::Node#to_html     1.000 i/100ms
+Commonmarker.to_html     1.000 i/100ms
+Commonmarker::Node.to_html
+                         1.000 i/100ms
+Kramdown::Document#to_html
+                         1.000 i/100ms
 Calculating -------------------------------------
-           redcarpet     22.317  (± 4.5%) i/s -    112.000  in   5.036374s
-commonmarker with to_html
-                          5.815  (± 0.0%) i/s -     30.000  in   5.168869s
-            kramdown      0.327  (± 0.0%) i/s -      2.000  in   6.121486s
+  Markly.render_html     15.606 (±25.6%) i/s -     71.000 in   5.047132s
+Markly::Node#to_html     15.692 (±25.5%) i/s -     72.000 in   5.095810s
+Commonmarker.to_html      4.482 (± 0.0%) i/s -     23.000 in   5.137680s
+Commonmarker::Node.to_html
+                          5.092 (±19.6%) i/s -     25.000 in   5.072220s
+Kramdown::Document#to_html
+                          0.379 (± 0.0%) i/s -      2.000 in   5.277770s
 
 Comparison:
-           redcarpet:       22.3 i/s
-commonmarker with to_html:        5.8 i/s - 3.84x  (± 0.00) slower
-            kramdown:        0.3 i/s - 68.30x  (± 0.00) slower
+Markly::Node#to_html:       15.7 i/s
+  Markly.render_html:       15.6 i/s - same-ish: difference falls within error
+Commonmarker::Node.to_html:        5.1 i/s - 3.08x  slower
+Commonmarker.to_html:        4.5 i/s - 3.50x  slower
+Kramdown::Document#to_html:        0.4 i/s - 41.40x  slower
 ```

@@ -10,6 +10,7 @@ use crate::utils::try_convert_string;
 
 const PARSE_SMART: &str = "smart";
 const PARSE_DEFAULT_INFO_STRING: &str = "default_info_string";
+const PARSE_RELAXED_AUTOLINKS: &str = "relaxed_autolinks";
 
 fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -20,6 +21,9 @@ fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash
                 }
                 Ok(Cow::Borrowed(PARSE_DEFAULT_INFO_STRING)) => {
                     comrak_options.parse.default_info_string = try_convert_string(value);
+                }
+                Ok(Cow::Borrowed(PARSE_RELAXED_AUTOLINKS)) => {
+                    comrak_options.parse.relaxed_autolinks = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
@@ -34,6 +38,7 @@ const RENDER_WIDTH: &str = "width";
 const RENDER_UNSAFE: &str = "unsafe";
 const RENDER_ESCAPE: &str = "escape";
 const RENDER_SOURCEPOS: &str = "sourcepos";
+const RENDER_ESCAPED_CHAR_SPANS: &str = "escaped_char_spans";
 
 fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -57,6 +62,9 @@ fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHas
                 Ok(Cow::Borrowed(RENDER_SOURCEPOS)) => {
                     comrak_options.render.sourcepos = TryConvert::try_convert(value)?;
                 }
+                Ok(Cow::Borrowed(RENDER_ESCAPED_CHAR_SPANS)) => {
+                    comrak_options.render.escaped_char_spans = TryConvert::try_convert(value)?;
+                }
                 _ => {}
             }
             Ok(ForEach::Continue)
@@ -75,6 +83,9 @@ const EXTENSION_FOOTNOTES: &str = "footnotes";
 const EXTENSION_DESCRIPTION_LISTS: &str = "description_lists";
 const EXTENSION_FRONT_MATTER_DELIMITER: &str = "front_matter_delimiter";
 const EXTENSION_SHORTCODES: &str = "shortcodes";
+const EXTENSION_MULTILINE_BLOCK_QUOTES: &str = "multiline_block_quotes";
+const EXTENSION_MATH_DOLLARS: &str = "math_dollars";
+const EXTENSION_MATH_CODE: &str = "math_code";
 
 fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -116,6 +127,16 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 }
                 Ok(Cow::Borrowed(EXTENSION_SHORTCODES)) => {
                     comrak_options.extension.shortcodes = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_MULTILINE_BLOCK_QUOTES)) => {
+                    comrak_options.extension.multiline_block_quotes =
+                        TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_MATH_DOLLARS)) => {
+                    comrak_options.extension.math_dollars = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_MATH_CODE)) => {
+                    comrak_options.extension.math_code = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }

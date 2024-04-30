@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class TestTasklists < Minitest::Test
+class TasklistsTest < Minitest::Test
   def test_to_html
     text = <<-MD
  - [x] Add task list

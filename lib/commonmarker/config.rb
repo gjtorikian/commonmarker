@@ -8,6 +8,7 @@ module Commonmarker
       parse: {
         smart: false,
         default_info_string: "",
+        relaxed_autolinks: false,
       }.freeze,
       render: {
         hardbreaks: true,
@@ -16,6 +17,7 @@ module Commonmarker
         unsafe: false,
         escape: false,
         sourcepos: false,
+        escaped_char_spans: true,
       }.freeze,
       extension: {
         strikethrough: true,
@@ -29,6 +31,9 @@ module Commonmarker
         description_lists: false,
         front_matter_delimiter: "",
         shortcodes: true,
+        multiline_block_quotes: false,
+        math_dollars: false,
+        math_code: false,
       },
       format: [:html].freeze,
     }.freeze

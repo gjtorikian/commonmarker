@@ -51,6 +51,6 @@ build/
 actual.txt
 test.txt
 test/progit
-test/benchinput.md
+test/benchmark/large.md
 
 *.orig
