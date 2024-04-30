@@ -23,10 +23,7 @@ class NodeTraversalTest < Minitest::Test
   end
 
   def test_enumerate_nodes
-    nodes = []
-    @document.first_child.each do |node|
-      nodes << node.type
-    end
+    nodes = @document.first_child.map(&:type)
 
     assert_equal([:text, :emph, :text], nodes)
   end
