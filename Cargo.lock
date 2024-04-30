@@ -221,6 +221,7 @@ version = "1.0.0"
 dependencies = [
  "comrak",
  "magnus",
+ "rb-sys",
  "rctree",
  "syntect",
  "typed-arena",
