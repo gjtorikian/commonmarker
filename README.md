@@ -151,10 +151,11 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 
 ### Parse options
 
-| Name                  | Description                                                                          | Default |
-| --------------------- | ------------------------------------------------------------------------------------ | ------- |
-| `smart`               | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation. | `false` |
-| `default_info_string` | The default info string for fenced code blocks.                                      | `""`    |
+| Name                  | Description                                                                                                                                | Default |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| `smart`               | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                       | `false` |
+| `default_info_string` | The default info string for fenced code blocks.                                                                                            | `""`    |
+| `relaxed_autolinks`   | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme. | `false` |
 
 ### Render options
 

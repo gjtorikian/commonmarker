@@ -10,6 +10,7 @@ use crate::utils::try_convert_string;
 
 const PARSE_SMART: &str = "smart";
 const PARSE_DEFAULT_INFO_STRING: &str = "default_info_string";
+const PARSE_RELAXED_AUTOLINKS: &str = "relaxed_autolinks";
 
 fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -20,6 +21,9 @@ fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash
                 }
                 Ok(Cow::Borrowed(PARSE_DEFAULT_INFO_STRING)) => {
                     comrak_options.parse.default_info_string = try_convert_string(value);
+                }
+                Ok(Cow::Borrowed(PARSE_RELAXED_AUTOLINKS)) => {
+                    comrak_options.parse.relaxed_autolinks = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }

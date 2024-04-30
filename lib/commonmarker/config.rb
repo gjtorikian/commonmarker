@@ -8,6 +8,7 @@ module Commonmarker
       parse: {
         smart: false,
         default_info_string: "",
+        relaxed_autolinks: false,
       }.freeze,
       render: {
         hardbreaks: true,
