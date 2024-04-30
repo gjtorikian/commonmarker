@@ -29,6 +29,7 @@ module Commonmarker
         description_lists: false,
         front_matter_delimiter: "",
         shortcodes: true,
+        multiline_block_quotes: false,
       },
       format: [:html].freeze,
     }.freeze

@@ -191,6 +191,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `description_lists`      | Enables the description lists extension.                                                                            | `false` |
 | `front_matter_delimiter` | Enables the front matter extension.                                                                                 | `""`    |
 | `shortcodes`             | Enables the shortcodes extension.                                                                                   | `true`  |
+| `multiline_block_quotes` | Enables the multiline block quotes extension.                                                                       | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 
