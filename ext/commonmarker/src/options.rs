@@ -80,6 +80,8 @@ const EXTENSION_DESCRIPTION_LISTS: &str = "description_lists";
 const EXTENSION_FRONT_MATTER_DELIMITER: &str = "front_matter_delimiter";
 const EXTENSION_SHORTCODES: &str = "shortcodes";
 const EXTENSION_MULTILINE_BLOCK_QUOTES: &str = "multiline_block_quotes";
+const EXTENSION_MATH_DOLLARS: &str = "math_dollars";
+const EXTENSION_MATH_CODE: &str = "math_code";
 
 fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -125,6 +127,12 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 Ok(Cow::Borrowed(EXTENSION_MULTILINE_BLOCK_QUOTES)) => {
                     comrak_options.extension.multiline_block_quotes =
                         TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_MATH_DOLLARS)) => {
+                    comrak_options.extension.math_dollars = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_MATH_CODE)) => {
+                    comrak_options.extension.math_code = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }

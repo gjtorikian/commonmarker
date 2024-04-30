@@ -179,20 +179,21 @@ Commonmarker.to_html('"Hi *there*"', options: {
 
 ### Extension options
 
-| Name                     | Description                                                                                                         | Default |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------- | ------- |
-| `strikethrough`          | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
-| `tagfilter`              | Enables the [tagfilter extension](https://github.github.com/gfm/#disallowed-raw-html-extension-) from the GFM spec. | `true`  |
-| `table`                  | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
-| `autolink`               | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `true`  |
-| `tasklist`               | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
-| `superscript`            | Enables the superscript Comrak extension.                                                                           | `false` |
-| `header_ids`             | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
-| `footnotes`              | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
-| `description_lists`      | Enables the description lists extension.                                                                            | `false` |
-| `front_matter_delimiter` | Enables the front matter extension.                                                                                 | `""`    |
-| `shortcodes`             | Enables the shortcodes extension.                                                                                   | `true`  |
-| `multiline_block_quotes` | Enables the multiline block quotes extension.                                                                       | `false` |
+| Name                        | Description                                                                                                         | Default |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------- |
+| `strikethrough`             | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
+| `tagfilter`                 | Enables the [tagfilter extension](https://github.github.com/gfm/#disallowed-raw-html-extension-) from the GFM spec. | `true`  |
+| `table`                     | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
+| `autolink`                  | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `true`  |
+| `tasklist`                  | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
+| `superscript`               | Enables the superscript Comrak extension.                                                                           | `false` |
+| `header_ids`                | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
+| `footnotes`                 | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
+| `description_lists`         | Enables the description lists extension.                                                                            | `false` |
+| `front_matter_delimiter`    | Enables the front matter extension.                                                                                 | `""`    |
+| `shortcodes`                | Enables the shortcodes extension.                                                                                   | `true`  |
+| `multiline_block_quotes`    | Enables the multiline block quotes extension.                                                                       | `false` |
+| `math_dollars`, `math_code` | Enables the math extension.                                                                                         | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 

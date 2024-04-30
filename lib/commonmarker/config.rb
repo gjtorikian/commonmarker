@@ -31,6 +31,8 @@ module Commonmarker
         front_matter_delimiter: "",
         shortcodes: true,
         multiline_block_quotes: false,
+        math_dollars: false,
+        math_code: false,
       },
       format: [:html].freeze,
     }.freeze
