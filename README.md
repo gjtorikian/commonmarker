@@ -158,14 +158,15 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 
 ### Render options
 
-| Name              | Description                                                                                            | Default |
-| ----------------- | ------------------------------------------------------------------------------------------------------ | ------- |
-| `hardbreaks`      | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
-| `github_pre_lang` | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
-| `width`           | The wrap column when outputting CommonMark.                                                            | `80`    |
-| `unsafe`          | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
-| `escape`          | Escape raw HTML instead of clobbering it.                                                              | `false` |
-| `sourcepos`       | Include source position attribute in HTML and XML output.                                              | `false` |
+| Name                 | Description                                                                                            | Default |
+| -------------------- | ------------------------------------------------------------------------------------------------------ | ------- |
+| `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
+| `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
+| `width`              | The wrap column when outputting CommonMark.                                                            | `80`    |
+| `unsafe`             | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
+| `escape`             | Escape raw HTML instead of clobbering it.                                                              | `false` |
+| `sourcepos`          | Include source position attribute in HTML and XML output.                                              | `false` |
+| `escaped_char_spans` | Wrap escaped characters in span tags                                                                   | `true`  |
 
 As well, there are several extensions which you can toggle in the same manner:
 

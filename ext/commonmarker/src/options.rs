@@ -34,6 +34,7 @@ const RENDER_WIDTH: &str = "width";
 const RENDER_UNSAFE: &str = "unsafe";
 const RENDER_ESCAPE: &str = "escape";
 const RENDER_SOURCEPOS: &str = "sourcepos";
+const RENDER_ESCAPED_CHAR_SPANS: &str = "escaped_char_spans";
 
 fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -56,6 +57,9 @@ fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHas
                 }
                 Ok(Cow::Borrowed(RENDER_SOURCEPOS)) => {
                     comrak_options.render.sourcepos = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(RENDER_ESCAPED_CHAR_SPANS)) => {
+                    comrak_options.render.escaped_char_spans = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }

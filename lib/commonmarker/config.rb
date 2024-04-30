@@ -16,6 +16,7 @@ module Commonmarker
         unsafe: false,
         escape: false,
         sourcepos: false,
+        escaped_char_spans: true,
       }.freeze,
       extension: {
         strikethrough: true,
