@@ -1,3 +1,17 @@
+## [v1.1.0] - 30-04-2024
+## What's Changed
+* Bump shlex from 1.2.0 to 1.3.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/274
+* Bump actions/cache from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/273
+* Bump comrak from 0.20.0 to 0.21.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/275
+* Bump syntect from 5.1.0 to 5.2.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/278
+* Bump magnus from 0.6.2 to 0.6.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/282
+* Update automerge.yml by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/284
+* Bump comrak from 0.21.0 to 0.22.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/283
+* Bump comrak from 0.22.0 to 0.23.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/287
+* Reintroduce AST parse/walk by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/276
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.4...v1.1.0
 ## [v1.0.4] - 03-01-2024
 ## What's Changed
 * Builds on behalf of Ruby 3.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/271
