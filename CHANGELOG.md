@@ -1,3 +1,9 @@
+## [v1.1.1] - 01-05-2024
+## What's Changed
+* Support ruby-head  by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/288
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.0...v1.1.1
 ## [v1.1.0] - 30-04-2024
 ## What's Changed
 * Bump shlex from 1.2.0 to 1.3.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/274
