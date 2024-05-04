@@ -136,6 +136,7 @@ class NodeTest < Minitest::Test
 
     def test_code_inline_can_set_string_content
       @code_inline.string_content = "string content"
+
       assert_match(%r{<code>string content</code>}, @document.to_html)
     end
   end
