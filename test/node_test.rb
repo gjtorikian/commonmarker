@@ -102,9 +102,10 @@ class NodeTest < Minitest::Test
 
   class StringContentTest < Minitest::Test
     def setup
-      @document = Commonmarker.parse("**HELLO!** \n***\n This has nodes!")
+      @document = Commonmarker.parse("**HELLO!** \n***\n This has `nodes`!")
       @paragraph = @document.first_child
       @emph = @paragraph.first_child
+      @code_inline = @document.last_child.last_child.previous_sibling
     end
 
     def test_node_can_get_string_content
@@ -127,6 +128,16 @@ class NodeTest < Minitest::Test
       end
 
       assert_match(%r{<strong>HELLO!</strong>}, @document.to_html)
+    end
+
+    def test_code_inline_can_get_string_content
+      assert_equal("nodes", @code_inline.string_content)
+    end
+
+    def test_code_inline_can_set_string_content
+      @code_inline.string_content = "string content"
+
+      assert_match(%r{<code>string content</code>}, @document.to_html)
     end
   end
 

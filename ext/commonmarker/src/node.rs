@@ -669,6 +669,14 @@ impl CommonmarkerNode {
     fn get_string_content(&self) -> Result<String, magnus::Error> {
         let node = self.inner.borrow();
 
+        match node.data.value {
+            ComrakNodeValue::Code(ref code) => return Ok(code.literal.to_string()),
+            ComrakNodeValue::CodeBlock(ref code_block) => {
+                return Ok(code_block.literal.to_string())
+            }
+            _ => {}
+        }
+
         match node.data.value.text() {
             Some(s) => Ok(s.to_string()),
             None => Err(magnus::Error::new(
@@ -680,6 +688,18 @@ impl CommonmarkerNode {
 
     fn set_string_content(&self, new_content: String) -> Result<bool, magnus::Error> {
         let mut node = self.inner.borrow_mut();
+
+        match node.data.value {
+            ComrakNodeValue::Code(ref mut code) => {
+                code.literal = new_content;
+                return Ok(true);
+            }
+            ComrakNodeValue::CodeBlock(ref mut code_block) => {
+                code_block.literal = new_content;
+                return Ok(true);
+            }
+            _ => {}
+        }
 
         match node.data.value.text_mut() {
             Some(s) => {
