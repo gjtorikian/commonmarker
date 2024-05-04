@@ -1,3 +1,9 @@
+## [v1.1.2] - 04-05-2024
+## What's Changed
+* Expose code and code blocks' literals via string_content/=. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/290
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.1...v1.1.2
 ## [v1.1.1] - 01-05-2024
 ## What's Changed
 * Support ruby-head  by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/288
