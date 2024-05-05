@@ -33,7 +33,7 @@ large = File.read("test/benchmark/large.md").freeze
     end
 
     x.report("Commonmarker::Node.to_html") do
-      Commonmarker.parse(large).to_html
+      Commonmarker.parse(input).to_html
     end
 
     x.report("Kramdown::Document#to_html") do
