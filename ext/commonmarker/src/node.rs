@@ -1108,8 +1108,5 @@ pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
 
-    c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
-    c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
-
     Ok(())
 }
