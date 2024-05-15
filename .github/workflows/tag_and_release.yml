@@ -7,17 +7,19 @@ on:
       - main
     paths:
       - "lib/commonmarker/version.rb"
-
-env:
-  CACHE_KEY_PREFIX: "cruby-v1-"
+  pull_request_target:
+    types:
+      - closed
 
 jobs:
   ruby:
     uses: yettoapp/actions/.github/workflows/ruby_gem_release.yml@main
     secrets:
       rubygems_api_key: ${{ secrets.RUBYGEMS_API_BOT_KEY }}
-      gh_token: ${{ secrets.PUBLIC_PUSH_TO_PROTECTED_BRANCH }}
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
     with:
       gem_name: commonmarker
       version_filepath: lib/commonmarker/version.rb
       oxidized: true
+      prepare: ${{ github.event_name == 'push' }}
+      release: ${{ github.event_name == 'workflow_dispatch' || ((github.event.pull_request.merged == true) && (contains(github.event.pull_request.labels.*.name, 'release'))) }}
