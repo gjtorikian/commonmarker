@@ -1,3 +1,14 @@
+# [v1.1.3] - 15-05-2024
+## What's Changed
+* benchmark: correct Commonmarker::Node.to_html input. by @rossta in https://github.com/gjtorikian/commonmarker/pull/291
+* Bump magnus from 0.6.3 to 0.6.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/292
+* node: remove duplicate fence info method defs. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/295
+* :gem: 1.1.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/296
+
+## New Contributors
+* @rossta made their first contribution in https://github.com/gjtorikian/commonmarker/pull/291
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.2...v1.1.3
 ## [v1.1.2] - 04-05-2024
 ## What's Changed
 * Expose code and code blocks' literals via string_content/=. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/290
