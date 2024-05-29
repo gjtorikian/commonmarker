@@ -44,6 +44,7 @@ class NodeCreationTest < Minitest::Test
       [:math, dollar_math: true, display_math: false, literal: "$a+b=2$"],
       [:multiline_block_quote, fence_length: 2, fence_offset: 0],
       [:escaped],
+      [:wikilink, url: "www.yetto.app/billy.png"],
     ]
     node_types.each do |type, arguments|
       node = arguments.nil? ? Commonmarker::Node.new(type) : Commonmarker::Node.new(type, **arguments)
