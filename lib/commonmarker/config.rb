@@ -34,6 +34,8 @@ module Commonmarker
         multiline_block_quotes: false,
         math_dollars: false,
         math_code: false,
+        wikilinks_title_before_pipe: false,
+        wikilinks_title_after_pipe: false,
       },
       format: [:html].freeze,
     }.freeze

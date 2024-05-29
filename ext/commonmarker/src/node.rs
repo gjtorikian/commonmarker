@@ -2,7 +2,7 @@ use comrak::nodes::{
     Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, ListType, NodeCode, NodeCodeBlock,
     NodeDescriptionItem, NodeFootnoteDefinition, NodeFootnoteReference, NodeHeading, NodeHtmlBlock,
     NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote, NodeShortCode, NodeTable,
-    NodeValue as ComrakNodeValue, TableAlignment,
+    NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
 };
 use comrak::{arena_tree::Node as ComrakNode, ComrakOptions};
 use magnus::RArray;
@@ -453,6 +453,15 @@ impl CommonmarkerNode {
             }
 
             "escaped" => ComrakNodeValue::Escaped,
+
+            "wikilink" => {
+                let kwargs =
+                    scan_args::get_kwargs::<_, (String,), (), ()>(args.keywords, &["url"], &[])?;
+
+                let (url,) = kwargs.required;
+
+                ComrakNodeValue::WikiLink(NodeWikiLink { url })
+            }
             _ => panic!("unknown node type {}", node_type),
         };
 
@@ -539,6 +548,7 @@ impl CommonmarkerNode {
             ComrakNodeValue::MultilineBlockQuote(_) => Symbol::new("multiline_block_quote"),
             ComrakNodeValue::Escaped => Symbol::new("escaped"),
             ComrakNodeValue::Math(..) => Symbol::new("math"),
+            ComrakNodeValue::WikiLink(..) => Symbol::new("wikilink"),
         }
     }
 

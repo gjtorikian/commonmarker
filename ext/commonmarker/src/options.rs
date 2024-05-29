@@ -86,6 +86,8 @@ const EXTENSION_SHORTCODES: &str = "shortcodes";
 const EXTENSION_MULTILINE_BLOCK_QUOTES: &str = "multiline_block_quotes";
 const EXTENSION_MATH_DOLLARS: &str = "math_dollars";
 const EXTENSION_MATH_CODE: &str = "math_code";
+const EXTENSION_WIKILINKS_TITLE_AFTER_PIPE: &str = "wikilinks_title_after_pipe";
+const EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE: &str = "wikilinks_title_before_pipe";
 
 fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -137,6 +139,14 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 }
                 Ok(Cow::Borrowed(EXTENSION_MATH_CODE)) => {
                     comrak_options.extension.math_code = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_WIKILINKS_TITLE_AFTER_PIPE)) => {
+                    comrak_options.extension.wikilinks_title_after_pipe =
+                        TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE)) => {
+                    comrak_options.extension.wikilinks_title_before_pipe =
+                        TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
