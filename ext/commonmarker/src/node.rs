@@ -1,20 +1,20 @@
+use comrak::arena_tree::Node as ComrakNode;
 use comrak::nodes::{
     Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, ListType, NodeCode, NodeCodeBlock,
     NodeDescriptionItem, NodeFootnoteDefinition, NodeFootnoteReference, NodeHeading, NodeHtmlBlock,
     NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote, NodeShortCode, NodeTable,
     NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
 };
-use comrak::{arena_tree::Node as ComrakNode, ComrakOptions};
 use magnus::RArray;
-use magnus::{
-    function, method, r_hash::ForEach, scan_args, Module, Object, RHash, RModule, Symbol, Value,
-};
+use magnus::{function, method, scan_args, Module, Object, RHash, RModule, Symbol, Value};
 use rctree::Node;
 use typed_arena::Arena;
 
 use std::cell::RefCell;
 
-use crate::options::iterate_options_hash;
+use crate::format_options;
+
+use crate::plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
 
 #[derive(Debug, Clone)]
 #[magnus::wrap(class = "Commonmarker::Node::Ast", size, mark)]
@@ -905,15 +905,24 @@ impl CommonmarkerNode {
             &[],
             &["options", "plugins"],
         )?;
-        let (rb_options, _rb_plugins) = kwargs.optional;
+        let (rb_options, rb_plugins) = kwargs.optional;
 
-        let mut comrak_options = ComrakOptions::default();
+        let comrak_options = match format_options(rb_options) {
+            Ok(options) => options,
+            Err(err) => return Err(err),
+        };
 
-        if let Some(rb_options) = rb_options {
-            rb_options.foreach(|key: Symbol, value: RHash| {
-                iterate_options_hash(&mut comrak_options, key, value)?;
-                Ok(ForEach::Continue)
-            })?;
+        let mut comrak_plugins = comrak::Plugins::default();
+
+        let syntect_adapter = match construct_syntax_highlighter_from_plugin(rb_plugins) {
+            Ok(Some(adapter)) => Some(adapter),
+            Ok(None) => None,
+            Err(err) => return Err(err),
+        };
+
+        match syntect_adapter {
+            Some(ref adapter) => comrak_plugins.render.codefence_syntax_highlighter = Some(adapter),
+            None => comrak_plugins.render.codefence_syntax_highlighter = None,
         }
 
         let arena: Arena<ComrakAstNode> = Arena::new();
@@ -946,7 +955,12 @@ impl CommonmarkerNode {
         }
 
         let mut output = vec![];
-        match comrak::format_html(&comrak_root_node, &comrak_options, &mut output) {
+        match comrak::format_html_with_plugins(
+            &comrak_root_node,
+            &comrak_options,
+            &mut output,
+            &comrak_plugins,
+        ) {
             Ok(_) => {}
             Err(e) => {
                 return Err(magnus::Error::new(
@@ -973,15 +987,25 @@ impl CommonmarkerNode {
             &[],
             &["options", "plugins"],
         )?;
-        let (rb_options, _rb_plugins) = kwargs.optional;
+        let (rb_options, rb_plugins) = kwargs.optional;
 
-        let mut comrak_options = ComrakOptions::default();
+        let _comrak_options = format_options(rb_options);
+        let comrak_options = match format_options(rb_options) {
+            Ok(options) => options,
+            Err(err) => return Err(err),
+        };
 
-        if let Some(rb_options) = rb_options {
-            rb_options.foreach(|key: Symbol, value: RHash| {
-                iterate_options_hash(&mut comrak_options, key, value)?;
-                Ok(ForEach::Continue)
-            })?;
+        let mut comrak_plugins = comrak::Plugins::default();
+
+        let syntect_adapter = match construct_syntax_highlighter_from_plugin(rb_plugins) {
+            Ok(Some(adapter)) => Some(adapter),
+            Ok(None) => None,
+            Err(err) => return Err(err),
+        };
+
+        match syntect_adapter {
+            Some(ref adapter) => comrak_plugins.render.codefence_syntax_highlighter = Some(adapter),
+            None => comrak_plugins.render.codefence_syntax_highlighter = None,
         }
 
         let arena: Arena<ComrakAstNode> = Arena::new();
@@ -1014,7 +1038,12 @@ impl CommonmarkerNode {
         }
 
         let mut output = vec![];
-        match comrak::format_commonmark(&comrak_root_node, &comrak_options, &mut output) {
+        match comrak::format_commonmark_with_plugins(
+            &comrak_root_node,
+            &comrak_options,
+            &mut output,
+            &comrak_plugins,
+        ) {
             Ok(_) => {}
             Err(e) => {
                 return Err(magnus::Error::new(

@@ -100,6 +100,22 @@ class NodeTest < Minitest::Test
     assert_match(%r{<p>Hi . This has <strong>many nodes</strong>!</p>\n}, @document.to_html)
   end
 
+  def test_node_html_with_plugins
+    code = <<~CODE
+      ```ruby
+      puts "hello"
+      ```
+    CODE
+
+    plugins = { syntax_highlighter: { theme: "InspiredGitHub" } }
+
+    result = Commonmarker.to_html(code, plugins: plugins)
+
+    doc = Commonmarker.parse(code)
+
+    assert_equal(result, doc.to_html(plugins: plugins))
+  end
+
   class StringContentTest < Minitest::Test
     def setup
       @document = Commonmarker.parse("**HELLO!** \n***\n This has `nodes`!")
@@ -272,10 +288,12 @@ class NodeTest < Minitest::Test
     end
 
     def test_can_set_fence_info
+      assert_match(/<pre lang=\"ruby\"/, @document.to_html)
+
       @fence_node.fence_info = "perl"
 
       assert_equal("perl", @fence_node.fence_info)
-      assert_match(%r{<pre lang="perl"><code>puts 'wow'\n<\/code><\/pre>}, @document.to_html)
+      assert_match(/<pre lang=\"perl\"/, @document.to_html)
     end
   end
 end
