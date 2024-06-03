@@ -1,3 +1,10 @@
+# [v1.1.4] - 03-06-2024
+## What's Changed
+* Bump comrak from 0.23.0 to 0.24.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/298
+* Support plugins when processing node tree by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/299
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.3...v1.1.4
 # [v1.1.3] - 15-05-2024
 ## What's Changed
 * benchmark: correct Commonmarker::Node.to_html input. by @rossta in https://github.com/gjtorikian/commonmarker/pull/291
