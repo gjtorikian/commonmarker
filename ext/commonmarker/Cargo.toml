@@ -6,7 +6,7 @@ rust-version = "1.75.0"
 publish = false
 
 [dependencies]
-magnus = { version = "0.6", features = ["rb-sys"] }
+magnus = { version = "0.7", features = ["rb-sys"] }
 rb-sys = { version = "*", default-features = false, features = [
     "stable-api-compiled-fallback",
 ] }
