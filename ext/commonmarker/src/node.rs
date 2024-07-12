@@ -238,8 +238,8 @@ impl CommonmarkerNode {
                 let (alignments, num_columns, num_rows, num_nonempty_cells) = kwargs.required;
 
                 let mut comrak_alignments = vec![];
-                alignments.each().for_each(|alignment| {
-                    match alignment.unwrap().to_string().as_str() {
+                alignments.into_iter().for_each(|alignment| {
+                    match alignment.to_string().as_str() {
                         "left" => {
                             comrak_alignments.push(TableAlignment::Left);
                         }
