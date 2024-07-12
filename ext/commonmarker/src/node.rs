@@ -401,12 +401,12 @@ impl CommonmarkerNode {
 
                 let (code,) = kwargs.required;
 
-                match NodeShortCode::try_from(code.as_str()) {
-                    Ok(shortcode) => ComrakNodeValue::ShortCode(shortcode),
-                    _ => {
+                match NodeShortCode::resolve(code.as_str()) {
+                    Some(shortcode) => ComrakNodeValue::ShortCode(shortcode),
+                    None => {
                         return Err(magnus::Error::new(
                             magnus::exception::arg_error(),
-                            "list type must be `bullet` or `ordered`",
+                            "could not resolve shortcode",
                         ));
                     }
                 }
