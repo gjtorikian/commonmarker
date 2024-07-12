@@ -24,7 +24,8 @@ fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash
                     comrak_options.parse.default_info_string = try_convert_string(value);
                 }
                 Ok(Cow::Borrowed(PARSE_RELAXED_TASKLIST_MATCHING)) => {
-                    comrak_options.parse.relaxed_tasklist_matching = TryConvert::try_convert(value)?;
+                    comrak_options.parse.relaxed_tasklist_matching =
+                        TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(PARSE_RELAXED_AUTOLINKS)) => {
                     comrak_options.parse.relaxed_autolinks = TryConvert::try_convert(value)?;
