@@ -11,6 +11,7 @@ class SpecTest < Minitest::Test
       opts = {
         render: {
           unsafe: true,
+          gfm_quirks: true,
         },
         extension: testcase[:extensions].each_with_object({}) do |ext, hash|
           hash[ext] = true

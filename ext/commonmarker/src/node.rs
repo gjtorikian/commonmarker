@@ -238,8 +238,9 @@ impl CommonmarkerNode {
                 let (alignments, num_columns, num_rows, num_nonempty_cells) = kwargs.required;
 
                 let mut comrak_alignments = vec![];
-                alignments.each().for_each(|alignment| {
-                    match alignment.unwrap().to_string().as_str() {
+                alignments
+                    .into_iter()
+                    .for_each(|alignment| match alignment.to_string().as_str() {
                         "left" => {
                             comrak_alignments.push(TableAlignment::Left);
                         }
@@ -252,8 +253,7 @@ impl CommonmarkerNode {
                         _ => {
                             comrak_alignments.push(TableAlignment::None);
                         }
-                    }
-                });
+                    });
                 ComrakNodeValue::Table(NodeTable {
                     // The table alignments
                     alignments: comrak_alignments,
@@ -401,12 +401,12 @@ impl CommonmarkerNode {
 
                 let (code,) = kwargs.required;
 
-                match NodeShortCode::try_from(code.as_str()) {
-                    Ok(shortcode) => ComrakNodeValue::ShortCode(shortcode),
-                    _ => {
+                match NodeShortCode::resolve(code.as_str()) {
+                    Some(shortcode) => ComrakNodeValue::ShortCode(shortcode),
+                    None => {
                         return Err(magnus::Error::new(
                             magnus::exception::arg_error(),
-                            "list type must be `bullet` or `ordered`",
+                            "could not resolve shortcode",
                         ));
                     }
                 }
@@ -549,6 +549,9 @@ impl CommonmarkerNode {
             ComrakNodeValue::Escaped => Symbol::new("escaped"),
             ComrakNodeValue::Math(..) => Symbol::new("math"),
             ComrakNodeValue::WikiLink(..) => Symbol::new("wikilink"),
+            ComrakNodeValue::Underline => Symbol::new("underline"),
+            ComrakNodeValue::SpoileredText => Symbol::new("spoilered_text"),
+            ComrakNodeValue::EscapedTag(_) => Symbol::new("escaped_tag"),
         }
     }
 

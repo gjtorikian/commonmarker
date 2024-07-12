@@ -10,6 +10,7 @@ use crate::utils::try_convert_string;
 
 const PARSE_SMART: &str = "smart";
 const PARSE_DEFAULT_INFO_STRING: &str = "default_info_string";
+const PARSE_RELAXED_TASKLIST_MATCHING: &str = "relaxed_tasklist_matching";
 const PARSE_RELAXED_AUTOLINKS: &str = "relaxed_autolinks";
 
 fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
@@ -21,6 +22,10 @@ fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash
                 }
                 Ok(Cow::Borrowed(PARSE_DEFAULT_INFO_STRING)) => {
                     comrak_options.parse.default_info_string = try_convert_string(value);
+                }
+                Ok(Cow::Borrowed(PARSE_RELAXED_TASKLIST_MATCHING)) => {
+                    comrak_options.parse.relaxed_tasklist_matching =
+                        TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(PARSE_RELAXED_AUTOLINKS)) => {
                     comrak_options.parse.relaxed_autolinks = TryConvert::try_convert(value)?;
@@ -34,11 +39,16 @@ fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash
 
 const RENDER_HARDBREAKS: &str = "hardbreaks";
 const RENDER_GITHUB_PRE_LANG: &str = "github_pre_lang";
+const RENDER_FULL_INFO_STRING: &str = "full_info_string";
 const RENDER_WIDTH: &str = "width";
 const RENDER_UNSAFE: &str = "unsafe";
 const RENDER_ESCAPE: &str = "escape";
 const RENDER_SOURCEPOS: &str = "sourcepos";
 const RENDER_ESCAPED_CHAR_SPANS: &str = "escaped_char_spans";
+const RENDER_IGNORE_SETEXT: &str = "ignore_setext";
+const RENDER_IGNORE_EMPTY_LINKS: &str = "ignore_empty_links";
+const RENDER_GFM_QUIRKS: &str = "gfm_quirks";
+const RENDER_PREFER_FENCED: &str = "prefer_fenced";
 
 fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -49,6 +59,9 @@ fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHas
                 }
                 Ok(Cow::Borrowed(RENDER_GITHUB_PRE_LANG)) => {
                     comrak_options.render.github_pre_lang = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(RENDER_FULL_INFO_STRING)) => {
+                    comrak_options.render.full_info_string = TryConvert::try_convert(value)?;
                 }
                 Ok(Cow::Borrowed(RENDER_WIDTH)) => {
                     comrak_options.render.width = TryConvert::try_convert(value)?;
@@ -64,6 +77,18 @@ fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHas
                 }
                 Ok(Cow::Borrowed(RENDER_ESCAPED_CHAR_SPANS)) => {
                     comrak_options.render.escaped_char_spans = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(RENDER_IGNORE_SETEXT)) => {
+                    comrak_options.render.ignore_setext = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(RENDER_IGNORE_EMPTY_LINKS)) => {
+                    comrak_options.render.ignore_empty_links = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(RENDER_GFM_QUIRKS)) => {
+                    comrak_options.render.gfm_quirks = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(RENDER_PREFER_FENCED)) => {
+                    comrak_options.render.prefer_fenced = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
@@ -82,12 +107,15 @@ const EXTENSION_HEADER_IDS: &str = "header_ids";
 const EXTENSION_FOOTNOTES: &str = "footnotes";
 const EXTENSION_DESCRIPTION_LISTS: &str = "description_lists";
 const EXTENSION_FRONT_MATTER_DELIMITER: &str = "front_matter_delimiter";
-const EXTENSION_SHORTCODES: &str = "shortcodes";
 const EXTENSION_MULTILINE_BLOCK_QUOTES: &str = "multiline_block_quotes";
 const EXTENSION_MATH_DOLLARS: &str = "math_dollars";
 const EXTENSION_MATH_CODE: &str = "math_code";
+const EXTENSION_SHORTCODES: &str = "shortcodes";
 const EXTENSION_WIKILINKS_TITLE_AFTER_PIPE: &str = "wikilinks_title_after_pipe";
 const EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE: &str = "wikilinks_title_before_pipe";
+const EXTENSION_UNDERLINE: &str = "underline";
+const EXTENSION_SPOILER: &str = "spoiler";
+const EXTENSION_GREENTEXT: &str = "greentext";
 
 fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -127,9 +155,6 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                         }
                     }
                 }
-                Ok(Cow::Borrowed(EXTENSION_SHORTCODES)) => {
-                    comrak_options.extension.shortcodes = TryConvert::try_convert(value)?;
-                }
                 Ok(Cow::Borrowed(EXTENSION_MULTILINE_BLOCK_QUOTES)) => {
                     comrak_options.extension.multiline_block_quotes =
                         TryConvert::try_convert(value)?;
@@ -140,6 +165,9 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 Ok(Cow::Borrowed(EXTENSION_MATH_CODE)) => {
                     comrak_options.extension.math_code = TryConvert::try_convert(value)?;
                 }
+                Ok(Cow::Borrowed(EXTENSION_SHORTCODES)) => {
+                    comrak_options.extension.shortcodes = TryConvert::try_convert(value)?;
+                }
                 Ok(Cow::Borrowed(EXTENSION_WIKILINKS_TITLE_AFTER_PIPE)) => {
                     comrak_options.extension.wikilinks_title_after_pipe =
                         TryConvert::try_convert(value)?;
@@ -147,6 +175,15 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 Ok(Cow::Borrowed(EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE)) => {
                     comrak_options.extension.wikilinks_title_before_pipe =
                         TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_UNDERLINE)) => {
+                    comrak_options.extension.underline = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_SPOILER)) => {
+                    comrak_options.extension.spoiler = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_GREENTEXT)) => {
+                    comrak_options.extension.greentext = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }

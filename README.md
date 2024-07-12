@@ -151,11 +151,12 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 
 ### Parse options
 
-| Name                  | Description                                                                                                                                | Default |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
-| `smart`               | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                       | `false` |
-| `default_info_string` | The default info string for fenced code blocks.                                                                                            | `""`    |
-| `relaxed_autolinks`   | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme. | `false` |
+| Name                          | Description                                                                                                                                 | Default |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `smart`                       | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                        | `false` |
+| `default_info_string`         | The default info string for fenced code blocks.                                                                                             | `""`    |
+| `relaxed_tasklist_matching`   | Enables relaxing of the tasklist extension matching, allowing any non-space to be used for the "checked" state instead of only `x` and `X`. | `false` |
+| `relaxed_autolinks`           | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
 
 ### Render options
 
@@ -163,38 +164,48 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | -------------------- | ------------------------------------------------------------------------------------------------------ | ------- |
 | `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
 | `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
+| `full_info_string`   | Gives info string data after a space in a `data-meta` attribute on code blocks.                        | `false` |
 | `width`              | The wrap column when outputting CommonMark.                                                            | `80`    |
 | `unsafe`             | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
 | `escape`             | Escape raw HTML instead of clobbering it.                                                              | `false` |
 | `sourcepos`          | Include source position attribute in HTML and XML output.                                              | `false` |
-| `escaped_char_spans` | Wrap escaped characters in span tags                                                                   | `true`  |
+| `escaped_char_spans` | Wrap escaped characters in span tags.                                                                  | `true`  |
+| `ignore_setext`      | Ignores setext-style headings.                                                                         | `false` |
+| `ignore_empty_links` | Ignores empty links, leaving the Markdown text in place.                                               | `false` |
+| `gfm_quirks`         | Outputs HTML with GFM-style quirks; namely, not nesting `<strong>` inlines.                            | `false` |
+| `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                            | `false` |
 
 As well, there are several extensions which you can toggle in the same manner:
 
 ```ruby
 Commonmarker.to_html('"Hi *there*"', options: {
     extension: { footnotes: true, description_lists: true },
-    render: { hardbreaks: false}
+    render: { hardbreaks: false }
 })
 ```
 
 ### Extension options
 
-| Name                        | Description                                                                                                         | Default |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------- |
-| `strikethrough`             | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
-| `tagfilter`                 | Enables the [tagfilter extension](https://github.github.com/gfm/#disallowed-raw-html-extension-) from the GFM spec. | `true`  |
-| `table`                     | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
-| `autolink`                  | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `true`  |
-| `tasklist`                  | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
-| `superscript`               | Enables the superscript Comrak extension.                                                                           | `false` |
-| `header_ids`                | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
-| `footnotes`                 | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
-| `description_lists`         | Enables the description lists extension.                                                                            | `false` |
-| `front_matter_delimiter`    | Enables the front matter extension.                                                                                 | `""`    |
-| `shortcodes`                | Enables the shortcodes extension.                                                                                   | `true`  |
-| `multiline_block_quotes`    | Enables the multiline block quotes extension.                                                                       | `false` |
-| `math_dollars`, `math_code` | Enables the math extension.                                                                                         | `false` |
+| Name                          | Description                                                                                                         | Default |
+| ---------------------------   | ------------------------------------------------------------------------------------------------------------------- | ------- |
+| `strikethrough`               | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
+| `tagfilter`                   | Enables the [tagfilter extension](https://github.github.com/gfm/#disallowed-raw-html-extension-) from the GFM spec. | `true`  |
+| `table`                       | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
+| `autolink`                    | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `true`  |
+| `tasklist`                    | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
+| `superscript`                 | Enables the superscript Comrak extension.                                                                           | `false` |
+| `header_ids`                  | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
+| `footnotes`                   | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
+| `description_lists`           | Enables the description lists extension.                                                                            | `false` |
+| `front_matter_delimiter`      | Enables the front matter extension.                                                                                 | `""`    |
+| `multiline_block_quotes`      | Enables the multiline block quotes extension.                                                                       | `false` |
+| `math_dollars`, `math_code`   | Enables the math extension.                                                                                         | `false` |
+| `shortcodes`                  | Enables the shortcodes extension.                                                                                   | `true`  |
+| `wikilinks_title_before_pipe` | Enables the wikilinks extension, placing the title before the dividing pipe.                                        | `false` |
+| `wikilinks_title_after_pipe`  | Enables the shortcodes extension, placing the title after the dividing pipe.                                        | `false` |
+| `underline`                   | Enables the underline extension.                                                                                    | `false` |
+| `spoiler`                     | Enables the spoiler extension.                                                                                      | `false` |
+| `greentext`                   | Enables the greentext extension.                                                                                    | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 
