@@ -549,6 +549,9 @@ impl CommonmarkerNode {
             ComrakNodeValue::Escaped => Symbol::new("escaped"),
             ComrakNodeValue::Math(..) => Symbol::new("math"),
             ComrakNodeValue::WikiLink(..) => Symbol::new("wikilink"),
+            ComrakNodeValue::Underline => Symbol::new("underline"),
+            ComrakNodeValue::SpoileredText => Symbol::new("spoilered_text"),
+            ComrakNodeValue::EscapedTag(_) => Symbol::new("escaped_tag"),
         }
     }
 
