@@ -1,3 +1,14 @@
+# [v1.1.5] - 29-07-2024
+## What's Changed
+* Bump magnus from 0.6.4 to 0.7.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/301
+* Bump rb-sys from 0.9.97 to 0.9.98 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/302
+* Bump comrak from 0.24.1 to 0.25.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/303
+* Bump comrak from 0.25.0 to 0.26.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/304
+* Bump rb-sys from 0.9.98 to 0.9.99 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/305
+* Update dependencies by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/307
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.4...v1.1.5
 # [v1.1.4] - 03-06-2024
 ## What's Changed
 * Bump comrak from 0.23.0 to 0.24.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/298
