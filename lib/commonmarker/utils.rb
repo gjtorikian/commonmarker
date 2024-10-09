@@ -6,16 +6,16 @@ module Commonmarker
   module Utils
     include Commonmarker::Constants
 
-    def fetch_kv(option, key, value, type)
+    def fetch_kv(options, key, value, type)
       value_klass = value.class
 
-      if Constants::BOOLS.include?(value) && BOOLS.include?(option[key])
-        option[key]
-      elsif option[key].is_a?(value_klass)
-        option[key]
+      if Constants::BOOLS.include?(value) && BOOLS.include?(options[key])
+        options[key]
+      elsif options[key].is_a?(value_klass)
+        options[key]
       else
         expected_type = Constants::BOOLS.include?(value) ? "Boolean" : value_klass.to_s
-        raise TypeError, "#{type} option `:#{key}` must be #{expected_type}; got #{option[key].class}"
+        raise TypeError, "#{type} option `:#{key}` must be #{expected_type}; got #{options[key].class}"
       end
     end
   end

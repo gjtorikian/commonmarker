@@ -22,6 +22,6 @@ class FootnotesTest < Minitest::Test
       </section>
     HTML
 
-    assert_equal(expected, Commonmarker.to_html(md, options: { extension: { footnotes: true } }))
+    assert_equal(expected, Commonmarker.to_html(md, options: { extension: { header_ids: nil, footnotes: true } }))
   end
 end
