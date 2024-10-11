@@ -86,7 +86,7 @@ You can also modify the following attributes:
 You can use `walk` or `each` to iterate over nodes:
 
 - `walk` will iterate on a node and recursively iterate on a node's children.
-- `each` will iterate on a node and its children, but no further.
+- `each` will iterate on a node's direct children, but no further.
 
 ```ruby
 require 'commonmarker'
