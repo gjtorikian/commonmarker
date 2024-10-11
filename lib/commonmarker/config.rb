@@ -45,8 +45,7 @@ module Commonmarker
         underline: false,
         spoiler: false,
         greentext: false,
-      },
-      format: [:html].freeze,
+      }.freeze,
     }.freeze
 
     PLUGINS = {
@@ -58,10 +57,6 @@ module Commonmarker
 
     class << self
       include Commonmarker::Utils
-
-      def merged_with_defaults(options)
-        Commonmarker::Config::OPTIONS.merge(process_options(options))
-      end
 
       def process_options(options)
         {
@@ -79,37 +74,30 @@ module Commonmarker
     end
 
     [:parse, :render, :extension].each do |type|
-      define_singleton_method :"process_#{type}_options" do |option|
+      define_singleton_method :"process_#{type}_options" do |options|
         Commonmarker::Config::OPTIONS[type].each_with_object({}) do |(key, value), hash|
-          if option.nil? # option not provided, go for the default
+          if options.nil? || !options.key?(key) # option not provided, use the default
             hash[key] = value
             next
           end
 
-          # option explicitly not included, remove it
-          next if option[key].nil?
+          if options[key].nil? # # option explicitly not included, remove it
+            options.delete(key)
+            next
+          end
 
-          hash[key] = fetch_kv(option, key, value, type)
+          hash[key] = fetch_kv(options, key, value, type)
         end
       end
     end
 
-    [:syntax_highlighter].each do |type|
-      define_singleton_method :"process_#{type}_plugin" do |plugin|
-        return if plugin.nil? # plugin explicitly nil, remove it
+    define_singleton_method :process_syntax_highlighter_plugin do |options|
+      return if options.nil? # plugin explicitly nil, remove it
 
-        Commonmarker::Config::PLUGINS[type].each_with_object({}) do |(key, value), hash|
-          if plugin.nil? # option not provided, go for the default
-            hash[key] = value
-            next
-          end
+      raise TypeError, "Expected a Hash for syntax_highlighter plugin, got #{options.class}" unless options.is_a?(Hash)
+      raise TypeError, "Expected a Hash for syntax_highlighter plugin, got nothing" if options.empty?
 
-          # option explicitly not included, remove it
-          next if plugin[key].nil?
-
-          hash[key] = fetch_kv(plugin, key, value, type)
-        end
-      end
+      Commonmarker::Config::PLUGINS[:syntax_highlighter].merge(options)
     end
   end
 end

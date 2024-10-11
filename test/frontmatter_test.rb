@@ -21,6 +21,6 @@ class FrontmatterTest < Minitest::Test
       <h1>Title 1</h1>
     HTML
 
-    assert_equal(expected, Commonmarker.to_html(md, options: { extension: { front_matter_delimiter: "---" } }))
+    assert_equal(expected, Commonmarker.to_html(md, options: { extension: { header_ids: nil, front_matter_delimiter: "---" } }))
   end
 end

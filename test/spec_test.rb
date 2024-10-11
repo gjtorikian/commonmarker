@@ -8,18 +8,30 @@ class SpecTest < Minitest::Test
 
   spec.each do |testcase|
     define_method(:"test_to_html_example_#{testcase[:example]}") do
-      opts = {
-        render: {
-          unsafe: true,
-          gfm_quirks: true,
-        },
-        extension: testcase[:extensions].each_with_object({}) do |ext, hash|
-          hash[ext] = true
-        end,
+      render_options = Commonmarker::Config::OPTIONS[:render].each_with_object({}) do |(key, _value), hsh|
+        hsh[key] = nil
+      end
+      render_options[:unsafe] = true
+      render_options[:gfm_quirks] = true
+
+      string_extensions = [:front_matter_delimiter, :header_ids]
+      extensions_options = Commonmarker::Config::OPTIONS[:extension].each_with_object({}) do |(key, _value), hsh|
+        hsh[key] = if string_extensions.include?(key)
+          nil
+        else
+          false
+        end
+      end
+
+      testcase[:extensions].each do |ext, _value|
+        extensions_options[ext] = true
+      end
+
+      options = {
+        render: render_options,
+        extension: extensions_options,
       }
 
-      options = Commonmarker::Config.merged_with_defaults(opts)
-      options[:extension].delete(:header_ids) # this interefers with the spec.txt extension-less capability
       options[:extension][:tasklist] = true
       actual = Commonmarker.to_html(testcase[:markdown], options: options, plugins: nil).rstrip
 
