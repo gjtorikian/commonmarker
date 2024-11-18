@@ -45,11 +45,10 @@ static VALUE encode_utf8_string(const char *c_string) {
   return string;
 }
 
-/* Encode a C string using the encoding from Ruby string +source+. */
-static VALUE encode_source_string(const char *c_string, VALUE source) {
-  VALUE string = rb_str_new2(c_string);
-  rb_enc_copy(string, source);
-  return string;
+static VALUE commonmarker_cstr_adopt(const char *str, rb_encoding *enc) {
+  VALUE ret = rb_enc_str_new_cstr(str, enc);
+  cmark_get_default_mem_allocator()->free(str);
+  return ret;
 }
 
 static void rb_mark_c_struct(void *data) {
@@ -175,7 +174,7 @@ static VALUE rb_markdown_to_html(VALUE self, VALUE rb_text, VALUE rb_options, VA
   cmark_parser_free(parser);
   cmark_node_free(doc);
 
-  return rb_utf8_str_new_cstr(html);
+  return commonmarker_cstr_adopt(html, rb_utf8_encoding());
 }
 
 /*
@@ -204,7 +203,7 @@ static VALUE rb_markdown_to_xml(VALUE self, VALUE rb_text, VALUE rb_options, VAL
   cmark_parser_free(parser);
   cmark_node_free(doc);
 
-  return rb_utf8_str_new_cstr(xml);
+  return commonmarker_cstr_adopt(xml, rb_utf8_encoding());
 }
 
 /*
@@ -1178,7 +1177,7 @@ static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   if (houdini_escape_href(&buf, (const uint8_t *)RSTRING_PTR(rb_text),
                           RSTRING_LEN(rb_text))) {
     result = (char *)cmark_strbuf_detach(&buf);
-    return encode_source_string(result, rb_text);
+    return commonmarker_cstr_adopt(result, rb_enc_get(rb_text));
 
   }
 
@@ -1199,7 +1198,7 @@ static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   if (houdini_escape_html0(&buf, (const uint8_t *)RSTRING_PTR(rb_text),
                            RSTRING_LEN(rb_text), 0)) {
     result = (char *)cmark_strbuf_detach(&buf);
-    return encode_source_string(result, rb_text);
+    return commonmarker_cstr_adopt(result, rb_enc_get(rb_text));
   }
 
   return rb_text;
