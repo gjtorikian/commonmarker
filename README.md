@@ -147,16 +147,16 @@ Commonmarker.to_html('"Hi *there*"', options:{
 })
 ```
 
-Note that there is a distinction in comrak for "parse" options and "render" options, which are represented in the tables below.
+Note that there is a distinction in comrak for "parse" options and "render" options, which are represented in the tables below. As well, if you wish to disable any-non boolean option, pass in `nil`.
 
 ### Parse options
 
-| Name                          | Description                                                                                                                                 | Default |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `smart`                       | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                        | `false` |
-| `default_info_string`         | The default info string for fenced code blocks.                                                                                             | `""`    |
-| `relaxed_tasklist_matching`   | Enables relaxing of the tasklist extension matching, allowing any non-space to be used for the "checked" state instead of only `x` and `X`. | `false` |
-| `relaxed_autolinks`           | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
+| Name                        | Description                                                                                                                                 | Default |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `smart`                     | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                        | `false` |
+| `default_info_string`       | The default info string for fenced code blocks.                                                                                             | `""`    |
+| `relaxed_tasklist_matching` | Enables relaxing of the tasklist extension matching, allowing any non-space to be used for the "checked" state instead of only `x` and `X`. | `false` |
+| `relaxed_autolinks`         | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
 
 ### Render options
 
@@ -187,7 +187,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 ### Extension options
 
 | Name                          | Description                                                                                                         | Default |
-| ---------------------------   | ------------------------------------------------------------------------------------------------------------------- | ------- |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------- |
 | `strikethrough`               | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
 | `tagfilter`                   | Enables the [tagfilter extension](https://github.github.com/gfm/#disallowed-raw-html-extension-) from the GFM spec. | `true`  |
 | `table`                       | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
