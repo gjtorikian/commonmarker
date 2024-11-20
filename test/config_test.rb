@@ -11,6 +11,9 @@ class ConfigTest < Minitest::Test
       render: {
         unsafe: false,
       },
+      extension: {
+        autolink: false,
+      },
     }
     processed_config = Commonmarker::Config.process_options(user_config)
 
