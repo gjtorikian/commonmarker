@@ -1,3 +1,21 @@
+# [v2.0.0] - 25-11-2024
+## What's Changed
+* Bump rb-sys from 0.9.99 to 0.9.100 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/309
+* Bump rb-sys from 0.9.100 to 0.9.101 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/310
+* Bump comrak from 0.26.0 to 0.27.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/311
+* Bump rb-sys from 0.9.101 to 0.9.102 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/312
+* Bump comrak from 0.27.0 to 0.28.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/313
+* Bump comrak from 0.28.0 to 0.29.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/316
+* Readme defintion of  seems ot conflict with implementation by @stellarpower in https://github.com/gjtorikian/commonmarker/pull/317
+* Bump rb-sys from 0.9.102 to 0.9.103 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/319
+* add an option to merge default configs by @monkeyWzr in https://github.com/gjtorikian/commonmarker/pull/315
+* Bump comrak from 0.29.0 to 0.30.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/321
+
+## New Contributors
+* @stellarpower made their first contribution in https://github.com/gjtorikian/commonmarker/pull/317
+* @monkeyWzr made their first contribution in https://github.com/gjtorikian/commonmarker/pull/315
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.5...v2.0.0
 # [v1.1.5] - 29-07-2024
 ## What's Changed
 * Bump magnus from 0.6.4 to 0.7.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/301
