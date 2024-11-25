@@ -76,4 +76,20 @@ class ExtensionsTest < Minitest::Test
       Commonmarker.to_html("Happy Friday! :smile:", options: options),
     )
   end
+
+  def test_subscript_disabled_by_default
+    assert_equal(
+      "<p><del>H<del>2</del>O</del></p>\n",
+      Commonmarker.to_html("~~H~2~O~~"),
+    )
+  end
+
+  def test_can_support_subscript
+    options = { extension: { subscript: true } }
+
+    assert_equal(
+      "<p><del>H<sub>2</sub>O</del></p>\n",
+      Commonmarker.to_html("~~H~2~O~~", options: options),
+    )
+  end
 end

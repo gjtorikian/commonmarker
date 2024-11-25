@@ -74,7 +74,7 @@ class NodeTest < Minitest::Test
 
     assert(@document.first_child.first_child.replace(strikethrough_node))
 
-    assert_match(/~bazinga~\*there\*/, @document.to_commonmark)
+    assert_match(/~~bazinga~~\*there\*/, @document.to_commonmark)
   end
 
   def test_last_child

@@ -116,6 +116,7 @@ const EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE: &str = "wikilinks_title_before_pipe
 const EXTENSION_UNDERLINE: &str = "underline";
 const EXTENSION_SPOILER: &str = "spoiler";
 const EXTENSION_GREENTEXT: &str = "greentext";
+const EXTENSION_SUBSCRIPT: &str = "subscript";
 
 fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -184,6 +185,9 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 }
                 Ok(Cow::Borrowed(EXTENSION_GREENTEXT)) => {
                     comrak_options.extension.greentext = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(EXTENSION_SUBSCRIPT)) => {
+                    comrak_options.extension.subscript = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }

@@ -66,6 +66,7 @@ impl CommonmarkerNode {
                         Option<String>,
                         Option<u8>,
                         Option<bool>,
+                        Option<bool>,
                     ),
                     (),
                 >(
@@ -78,11 +79,12 @@ impl CommonmarkerNode {
                         "delimiter",
                         "bullet_char",
                         "tight",
+                        "task_list",
                     ],
                 )?;
 
                 let (list_type,) = kwargs.required;
-                let (marker_offset, padding, start, delimiter, bullet_char, tight) =
+                let (marker_offset, padding, start, delimiter, bullet_char, tight, task_list) =
                     kwargs.optional;
 
                 let commonmark_list_type = list_type.to_string();
@@ -121,6 +123,7 @@ impl CommonmarkerNode {
                     // Whether the list is [tight](https://github.github.com/gfm/#tight), i.e. whether the
                     // paragraphs are wrapped in `<p>` tags when formatted as HTML.
                     tight: tight.unwrap_or(false),
+                    is_task_list: task_list.unwrap_or(false),
                 })
             }
             "description_list" => ComrakNodeValue::DescriptionList,
@@ -335,6 +338,7 @@ impl CommonmarkerNode {
             "strong" => ComrakNodeValue::Strong,
             "strikethrough" => ComrakNodeValue::Strikethrough,
             "superscript" => ComrakNodeValue::Superscript,
+            "subscript" => ComrakNodeValue::Subscript,
             "link" => {
                 let kwargs = scan_args::get_kwargs::<_, (String,), (Option<String>,), ()>(
                     args.keywords,
@@ -462,6 +466,7 @@ impl CommonmarkerNode {
 
                 ComrakNodeValue::WikiLink(NodeWikiLink { url })
             }
+
             _ => panic!("unknown node type {}", node_type),
         };
 
@@ -550,6 +555,7 @@ impl CommonmarkerNode {
             ComrakNodeValue::Math(..) => Symbol::new("math"),
             ComrakNodeValue::WikiLink(..) => Symbol::new("wikilink"),
             ComrakNodeValue::Underline => Symbol::new("underline"),
+            ComrakNodeValue::Subscript => Symbol::new("subscript"),
             ComrakNodeValue::SpoileredText => Symbol::new("spoilered_text"),
             ComrakNodeValue::EscapedTag(_) => Symbol::new("escaped_tag"),
         }
