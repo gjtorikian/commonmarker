@@ -46,6 +46,7 @@ module Commonmarker
         spoiler: false,
         greentext: false,
       }.freeze,
+      format: [:html].freeze,
     }.freeze
 
     PLUGINS = {
