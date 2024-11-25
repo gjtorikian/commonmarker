@@ -12,6 +12,7 @@ class SmartPunctTest < Minitest::Test
       },
       render: {
         hardbreaks: false,
+        escaped_char_spans: false,
       },
     }
 
