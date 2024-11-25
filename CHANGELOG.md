@@ -1,153 +1,230 @@
-# [v1.1.5] - 29-07-2024
-## What's Changed
-* Bump magnus from 0.6.4 to 0.7.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/301
-* Bump rb-sys from 0.9.97 to 0.9.98 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/302
-* Bump comrak from 0.24.1 to 0.25.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/303
-* Bump comrak from 0.25.0 to 0.26.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/304
-* Bump rb-sys from 0.9.98 to 0.9.99 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/305
-* Update dependencies by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/307
+# [v2.0.0] - 25-11-2024
 
+This is a major release in the sense that there's a breaking API change,
+but not in the sense that anything earth-shatteringly urgent has
+occurred.
+
+In certain situations, user-provided options were not being merged
+correctly. This meant that default config values were being ignored
+erroneously.
+This was a bug, which has been fixed. Unfortunately, it's possible that
+downstream projects were relying on the old, broken behavior, so a
+simple patch release wouldn't do.
+
+If you're _not_ passing any options to `to_html` and everything works
+fine for you, than this should be an upgrade without side-effects.
+
+If you _are_ passing options to `to_html` (i.e. overridding the
+defaults), then consult the README for a list of options and
+their default values. Make sure that the default values given to
+`to_html` is acceptable to your project!
+
+## What's Changed
+
+- Bump rb-sys from 0.9.99 to 0.9.100 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/309
+- Bump rb-sys from 0.9.100 to 0.9.101 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/310
+- Bump comrak from 0.26.0 to 0.27.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/311
+- Bump rb-sys from 0.9.101 to 0.9.102 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/312
+- Bump comrak from 0.27.0 to 0.28.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/313
+- Bump comrak from 0.28.0 to 0.29.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/316
+- Readme defintion of seems ot conflict with implementation by @stellarpower in https://github.com/gjtorikian/commonmarker/pull/317
+- Bump rb-sys from 0.9.102 to 0.9.103 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/319
+- add an option to merge default configs by @monkeyWzr in https://github.com/gjtorikian/commonmarker/pull/315
+- Bump comrak from 0.29.0 to 0.30.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/321
+
+## New Contributors
+
+- @stellarpower made their first contribution in https://github.com/gjtorikian/commonmarker/pull/317
+- @monkeyWzr made their first contribution in https://github.com/gjtorikian/commonmarker/pull/315
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.5...v2.0.0
+
+# [v1.1.5] - 29-07-2024
+
+## What's Changed
+
+- Bump magnus from 0.6.4 to 0.7.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/301
+- Bump rb-sys from 0.9.97 to 0.9.98 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/302
+- Bump comrak from 0.24.1 to 0.25.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/303
+- Bump comrak from 0.25.0 to 0.26.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/304
+- Bump rb-sys from 0.9.98 to 0.9.99 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/305
+- Update dependencies by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/307
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.4...v1.1.5
-# [v1.1.4] - 03-06-2024
-## What's Changed
-* Bump comrak from 0.23.0 to 0.24.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/298
-* Support plugins when processing node tree by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/299
 
+# [v1.1.4] - 03-06-2024
+
+## What's Changed
+
+- Bump comrak from 0.23.0 to 0.24.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/298
+- Support plugins when processing node tree by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/299
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.3...v1.1.4
+
 # [v1.1.3] - 15-05-2024
+
 ## What's Changed
-* benchmark: correct Commonmarker::Node.to_html input. by @rossta in https://github.com/gjtorikian/commonmarker/pull/291
-* Bump magnus from 0.6.3 to 0.6.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/292
-* node: remove duplicate fence info method defs. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/295
-* :gem: 1.1.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/296
+
+- benchmark: correct Commonmarker::Node.to_html input. by @rossta in https://github.com/gjtorikian/commonmarker/pull/291
+- Bump magnus from 0.6.3 to 0.6.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/292
+- node: remove duplicate fence info method defs. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/295
+- :gem: 1.1.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/296
 
 ## New Contributors
-* @rossta made their first contribution in https://github.com/gjtorikian/commonmarker/pull/291
+
+- @rossta made their first contribution in https://github.com/gjtorikian/commonmarker/pull/291
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.2...v1.1.3
-## [v1.1.2] - 04-05-2024
-## What's Changed
-* Expose code and code blocks' literals via string_content/=. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/290
 
+## [v1.1.2] - 04-05-2024
+
+## What's Changed
+
+- Expose code and code blocks' literals via string_content/=. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/290
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.1...v1.1.2
-## [v1.1.1] - 01-05-2024
-## What's Changed
-* Support ruby-head  by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/288
 
+## [v1.1.1] - 01-05-2024
+
+## What's Changed
+
+- Support ruby-head by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/288
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.1.0...v1.1.1
-## [v1.1.0] - 30-04-2024
-## What's Changed
-* Bump shlex from 1.2.0 to 1.3.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/274
-* Bump actions/cache from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/273
-* Bump comrak from 0.20.0 to 0.21.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/275
-* Bump syntect from 5.1.0 to 5.2.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/278
-* Bump magnus from 0.6.2 to 0.6.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/282
-* Update automerge.yml by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/284
-* Bump comrak from 0.21.0 to 0.22.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/283
-* Bump comrak from 0.22.0 to 0.23.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/287
-* Reintroduce AST parse/walk by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/276
 
+## [v1.1.0] - 30-04-2024
+
+## What's Changed
+
+- Bump shlex from 1.2.0 to 1.3.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/274
+- Bump actions/cache from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/273
+- Bump comrak from 0.20.0 to 0.21.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/275
+- Bump syntect from 5.1.0 to 5.2.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/278
+- Bump magnus from 0.6.2 to 0.6.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/282
+- Update automerge.yml by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/284
+- Bump comrak from 0.21.0 to 0.22.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/283
+- Bump comrak from 0.22.0 to 0.23.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/287
+- Reintroduce AST parse/walk by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/276
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.4...v1.1.0
-## [v1.0.4] - 03-01-2024
-## What's Changed
-* Builds on behalf of Ruby 3.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/271
 
+## [v1.0.4] - 03-01-2024
+
+## What's Changed
+
+- Builds on behalf of Ruby 3.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/271
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.3...v1.0.4
-## [v1.0.3] - 28-12-2023
-**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.2...v1.0.3
-## [v1.0.2] - 28-12-2023
-## What's Changed
-* Support Ruby 3.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/267
 
+## [v1.0.3] - 28-12-2023
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.2...v1.0.3
+
+## [v1.0.2] - 28-12-2023
+
+## What's Changed
+
+- Support Ruby 3.3 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/267
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.1...v1.0.2
+
 ## [v1.0.1] - 27-12-2023
+
 ## What's Changed
-* Add sourcepos option by @ppworks in https://github.com/gjtorikian/commonmarker/pull/265
+
+- Add sourcepos option by @ppworks in https://github.com/gjtorikian/commonmarker/pull/265
 
 ## New Contributors
-* @ppworks made their first contribution in https://github.com/gjtorikian/commonmarker/pull/265
+
+- @ppworks made their first contribution in https://github.com/gjtorikian/commonmarker/pull/265
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.0...v1.0.1
+
 ## [v1.0.0] - 24-12-2023
+
 ## What's Changed
-* Migrate to comrak/Rust by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/185
-* Bump actions/checkout from 2 to 3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/192
-* Update rake-compiler requirement from ~> 0.9 to ~> 1.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/193
-* Migrate to magnus/rb_sys by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/194
-* Release v1 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/186
-* Clippy and cleanup by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/196
-* Bump comrak from 0.14.0 to 0.15.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/198
-* Frontmatter parse tweak by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/203
-* Windows build by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/197
-* Bump magnus from 0.4.1 to 0.4.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/204
-* Bump comrak from 0.14.0 to 0.15.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/205
-* Bump magnus from 0.4.2 to 0.4.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/206
-* Bump magnus from 0.4.3 to 0.4.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/208
-* Implement native syntax highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/209
-* Provide 3.2 build support by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/212
-* always use rb_sys (don't use Ruby's emerging cargo tooling where available) by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/213
-* remove gemspec by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/214
-* Fix a couple of misleading README points by @DannyBen in https://github.com/gjtorikian/commonmarker/pull/215
-* Clarify syntax highlighter plugin usage in README by @DannyBen in https://github.com/gjtorikian/commonmarker/pull/218
-* Change  to  by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/220
-* Bump comrak from 0.15.0 to 0.16.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/225
-* Add shortcodes/emoji by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/210
-* Bump magnus from 0.4.4 to 0.5.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/230
-* Bump magnus from 0.5.0 to 0.5.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/231
-* Add ability to load s from a folder by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/232
-* Test the new integrated rb-sys by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/228
-* Bump magnus from 0.5.1 to 0.5.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/233
-* Bump comrak from 0.16.0 to 0.17.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/234
-* Updates from upstream by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/235
-* Bump comrak from 0.17.1 to 0.18.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/237
-* Bump magnus from 0.5.2 to 0.5.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/238
-* Bump magnus from 0.5.3 to 0.5.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/242
-* Move debug gems into test env by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/245
-* Bump syntect from 5.0.0 to 5.1.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/248
-* Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/252
-* Bump magnus from 0.5.4 to 0.6.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/254
-* Bump comrak from 0.18.0 to 0.19.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/255
-* fix front_matter_delimiter type by @noraj in https://github.com/gjtorikian/commonmarker/pull/257
-* Reintroduce  platform releases by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/260
-* Bump comrak from 0.19.0 to 0.20.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/261
-* Classy highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/262
-* :gem: 1.0.0 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/264
+
+- Migrate to comrak/Rust by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/185
+- Bump actions/checkout from 2 to 3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/192
+- Update rake-compiler requirement from ~> 0.9 to ~> 1.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/193
+- Migrate to magnus/rb_sys by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/194
+- Release v1 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/186
+- Clippy and cleanup by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/196
+- Bump comrak from 0.14.0 to 0.15.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/198
+- Frontmatter parse tweak by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/203
+- Windows build by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/197
+- Bump magnus from 0.4.1 to 0.4.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/204
+- Bump comrak from 0.14.0 to 0.15.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/205
+- Bump magnus from 0.4.2 to 0.4.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/206
+- Bump magnus from 0.4.3 to 0.4.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/208
+- Implement native syntax highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/209
+- Provide 3.2 build support by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/212
+- always use rb_sys (don't use Ruby's emerging cargo tooling where available) by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/213
+- remove gemspec by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/214
+- Fix a couple of misleading README points by @DannyBen in https://github.com/gjtorikian/commonmarker/pull/215
+- Clarify syntax highlighter plugin usage in README by @DannyBen in https://github.com/gjtorikian/commonmarker/pull/218
+- Change to by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/220
+- Bump comrak from 0.15.0 to 0.16.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/225
+- Add shortcodes/emoji by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/210
+- Bump magnus from 0.4.4 to 0.5.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/230
+- Bump magnus from 0.5.0 to 0.5.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/231
+- Add ability to load s from a folder by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/232
+- Test the new integrated rb-sys by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/228
+- Bump magnus from 0.5.1 to 0.5.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/233
+- Bump comrak from 0.16.0 to 0.17.1 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/234
+- Updates from upstream by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/235
+- Bump comrak from 0.17.1 to 0.18.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/237
+- Bump magnus from 0.5.2 to 0.5.3 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/238
+- Bump magnus from 0.5.3 to 0.5.4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/242
+- Move debug gems into test env by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/245
+- Bump syntect from 5.0.0 to 5.1.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/248
+- Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/252
+- Bump magnus from 0.5.4 to 0.6.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/254
+- Bump comrak from 0.18.0 to 0.19.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/255
+- fix front_matter_delimiter type by @noraj in https://github.com/gjtorikian/commonmarker/pull/257
+- Reintroduce platform releases by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/260
+- Bump comrak from 0.19.0 to 0.20.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/261
+- Classy highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/262
+- :gem: 1.0.0 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/264
 
 ## New Contributors
-* @dependabot made their first contribution in https://github.com/gjtorikian/commonmarker/pull/192
-* @DannyBen made their first contribution in https://github.com/gjtorikian/commonmarker/pull/215
-* @noraj made their first contribution in https://github.com/gjtorikian/commonmarker/pull/257
+
+- @dependabot made their first contribution in https://github.com/gjtorikian/commonmarker/pull/192
+- @DannyBen made their first contribution in https://github.com/gjtorikian/commonmarker/pull/215
+- @noraj made their first contribution in https://github.com/gjtorikian/commonmarker/pull/257
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v0.23.6...v1.0.0
-## [v1.0.0.pre12] - 07-12-2023
-## What's Changed
-* Reintroduce  platform releases by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/260
-* Bump comrak from 0.19.0 to 0.20.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/261
-* Classy highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/262
 
+## [v1.0.0.pre12] - 07-12-2023
+
+## What's Changed
+
+- Reintroduce platform releases by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/260
+- Bump comrak from 0.19.0 to 0.20.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/261
+- Classy highlighting by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/262
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre11...v1.0.0.pre12
+
 ## [v1.0.0.pre11] - 12-10-2023
+
 ## What's Changed
-* Bump syntect from 5.0.0 to 5.1.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/248
-* Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/252
-* Bump magnus from 0.5.4 to 0.6.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/254
-* Bump comrak from 0.18.0 to 0.19.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/255
-* fix front_matter_delimiter type by @noraj in https://github.com/gjtorikian/commonmarker/pull/257
+
+- Bump syntect from 5.0.0 to 5.1.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/248
+- Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/252
+- Bump magnus from 0.5.4 to 0.6.2 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/254
+- Bump comrak from 0.18.0 to 0.19.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/255
+- fix front_matter_delimiter type by @noraj in https://github.com/gjtorikian/commonmarker/pull/257
 
 ## New Contributors
-* @noraj made their first contribution in https://github.com/gjtorikian/commonmarker/pull/257
+
+- @noraj made their first contribution in https://github.com/gjtorikian/commonmarker/pull/257
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v1.0.0.pre10...v1.0.0.pre11
+
 ## [v1.0.0.pre10] - 24-07-2023
+
 null
+
 # Changelog
 
 ## [v1.0.0.pre9](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre9) (2023-03-28)
@@ -212,7 +289,7 @@ null
 
 **Merged pull requests:**
 
-- always use rb\_sys \(don't use Ruby's emerging cargo tooling where available\) [\#213](https://github.com/gjtorikian/commonmarker/pull/213) ([kivikakk](https://github.com/kivikakk))
+- always use rb_sys \(don't use Ruby's emerging cargo tooling where available\) [\#213](https://github.com/gjtorikian/commonmarker/pull/213) ([kivikakk](https://github.com/kivikakk))
 
 ## [v1.0.0.pre5](https://github.com/gjtorikian/commonmarker/tree/v1.0.0.pre5) (2023-01-08)
 
@@ -263,7 +340,7 @@ null
 - Frontmatter parse tweak [\#203](https://github.com/gjtorikian/commonmarker/pull/203) ([gjtorikian](https://github.com/gjtorikian))
 - Bump comrak from 0.14.0 to 0.15.0 [\#198](https://github.com/gjtorikian/commonmarker/pull/198) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Clippy and cleanup [\#196](https://github.com/gjtorikian/commonmarker/pull/196) ([gjtorikian](https://github.com/gjtorikian))
-- Migrate to magnus/rb\_sys [\#194](https://github.com/gjtorikian/commonmarker/pull/194) ([gjtorikian](https://github.com/gjtorikian))
+- Migrate to magnus/rb_sys [\#194](https://github.com/gjtorikian/commonmarker/pull/194) ([gjtorikian](https://github.com/gjtorikian))
 - Update rake-compiler requirement from ~\> 0.9 to ~\> 1.2 [\#193](https://github.com/gjtorikian/commonmarker/pull/193) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump actions/checkout from 2 to 3 [\#192](https://github.com/gjtorikian/commonmarker/pull/192) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release v1 [\#186](https://github.com/gjtorikian/commonmarker/pull/186) ([gjtorikian](https://github.com/gjtorikian))
@@ -316,12 +393,12 @@ null
 **Closed issues:**
 
 - Site [\#178](https://github.com/gjtorikian/commonmarker/issues/178)
-- High security affected by Integer overflow in cmark-gfm table parsing extension leads to heap memory corruption  [\#175](https://github.com/gjtorikian/commonmarker/issues/175)
+- High security affected by Integer overflow in cmark-gfm table parsing extension leads to heap memory corruption [\#175](https://github.com/gjtorikian/commonmarker/issues/175)
 
 **Merged pull requests:**
 
 - Update cmark-upstream to 0.29.0.gfm.4 [\#180](https://github.com/gjtorikian/commonmarker/pull/180) ([lumaxis](https://github.com/lumaxis))
-- Add rb\_undef\_alloc\_func for Node [\#179](https://github.com/gjtorikian/commonmarker/pull/179) ([dorkrawk](https://github.com/dorkrawk))
+- Add rb_undef_alloc_func for Node [\#179](https://github.com/gjtorikian/commonmarker/pull/179) ([dorkrawk](https://github.com/dorkrawk))
 - Add Ruby 3.1 to the CI matrix [\#174](https://github.com/gjtorikian/commonmarker/pull/174) ([petergoldstein](https://github.com/petergoldstein))
 
 ## [v0.23.4](https://github.com/gjtorikian/commonmarker/tree/v0.23.4) (2022-03-03)
@@ -349,7 +426,7 @@ null
 **Closed issues:**
 
 - allow keeping text content of unknown tags [\#169](https://github.com/gjtorikian/commonmarker/issues/169)
-- STRIKETHROUGH\_DOUBLE\_TILDE not working [\#168](https://github.com/gjtorikian/commonmarker/issues/168)
+- STRIKETHROUGH_DOUBLE_TILDE not working [\#168](https://github.com/gjtorikian/commonmarker/issues/168)
 - Allow disabling 4-space code blocks [\#167](https://github.com/gjtorikian/commonmarker/issues/167)
 - tables with escaped pipes are not recognized [\#166](https://github.com/gjtorikian/commonmarker/issues/166)
 
@@ -396,7 +473,7 @@ null
 - Tagging "tasklist" lists with a class for easy styling? [\#137](https://github.com/gjtorikian/commonmarker/issues/137)
 - Escape math environments [\#136](https://github.com/gjtorikian/commonmarker/issues/136)
 - Open to removing the ruby-enum dependency? [\#135](https://github.com/gjtorikian/commonmarker/issues/135)
-- In HtmlRenderer, escape\_html\(\) returns a string with encoding \#\<Encoding:ASCII-8BIT\> [\#130](https://github.com/gjtorikian/commonmarker/issues/130)
+- In HtmlRenderer, escape_html\(\) returns a string with encoding \#\<Encoding:ASCII-8BIT\> [\#130](https://github.com/gjtorikian/commonmarker/issues/130)
 
 **Merged pull requests:**
 
@@ -445,7 +522,7 @@ null
 
 **Merged pull requests:**
 
-- Add Node\#tasklist\_item\_checked= [\#116](https://github.com/gjtorikian/commonmarker/pull/116) ([tomoasleep](https://github.com/tomoasleep))
+- Add Node\#tasklist_item_checked= [\#116](https://github.com/gjtorikian/commonmarker/pull/116) ([tomoasleep](https://github.com/tomoasleep))
 - clear up an example in the README [\#115](https://github.com/gjtorikian/commonmarker/pull/115) ([kivikakk](https://github.com/kivikakk))
 - Update GFM release [\#113](https://github.com/gjtorikian/commonmarker/pull/113) ([gjtorikian](https://github.com/gjtorikian))
 - Rubocop updates [\#111](https://github.com/gjtorikian/commonmarker/pull/111) ([gjtorikian](https://github.com/gjtorikian))
@@ -458,7 +535,7 @@ null
 
 - Bug when parse word with spaces in tags [\#106](https://github.com/gjtorikian/commonmarker/issues/106)
 - UNSAFE mode inserts \<p\> tags inside \<pre\> tag [\#102](https://github.com/gjtorikian/commonmarker/issues/102)
-- Wrong path gets encoded in Makefile: /home/conda/feedstock\_root/build\_artifacts/ruby\_1552262701982/\_build\_env/bin/x86\_64-conda\_cos6-linux-gnu-cc: Command not found [\#101](https://github.com/gjtorikian/commonmarker/issues/101)
+- Wrong path gets encoded in Makefile: /home/conda/feedstock_root/build_artifacts/ruby_1552262701982/\_build_env/bin/x86_64-conda_cos6-linux-gnu-cc: Command not found [\#101](https://github.com/gjtorikian/commonmarker/issues/101)
 
 **Merged pull requests:**
 
@@ -495,7 +572,7 @@ null
 
 **Closed issues:**
 
-- .render\_html throws an error when given a parse-only option such as :SMART [\#96](https://github.com/gjtorikian/commonmarker/issues/96)
+- .render_html throws an error when given a parse-only option such as :SMART [\#96](https://github.com/gjtorikian/commonmarker/issues/96)
 - code in header produce invalid anchor [\#93](https://github.com/gjtorikian/commonmarker/issues/93)
 - Escaping of square brackets for reference-style links [\#91](https://github.com/gjtorikian/commonmarker/issues/91)
 - Please add an option for accessible footnotes [\#89](https://github.com/gjtorikian/commonmarker/issues/89)
@@ -559,7 +636,7 @@ null
 
 **Merged pull requests:**
 
-- Update cmark-upstream  [\#78](https://github.com/gjtorikian/commonmarker/pull/78) ([gjtorikian](https://github.com/gjtorikian))
+- Update cmark-upstream [\#78](https://github.com/gjtorikian/commonmarker/pull/78) ([gjtorikian](https://github.com/gjtorikian))
 - grab header/define fixes [\#76](https://github.com/gjtorikian/commonmarker/pull/76) ([kivikakk](https://github.com/kivikakk))
 
 ## [v0.17.11](https://github.com/gjtorikian/commonmarker/tree/v0.17.11) (2018-08-10)
@@ -616,7 +693,7 @@ null
 
 **Merged pull requests:**
 
-- Support the TABLE\_PREFER\_STYLE\_ATTRIBUTES render option [\#66](https://github.com/gjtorikian/commonmarker/pull/66) ([gfx](https://github.com/gfx))
+- Support the TABLE_PREFER_STYLE_ATTRIBUTES render option [\#66](https://github.com/gjtorikian/commonmarker/pull/66) ([gfx](https://github.com/gfx))
 - Fix issues with tables during a round-trip parsing CM and then producing CM again. [\#65](https://github.com/gjtorikian/commonmarker/pull/65) ([jerryjvl](https://github.com/jerryjvl))
 
 ## [v0.17.7.1](https://github.com/gjtorikian/commonmarker/tree/v0.17.7.1) (2017-12-10)
@@ -884,7 +961,7 @@ null
 
 **Closed issues:**
 
-- No rule to make target libcmark\_static [\#22](https://github.com/gjtorikian/commonmarker/issues/22)
+- No rule to make target libcmark_static [\#22](https://github.com/gjtorikian/commonmarker/issues/22)
 
 **Merged pull requests:**
 
@@ -956,7 +1033,7 @@ null
 
 **Closed issues:**
 
-- Smart punctuation and hardbreaks don't mix in render\_doc [\#17](https://github.com/gjtorikian/commonmarker/issues/17)
+- Smart punctuation and hardbreaks don't mix in render_doc [\#17](https://github.com/gjtorikian/commonmarker/issues/17)
 
 **Merged pull requests:**
 
@@ -1029,7 +1106,7 @@ null
 
 **Closed issues:**
 
-- Look into using the C AST walk  [\#3](https://github.com/gjtorikian/commonmarker/issues/3)
+- Look into using the C AST walk [\#3](https://github.com/gjtorikian/commonmarker/issues/3)
 - Don't force users to call `free`, if possible [\#2](https://github.com/gjtorikian/commonmarker/issues/2)
 
 **Merged pull requests:**
@@ -1056,6 +1133,4 @@ null
 
 [Full Changelog](https://github.com/gjtorikian/commonmarker/compare/963ec7e72ff5125b11b3fbc842bd077031fc6c90...v0.0.1)
 
-
-
-\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
+\* _This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)_
