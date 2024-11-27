@@ -62,9 +62,9 @@ module Commonmarker
 
       def process_options(options)
         {
-          parse: process_parse_options(options[:parse]),
-          render: process_render_options(options[:render]),
-          extension: process_extension_options(options[:extension]),
+          parse: process_parse_options(options[:parse].dup),
+          render: process_render_options(options[:render].dup),
+          extension: process_extension_options(options[:extension].dup),
         }
       end
 
