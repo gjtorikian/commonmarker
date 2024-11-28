@@ -1,3 +1,9 @@
+# [v2.0.1] - 27-11-2024
+## What's Changed
+* Fixed the issue where nil for header_ids  by @ppworks in https://github.com/gjtorikian/commonmarker/pull/324
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.0.0...v2.0.1
 # [v2.0.0] - 25-11-2024
 
 This is a major release in the sense that there's a breaking API change,
