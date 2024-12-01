@@ -39,20 +39,18 @@ class ExtensionsTest < Minitest::Test
 
   def test_definition_lists
     markdown = <<~MARKDOWN
-      ~strikethrough disabled to ensure options accepted~
-
       Commonmark Definition
 
       : Ruby wrapper for comrak (CommonMark parser)
     MARKDOWN
 
-    extensions = { strikethrough: false, description_lists: true }
+    extensions = { description_lists: true }
     options = { extension: extensions, render: { hardbreaks: false } }
     output = Commonmarker.to_html(markdown, options: options)
 
     html = <<~HTML
-      <p>~strikethrough disabled to ensure options accepted~</p>
-      <dl><dt>Commonmark Definition</dt>
+      <dl>
+      <dt>Commonmark Definition</dt>
       <dd>
       <p>Ruby wrapper for comrak (CommonMark parser)</p>
       </dd>

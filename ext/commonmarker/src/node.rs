@@ -128,19 +128,25 @@ impl CommonmarkerNode {
             }
             "description_list" => ComrakNodeValue::DescriptionList,
             "description_item" => {
-                let kwargs = scan_args::get_kwargs::<_, (), (Option<usize>, Option<usize>), ()>(
-                    args.keywords,
-                    &[],
-                    &["marker_offset", "padding"],
+                let kwargs = scan_args::get_kwargs::<
+                    _,
+                    (),
+                    (Option<usize>, Option<usize>, Option<bool>),
+                    (),
+                >(
+                    args.keywords, &[], &["marker_offset", "padding", "tight"]
                 )?;
 
-                let (marker_offset, padding) = kwargs.optional;
+                let (marker_offset, padding, tight) = kwargs.optional;
 
                 ComrakNodeValue::DescriptionItem(NodeDescriptionItem {
                     // Number of spaces before the list marker.
                     marker_offset: marker_offset.unwrap_or(0),
                     // Number of characters between the start of the list marker and the item text (including the list marker(s)).
                     padding: padding.unwrap_or(0),
+                    // Whether the list is [tight](https://github.github.com/gfm/#tight), i.e. whether the
+                    // paragraphs are wrapped in `<p>` tags when formatted as HTML.
+                    tight: tight.unwrap_or(false),
                 })
             }
             "description_term" => ComrakNodeValue::DescriptionTerm,
