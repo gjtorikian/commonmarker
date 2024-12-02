@@ -25,6 +25,12 @@ defaults), then consult the README for a list of options and
 their default values. Make sure that the default values given to
 `to_html` is acceptable to your project!
 
+As an example of the change here, `extension: { header_ids }` is
+set to `""`, which means that `h*` tags will have GitHub style
+anchors automatically added to them. You can remove this (and other
+undesired options) by passing a `nil` value: `extension: { header_ids: nil }`.
+
+
 ## What's Changed
 
 - Bump rb-sys from 0.9.99 to 0.9.100 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/309
