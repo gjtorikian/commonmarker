@@ -76,7 +76,7 @@ fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
     ))
 }
 
-fn format_options(rb_options: Option<RHash>) -> Result<comrak::Options, magnus::Error> {
+fn format_options<'c>(rb_options: Option<RHash>) -> Result<comrak::Options<'c>, magnus::Error> {
     let mut comrak_options = ComrakOptions::default();
 
     if let Some(rb_options) = rb_options {
