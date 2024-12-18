@@ -547,6 +547,7 @@ impl CommonmarkerNode {
             ComrakNodeValue::Image(..) => Symbol::new("image"),
             ComrakNodeValue::Link(..) => Symbol::new("link"),
             ComrakNodeValue::Emph => Symbol::new("emph"),
+            ComrakNodeValue::Raw(..) => Symbol::new("raw"),
             ComrakNodeValue::Strong => Symbol::new("strong"),
             ComrakNodeValue::Code(..) => Symbol::new("code"),
             ComrakNodeValue::HtmlInline(..) => Symbol::new("html_inline"),
