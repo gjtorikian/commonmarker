@@ -4,16 +4,17 @@ on:
   pull_request:
 
 jobs:
-  test:
+  ci:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
           - macos-latest
           - windows-latest
         ruby-version:
-          - 3.3
+          - 3.4
           - ruby-head
 
     steps:
