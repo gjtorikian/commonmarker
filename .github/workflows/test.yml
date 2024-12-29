@@ -13,7 +13,7 @@ jobs:
           - macos-latest
           - windows-latest
         ruby-version:
-          - 3.3
+          - 3.4
           - ruby-head
 
     steps:
