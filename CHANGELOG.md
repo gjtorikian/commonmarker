@@ -1,3 +1,12 @@
+# [v2.0.2] - 29-12-2024
+## What's Changed
+* Bump comrak from 0.30.0 to 0.31.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/323
+* Bump comrak from 0.31.0 to 0.32.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/328
+* Bump rb-sys from 0.9.103 to 0.9.104 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/329
+* Support Ruby 3.4 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/330
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.0.1...v2.0.2
 # [v2.0.1] - 27-11-2024
 ## What's Changed
 * Fixed the issue where nil for header_ids  by @ppworks in https://github.com/gjtorikian/commonmarker/pull/324
