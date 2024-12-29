@@ -14,8 +14,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/gjtorikian/commonmarker"
 
   spec.required_ruby_version = "~> 3.1"
-  # https://github.com/rubygems/rubygems/pull/5852#issuecomment-1231118509
-  spec.required_rubygems_version = ">= 3.3.22"
+  spec.required_rubygems_version = "~> 3.4"
 
   spec.files = ["LICENSE.txt", "README.md", "Cargo.lock", "Cargo.toml"]
   spec.files += Dir.glob("lib/**/*.rb")
