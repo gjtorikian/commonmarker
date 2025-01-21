@@ -1,3 +1,11 @@
+# [v2.0.3] - 21-01-2025
+## What's Changed
+* Bump rb-sys from 0.9.106 to 0.9.107 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/341
+* Bump rb-sys from 0.9.107 to 0.9.108 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/342
+* Bump comrak from 0.33.0 to 0.34.0; add support for GitHub style alerts by @dependabot in https://github.com/gjtorikian/commonmarker/pull/344
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.0.2.1...v2.0.3
 # [v2.0.2.1] - 08-01-2025
 ## What's Changed
 * Bump comrak from 0.32.0 to 0.33.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/334
