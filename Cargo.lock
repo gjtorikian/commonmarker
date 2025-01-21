@@ -265,9 +265,9 @@ dependencies = [
 
 [[package]]
 name = "comrak"
-version = "0.33.0"
+version = "0.34.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39bff2cbb80102771ca62bd2375bc6f6611dc1493373440b23aa08a155538708"
+checksum = "1664eb8abab93a9c09d1e85df10b4de6af0b4c738f267750b211a77a771447fe"
 dependencies = [
  "bon",
  "caseless",
@@ -676,18 +676,18 @@ dependencies = [
 
 [[package]]
 name = "rb-sys"
-version = "0.9.106"
+version = "0.9.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17b6efdbc8c1a22cb8b5d7ead0237c16c362c9ef6fbdc09e2d1040615b0f4cd0"
+checksum = "1e955384e1a4dc64b71d1e4b39ed0edbd77c7bde4a10dfd5ad208e1160fddfa7"
 dependencies = [
  "rb-sys-build",
 ]
 
 [[package]]
 name = "rb-sys-build"
-version = "0.9.106"
+version = "0.9.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e1d88c51e52f8636a5efc24ec5987056e64e48a91ed2a1af96cb5564686cc10f"
+checksum = "c167c6571889b2550d6fcb315e8aa60bdb95e47e4b64793e3f65a30dc25afc85"
 dependencies = [
  "bindgen",
  "lazy_static",

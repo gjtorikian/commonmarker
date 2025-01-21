@@ -46,6 +46,7 @@ class NodeCreationTest < Minitest::Test
       [:escaped],
       [:wikilink, url: "www.yetto.app/billy.png"],
       [:raw],
+      [:alert, type: :note],
     ]
     node_types.each do |type, arguments|
       node = arguments.nil? ? Commonmarker::Node.new(type) : Commonmarker::Node.new(type, **arguments)

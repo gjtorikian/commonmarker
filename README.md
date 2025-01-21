@@ -209,6 +209,8 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `underline`                   | Enables the underline extension.                                                                                    | `false` |
 | `spoiler`                     | Enables the spoiler extension.                                                                                      | `false` |
 | `greentext`                   | Enables the greentext extension.                                                                                    | `false` |
+| `subscript`                   | Enables the subscript extension.                                                                                    | `false` |
+| `alerts`                      | Enables the alerts extension.                                                                                       | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 
