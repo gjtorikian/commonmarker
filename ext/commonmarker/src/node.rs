@@ -473,6 +473,18 @@ impl CommonmarkerNode {
                 ComrakNodeValue::WikiLink(NodeWikiLink { url })
             }
 
+            "raw" => {
+                let kwargs = scan_args::get_kwargs::<_, (), (Option<String>,), ()>(
+                    args.keywords,
+                    &[],
+                    &["content"],
+                )?;
+
+                let (content,) = kwargs.optional;
+
+                ComrakNodeValue::Raw(content.unwrap_or_default())
+            }
+
             "alert" => {
                 let kwargs = scan_args::get_kwargs::<
                     _,
