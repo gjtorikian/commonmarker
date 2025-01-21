@@ -1,34 +1,44 @@
 # [v2.0.3] - 21-01-2025
-## What's Changed
-* Bump rb-sys from 0.9.106 to 0.9.107 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/341
-* Bump rb-sys from 0.9.107 to 0.9.108 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/342
-* Bump comrak from 0.33.0 to 0.34.0; add support for GitHub style alerts by @dependabot in https://github.com/gjtorikian/commonmarker/pull/344
 
+## What's Changed
+
+- Bump rb-sys from 0.9.106 to 0.9.107 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/341
+- Bump rb-sys from 0.9.107 to 0.9.108 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/342
+- Bump comrak from 0.33.0 to 0.34.0; add support for GitHub style alerts by @dependabot in https://github.com/gjtorikian/commonmarker/pull/344
+- Add support for GitHub style alerts by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/344
+- Support raw nodes by @wakairo in https://github.com/gjtorikian/commonmarker/pull/340
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.0.2.1...v2.0.3
-# [v2.0.2.1] - 08-01-2025
-## What's Changed
-* Bump comrak from 0.32.0 to 0.33.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/334
-* Bump rb-sys from 0.9.105 to 0.9.106 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/336
-* Bump rb-sys build system to correctly support 3.3+ by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/337
 
+# [v2.0.2.1] - 08-01-2025
+
+## What's Changed
+
+- Bump comrak from 0.32.0 to 0.33.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/334
+- Bump rb-sys from 0.9.105 to 0.9.106 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/336
+- Bump rb-sys build system to correctly support 3.3+ by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/337
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.0.2...v2.0.2.1
-# [v2.0.2] - 29-12-2024
-## What's Changed
-* Bump comrak from 0.30.0 to 0.31.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/323
-* Bump comrak from 0.31.0 to 0.32.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/328
-* Bump rb-sys from 0.9.103 to 0.9.104 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/329
-* Support Ruby 3.4 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/330
 
+# [v2.0.2] - 29-12-2024
+
+## What's Changed
+
+- Bump comrak from 0.30.0 to 0.31.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/323
+- Bump comrak from 0.31.0 to 0.32.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/328
+- Bump rb-sys from 0.9.103 to 0.9.104 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/329
+- Support Ruby 3.4 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/330
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.0.1...v2.0.2
-# [v2.0.1] - 27-11-2024
-## What's Changed
-* Fixed the issue where nil for header_ids  by @ppworks in https://github.com/gjtorikian/commonmarker/pull/324
 
+# [v2.0.1] - 27-11-2024
+
+## What's Changed
+
+- Fixed the issue where nil for header_ids by @ppworks in https://github.com/gjtorikian/commonmarker/pull/324
 
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.0.0...v2.0.1
+
 # [v2.0.0] - 25-11-2024
 
 This is a major release in the sense that there's a breaking API change,
@@ -54,7 +64,6 @@ As an example of the change here, `extension: { header_ids }` is
 set to `""`, which means that `h*` tags will have GitHub style
 anchors automatically added to them. You can remove this (and other
 undesired options) by passing a `nil` value: `extension: { header_ids: nil }`.
-
 
 ## What's Changed
 
