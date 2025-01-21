@@ -46,6 +46,7 @@ module Commonmarker
         spoiler: false,
         greentext: false,
         subscript: false,
+        alerts: false,
       }.freeze,
       format: [:html].freeze,
     }.freeze

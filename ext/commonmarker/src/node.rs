@@ -1,9 +1,9 @@
 use comrak::arena_tree::Node as ComrakNode;
 use comrak::nodes::{
-    Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, ListType, NodeCode, NodeCodeBlock,
-    NodeDescriptionItem, NodeFootnoteDefinition, NodeFootnoteReference, NodeHeading, NodeHtmlBlock,
-    NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote, NodeShortCode, NodeTable,
-    NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
+    AlertType, Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, ListType, NodeAlert,
+    NodeCode, NodeCodeBlock, NodeDescriptionItem, NodeFootnoteDefinition, NodeFootnoteReference,
+    NodeHeading, NodeHtmlBlock, NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote,
+    NodeShortCode, NodeTable, NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
 };
 use magnus::RArray;
 use magnus::{function, method, scan_args, Module, Object, RHash, RModule, Symbol, Value};
@@ -473,6 +473,47 @@ impl CommonmarkerNode {
                 ComrakNodeValue::WikiLink(NodeWikiLink { url })
             }
 
+            "alert" => {
+                let kwargs = scan_args::get_kwargs::<
+                    _,
+                    (Symbol,),
+                    (Option<String>, Option<bool>, Option<usize>, Option<usize>),
+                    (),
+                >(
+                    args.keywords,
+                    &["type"],
+                    &["title", "multiline", "fence_length", "fence_offset"],
+                )?;
+
+                let (alert_name,) = kwargs.required;
+                let (title, multiline, fence_length, fence_offset) = kwargs.optional;
+
+                let alert_type = match alert_name.to_string().as_str() {
+                    "note" => AlertType::Note,
+                    "tip" => AlertType::Tip,
+                    "important" => AlertType::Important,
+                    "warning" => AlertType::Warning,
+                    _ => {
+                        return Err(magnus::Error::new(
+                            magnus::exception::arg_error(),
+                            "alert type must be `note`, `tip`, `important`, or `warning`",
+                        ));
+                    }
+                };
+
+                ComrakNodeValue::Alert(NodeAlert {
+                    alert_type,
+                    // Overridden title. If None, then use the default title.
+                    title,
+                    // Originated from a multiline blockquote.
+                    multiline: multiline.unwrap_or(false),
+                    // The length of the fence (multiline only).
+                    fence_length: fence_length.unwrap_or(0),
+                    // The indentation level of the fence marker (multiline only)
+                    fence_offset: fence_offset.unwrap_or(0),
+                })
+            }
+
             _ => panic!("unknown node type {}", node_type),
         };
 
@@ -565,6 +606,7 @@ impl CommonmarkerNode {
             ComrakNodeValue::Subscript => Symbol::new("subscript"),
             ComrakNodeValue::SpoileredText => Symbol::new("spoilered_text"),
             ComrakNodeValue::EscapedTag(_) => Symbol::new("escaped_tag"),
+            ComrakNodeValue::Alert(..) => Symbol::new("alert"),
         }
     }
 
