@@ -1,3 +1,9 @@
+# [v2.0.4] - 23-01-2025
+## What's Changed
+* Bump comrak from 0.34.0 to 0.35.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/346
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.0.3...v2.0.4
 # [v2.0.3] - 21-01-2025
 
 ## What's Changed
