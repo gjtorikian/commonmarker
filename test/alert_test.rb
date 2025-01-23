@@ -17,8 +17,8 @@ class FrontmatterTest < Minitest::Test
     assert_equal(expected, Commonmarker.to_html(md))
 
     expected = <<~HTML
-      <div class="alert alert-note">
-      <p class="alert-title">Note</p>
+      <div class="markdown-alert markdown-alert-note">
+      <p class="markdown-alert-title">Note</p>
       <p>Something of note</p>
       </div>
     HTML
@@ -40,8 +40,8 @@ class FrontmatterTest < Minitest::Test
     assert_equal(expected, Commonmarker.to_html(md))
 
     expected = <<~HTML
-      <div class="alert alert-tip">
-      <p class="alert-title">Tip</p>
+      <div class="markdown-alert markdown-alert-tip">
+      <p class="markdown-alert-title">Tip</p>
       <p>Something of tip</p>
       </div>
     HTML
@@ -55,8 +55,8 @@ class FrontmatterTest < Minitest::Test
     assert_equal(:alert, node.type)
 
     expected = <<~HTML
-      <div class="alert alert-warning">
-      <p class="alert-title">This is bad</p>
+      <div class="markdown-alert markdown-alert-warning">
+      <p class="markdown-alert-title">This is bad</p>
       </div>
     HTML
     assert_equal(expected, node.to_html)
