@@ -25,6 +25,8 @@ Or install it yourself as:
 
 ## Usage
 
+This gem expects to receive UTF-8 strings. Ensure your strings are the right encoding before passing them into `Commonmarker`.
+
 ### Converting to HTML
 
 Call `to_html` on a string to convert it to HTML:
