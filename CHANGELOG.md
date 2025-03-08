@@ -1,3 +1,10 @@
+# [v2.1.1] - 08-03-2025
+## What's Changed
+* Bump rb-sys from 0.9.110 to 0.9.111 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/357
+* Address packaging issues with ruby 3.3.x by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/359
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.1.0...v2.1.1
 # [v2.1.0] - 25-02-2025
 ## What's Changed
 * Bump rb-sys from 0.9.108 to 0.9.109 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/349
