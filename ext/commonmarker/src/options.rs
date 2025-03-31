@@ -49,6 +49,7 @@ const RENDER_IGNORE_SETEXT: &str = "ignore_setext";
 const RENDER_IGNORE_EMPTY_LINKS: &str = "ignore_empty_links";
 const RENDER_GFM_QUIRKS: &str = "gfm_quirks";
 const RENDER_PREFER_FENCED: &str = "prefer_fenced";
+const RENDER_TASKLIST_CLASSES: &str = "tasklist_classes";
 
 fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -89,6 +90,9 @@ fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHas
                 }
                 Ok(Cow::Borrowed(RENDER_PREFER_FENCED)) => {
                     comrak_options.render.prefer_fenced = TryConvert::try_convert(value)?;
+                }
+                Ok(Cow::Borrowed(RENDER_TASKLIST_CLASSES)) => {
+                    comrak_options.render.tasklist_classes = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
