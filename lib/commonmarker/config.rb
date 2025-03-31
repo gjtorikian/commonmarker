@@ -24,6 +24,7 @@ module Commonmarker
         ignore_empty_links: false,
         gfm_quirks: false,
         prefer_fenced: false,
+        tasklist_classes: false,
       }.freeze,
       extension: {
         strikethrough: true,
