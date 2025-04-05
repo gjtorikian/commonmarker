@@ -1,3 +1,13 @@
+# [v2.3.0] - 05-04-2025
+## What's Changed
+* Adds tasklist_classes to the list of render options. by @marius-balteanu in https://github.com/gjtorikian/commonmarker/pull/365
+* Clean up some of the Rust-y code by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/366
+* Bump comrak to 0.38 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/367
+
+## New Contributors
+* @marius-balteanu made their first contribution in https://github.com/gjtorikian/commonmarker/pull/365
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.2.0...v2.3.0
 # [v2.2.0] - 25-03-2025
 ## What's Changed
 * Bump comrak from 0.35.0 to 0.37.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/361
