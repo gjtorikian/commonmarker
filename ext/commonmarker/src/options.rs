@@ -16,18 +16,18 @@ const PARSE_RELAXED_AUTOLINKS: &str = "relaxed_autolinks";
 fn iterate_parse_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
         .foreach(|key: Symbol, value: Value| {
-            match key.name() {
-                Ok(Cow::Borrowed(PARSE_SMART)) => {
+            match key.name()? {
+                Cow::Borrowed(PARSE_SMART) => {
                     comrak_options.parse.smart = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(PARSE_DEFAULT_INFO_STRING)) => {
+                Cow::Borrowed(PARSE_DEFAULT_INFO_STRING) => {
                     comrak_options.parse.default_info_string = try_convert_string(value);
                 }
-                Ok(Cow::Borrowed(PARSE_RELAXED_TASKLIST_MATCHING)) => {
+                Cow::Borrowed(PARSE_RELAXED_TASKLIST_MATCHING) => {
                     comrak_options.parse.relaxed_tasklist_matching =
                         TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(PARSE_RELAXED_AUTOLINKS)) => {
+                Cow::Borrowed(PARSE_RELAXED_AUTOLINKS) => {
                     comrak_options.parse.relaxed_autolinks = TryConvert::try_convert(value)?;
                 }
                 _ => {}
@@ -54,44 +54,44 @@ const RENDER_TASKLIST_CLASSES: &str = "tasklist_classes";
 fn iterate_render_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
         .foreach(|key: Symbol, value: Value| {
-            match key.name() {
-                Ok(Cow::Borrowed(RENDER_HARDBREAKS)) => {
+            match key.name()? {
+                Cow::Borrowed(RENDER_HARDBREAKS) => {
                     comrak_options.render.hardbreaks = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_GITHUB_PRE_LANG)) => {
+                Cow::Borrowed(RENDER_GITHUB_PRE_LANG) => {
                     comrak_options.render.github_pre_lang = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_FULL_INFO_STRING)) => {
+                Cow::Borrowed(RENDER_FULL_INFO_STRING) => {
                     comrak_options.render.full_info_string = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_WIDTH)) => {
+                Cow::Borrowed(RENDER_WIDTH) => {
                     comrak_options.render.width = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_UNSAFE)) => {
+                Cow::Borrowed(RENDER_UNSAFE) => {
                     comrak_options.render.unsafe_ = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_ESCAPE)) => {
+                Cow::Borrowed(RENDER_ESCAPE) => {
                     comrak_options.render.escape = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_SOURCEPOS)) => {
+                Cow::Borrowed(RENDER_SOURCEPOS) => {
                     comrak_options.render.sourcepos = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_ESCAPED_CHAR_SPANS)) => {
+                Cow::Borrowed(RENDER_ESCAPED_CHAR_SPANS) => {
                     comrak_options.render.escaped_char_spans = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_IGNORE_SETEXT)) => {
+                Cow::Borrowed(RENDER_IGNORE_SETEXT) => {
                     comrak_options.render.ignore_setext = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_IGNORE_EMPTY_LINKS)) => {
+                Cow::Borrowed(RENDER_IGNORE_EMPTY_LINKS) => {
                     comrak_options.render.ignore_empty_links = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_GFM_QUIRKS)) => {
+                Cow::Borrowed(RENDER_GFM_QUIRKS) => {
                     comrak_options.render.gfm_quirks = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_PREFER_FENCED)) => {
+                Cow::Borrowed(RENDER_PREFER_FENCED) => {
                     comrak_options.render.prefer_fenced = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(RENDER_TASKLIST_CLASSES)) => {
+                Cow::Borrowed(RENDER_TASKLIST_CLASSES) => {
                     comrak_options.render.tasklist_classes = TryConvert::try_convert(value)?;
                 }
                 _ => {}
@@ -126,75 +126,75 @@ const EXTENSION_ALERTS: &str = "alerts";
 fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
         .foreach(|key: Symbol, value: Value| {
-            match key.name() {
-                Ok(Cow::Borrowed(EXTENSION_STRIKETHROUGH)) => {
+            match key.name()? {
+                Cow::Borrowed(EXTENSION_STRIKETHROUGH) => {
                     comrak_options.extension.strikethrough = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_TAGFILTER)) => {
+                Cow::Borrowed(EXTENSION_TAGFILTER) => {
                     comrak_options.extension.tagfilter = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_TABLE)) => {
+                Cow::Borrowed(EXTENSION_TABLE) => {
                     comrak_options.extension.table = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_AUTOLINK)) => {
+                Cow::Borrowed(EXTENSION_AUTOLINK) => {
                     comrak_options.extension.autolink = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_TASKLIST)) => {
+                Cow::Borrowed(EXTENSION_TASKLIST) => {
                     comrak_options.extension.tasklist = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_SUPERSCRIPT)) => {
+                Cow::Borrowed(EXTENSION_SUPERSCRIPT) => {
                     comrak_options.extension.superscript = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_HEADER_IDS)) => {
+                Cow::Borrowed(EXTENSION_HEADER_IDS) => {
                     comrak_options.extension.header_ids = try_convert_string(value);
                 }
-                Ok(Cow::Borrowed(EXTENSION_FOOTNOTES)) => {
+                Cow::Borrowed(EXTENSION_FOOTNOTES) => {
                     comrak_options.extension.footnotes = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_DESCRIPTION_LISTS)) => {
+                Cow::Borrowed(EXTENSION_DESCRIPTION_LISTS) => {
                     comrak_options.extension.description_lists = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_FRONT_MATTER_DELIMITER)) => {
+                Cow::Borrowed(EXTENSION_FRONT_MATTER_DELIMITER) => {
                     if let Some(option) = try_convert_string(value) {
                         if !option.is_empty() {
                             comrak_options.extension.front_matter_delimiter = Some(option);
                         }
                     }
                 }
-                Ok(Cow::Borrowed(EXTENSION_MULTILINE_BLOCK_QUOTES)) => {
+                Cow::Borrowed(EXTENSION_MULTILINE_BLOCK_QUOTES) => {
                     comrak_options.extension.multiline_block_quotes =
                         TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_MATH_DOLLARS)) => {
+                Cow::Borrowed(EXTENSION_MATH_DOLLARS) => {
                     comrak_options.extension.math_dollars = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_MATH_CODE)) => {
+                Cow::Borrowed(EXTENSION_MATH_CODE) => {
                     comrak_options.extension.math_code = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_SHORTCODES)) => {
+                Cow::Borrowed(EXTENSION_SHORTCODES) => {
                     comrak_options.extension.shortcodes = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_WIKILINKS_TITLE_AFTER_PIPE)) => {
+                Cow::Borrowed(EXTENSION_WIKILINKS_TITLE_AFTER_PIPE) => {
                     comrak_options.extension.wikilinks_title_after_pipe =
                         TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE)) => {
+                Cow::Borrowed(EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE) => {
                     comrak_options.extension.wikilinks_title_before_pipe =
                         TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_UNDERLINE)) => {
+                Cow::Borrowed(EXTENSION_UNDERLINE) => {
                     comrak_options.extension.underline = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_SPOILER)) => {
+                Cow::Borrowed(EXTENSION_SPOILER) => {
                     comrak_options.extension.spoiler = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_GREENTEXT)) => {
+                Cow::Borrowed(EXTENSION_GREENTEXT) => {
                     comrak_options.extension.greentext = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_SUBSCRIPT)) => {
+                Cow::Borrowed(EXTENSION_SUBSCRIPT) => {
                     comrak_options.extension.subscript = TryConvert::try_convert(value)?;
                 }
-                Ok(Cow::Borrowed(EXTENSION_ALERTS)) => {
+                Cow::Borrowed(EXTENSION_ALERTS) => {
                     comrak_options.extension.alerts = TryConvert::try_convert(value)?;
                 }
                 _ => {}
