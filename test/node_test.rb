@@ -208,7 +208,7 @@ class NodeTest < Minitest::Test
       @header_node.header_level = 6
 
       assert_equal(6, @header_node.header_level)
-      assert_match(%r{<h6><a href=\"#header-three\" aria-hidden=\"true\" class=\"anchor\" id=\"header-three\"></a>Header Three</h6>\n}, @document.to_html)
+      assert_match(%r{<h6><a inert href=\"#header-three\" aria-hidden=\"true\" class=\"anchor\" id=\"header-three\"></a>Header Three</h6>\n}, @document.to_html)
     end
   end
 
