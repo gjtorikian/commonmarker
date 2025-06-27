@@ -1,3 +1,14 @@
+# [v2.3.1] - 27-06-2025
+## What's Changed
+* Bump comrak from 0.38.0 to 0.39.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/370
+* Bump rb-sys from 0.9.111 to 0.9.114 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/372
+* Bump comrak from 0.39.0 to 0.39.1 by @JamieMagee in https://github.com/gjtorikian/commonmarker/pull/377
+* Bump gem to 2.3.1. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/378
+
+## New Contributors
+* @JamieMagee made their first contribution in https://github.com/gjtorikian/commonmarker/pull/377
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.3.0...v2.3.1
 # [v2.3.0] - 05-04-2025
 ## What's Changed
 * Adds tasklist_classes to the list of render options. by @marius-balteanu in https://github.com/gjtorikian/commonmarker/pull/365
