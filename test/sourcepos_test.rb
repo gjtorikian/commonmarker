@@ -11,7 +11,7 @@ class SourceposTest < Minitest::Test
       - list1
     MARKDOWN
     expected = <<~HTML
-      <h1 data-sourcepos="1:1-1:9"><a inert href="#heading" aria-hidden="true" class="anchor" id="heading"></a>heading</h1>
+      <h1 data-sourcepos="1:1-1:9"><a href="#heading" aria-hidden="true" class="anchor" id="heading"></a>heading</h1>
       <p data-sourcepos="2:1-2:9">paragraph</p>
       <ul data-sourcepos="4:1-4:7">
       <li data-sourcepos="4:1-4:7">list1</li>
