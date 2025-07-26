@@ -208,7 +208,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `math_dollars`, `math_code`   | Enables the math extension.                                                                                         | `false` |
 | `shortcodes`                  | Enables the shortcodes extension.                                                                                   | `true`  |
 | `wikilinks_title_before_pipe` | Enables the wikilinks extension, placing the title before the dividing pipe.                                        | `false` |
-| `wikilinks_title_after_pipe`  | Enables the shortcodes extension, placing the title after the dividing pipe.                                        | `false` |
+| `wikilinks_title_after_pipe`  | Enables the wikilinks extension, placing the title after the dividing pipe.                                         | `false` |
 | `underline`                   | Enables the underline extension.                                                                                    | `false` |
 | `spoiler`                     | Enables the spoiler extension.                                                                                      | `false` |
 | `greentext`                   | Enables the greentext extension.                                                                                    | `false` |
