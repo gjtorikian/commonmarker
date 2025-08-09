@@ -1,3 +1,16 @@
+# [v2.3.2] - 09-08-2025
+## What's Changed
+* [skip test] Release v2.3.1 by @github-actions[bot] in https://github.com/gjtorikian/commonmarker/pull/379
+* Bump comrak from 0.39.1 to 0.40.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/380
+* fix: correct typo in wikilinks_title_after_pipe description by @hagiya0121 in https://github.com/gjtorikian/commonmarker/pull/382
+* Bump rb-sys from 0.9.114 to 0.9.117 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/383
+* Bump comrak from 0.40.0 to 0.41.0 by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/384
+* add cjk_friendly_emphasis support; gem version 2.3.2. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/385
+
+## New Contributors
+* @hagiya0121 made their first contribution in https://github.com/gjtorikian/commonmarker/pull/382
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.3.1...v2.3.2
 # [v2.3.1] - 27-06-2025
 ## What's Changed
 * Bump comrak from 0.38.0 to 0.39.0 by @dependabot in https://github.com/gjtorikian/commonmarker/pull/370
