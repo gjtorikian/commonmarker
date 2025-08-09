@@ -90,4 +90,18 @@ class ExtensionsTest < Minitest::Test
       Commonmarker.to_html("~~H~2~O~~", options: options),
     )
   end
+
+  def test_cjk_friendly_emphasis
+    assert_equal(
+      "<p>**この文は重要です。**但这句话并不重要。</p>\n",
+      Commonmarker.to_html("**この文は重要です。**但这句话并不重要。"),
+    )
+
+    options = { extension: { cjk_friendly_emphasis: true } }
+
+    assert_equal(
+      "<p><strong>この文は重要です。</strong>但这句话并不重要。</p>\n",
+      Commonmarker.to_html("**この文は重要です。**但这句话并不重要。", options: options),
+    )
+  end
 end

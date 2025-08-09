@@ -214,6 +214,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `greentext`                   | Enables the greentext extension.                                                                                    | `false` |
 | `subscript`                   | Enables the subscript extension.                                                                                    | `false` |
 | `alerts`                      | Enables the alerts extension.                                                                                       | `false` |
+| `cjk_friendly_emphasis`       | Enables the [CJK friendly emphasis](https://github.com/tats-u/markdown-cjk-friendly) extension.                     | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 

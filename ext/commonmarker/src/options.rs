@@ -122,6 +122,7 @@ const EXTENSION_SPOILER: &str = "spoiler";
 const EXTENSION_GREENTEXT: &str = "greentext";
 const EXTENSION_SUBSCRIPT: &str = "subscript";
 const EXTENSION_ALERTS: &str = "alerts";
+const EXTENSION_CJK_FRIENDLY_EMPHASIS: &str = "cjk_friendly_emphasis";
 
 fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: RHash) {
     options_hash
@@ -196,6 +197,10 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 }
                 Cow::Borrowed(EXTENSION_ALERTS) => {
                     comrak_options.extension.alerts = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(EXTENSION_CJK_FRIENDLY_EMPHASIS) => {
+                    comrak_options.extension.cjk_friendly_emphasis =
+                        TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
