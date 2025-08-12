@@ -18,7 +18,7 @@ jobs:
           - ruby-head
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: oxidize-rb/actions/setup-ruby-and-rust@main
         with:
