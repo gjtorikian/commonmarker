@@ -1,3 +1,13 @@
+# [v2.4.0] - 15-09-2025
+## What's Changed
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/387
+* Bump magnus from 0.7.1 to 0.8.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/388
+* Bump magnus from 0.8.0 to 0.8.1 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/389
+* Bump comrak from 0.41.0 to 0.41.1 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/391
+* Update dependencies + release new minor by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/392
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.3.2...v2.4.0
 # [v2.3.2] - 09-08-2025
 ## What's Changed
 * [skip test] Release v2.3.1 by @github-actions[bot] in https://github.com/gjtorikian/commonmarker/pull/379
