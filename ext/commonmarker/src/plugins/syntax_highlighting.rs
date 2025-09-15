@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use comrak::plugins::syntect::{SyntectAdapter, SyntectAdapterBuilder};
 
 use magnus::value::ReprValue;
-use magnus::{exception, RHash, Symbol, TryConvert, Value};
+use magnus::{RHash, TryConvert, Value};
 use syntect::highlighting::ThemeSet;
 
 use crate::EMPTY_STR;
@@ -14,7 +14,8 @@ pub fn construct_syntax_highlighter_from_plugin(
     match rb_plugins {
         None => Ok(None),
         Some(rb_plugins) => {
-            let theme = match rb_plugins.get(Symbol::new(super::SYNTAX_HIGHLIGHTER_PLUGIN)) {
+            let ruby = magnus::Ruby::get_with(rb_plugins);
+            let theme = match rb_plugins.get(ruby.to_symbol(super::SYNTAX_HIGHLIGHTER_PLUGIN)) {
                 Some(syntax_highlighter_options) => {
                     match fetch_syntax_highlighter_theme(syntax_highlighter_options) {
                         Ok(theme) => theme,
@@ -36,18 +37,19 @@ pub fn construct_syntax_highlighter_from_plugin(
                         adapter = SyntectAdapter::new(None);
                         Ok(Some(adapter))
                     } else {
-                        let path =
-                            match rb_plugins.get(Symbol::new(super::SYNTAX_HIGHLIGHTER_PLUGIN)) {
-                                Some(syntax_highlighter_options) => {
-                                    fetch_syntax_highlighter_path(syntax_highlighter_options)?
-                                }
-                                None => PathBuf::from("".to_string()), // no `syntax_highlighter:` defined
-                            };
+                        let path = match rb_plugins
+                            .get(ruby.to_symbol(super::SYNTAX_HIGHLIGHTER_PLUGIN))
+                        {
+                            Some(syntax_highlighter_options) => {
+                                fetch_syntax_highlighter_path(syntax_highlighter_options)?
+                            }
+                            None => PathBuf::from("".to_string()), // no `syntax_highlighter:` defined
+                        };
 
                         if path.exists() {
                             if !path.is_dir() {
                                 return Err(magnus::Error::new(
-                                    exception::arg_error(),
+                                    ruby.exception_arg_error(),
                                     "`path` needs to be a directory",
                                 ));
                             }
@@ -59,7 +61,7 @@ pub fn construct_syntax_highlighter_from_plugin(
                                 Ok(_) => {}
                                 Err(e) => {
                                     return Err(magnus::Error::new(
-                                        exception::arg_error(),
+                                        ruby.exception_arg_error(),
                                         format!("failed to load theme set from path: {e}"),
                                     ));
                                 }
@@ -70,7 +72,7 @@ pub fn construct_syntax_highlighter_from_plugin(
                                 Some(theme) => theme,
                                 None => {
                                     return Err(magnus::Error::new(
-                                        exception::arg_error(),
+                                        ruby.exception_arg_error(),
                                         format!("theme `{}` does not exist", theme),
                                     ));
                                 }
@@ -86,7 +88,7 @@ pub fn construct_syntax_highlighter_from_plugin(
                                 .get(&theme)
                                 .ok_or_else(|| {
                                     magnus::Error::new(
-                                        exception::arg_error(),
+                                        ruby.exception_arg_error(),
                                         format!("theme `{}` does not exist", theme),
                                     )
                                 })?;
@@ -101,6 +103,7 @@ pub fn construct_syntax_highlighter_from_plugin(
 }
 
 fn fetch_syntax_highlighter_theme(value: Value) -> Result<Option<String>, magnus::Error> {
+    let ruby = magnus::Ruby::get_with(value);
     if value.is_nil() {
         // `syntax_highlighter: nil`
         return Ok(None);
@@ -116,18 +119,18 @@ fn fetch_syntax_highlighter_theme(value: Value) -> Result<Option<String>, magnus
 
     if syntax_highlighter_plugin.is_nil() || syntax_highlighter_plugin.is_empty() {
         return Err(magnus::Error::new(
-            magnus::exception::type_error(),
+            ruby.exception_type_error(),
             "theme cannot be blank hash",
         ));
     }
 
-    let theme_key = Symbol::new(super::SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY);
+    let theme_key = ruby.to_symbol(super::SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY);
 
     match syntax_highlighter_plugin.get(theme_key) {
         Some(theme) => {
             if theme.is_nil() {
                 return Err(magnus::Error::new(
-                    magnus::exception::type_error(),
+                    ruby.exception_type_error(),
                     "theme cannot be nil",
                 ));
             }
@@ -147,7 +150,8 @@ fn fetch_syntax_highlighter_path(value: Value) -> Result<PathBuf, magnus::Error>
     }
 
     let syntax_highlighter_plugin: RHash = TryConvert::try_convert(value)?;
-    let path_key = Symbol::new(super::SYNTAX_HIGHLIGHTER_PLUGIN_PATH_KEY);
+    let ruby = magnus::Ruby::get_with(value);
+    let path_key = ruby.to_symbol(super::SYNTAX_HIGHLIGHTER_PLUGIN_PATH_KEY);
 
     match syntax_highlighter_plugin.get(path_key) {
         Some(path) => {

@@ -1,7 +1,7 @@
 extern crate core;
 
 use comrak::{markdown_to_html_with_plugins, parse_document, ComrakOptions};
-use magnus::{define_module, function, r_hash::ForEach, scan_args, Error, RHash, Symbol, Value};
+use magnus::{function, r_hash::ForEach, scan_args, Error, RHash, Symbol, Value};
 use node::CommonmarkerNode;
 use plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
 
@@ -51,10 +51,7 @@ fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
     )?;
     let (rb_options, rb_plugins) = kwargs.optional;
 
-    let comrak_options = match format_options(rb_options) {
-        Ok(options) => options,
-        Err(err) => return Err(err),
-    };
+    let comrak_options = format_options(rb_options)?;
 
     let mut comrak_plugins = comrak::Plugins::default();
 
@@ -91,7 +88,8 @@ fn format_options<'c>(rb_options: Option<RHash>) -> Result<comrak::Options<'c>, 
 
 #[magnus::init]
 fn init() -> Result<(), Error> {
-    let m_commonmarker = define_module("Commonmarker")?;
+    let ruby = magnus::Ruby::get().unwrap();
+    let m_commonmarker = ruby.define_module("Commonmarker")?;
 
     m_commonmarker.define_module_function("commonmark_parse", function!(commonmark_parse, -1))?;
     m_commonmarker

@@ -4,7 +4,7 @@ use comrak::ComrakOptions;
 
 use magnus::value::ReprValue;
 use magnus::TryConvert;
-use magnus::{class, r_hash::ForEach, Error, RHash, Symbol, Value};
+use magnus::{r_hash::ForEach, Error, RHash, Symbol, Value};
 
 use crate::utils::try_convert_string;
 
@@ -214,7 +214,8 @@ pub fn iterate_options_hash(
     key: Symbol,
     value: RHash,
 ) -> Result<ForEach, Error> {
-    assert!(value.is_kind_of(class::hash()));
+    let ruby = magnus::Ruby::get().unwrap();
+    assert!(value.is_kind_of(ruby.class_hash()));
 
     if key.name().unwrap() == "parse" {
         iterate_parse_options(comrak_options, value);

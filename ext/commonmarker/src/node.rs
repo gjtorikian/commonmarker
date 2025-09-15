@@ -33,6 +33,7 @@ unsafe impl Send for CommonmarkerNode {}
 
 impl CommonmarkerNode {
     pub fn new(args: &[Value]) -> Result<Self, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
         let (node_type,): (Symbol,) = args.required;
 
@@ -91,7 +92,7 @@ impl CommonmarkerNode {
 
                 if commonmark_list_type != "bullet" && commonmark_list_type != "ordered" {
                     return Err(magnus::Error::new(
-                        magnus::exception::arg_error(),
+                        ruby.exception_arg_error(),
                         "list type must be `bullet` or `ordered`",
                     ));
                 }
@@ -415,7 +416,7 @@ impl CommonmarkerNode {
                     Some(shortcode) => ComrakNodeValue::ShortCode(shortcode),
                     None => {
                         return Err(magnus::Error::new(
-                            magnus::exception::arg_error(),
+                            ruby.exception_arg_error(),
                             "could not resolve shortcode",
                         ));
                     }
@@ -507,7 +508,7 @@ impl CommonmarkerNode {
                     "warning" => AlertType::Warning,
                     _ => {
                         return Err(magnus::Error::new(
-                            magnus::exception::arg_error(),
+                            ruby.exception_arg_error(),
                             "alert type must be `note`, `tip`, `important`, or `warning`",
                         ));
                     }
@@ -576,49 +577,50 @@ impl CommonmarkerNode {
 
     fn type_to_symbol(&self) -> Symbol {
         let node = self.inner.borrow();
+        let ruby = magnus::Ruby::get().unwrap();
         match node.data.value {
-            ComrakNodeValue::Document => Symbol::new("document"),
-            ComrakNodeValue::BlockQuote => Symbol::new("block_quote"),
-            ComrakNodeValue::FootnoteDefinition(_) => Symbol::new("footnote_definition"),
-            ComrakNodeValue::List(..) => Symbol::new("list"),
-            ComrakNodeValue::DescriptionList => Symbol::new("description_list"),
-            ComrakNodeValue::DescriptionItem(_) => Symbol::new("description_item"),
-            ComrakNodeValue::DescriptionTerm => Symbol::new("description_term"),
-            ComrakNodeValue::DescriptionDetails => Symbol::new("description_details"),
-            ComrakNodeValue::Item(..) => Symbol::new("item"),
-            ComrakNodeValue::CodeBlock(..) => Symbol::new("code_block"),
-            ComrakNodeValue::HtmlBlock(..) => Symbol::new("html_block"),
-            ComrakNodeValue::Paragraph => Symbol::new("paragraph"),
-            ComrakNodeValue::Heading(..) => Symbol::new("heading"),
-            ComrakNodeValue::ThematicBreak => Symbol::new("thematic_break"),
-            ComrakNodeValue::Table(..) => Symbol::new("table"),
-            ComrakNodeValue::TableRow(..) => Symbol::new("table_row"),
-            ComrakNodeValue::TableCell => Symbol::new("table_cell"),
-            ComrakNodeValue::Text(..) => Symbol::new("text"),
-            ComrakNodeValue::SoftBreak => Symbol::new("softbreak"),
-            ComrakNodeValue::LineBreak => Symbol::new("linebreak"),
-            ComrakNodeValue::Image(..) => Symbol::new("image"),
-            ComrakNodeValue::Link(..) => Symbol::new("link"),
-            ComrakNodeValue::Emph => Symbol::new("emph"),
-            ComrakNodeValue::Raw(..) => Symbol::new("raw"),
-            ComrakNodeValue::Strong => Symbol::new("strong"),
-            ComrakNodeValue::Code(..) => Symbol::new("code"),
-            ComrakNodeValue::HtmlInline(..) => Symbol::new("html_inline"),
-            ComrakNodeValue::Strikethrough => Symbol::new("strikethrough"),
-            ComrakNodeValue::FrontMatter(_) => Symbol::new("frontmatter"),
-            ComrakNodeValue::TaskItem { .. } => Symbol::new("taskitem"),
-            ComrakNodeValue::Superscript => Symbol::new("superscript"),
-            ComrakNodeValue::FootnoteReference(..) => Symbol::new("footnote_reference"),
-            ComrakNodeValue::ShortCode(_) => Symbol::new("shortcode"),
-            ComrakNodeValue::MultilineBlockQuote(_) => Symbol::new("multiline_block_quote"),
-            ComrakNodeValue::Escaped => Symbol::new("escaped"),
-            ComrakNodeValue::Math(..) => Symbol::new("math"),
-            ComrakNodeValue::WikiLink(..) => Symbol::new("wikilink"),
-            ComrakNodeValue::Underline => Symbol::new("underline"),
-            ComrakNodeValue::Subscript => Symbol::new("subscript"),
-            ComrakNodeValue::SpoileredText => Symbol::new("spoilered_text"),
-            ComrakNodeValue::EscapedTag(_) => Symbol::new("escaped_tag"),
-            ComrakNodeValue::Alert(..) => Symbol::new("alert"),
+            ComrakNodeValue::Document => ruby.to_symbol("document"),
+            ComrakNodeValue::BlockQuote => ruby.to_symbol("block_quote"),
+            ComrakNodeValue::FootnoteDefinition(_) => ruby.to_symbol("footnote_definition"),
+            ComrakNodeValue::List(..) => ruby.to_symbol("list"),
+            ComrakNodeValue::DescriptionList => ruby.to_symbol("description_list"),
+            ComrakNodeValue::DescriptionItem(_) => ruby.to_symbol("description_item"),
+            ComrakNodeValue::DescriptionTerm => ruby.to_symbol("description_term"),
+            ComrakNodeValue::DescriptionDetails => ruby.to_symbol("description_details"),
+            ComrakNodeValue::Item(..) => ruby.to_symbol("item"),
+            ComrakNodeValue::CodeBlock(..) => ruby.to_symbol("code_block"),
+            ComrakNodeValue::HtmlBlock(..) => ruby.to_symbol("html_block"),
+            ComrakNodeValue::Paragraph => ruby.to_symbol("paragraph"),
+            ComrakNodeValue::Heading(..) => ruby.to_symbol("heading"),
+            ComrakNodeValue::ThematicBreak => ruby.to_symbol("thematic_break"),
+            ComrakNodeValue::Table(..) => ruby.to_symbol("table"),
+            ComrakNodeValue::TableRow(..) => ruby.to_symbol("table_row"),
+            ComrakNodeValue::TableCell => ruby.to_symbol("table_cell"),
+            ComrakNodeValue::Text(..) => ruby.to_symbol("text"),
+            ComrakNodeValue::SoftBreak => ruby.to_symbol("softbreak"),
+            ComrakNodeValue::LineBreak => ruby.to_symbol("linebreak"),
+            ComrakNodeValue::Image(..) => ruby.to_symbol("image"),
+            ComrakNodeValue::Link(..) => ruby.to_symbol("link"),
+            ComrakNodeValue::Emph => ruby.to_symbol("emph"),
+            ComrakNodeValue::Raw(..) => ruby.to_symbol("raw"),
+            ComrakNodeValue::Strong => ruby.to_symbol("strong"),
+            ComrakNodeValue::Code(..) => ruby.to_symbol("code"),
+            ComrakNodeValue::HtmlInline(..) => ruby.to_symbol("html_inline"),
+            ComrakNodeValue::Strikethrough => ruby.to_symbol("strikethrough"),
+            ComrakNodeValue::FrontMatter(_) => ruby.to_symbol("frontmatter"),
+            ComrakNodeValue::TaskItem { .. } => ruby.to_symbol("taskitem"),
+            ComrakNodeValue::Superscript => ruby.to_symbol("superscript"),
+            ComrakNodeValue::FootnoteReference(..) => ruby.to_symbol("footnote_reference"),
+            ComrakNodeValue::ShortCode(_) => ruby.to_symbol("shortcode"),
+            ComrakNodeValue::MultilineBlockQuote(_) => ruby.to_symbol("multiline_block_quote"),
+            ComrakNodeValue::Escaped => ruby.to_symbol("escaped"),
+            ComrakNodeValue::Math(..) => ruby.to_symbol("math"),
+            ComrakNodeValue::WikiLink(..) => ruby.to_symbol("wikilink"),
+            ComrakNodeValue::Underline => ruby.to_symbol("underline"),
+            ComrakNodeValue::Subscript => ruby.to_symbol("subscript"),
+            ComrakNodeValue::SpoileredText => ruby.to_symbol("spoilered_text"),
+            ComrakNodeValue::EscapedTag(_) => ruby.to_symbol("escaped_tag"),
+            ComrakNodeValue::Alert(..) => ruby.to_symbol("alert"),
         }
     }
 
@@ -678,14 +680,15 @@ impl CommonmarkerNode {
     fn get_sourcepos(&self) -> Result<RHash, magnus::Error> {
         let node = self.inner.borrow();
 
-        let result = RHash::new();
-        result.aset(Symbol::new("start_line"), node.data.sourcepos.start.line)?;
+        let ruby = magnus::Ruby::get().unwrap();
+        let result = ruby.hash_new();
+        result.aset(ruby.to_symbol("start_line"), node.data.sourcepos.start.line)?;
         result.aset(
-            Symbol::new("start_column"),
+            ruby.to_symbol("start_column"),
             node.data.sourcepos.start.column,
         )?;
-        result.aset(Symbol::new("end_line"), node.data.sourcepos.end.line)?;
-        result.aset(Symbol::new("end_column"), node.data.sourcepos.end.column)?;
+        result.aset(ruby.to_symbol("end_line"), node.data.sourcepos.end.line)?;
+        result.aset(ruby.to_symbol("end_column"), node.data.sourcepos.end.column)?;
 
         Ok(result)
     }
@@ -715,19 +718,21 @@ impl CommonmarkerNode {
     }
 
     fn get_url(&self) -> Result<String, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let node = self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::Link(link) => Ok(link.url.to_string()),
             ComrakNodeValue::Image(image) => Ok(image.url.to_string()),
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not an image or link node",
             )),
         }
     }
 
     fn set_url(&self, new_url: String) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let mut node = self.inner.borrow_mut();
 
         match node.data.value {
@@ -740,13 +745,14 @@ impl CommonmarkerNode {
                 Ok(true)
             }
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not an image or link node",
             )),
         }
     }
 
     fn get_string_content(&self) -> Result<String, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let node = self.inner.borrow();
 
         match node.data.value {
@@ -760,13 +766,14 @@ impl CommonmarkerNode {
         match node.data.value.text() {
             Some(s) => Ok(s.to_string()),
             None => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node does not have string content",
             )),
         }
     }
 
     fn set_string_content(&self, new_content: String) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let mut node = self.inner.borrow_mut();
 
         match node.data.value {
@@ -787,26 +794,28 @@ impl CommonmarkerNode {
                 Ok(true)
             }
             None => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node does not have string content",
             )),
         }
     }
 
     fn get_title(&self) -> Result<String, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let node = self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::Link(link) => Ok(link.title.to_string()),
             ComrakNodeValue::Image(image) => Ok(image.title.to_string()),
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not an image or link node",
             )),
         }
     }
 
     fn set_title(&self, new_title: String) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let mut node = self.inner.borrow_mut();
 
         match node.data.value {
@@ -819,25 +828,27 @@ impl CommonmarkerNode {
                 Ok(true)
             }
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not an image or link node",
             )),
         }
     }
 
     fn get_header_level(&self) -> Result<u8, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let node = self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::Heading(heading) => Ok(heading.level),
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a heading node",
             )),
         }
     }
 
     fn set_header_level(&self, new_level: u8) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let mut node = self.inner.borrow_mut();
 
         match node.data.value {
@@ -846,7 +857,7 @@ impl CommonmarkerNode {
                 Ok(true)
             }
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a heading node",
             )),
         }
@@ -854,20 +865,22 @@ impl CommonmarkerNode {
 
     fn get_list_type(&self) -> Result<Symbol, magnus::Error> {
         let node = self.inner.borrow();
+        let ruby = magnus::Ruby::get().unwrap();
 
         match &node.data.value {
             ComrakNodeValue::List(list) => match list.list_type {
-                comrak::nodes::ListType::Bullet => Ok(Symbol::new("bullet")),
-                comrak::nodes::ListType::Ordered => Ok(Symbol::new("ordered")),
+                comrak::nodes::ListType::Bullet => Ok(ruby.to_symbol("bullet")),
+                comrak::nodes::ListType::Ordered => Ok(ruby.to_symbol("ordered")),
             },
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a list node",
             )),
         }
     }
 
     fn set_list_type(&self, new_type: Symbol) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let mut node = self.inner.borrow_mut();
 
         match node.data.value {
@@ -880,25 +893,27 @@ impl CommonmarkerNode {
                 Ok(true)
             }
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a list node",
             )),
         }
     }
 
     fn get_list_start(&self) -> Result<usize, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let node = self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::List(list) => Ok(list.start),
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a list node",
             )),
         }
     }
 
     fn set_list_start(&self, new_start: usize) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let mut node = self.inner.borrow_mut();
 
         match node.data.value {
@@ -907,25 +922,27 @@ impl CommonmarkerNode {
                 Ok(true)
             }
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a list node",
             )),
         }
     }
 
     fn get_list_tight(&self) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let node = self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::List(list) => Ok(list.tight),
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a list node",
             )),
         }
     }
 
     fn set_list_tight(&self, new_tight: bool) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let mut node = self.inner.borrow_mut();
 
         match node.data.value {
@@ -934,25 +951,27 @@ impl CommonmarkerNode {
                 Ok(true)
             }
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a list node",
             )),
         }
     }
 
     fn get_fence_info(&self) -> Result<String, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let node = self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::CodeBlock(code_block) => Ok(code_block.info.to_string()),
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a code block node",
             )),
         }
     }
 
     fn set_fence_info(&self, new_info: String) -> Result<bool, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let mut node = self.inner.borrow_mut();
 
         match node.data.value {
@@ -961,13 +980,14 @@ impl CommonmarkerNode {
                 Ok(true)
             }
             _ => Err(magnus::Error::new(
-                magnus::exception::type_error(),
+                ruby.exception_type_error(),
                 "node is not a code block node",
             )),
         }
     }
 
     fn to_html(&self, args: &[Value]) -> Result<String, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
         let kwargs = scan_args::get_kwargs::<_, (), (Option<RHash>, Option<RHash>), ()>(
@@ -1034,7 +1054,7 @@ impl CommonmarkerNode {
             Ok(_) => {}
             Err(e) => {
                 return Err(magnus::Error::new(
-                    magnus::exception::runtime_error(),
+                    ruby.exception_runtime_error(),
                     format!("cannot convert into html: {}", e),
                 ));
             }
@@ -1043,13 +1063,14 @@ impl CommonmarkerNode {
         match std::str::from_utf8(&output) {
             Ok(s) => Ok(s.to_string()),
             Err(_e) => Err(magnus::Error::new(
-                magnus::exception::runtime_error(),
+                ruby.exception_runtime_error(),
                 "cannot convert into utf-8",
             )),
         }
     }
 
     fn to_commonmark(&self, args: &[Value]) -> Result<String, magnus::Error> {
+        let ruby = magnus::Ruby::get().unwrap();
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
         let kwargs = scan_args::get_kwargs::<_, (), (Option<RHash>, Option<RHash>), ()>(
@@ -1060,10 +1081,7 @@ impl CommonmarkerNode {
         let (rb_options, rb_plugins) = kwargs.optional;
 
         let _comrak_options = format_options(rb_options);
-        let comrak_options = match format_options(rb_options) {
-            Ok(options) => options,
-            Err(err) => return Err(err),
-        };
+        let comrak_options = format_options(rb_options)?;
 
         let mut comrak_plugins = comrak::Plugins::default();
 
@@ -1117,7 +1135,7 @@ impl CommonmarkerNode {
             Ok(_) => {}
             Err(e) => {
                 return Err(magnus::Error::new(
-                    magnus::exception::runtime_error(),
+                    ruby.exception_runtime_error(),
                     format!("cannot convert into html: {}", e),
                 ));
             }
@@ -1126,7 +1144,7 @@ impl CommonmarkerNode {
         match std::str::from_utf8(&output) {
             Ok(s) => Ok(s.to_string()),
             Err(_e) => Err(magnus::Error::new(
-                magnus::exception::runtime_error(),
+                ruby.exception_runtime_error(),
                 "cannot convert into utf-8",
             )),
         }
@@ -1134,8 +1152,9 @@ impl CommonmarkerNode {
 }
 
 pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
+    let ruby = magnus::Ruby::get().unwrap();
     let c_node = m_commonmarker
-        .define_class("Node", magnus::class::object())
+        .define_class("Node", ruby.class_object())
         .expect("cannot define class Commonmarker::Node");
 
     c_node.define_singleton_method("new", function!(CommonmarkerNode::new, -1))?;
