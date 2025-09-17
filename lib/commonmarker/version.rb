@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module CommonMarker
-  VERSION = "0.23.11"
+  VERSION = "0.23.12"
 end
