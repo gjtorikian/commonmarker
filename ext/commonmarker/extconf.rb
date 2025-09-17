@@ -2,6 +2,6 @@
 
 require 'mkmf'
 
-$CFLAGS << ' -std=c99'
+append_cflags(["-std=c99"])
 
 create_makefile('commonmarker/commonmarker')
