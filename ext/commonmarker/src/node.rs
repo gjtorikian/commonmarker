@@ -1044,7 +1044,7 @@ impl CommonmarkerNode {
             comrak_root_node.append(new_child);
         }
 
-        let mut output = vec![];
+        let mut output = String::new();
         match comrak::format_html_with_plugins(
             &comrak_root_node,
             &comrak_options,
@@ -1060,13 +1060,7 @@ impl CommonmarkerNode {
             }
         }
 
-        match std::str::from_utf8(&output) {
-            Ok(s) => Ok(s.to_string()),
-            Err(_e) => Err(magnus::Error::new(
-                ruby.exception_runtime_error(),
-                "cannot convert into utf-8",
-            )),
-        }
+        Ok(output)
     }
 
     fn to_commonmark(&self, args: &[Value]) -> Result<String, magnus::Error> {
@@ -1125,7 +1119,7 @@ impl CommonmarkerNode {
             comrak_root_node.append(new_child);
         }
 
-        let mut output = vec![];
+        let mut output = String::new();
         match comrak::format_commonmark_with_plugins(
             &comrak_root_node,
             &comrak_options,
@@ -1141,13 +1135,7 @@ impl CommonmarkerNode {
             }
         }
 
-        match std::str::from_utf8(&output) {
-            Ok(s) => Ok(s.to_string()),
-            Err(_e) => Err(magnus::Error::new(
-                ruby.exception_runtime_error(),
-                "cannot convert into utf-8",
-            )),
-        }
+        Ok(output)
     }
 }
 
