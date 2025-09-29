@@ -1,3 +1,11 @@
+# [v2.4.1] - 29-09-2025
+## What's Changed
+* Bump comrak from 0.41.1 to 0.42.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/395
+* Bump comrak from 0.42.0 to 0.43.0 by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/396
+* :gem: 2.4.1 by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/397
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.4.0...v2.4.1
 # [v2.4.0] - 15-09-2025
 ## What's Changed
 * Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/387
