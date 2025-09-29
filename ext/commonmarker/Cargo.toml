@@ -11,7 +11,7 @@ rb-sys = { version = "*", default-features = false, features = [
     "stable-api-compiled-fallback",
 ] }
 comrak = { version = "0.43", features = ["shortcodes"] }
-syntect = { version = "5.2", features = ["plist-load"] }
+syntect = { version = "5.3", features = ["plist-load"] }
 typed-arena = "2.0"
 rctree = "0.6"
 
