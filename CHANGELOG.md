@@ -1,3 +1,12 @@
+# [v2.5.0] - 14-10-2025
+## What's Changed
+* Bump syntect from 5.2.0 to 5.3.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/399
+* Bump magnus from 0.8.1 to 0.8.2 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/400
+* Bump Comrak to 0.44.0, add inline_footnotes support. by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/401
+* :gem: 2.5.0 by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/402
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.4.1...v2.5.0
 # [v2.4.1] - 29-09-2025
 ## What's Changed
 * Bump comrak from 0.41.1 to 0.42.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/395
