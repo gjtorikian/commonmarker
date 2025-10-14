@@ -202,6 +202,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `superscript`                 | Enables the superscript Comrak extension.                                                                           | `false` |
 | `header_ids`                  | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
 | `footnotes`                   | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
+| `inline_footnotes`            | Enables the inline footnotes extension.                                                                             | `false` |
 | `description_lists`           | Enables the description lists extension.                                                                            | `false` |
 | `front_matter_delimiter`      | Enables the front matter extension.                                                                                 | `""`    |
 | `multiline_block_quotes`      | Enables the multiline block quotes extension.                                                                       | `false` |

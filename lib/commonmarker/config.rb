@@ -35,6 +35,7 @@ module Commonmarker
         superscript: false,
         header_ids: "",
         footnotes: false,
+        inline_footnotes: false,
         description_lists: false,
         front_matter_delimiter: "",
         multiline_block_quotes: false,
