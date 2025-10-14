@@ -109,6 +109,7 @@ const EXTENSION_TASKLIST: &str = "tasklist";
 const EXTENSION_SUPERSCRIPT: &str = "superscript";
 const EXTENSION_HEADER_IDS: &str = "header_ids";
 const EXTENSION_FOOTNOTES: &str = "footnotes";
+const EXTENSION_INLINE_FOOTNOTES: &str = "inline_footnotes";
 const EXTENSION_DESCRIPTION_LISTS: &str = "description_lists";
 const EXTENSION_FRONT_MATTER_DELIMITER: &str = "front_matter_delimiter";
 const EXTENSION_MULTILINE_BLOCK_QUOTES: &str = "multiline_block_quotes";
@@ -151,6 +152,9 @@ fn iterate_extension_options(comrak_options: &mut ComrakOptions, options_hash: R
                 }
                 Cow::Borrowed(EXTENSION_FOOTNOTES) => {
                     comrak_options.extension.footnotes = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(EXTENSION_INLINE_FOOTNOTES) => {
+                    comrak_options.extension.inline_footnotes = TryConvert::try_convert(value)?;
                 }
                 Cow::Borrowed(EXTENSION_DESCRIPTION_LISTS) => {
                     comrak_options.extension.description_lists = TryConvert::try_convert(value)?;
