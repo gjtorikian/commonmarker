@@ -10,7 +10,7 @@ magnus = { version = "0.8", features = ["rb-sys"] }
 rb-sys = { version = "*", default-features = false, features = [
     "stable-api-compiled-fallback",
 ] }
-comrak = { version = "0.44", features = ["shortcodes"] }
+comrak = { version = "0.45", features = ["shortcodes"] }
 syntect = { version = "5.3", features = ["plist-load"] }
 typed-arena = "2.0"
 rctree = "0.6"
