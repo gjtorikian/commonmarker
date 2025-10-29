@@ -48,6 +48,7 @@ module Commonmarker
         spoiler: false,
         greentext: false,
         subscript: false,
+        subtext: false,
         alerts: false,
         cjk_friendly_emphasis: false,
       }.freeze,

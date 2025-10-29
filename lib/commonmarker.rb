@@ -23,7 +23,7 @@ module Commonmarker
 
       opts = Config.process_options(options)
 
-      commonmark_parse(text, options: opts)
+      commonmark_parse(text, parse: opts.fetch(:parse, {}), render: opts.fetch(:render, {}), extension: opts.fetch(:extension, {}))
     end
 
     # Public: Parses a CommonMark string into an HTML string.
@@ -41,7 +41,7 @@ module Commonmarker
       opts = Config.process_options(options)
       plugins = Config.process_plugins(plugins)
 
-      commonmark_to_html(text, options: opts, plugins: plugins)
+      commonmark_to_html(text, parse: opts.fetch(:parse, {}), render: opts.fetch(:render, {}), extension: opts.fetch(:extension, {}), plugins: plugins)
     end
   end
 end

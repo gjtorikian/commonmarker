@@ -213,6 +213,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `underline`                   | Enables the underline extension.                                                                                    | `false` |
 | `spoiler`                     | Enables the spoiler extension.                                                                                      | `false` |
 | `greentext`                   | Enables the greentext extension.                                                                                    | `false` |
+| `subtext`                     | Enables the subtext extension.                                                                                      | `false` |
 | `subscript`                   | Enables the subscript extension.                                                                                    | `false` |
 | `alerts`                      | Enables the alerts extension.                                                                                       | `false` |
 | `cjk_friendly_emphasis`       | Enables the [CJK friendly emphasis](https://github.com/tats-u/markdown-cjk-friendly) extension.                     | `false` |
