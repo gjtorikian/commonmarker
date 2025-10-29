@@ -1,7 +1,7 @@
 extern crate core;
 
 use comrak::{markdown_to_html_with_plugins, parse_document};
-use magnus::{function, r_hash::ForEach, scan_args, Error, RHash, Symbol, Value};
+use magnus::{function, scan_args, Error, RHash, Value};
 use node::CommonmarkerNode;
 use plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
 
