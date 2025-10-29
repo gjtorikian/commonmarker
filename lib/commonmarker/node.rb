@@ -44,7 +44,7 @@ module Commonmarker
       opts = Config.process_options(options)
       plugins = Config.process_plugins(plugins)
 
-      node_to_html(options: opts, plugins: plugins).force_encoding("utf-8")
+      node_to_html(render: opts[:render], parse: opts[:parse], extension: opts[:extension], plugins: plugins).force_encoding("utf-8")
     end
 
     # Public: Convert the node to a CommonMark string.
@@ -59,7 +59,7 @@ module Commonmarker
       opts = Config.process_options(options)
       plugins = Config.process_plugins(plugins)
 
-      node_to_commonmark(options: opts, plugins: plugins).force_encoding("utf-8")
+      node_to_commonmark(render: opts[:render], parse: opts[:parse], extension: opts[:extension], plugins: plugins).force_encoding("utf-8")
     end
   end
 end

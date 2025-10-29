@@ -91,6 +91,15 @@ class ExtensionsTest < Minitest::Test
     )
   end
 
+  def test_can_support_subtext
+    options = { extension: { subtext: true } }
+
+    assert_equal(
+      "<p><sub>subtext</sub></p>\n",
+      Commonmarker.to_html("-# subtext", options: options),
+    )
+  end
+
   def test_cjk_friendly_emphasis
     assert_equal(
       "<p>**この文は重要です。**但这句话并不重要。</p>\n",

@@ -60,4 +60,16 @@ class MaliciousnessTest < Minitest::Test
 
     assert_equal("text must be UTF-8 encoded; got US-ASCII!", err.message)
   end
+
+  def test_gc_stress_test
+    GC.stress = true
+
+    text = "Hello **world** -- how are _you_ today? I'm ~~fine~~, ~yourself~?"
+
+    html = Commonmarker.to_html(text, options: Commonmarker::Config::OPTIONS).rstrip
+
+    # If this segfaults, then it failed the test
+    assert_equal("<p>Hello <strong>world</strong> -- how are <em>you</em> today? I'm <del>fine</del>, <del>yourself</del>?</p>", html)
+    GC.stress = false
+  end
 end

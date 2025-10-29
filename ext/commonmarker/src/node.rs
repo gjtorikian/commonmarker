@@ -12,8 +12,7 @@ use typed_arena::Arena;
 
 use std::cell::RefCell;
 
-use crate::format_options;
-
+use crate::options::{iterate_extension_options, iterate_parse_options, iterate_render_options};
 use crate::plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
 
 #[derive(Debug, Clone)]
@@ -178,7 +177,7 @@ impl CommonmarkerNode {
                 let (fenced,) = kwargs.required;
                 let (fence_char, fence_length, fence_offset, info, literal) = kwargs.optional;
 
-                ComrakNodeValue::CodeBlock(NodeCodeBlock {
+                ComrakNodeValue::CodeBlock(Box::new(NodeCodeBlock {
                     // Whether the code block is fenced.
                     fenced,
                     // For fenced code blocks, the fence character itself (`` ` `` or `~`).
@@ -196,7 +195,7 @@ impl CommonmarkerNode {
                     // all, they are contained within this structure, rather than inserted into a child inline of
                     // any kind.
                     literal: literal.unwrap_or(String::new()),
-                })
+                }))
             }
             "html_block" => {
                 let kwargs = scan_args::get_kwargs::<_, (), (Option<u8>, Option<String>), ()>(
@@ -264,7 +263,7 @@ impl CommonmarkerNode {
                             comrak_alignments.push(TableAlignment::None);
                         }
                     });
-                ComrakNodeValue::Table(NodeTable {
+                ComrakNodeValue::Table(Box::new(NodeTable {
                     // The table alignments
                     alignments: comrak_alignments,
 
@@ -276,7 +275,7 @@ impl CommonmarkerNode {
 
                     // Number of non-empty, non-autocompleted cells
                     num_nonempty_cells,
-                })
+                }))
             }
             "table_row" => {
                 let kwargs =
@@ -296,7 +295,7 @@ impl CommonmarkerNode {
 
                 let (content,) = kwargs.optional;
 
-                ComrakNodeValue::Text(content.unwrap_or("".to_string()))
+                ComrakNodeValue::Text(content.unwrap_or_default().into())
             }
             "taskitem" => {
                 let kwargs = scan_args::get_kwargs::<_, (), (Option<char>,), ()>(
@@ -356,7 +355,7 @@ impl CommonmarkerNode {
                 let (url,) = kwargs.required;
                 let (title,) = kwargs.optional;
 
-                ComrakNodeValue::Link(NodeLink {
+                ComrakNodeValue::Link(Box::new(NodeLink {
                     // The URL for the link destination or image source.
                     url,
                     // The title for the link or image.
@@ -364,7 +363,7 @@ impl CommonmarkerNode {
                     // Note this field is used for the `title` attribute by the HTML formatter even for images;
                     // `alt` text is supplied in the image inline text.
                     title: title.unwrap_or_default(),
-                })
+                }))
             }
             "image" => {
                 let kwargs = scan_args::get_kwargs::<_, (String,), (Option<String>,), ()>(
@@ -376,7 +375,7 @@ impl CommonmarkerNode {
                 let (url,) = kwargs.required;
                 let (title,) = kwargs.optional;
 
-                ComrakNodeValue::Image(NodeLink {
+                ComrakNodeValue::Image(Box::new(NodeLink {
                     // The URL for the link destination or image source.
                     url,
                     // The title for the link or image.
@@ -384,7 +383,7 @@ impl CommonmarkerNode {
                     // Note this field is used for the `title` attribute by the HTML formatter even for images;
                     // `alt` text is supplied in the image inline text.
                     title: title.unwrap_or_default(),
-                })
+                }))
             }
             "footnote_reference" => {
                 let kwargs = scan_args::get_kwargs::<_, (String,), (Option<u32>, Option<u32>), ()>(
@@ -413,7 +412,7 @@ impl CommonmarkerNode {
                 let (code,) = kwargs.required;
 
                 match NodeShortCode::resolve(code.as_str()) {
-                    Some(shortcode) => ComrakNodeValue::ShortCode(shortcode),
+                    Some(shortcode) => ComrakNodeValue::ShortCode(Box::new(shortcode)),
                     None => {
                         return Err(magnus::Error::new(
                             ruby.exception_arg_error(),
@@ -514,7 +513,7 @@ impl CommonmarkerNode {
                     }
                 };
 
-                ComrakNodeValue::Alert(NodeAlert {
+                ComrakNodeValue::Alert(Box::new(NodeAlert {
                     alert_type,
                     // Overridden title. If None, then use the default title.
                     title,
@@ -524,7 +523,7 @@ impl CommonmarkerNode {
                     fence_length: fence_length.unwrap_or(0),
                     // The indentation level of the fence marker (multiline only)
                     fence_offset: fence_offset.unwrap_or(0),
-                })
+                }))
             }
 
             _ => panic!("unknown node type {}", node_type),
@@ -621,6 +620,7 @@ impl CommonmarkerNode {
             ComrakNodeValue::SpoileredText => ruby.to_symbol("spoilered_text"),
             ComrakNodeValue::EscapedTag(_) => ruby.to_symbol("escaped_tag"),
             ComrakNodeValue::Alert(..) => ruby.to_symbol("alert"),
+            ComrakNodeValue::Subtext => ruby.to_symbol("subtext"),
         }
     }
 
@@ -790,7 +790,7 @@ impl CommonmarkerNode {
 
         match node.data.value.text_mut() {
             Some(s) => {
-                *s = new_content;
+                *s = new_content.into();
                 Ok(true)
             }
             None => Err(magnus::Error::new(
@@ -990,19 +990,39 @@ impl CommonmarkerNode {
         let ruby = magnus::Ruby::get().unwrap();
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
-        let kwargs = scan_args::get_kwargs::<_, (), (Option<RHash>, Option<RHash>), ()>(
+        let kwargs = scan_args::get_kwargs::<
+            _,
+            (),
+            (Option<RHash>, Option<RHash>, Option<RHash>, Option<RHash>),
+            (),
+        >(
             args.keywords,
             &[],
-            &["options", "plugins"],
+            &["parse", "render", "extension", "plugins"],
         )?;
-        let (rb_options, rb_plugins) = kwargs.optional;
+        let (rb_parse, rb_render, rb_extension, rb_plugins) = kwargs.optional;
 
-        let comrak_options = match format_options(rb_options) {
-            Ok(options) => options,
-            Err(err) => return Err(err),
+        let mut comrak_parse_options = comrak::options::Parse::default();
+        let mut comrak_render_options = comrak::options::Render::default();
+        let mut comrak_extension_options = comrak::options::Extension::default();
+
+        if let Some(rb_parse) = rb_parse {
+            iterate_parse_options(&mut comrak_parse_options, rb_parse);
+        }
+        if let Some(rb_render) = rb_render {
+            iterate_render_options(&mut comrak_render_options, rb_render);
+        }
+        if let Some(rb_extension) = rb_extension {
+            iterate_extension_options(&mut comrak_extension_options, rb_extension);
+        }
+
+        let comrak_options = comrak::Options {
+            parse: comrak_parse_options,
+            render: comrak_render_options,
+            extension: comrak_extension_options,
         };
 
-        let mut comrak_plugins = comrak::Plugins::default();
+        let mut comrak_plugins = comrak::options::Plugins::default();
 
         let syntect_adapter = match construct_syntax_highlighter_from_plugin(rb_plugins) {
             Ok(Some(adapter)) => Some(adapter),
@@ -1067,17 +1087,39 @@ impl CommonmarkerNode {
         let ruby = magnus::Ruby::get().unwrap();
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
-        let kwargs = scan_args::get_kwargs::<_, (), (Option<RHash>, Option<RHash>), ()>(
+        let kwargs = scan_args::get_kwargs::<
+            _,
+            (),
+            (Option<RHash>, Option<RHash>, Option<RHash>, Option<RHash>),
+            (),
+        >(
             args.keywords,
             &[],
-            &["options", "plugins"],
+            &["render", "parse", "extension", "plugins"],
         )?;
-        let (rb_options, rb_plugins) = kwargs.optional;
+        let (rb_render, rb_parse, rb_extension, rb_plugins) = kwargs.optional;
 
-        let _comrak_options = format_options(rb_options);
-        let comrak_options = format_options(rb_options)?;
+        let mut comrak_parse_options = comrak::options::Parse::default();
+        let mut comrak_render_options = comrak::options::Render::default();
+        let mut comrak_extension_options = comrak::options::Extension::default();
 
-        let mut comrak_plugins = comrak::Plugins::default();
+        if let Some(rb_parse) = rb_parse {
+            iterate_parse_options(&mut comrak_parse_options, rb_parse);
+        }
+        if let Some(rb_render) = rb_render {
+            iterate_render_options(&mut comrak_render_options, rb_render);
+        }
+        if let Some(rb_extension) = rb_extension {
+            iterate_extension_options(&mut comrak_extension_options, rb_extension);
+        }
+
+        let comrak_options = comrak::Options {
+            parse: comrak_parse_options,
+            render: comrak_render_options,
+            extension: comrak_extension_options,
+        };
+
+        let mut comrak_plugins = comrak::options::Plugins::default();
 
         let syntect_adapter = match construct_syntax_highlighter_from_plugin(rb_plugins) {
             Ok(Some(adapter)) => Some(adapter),
