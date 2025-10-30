@@ -161,6 +161,7 @@ impl CommonmarkerNode {
                         Option<usize>,
                         Option<String>,
                         Option<String>,
+                        Option<bool>,
                     ),
                     (),
                 >(
@@ -172,10 +173,12 @@ impl CommonmarkerNode {
                         "fence_offset",
                         "info",
                         "literal",
+                        "closed",
                     ],
                 )?;
                 let (fenced,) = kwargs.required;
-                let (fence_char, fence_length, fence_offset, info, literal) = kwargs.optional;
+                let (fence_char, fence_length, fence_offset, info, literal, closed) =
+                    kwargs.optional;
 
                 ComrakNodeValue::CodeBlock(Box::new(NodeCodeBlock {
                     // Whether the code block is fenced.
@@ -195,6 +198,11 @@ impl CommonmarkerNode {
                     // all, they are contained within this structure, rather than inserted into a child inline of
                     // any kind.
                     literal: literal.unwrap_or(String::new()),
+
+                    // For fenced code blocks, whether the code block is closed.  (If not, it was terminated by
+                    // some other condition, like the end of the document, or the end of the indentation level the
+                    // code block was introduced at.)
+                    closed: closed.unwrap_or(true),
                 }))
             }
             "html_block" => {
@@ -215,20 +223,24 @@ impl CommonmarkerNode {
             }
             "paragraph" => ComrakNodeValue::Paragraph,
             "heading" => {
-                let kwargs = scan_args::get_kwargs::<_, (u8,), (Option<bool>,), ()>(
+                let kwargs = scan_args::get_kwargs::<_, (u8,), (Option<bool>, Option<bool>), ()>(
                     args.keywords,
                     &["level"],
-                    &["setext"],
+                    &["setext", "closed"],
                 )?;
 
                 let (level,) = kwargs.required;
-                let (setext,) = kwargs.optional;
+                let (setext, closed) = kwargs.optional;
 
                 ComrakNodeValue::Heading(NodeHeading {
-                    // Number of spaces before the list marker.
+                    // The heading level.  For setext headings, an underline made of "=" characters is level 1, and made of
+                    // "-" is level 2.  For ATX headings, the number of leading "#" characters (from 1 to 6) is its level.
                     level,
-                    // Number of characters between the start of the list marker and the item text (including the list marker(s)).
+                    // Whether the heading is setext style (marked by an underline).  If not, it is ATX style (marked by leading,
+                    // and possibly trailing, "#" characters).
                     setext: setext.unwrap_or(false),
+                    // For ATX headings, whether the the leading "#" are terminated by a sequence of closing "#" characters.
+                    closed: closed.unwrap_or(false),
                 })
             }
             "thematic_break" => ComrakNodeValue::ThematicBreak,
