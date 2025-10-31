@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: oxidize-rb/actions/setup-ruby-and-rust@open-ss-hell
+      - uses: oxidize-rb/actions/setup-ruby-and-rust@main
         with:
           ruby-version: ${{ matrix.ruby-version }}
           rubygems: latest
