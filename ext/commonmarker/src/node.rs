@@ -407,14 +407,16 @@ impl CommonmarkerNode {
                 let (name,) = kwargs.required;
                 let (ref_num, ix) = kwargs.optional;
 
-                ComrakNodeValue::FootnoteReference(NodeFootnoteReference {
+                ComrakNodeValue::FootnoteReference(Box::new(NodeFootnoteReference {
                     // The name of the footnote.
                     name,
+                    // The original text and sourcepos column spans that comprised the footnote ref.
+                    texts: vec![],
                     // The index of reference to the same footnote
                     ref_num: ref_num.unwrap_or(0),
                     // The index of the footnote in the document.
                     ix: ix.unwrap_or(0),
-                })
+                }))
             }
             // #[cfg(feature = "shortcodes")]
             "shortcode" => {
@@ -589,51 +591,7 @@ impl CommonmarkerNode {
     fn type_to_symbol(&self) -> Symbol {
         let node = self.inner.borrow();
         let ruby = magnus::Ruby::get().unwrap();
-        match node.data.value {
-            ComrakNodeValue::Document => ruby.to_symbol("document"),
-            ComrakNodeValue::BlockQuote => ruby.to_symbol("block_quote"),
-            ComrakNodeValue::FootnoteDefinition(_) => ruby.to_symbol("footnote_definition"),
-            ComrakNodeValue::List(..) => ruby.to_symbol("list"),
-            ComrakNodeValue::DescriptionList => ruby.to_symbol("description_list"),
-            ComrakNodeValue::DescriptionItem(_) => ruby.to_symbol("description_item"),
-            ComrakNodeValue::DescriptionTerm => ruby.to_symbol("description_term"),
-            ComrakNodeValue::DescriptionDetails => ruby.to_symbol("description_details"),
-            ComrakNodeValue::Item(..) => ruby.to_symbol("item"),
-            ComrakNodeValue::CodeBlock(..) => ruby.to_symbol("code_block"),
-            ComrakNodeValue::HtmlBlock(..) => ruby.to_symbol("html_block"),
-            ComrakNodeValue::Paragraph => ruby.to_symbol("paragraph"),
-            ComrakNodeValue::Heading(..) => ruby.to_symbol("heading"),
-            ComrakNodeValue::ThematicBreak => ruby.to_symbol("thematic_break"),
-            ComrakNodeValue::Table(..) => ruby.to_symbol("table"),
-            ComrakNodeValue::TableRow(..) => ruby.to_symbol("table_row"),
-            ComrakNodeValue::TableCell => ruby.to_symbol("table_cell"),
-            ComrakNodeValue::Text(..) => ruby.to_symbol("text"),
-            ComrakNodeValue::SoftBreak => ruby.to_symbol("softbreak"),
-            ComrakNodeValue::LineBreak => ruby.to_symbol("linebreak"),
-            ComrakNodeValue::Image(..) => ruby.to_symbol("image"),
-            ComrakNodeValue::Link(..) => ruby.to_symbol("link"),
-            ComrakNodeValue::Emph => ruby.to_symbol("emph"),
-            ComrakNodeValue::Raw(..) => ruby.to_symbol("raw"),
-            ComrakNodeValue::Strong => ruby.to_symbol("strong"),
-            ComrakNodeValue::Code(..) => ruby.to_symbol("code"),
-            ComrakNodeValue::HtmlInline(..) => ruby.to_symbol("html_inline"),
-            ComrakNodeValue::Strikethrough => ruby.to_symbol("strikethrough"),
-            ComrakNodeValue::FrontMatter(_) => ruby.to_symbol("frontmatter"),
-            ComrakNodeValue::TaskItem { .. } => ruby.to_symbol("taskitem"),
-            ComrakNodeValue::Superscript => ruby.to_symbol("superscript"),
-            ComrakNodeValue::FootnoteReference(..) => ruby.to_symbol("footnote_reference"),
-            ComrakNodeValue::ShortCode(_) => ruby.to_symbol("shortcode"),
-            ComrakNodeValue::MultilineBlockQuote(_) => ruby.to_symbol("multiline_block_quote"),
-            ComrakNodeValue::Escaped => ruby.to_symbol("escaped"),
-            ComrakNodeValue::Math(..) => ruby.to_symbol("math"),
-            ComrakNodeValue::WikiLink(..) => ruby.to_symbol("wikilink"),
-            ComrakNodeValue::Underline => ruby.to_symbol("underline"),
-            ComrakNodeValue::Subscript => ruby.to_symbol("subscript"),
-            ComrakNodeValue::SpoileredText => ruby.to_symbol("spoilered_text"),
-            ComrakNodeValue::EscapedTag(_) => ruby.to_symbol("escaped_tag"),
-            ComrakNodeValue::Alert(..) => ruby.to_symbol("alert"),
-            ComrakNodeValue::Subtext => ruby.to_symbol("subtext"),
-        }
+        ruby.to_symbol(node.data.value.xml_node_name())
     }
 
     fn get_parent(&self) -> Option<CommonmarkerNode> {
