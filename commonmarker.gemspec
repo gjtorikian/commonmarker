@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.license = "MIT"
   spec.homepage = "https://github.com/gjtorikian/commonmarker"
 
-  spec.required_ruby_version = "~> 3.2"
+  spec.required_ruby_version = ">= 3.2", "< 5"
   spec.required_rubygems_version = ">= 3.4"
 
   spec.files = ["LICENSE.txt", "README.md", "Cargo.lock", "Cargo.toml"]
