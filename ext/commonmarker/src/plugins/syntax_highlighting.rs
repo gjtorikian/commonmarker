@@ -3,21 +3,21 @@ use std::path::PathBuf;
 use comrak::plugins::syntect::{SyntectAdapter, SyntectAdapterBuilder};
 
 use magnus::value::ReprValue;
-use magnus::{RHash, TryConvert, Value};
+use magnus::{RHash, Ruby, TryConvert, Value};
 use syntect::highlighting::ThemeSet;
 
 use crate::EMPTY_STR;
 
 pub fn construct_syntax_highlighter_from_plugin(
+    ruby: &Ruby,
     rb_plugins: Option<RHash>,
 ) -> Result<Option<SyntectAdapter>, magnus::Error> {
     match rb_plugins {
         None => Ok(None),
         Some(rb_plugins) => {
-            let ruby = magnus::Ruby::get_with(rb_plugins);
             let theme = match rb_plugins.get(ruby.to_symbol(super::SYNTAX_HIGHLIGHTER_PLUGIN)) {
                 Some(syntax_highlighter_options) => {
-                    match fetch_syntax_highlighter_theme(syntax_highlighter_options) {
+                    match fetch_syntax_highlighter_theme(ruby, syntax_highlighter_options) {
                         Ok(theme) => theme,
                         Err(e) => {
                             return Err(e);
@@ -41,7 +41,7 @@ pub fn construct_syntax_highlighter_from_plugin(
                             .get(ruby.to_symbol(super::SYNTAX_HIGHLIGHTER_PLUGIN))
                         {
                             Some(syntax_highlighter_options) => {
-                                fetch_syntax_highlighter_path(syntax_highlighter_options)?
+                                fetch_syntax_highlighter_path(ruby, syntax_highlighter_options)?
                             }
                             None => PathBuf::from("".to_string()), // no `syntax_highlighter:` defined
                         };
@@ -102,8 +102,10 @@ pub fn construct_syntax_highlighter_from_plugin(
     }
 }
 
-fn fetch_syntax_highlighter_theme(value: Value) -> Result<Option<String>, magnus::Error> {
-    let ruby = magnus::Ruby::get_with(value);
+fn fetch_syntax_highlighter_theme(
+    ruby: &Ruby,
+    value: Value,
+) -> Result<Option<String>, magnus::Error> {
     if value.is_nil() {
         // `syntax_highlighter: nil`
         return Ok(None);
@@ -143,14 +145,13 @@ fn fetch_syntax_highlighter_theme(value: Value) -> Result<Option<String>, magnus
     }
 }
 
-fn fetch_syntax_highlighter_path(value: Value) -> Result<PathBuf, magnus::Error> {
+fn fetch_syntax_highlighter_path(ruby: &Ruby, value: Value) -> Result<PathBuf, magnus::Error> {
     if value.is_nil() {
         // `syntax_highlighter: nil`
         return Ok(PathBuf::from(EMPTY_STR));
     }
 
     let syntax_highlighter_plugin: RHash = TryConvert::try_convert(value)?;
-    let ruby = magnus::Ruby::get_with(value);
     let path_key = ruby.to_symbol(super::SYNTAX_HIGHLIGHTER_PLUGIN_PATH_KEY);
 
     match syntax_highlighter_plugin.get(path_key) {

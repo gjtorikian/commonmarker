@@ -5,8 +5,8 @@ use comrak::nodes::{
     NodeHeading, NodeHtmlBlock, NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote,
     NodeShortCode, NodeTable, NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
 };
-use magnus::RArray;
 use magnus::{function, method, scan_args, Module, Object, RHash, RModule, Symbol, Value};
+use magnus::{RArray, Ruby};
 use rctree::Node;
 use typed_arena::Arena;
 
@@ -31,8 +31,7 @@ pub struct CommonmarkerNode {
 unsafe impl Send for CommonmarkerNode {}
 
 impl CommonmarkerNode {
-    pub fn new(args: &[Value]) -> Result<Self, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
+    pub fn new(ruby: &Ruby, args: &[Value]) -> Result<Self, magnus::Error> {
         let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
         let (node_type,): (Symbol,) = args.required;
 
@@ -588,9 +587,8 @@ impl CommonmarkerNode {
         Ok(commonmarker_root_node)
     }
 
-    fn type_to_symbol(&self) -> Symbol {
-        let node = self.inner.borrow();
-        let ruby = magnus::Ruby::get().unwrap();
+    fn type_to_symbol(ruby: &Ruby, rb_self: &Self) -> Symbol {
+        let node = rb_self.inner.borrow();
         ruby.to_symbol(node.data.value.xml_node_name())
     }
 
@@ -647,10 +645,9 @@ impl CommonmarkerNode {
         })
     }
 
-    fn get_sourcepos(&self) -> Result<RHash, magnus::Error> {
-        let node = self.inner.borrow();
+    fn get_sourcepos(ruby: &Ruby, rb_self: &Self) -> Result<RHash, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
-        let ruby = magnus::Ruby::get().unwrap();
         let result = ruby.hash_new();
         result.aset(ruby.to_symbol("start_line"), node.data.sourcepos.start.line)?;
         result.aset(
@@ -687,9 +684,8 @@ impl CommonmarkerNode {
         Ok(true)
     }
 
-    fn get_url(&self) -> Result<String, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let node = self.inner.borrow();
+    fn get_url(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::Link(link) => Ok(link.url.to_string()),
@@ -701,9 +697,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_url(&self, new_url: String) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let mut node = self.inner.borrow_mut();
+    fn set_url(ruby: &Ruby, rb_self: &Self, new_url: String) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {
             ComrakNodeValue::Link(ref mut link) => {
@@ -721,9 +716,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn get_string_content(&self) -> Result<String, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let node = self.inner.borrow();
+    fn get_string_content(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
         match node.data.value {
             ComrakNodeValue::Code(ref code) => return Ok(code.literal.to_string()),
@@ -742,9 +736,12 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_string_content(&self, new_content: String) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let mut node = self.inner.borrow_mut();
+    fn set_string_content(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_content: String,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {
             ComrakNodeValue::Code(ref mut code) => {
@@ -770,9 +767,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn get_title(&self) -> Result<String, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let node = self.inner.borrow();
+    fn get_title(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::Link(link) => Ok(link.title.to_string()),
@@ -784,9 +780,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_title(&self, new_title: String) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let mut node = self.inner.borrow_mut();
+    fn set_title(ruby: &Ruby, rb_self: &Self, new_title: String) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {
             ComrakNodeValue::Link(ref mut link) => {
@@ -804,9 +799,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn get_header_level(&self) -> Result<u8, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let node = self.inner.borrow();
+    fn get_header_level(ruby: &Ruby, rb_self: &Self) -> Result<u8, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::Heading(heading) => Ok(heading.level),
@@ -817,9 +811,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_header_level(&self, new_level: u8) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let mut node = self.inner.borrow_mut();
+    fn set_header_level(ruby: &Ruby, rb_self: &Self, new_level: u8) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {
             ComrakNodeValue::Heading(ref mut heading) => {
@@ -833,9 +826,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn get_list_type(&self) -> Result<Symbol, magnus::Error> {
-        let node = self.inner.borrow();
-        let ruby = magnus::Ruby::get().unwrap();
+    fn get_list_type(ruby: &Ruby, rb_self: &Self) -> Result<Symbol, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::List(list) => match list.list_type {
@@ -849,9 +841,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_list_type(&self, new_type: Symbol) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let mut node = self.inner.borrow_mut();
+    fn set_list_type(ruby: &Ruby, rb_self: &Self, new_type: Symbol) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {
             ComrakNodeValue::List(ref mut list) => {
@@ -869,9 +860,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn get_list_start(&self) -> Result<usize, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let node = self.inner.borrow();
+    fn get_list_start(ruby: &Ruby, rb_self: &Self) -> Result<usize, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::List(list) => Ok(list.start),
@@ -882,9 +872,12 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_list_start(&self, new_start: usize) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let mut node = self.inner.borrow_mut();
+    fn set_list_start(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_start: usize,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {
             ComrakNodeValue::List(ref mut list) => {
@@ -898,9 +891,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn get_list_tight(&self) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let node = self.inner.borrow();
+    fn get_list_tight(ruby: &Ruby, rb_self: &Self) -> Result<bool, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::List(list) => Ok(list.tight),
@@ -911,9 +903,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_list_tight(&self, new_tight: bool) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let mut node = self.inner.borrow_mut();
+    fn set_list_tight(ruby: &Ruby, rb_self: &Self, new_tight: bool) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {
             ComrakNodeValue::List(ref mut list) => {
@@ -927,9 +918,8 @@ impl CommonmarkerNode {
         }
     }
 
-    fn get_fence_info(&self) -> Result<String, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let node = self.inner.borrow();
+    fn get_fence_info(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
+        let node = rb_self.inner.borrow();
 
         match &node.data.value {
             ComrakNodeValue::CodeBlock(code_block) => Ok(code_block.info.to_string()),
@@ -940,9 +930,12 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_fence_info(&self, new_info: String) -> Result<bool, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
-        let mut node = self.inner.borrow_mut();
+    fn set_fence_info(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_info: String,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {
             ComrakNodeValue::CodeBlock(ref mut code_block) => {
@@ -956,8 +949,7 @@ impl CommonmarkerNode {
         }
     }
 
-    fn to_html(&self, args: &[Value]) -> Result<String, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
+    fn to_html(ruby: &Ruby, rb_self: &Self, args: &[Value]) -> Result<String, magnus::Error> {
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
         let kwargs = scan_args::get_kwargs::<
@@ -994,7 +986,7 @@ impl CommonmarkerNode {
 
         let mut comrak_plugins = comrak::options::Plugins::default();
 
-        let syntect_adapter = match construct_syntax_highlighter_from_plugin(rb_plugins) {
+        let syntect_adapter = match construct_syntax_highlighter_from_plugin(ruby, rb_plugins) {
             Ok(Some(adapter)) => Some(adapter),
             Ok(None) => None,
             Err(err) => return Err(err),
@@ -1024,9 +1016,9 @@ impl CommonmarkerNode {
         }
 
         let comrak_root_node: ComrakNode<RefCell<ComrakAst>> =
-            ComrakNode::new(RefCell::new(self.inner.borrow().data.clone()));
+            ComrakNode::new(RefCell::new(rb_self.inner.borrow().data.clone()));
 
-        for c in self.inner.children() {
+        for c in rb_self.inner.children() {
             let child = CommonmarkerNode { inner: c };
 
             let new_child = iter_nodes(&arena, &child);
@@ -1053,8 +1045,7 @@ impl CommonmarkerNode {
         Ok(output)
     }
 
-    fn to_commonmark(&self, args: &[Value]) -> Result<String, magnus::Error> {
-        let ruby = magnus::Ruby::get().unwrap();
+    fn to_commonmark(ruby: &Ruby, rb_self: &Self, args: &[Value]) -> Result<String, magnus::Error> {
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
         let kwargs = scan_args::get_kwargs::<
@@ -1091,7 +1082,7 @@ impl CommonmarkerNode {
 
         let mut comrak_plugins = comrak::options::Plugins::default();
 
-        let syntect_adapter = match construct_syntax_highlighter_from_plugin(rb_plugins) {
+        let syntect_adapter = match construct_syntax_highlighter_from_plugin(ruby, rb_plugins) {
             Ok(Some(adapter)) => Some(adapter),
             Ok(None) => None,
             Err(err) => return Err(err),
@@ -1121,9 +1112,9 @@ impl CommonmarkerNode {
         }
 
         let comrak_root_node: ComrakNode<RefCell<ComrakAst>> =
-            ComrakNode::new(RefCell::new(self.inner.borrow().data.clone()));
+            ComrakNode::new(RefCell::new(rb_self.inner.borrow().data.clone()));
 
-        for c in self.inner.children() {
+        for c in rb_self.inner.children() {
             let child = CommonmarkerNode { inner: c };
 
             let new_child = iter_nodes(&arena, &child);
@@ -1151,8 +1142,7 @@ impl CommonmarkerNode {
     }
 }
 
-pub fn init(m_commonmarker: RModule) -> Result<(), magnus::Error> {
-    let ruby = magnus::Ruby::get().unwrap();
+pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
     let c_node = m_commonmarker
         .define_class("Node", ruby.class_object())
         .expect("cannot define class Commonmarker::Node");
