@@ -1,7 +1,7 @@
 extern crate core;
 
 use comrak::{markdown_to_html_with_plugins, parse_document};
-use magnus::{function, scan_args, Error, RHash, Value};
+use magnus::{function, scan_args, RHash, Ruby, Value};
 use node::CommonmarkerNode;
 use plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
 
@@ -55,7 +55,7 @@ fn commonmark_parse(args: &[Value]) -> Result<CommonmarkerNode, magnus::Error> {
     CommonmarkerNode::new_from_comrak_node(root)
 }
 
-fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
+fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<String, magnus::Error> {
     let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
     let (rb_commonmark,): (String,) = args.required;
 
@@ -87,7 +87,7 @@ fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
 
     let mut comrak_plugins = comrak::options::Plugins::default();
 
-    let syntect_adapter = match construct_syntax_highlighter_from_plugin(rb_plugins) {
+    let syntect_adapter = match construct_syntax_highlighter_from_plugin(ruby, rb_plugins) {
         Ok(Some(adapter)) => Some(adapter),
         Ok(None) => None,
         Err(err) => return Err(err),
@@ -112,15 +112,14 @@ fn commonmark_to_html(args: &[Value]) -> Result<String, magnus::Error> {
 }
 
 #[magnus::init]
-fn init() -> Result<(), Error> {
-    let ruby = magnus::Ruby::get().unwrap();
+fn init(ruby: &Ruby) -> Result<(), magnus::Error> {
     let m_commonmarker = ruby.define_module("Commonmarker")?;
 
     m_commonmarker.define_module_function("commonmark_parse", function!(commonmark_parse, -1))?;
     m_commonmarker
         .define_module_function("commonmark_to_html", function!(commonmark_to_html, -1))?;
 
-    node::init(m_commonmarker).expect("cannot define Commonmarker::Node class");
+    node::init(ruby, m_commonmarker).expect("cannot define Commonmarker::Node class");
 
     Ok(())
 }
