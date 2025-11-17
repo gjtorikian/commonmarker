@@ -40,4 +40,56 @@ class FootnotesTest < Minitest::Test
 
     assert_equal(expected, Commonmarker.to_html(md, options: { extension: { footnotes: true, inline_footnotes: true } }))
   end
+
+  def test_leave_footnote_definitions_option
+    md = <<~MARKDOWN
+      Here is a footnote reference.[^1]
+
+      [^1]: Here is the footnote.
+
+      Here is a longer footnote reference.[^ref]
+
+      [^ref]: Here is another footnote.
+    MARKDOWN
+
+    # Without leave_footnote_definitions, footnote definitions are moved to the end
+    doc_default = Commonmarker.parse(
+      md,
+      options: { extension: { footnotes: true } },
+    )
+
+    nodes_default = []
+    child = doc_default.first_child
+    while child
+      nodes_default << child.type
+      child = child.next_sibling
+    end
+
+    # Default behavior: footnotes moved to end
+    assert_equal(
+      [:paragraph, :paragraph, :footnote_definition, :footnote_definition],
+      nodes_default,
+      "Without leave_footnote_definitions, footnote definitions should be moved to the end",
+    )
+
+    # With leave_footnote_definitions: true, footnote definitions stay in original positions in AST
+    doc_leave = Commonmarker.parse(
+      md,
+      options: { parse: { leave_footnote_definitions: true }, extension: { footnotes: true } },
+    )
+
+    nodes_leave = []
+    child = doc_leave.first_child
+    while child
+      nodes_leave << child.type
+      child = child.next_sibling
+    end
+
+    # With option: footnotes stay in original positions (interleaved)
+    assert_equal(
+      [:paragraph, :footnote_definition, :paragraph, :footnote_definition],
+      nodes_leave,
+      "With leave_footnote_definitions, footnote definitions should remain in their original positions",
+    )
+  end
 end

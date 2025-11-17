@@ -10,6 +10,7 @@ module Commonmarker
         default_info_string: "",
         relaxed_tasklist_matching: false,
         relaxed_autolinks: false,
+        leave_footnote_definitions: false,
       }.freeze,
       render: {
         hardbreaks: true,

@@ -156,12 +156,13 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 
 ### Parse options
 
-| Name                        | Description                                                                                                                                 | Default |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `smart`                     | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                        | `false` |
-| `default_info_string`       | The default info string for fenced code blocks.                                                                                             | `""`    |
-| `relaxed_tasklist_matching` | Enables relaxing of the tasklist extension matching, allowing any non-space to be used for the "checked" state instead of only `x` and `X`. | `false` |
-| `relaxed_autolinks`         | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
+| Name                         | Description                                                                                                                                 | Default |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `smart`                      | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                        | `false` |
+| `default_info_string`        | The default info string for fenced code blocks.                                                                                             | `""`    |
+| `relaxed_tasklist_matching`  | Enables relaxing of the tasklist extension matching, allowing any non-space to be used for the "checked" state instead of only `x` and `X`. | `false` |
+| `relaxed_autolinks`          | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
+| `leave_footnote_definitions` | Allow footnote definitions to remain in their original positions instead of being moved to the document's end (only affects AST)            | `false` |
 
 ### Render options
 
