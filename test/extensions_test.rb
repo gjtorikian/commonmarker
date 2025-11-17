@@ -113,4 +113,18 @@ class ExtensionsTest < Minitest::Test
       Commonmarker.to_html("**この文は重要です。**但这句话并不重要。", options: options),
     )
   end
+
+  def test_highlight_extension
+    assert_equal(
+      "<p>This is ==important!==.</p>\n",
+      Commonmarker.to_html("This is ==important!==."),
+    )
+
+    options = { extension: { highlight: true } }
+
+    assert_equal(
+      "<p>This is <mark>important!</mark>.</p>\n",
+      Commonmarker.to_html("This is ==important!==.", options: options),
+    )
+  end
 end

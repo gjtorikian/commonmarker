@@ -51,6 +51,7 @@ module Commonmarker
         subtext: false,
         alerts: false,
         cjk_friendly_emphasis: false,
+        highlight: false,
       }.freeze,
       format: [:html].freeze,
     }.freeze

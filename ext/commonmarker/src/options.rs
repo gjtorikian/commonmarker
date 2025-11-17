@@ -121,6 +121,7 @@ const EXTENSION_SUBSCRIPT: &str = "subscript";
 const EXTENSION_SUBTEXT: &str = "subtext";
 const EXTENSION_ALERTS: &str = "alerts";
 const EXTENSION_CJK_FRIENDLY_EMPHASIS: &str = "cjk_friendly_emphasis";
+const EXTENSION_HIGHLIGHT: &str = "highlight";
 
 pub fn iterate_extension_options(
     comrak_options: &mut comrak::options::Extension,
@@ -204,6 +205,9 @@ pub fn iterate_extension_options(
                 }
                 Cow::Borrowed(EXTENSION_CJK_FRIENDLY_EMPHASIS) => {
                     comrak_options.cjk_friendly_emphasis = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(EXTENSION_HIGHLIGHT) => {
+                    comrak_options.highlight = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
