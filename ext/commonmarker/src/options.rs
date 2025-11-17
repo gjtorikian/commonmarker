@@ -9,6 +9,7 @@ const PARSE_SMART: &str = "smart";
 const PARSE_DEFAULT_INFO_STRING: &str = "default_info_string";
 const PARSE_RELAXED_TASKLIST_MATCHING: &str = "relaxed_tasklist_matching";
 const PARSE_RELAXED_AUTOLINKS: &str = "relaxed_autolinks";
+const PARSE_LEAVE_FOOTNOTE_DEFINITIONS: &str = "leave_footnote_definitions";
 
 pub fn iterate_parse_options(comrak_options: &mut comrak::options::Parse, options_hash: RHash) {
     options_hash
@@ -28,6 +29,9 @@ pub fn iterate_parse_options(comrak_options: &mut comrak::options::Parse, option
                 }
                 Cow::Borrowed(PARSE_RELAXED_AUTOLINKS) => {
                     comrak_options.relaxed_autolinks = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(PARSE_LEAVE_FOOTNOTE_DEFINITIONS) => {
+                    comrak_options.leave_footnote_definitions = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
@@ -121,6 +125,7 @@ const EXTENSION_SUBSCRIPT: &str = "subscript";
 const EXTENSION_SUBTEXT: &str = "subtext";
 const EXTENSION_ALERTS: &str = "alerts";
 const EXTENSION_CJK_FRIENDLY_EMPHASIS: &str = "cjk_friendly_emphasis";
+const EXTENSION_HIGHLIGHT: &str = "highlight";
 
 pub fn iterate_extension_options(
     comrak_options: &mut comrak::options::Extension,
@@ -204,6 +209,9 @@ pub fn iterate_extension_options(
                 }
                 Cow::Borrowed(EXTENSION_CJK_FRIENDLY_EMPHASIS) => {
                     comrak_options.cjk_friendly_emphasis = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(EXTENSION_HIGHLIGHT) => {
+                    comrak_options.highlight = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
