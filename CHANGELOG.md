@@ -1,3 +1,15 @@
+# [v2.6.0] - 03-12-2025
+## What's Changed
+* Bump comrak from 0.44.0 to 0.46.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/405
+* Bump comrak from 0.46.0 to 0.47.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/406
+* Bump comrak from 0.47.0 to 0.48.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/409
+* Remove uses of magnus::Ruby::get* by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/411
+* Add features from comrak v0.48.0 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/412
+* Bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/413
+* :gem: bump to 2.6.0 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/415
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.5.0...v2.6.0
 # [v2.5.0] - 14-10-2025
 ## What's Changed
 * Bump syntect from 5.2.0 to 5.3.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/399
