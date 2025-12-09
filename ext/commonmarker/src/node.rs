@@ -3,7 +3,8 @@ use comrak::nodes::{
     AlertType, Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, ListType, NodeAlert,
     NodeCode, NodeCodeBlock, NodeDescriptionItem, NodeFootnoteDefinition, NodeFootnoteReference,
     NodeHeading, NodeHtmlBlock, NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote,
-    NodeShortCode, NodeTable, NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
+    NodeShortCode, NodeTable, NodeTaskItem, NodeValue as ComrakNodeValue, NodeWikiLink,
+    TableAlignment,
 };
 use magnus::{function, method, scan_args, Module, Object, RHash, RModule, Symbol, Value};
 use magnus::{RArray, Ruby};
@@ -317,7 +318,10 @@ impl CommonmarkerNode {
 
                 let (mark,) = kwargs.optional;
 
-                ComrakNodeValue::TaskItem(mark)
+                ComrakNodeValue::TaskItem(NodeTaskItem {
+                    symbol: mark,
+                    symbol_sourcepos: (0, 0, 0, 0).into(),
+                })
             }
             "softbreak" => ComrakNodeValue::SoftBreak,
             "linebreak" => ComrakNodeValue::LineBreak,
