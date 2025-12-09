@@ -8,10 +8,10 @@ require "kramdown-parser-gfm"
 require "redcarpet"
 require "benchmark"
 
-small = File.read("test/benchmark/small.md").freeze
-large = File.read("test/benchmark/large.md").freeze
+SMALL_FILE = File.read("benchmark/small.md").freeze
+LARGE_FILE = File.read("benchmark/large.md").freeze
 
-[small, large].each do |input|
+[SMALL_FILE, LARGE_FILE].each do |input|
   printf("input size = %<bytes>d bytes\n\n", { bytes: input.bytesize })
 
   Benchmark.ips do |x|
