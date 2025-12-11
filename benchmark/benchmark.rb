@@ -9,9 +9,12 @@ require "redcarpet"
 require "benchmark"
 
 SMALL_FILE = File.read("benchmark/small.md").freeze
+SAMPLE_FILE = File.read("benchmark/sample.md").freeze
 LARGE_FILE = File.read("benchmark/large.md").freeze
 
-[SMALL_FILE, LARGE_FILE].each do |input|
+[SMALL_FILE, SAMPLE_FILE, LARGE_FILE].each do |input|
+  kramdown_document = Kramdown::Document.new(input, input: "GFM")
+
   printf("input size = %<bytes>d bytes\n\n", { bytes: input.bytesize })
 
   Benchmark.ips do |x|
@@ -37,7 +40,7 @@ LARGE_FILE = File.read("benchmark/large.md").freeze
     end
 
     x.report("Kramdown::Document#to_html") do
-      Kramdown::Document.new(input, input: "GFM").to_html
+      kramdown_document.to_html
     end
 
     x.compare!
