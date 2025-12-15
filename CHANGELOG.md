@@ -3,6 +3,7 @@
 * Bump comrak from 0.44.0 to 0.46.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/405
 * Bump comrak from 0.46.0 to 0.47.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/406
 * Bump comrak from 0.47.0 to 0.48.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/409
+* Newline handling has been updated. See [comrak's release notes](https://github.com/kivikakk/comrak/releases/tag/v0.48.0) for more deetails.
 * Remove uses of magnus::Ruby::get* by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/411
 * Add features from comrak v0.48.0 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/412
 * Bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/413
