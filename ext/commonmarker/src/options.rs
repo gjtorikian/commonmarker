@@ -213,7 +213,10 @@ pub fn format_options(
     let options_hash: RHash = TryConvert::try_convert(rb_options).map_err(|_| {
         Error::new(
             ruby.exception_type_error(),
-            format!("options must be a Hash; got {}", crate::utils::get_classname(rb_options)),
+            format!(
+                "options must be a Hash; got {}",
+                crate::utils::get_classname(rb_options)
+            ),
         )
     })?;
 
@@ -237,7 +240,10 @@ pub fn format_options(
             let parse_hash: RHash = TryConvert::try_convert(parse_value).map_err(|_| {
                 Error::new(
                     ruby.exception_type_error(),
-                    format!("parse options must be a Hash; got {}", crate::utils::get_classname(parse_value)),
+                    format!(
+                        "parse options must be a Hash; got {}",
+                        crate::utils::get_classname(parse_value)
+                    ),
                 )
             })?;
             iterate_parse_options_with_validation(ruby, &mut options.parse, parse_hash)?;
@@ -256,7 +262,10 @@ pub fn format_options(
             let render_hash: RHash = TryConvert::try_convert(render_value).map_err(|_| {
                 Error::new(
                     ruby.exception_type_error(),
-                    format!("render options must be a Hash; got {}", crate::utils::get_classname(render_value)),
+                    format!(
+                        "render options must be a Hash; got {}",
+                        crate::utils::get_classname(render_value)
+                    ),
                 )
             })?;
             iterate_render_options_with_validation(ruby, &mut options.render, render_hash)?;
@@ -275,7 +284,10 @@ pub fn format_options(
             let extension_hash: RHash = TryConvert::try_convert(extension_value).map_err(|_| {
                 Error::new(
                     ruby.exception_type_error(),
-                    format!("extension options must be a Hash; got {}", crate::utils::get_classname(extension_value)),
+                    format!(
+                        "extension options must be a Hash; got {}",
+                        crate::utils::get_classname(extension_value)
+                    ),
                 )
             })?;
             iterate_extension_options_with_validation(

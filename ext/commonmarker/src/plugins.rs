@@ -35,8 +35,7 @@ pub fn format_plugins(ruby: &Ruby, rb_plugins: Option<Value>) -> Result<Option<R
     }
 
     // Check for syntax_highlighter key
-    let syntax_highlighter_value =
-        plugins_hash.get(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN));
+    let syntax_highlighter_value = plugins_hash.get(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN));
 
     match syntax_highlighter_value {
         None => {
@@ -71,25 +70,25 @@ pub fn format_plugins(ruby: &Ruby, rb_plugins: Option<Value>) -> Result<Option<R
             let merged_sh = ruby.hash_new();
 
             // Get theme - nil is an error, missing key uses default
-            let theme: String = match sh_hash.get(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY))
-            {
-                Some(t) if t.is_nil() => {
-                    return Err(Error::new(
-                        ruby.exception_type_error(),
-                        "syntax_highlighter theme cannot be nil",
-                    ));
-                }
-                Some(t) => TryConvert::try_convert(t).map_err(|_| {
-                    Error::new(
-                        ruby.exception_type_error(),
-                        format!(
-                            "syntax_highlighter theme must be a String; got {}",
-                            crate::utils::get_classname(t)
-                        ),
-                    )
-                })?,
-                None => DEFAULT_THEME.to_string(),
-            };
+            let theme: String =
+                match sh_hash.get(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY)) {
+                    Some(t) if t.is_nil() => {
+                        return Err(Error::new(
+                            ruby.exception_type_error(),
+                            "syntax_highlighter theme cannot be nil",
+                        ));
+                    }
+                    Some(t) => TryConvert::try_convert(t).map_err(|_| {
+                        Error::new(
+                            ruby.exception_type_error(),
+                            format!(
+                                "syntax_highlighter theme must be a String; got {}",
+                                crate::utils::get_classname(t)
+                            ),
+                        )
+                    })?,
+                    None => DEFAULT_THEME.to_string(),
+                };
             merged_sh.aset(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY), theme)?;
 
             // Get path (use default if not provided)
