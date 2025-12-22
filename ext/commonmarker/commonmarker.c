@@ -86,9 +86,26 @@ static void rb_free_c_struct(void *data) {
   cmark_node_free(data);
 }
 
+static const rb_data_type_t cmark_node_data_type = {
+  "CommonMarker/Node",
+  {
+    rb_mark_c_struct,
+    rb_free_c_struct,
+  },
+};
+
+static const rb_data_type_t cmark_root_data_type = {
+  "CommonMarker/Node",
+  {
+    rb_mark_c_struct,
+    NULL,
+  },
+  &cmark_node_data_type,
+};
+
 static VALUE rb_node_to_value(cmark_node *node) {
   void *user_data;
-  RUBY_DATA_FUNC free_func;
+  const rb_data_type_t *type;
   VALUE val;
 
   if (node == NULL)
@@ -99,8 +116,8 @@ static VALUE rb_node_to_value(cmark_node *node) {
     return (VALUE)user_data;
 
   /* Only free tree roots. */
-  free_func = cmark_node_parent(node) ? NULL : rb_free_c_struct;
-  val = Data_Wrap_Struct(rb_cNode, rb_mark_c_struct, free_func, node);
+  type = cmark_node_parent(node) ? &cmark_root_data_type : &cmark_node_data_type;
+  val = TypedData_Wrap_Struct(rb_cNode, type, node);
   cmark_node_set_user_data(node, (void *)val);
 
   return val;
@@ -324,7 +341,7 @@ static VALUE rb_parse_document(VALUE self, VALUE rb_text, VALUE rb_len,
 static VALUE rb_node_get_string_content(VALUE self) {
   const char *text;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   text = cmark_node_get_literal(node);
   if (text == NULL) {
@@ -346,7 +363,7 @@ static VALUE rb_node_set_string_content(VALUE self, VALUE s) {
   cmark_node *node;
   Check_Type(s, T_STRING);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
   text = StringValueCStr(s);
 
   if (!cmark_node_set_literal(node, text)) {
@@ -367,7 +384,7 @@ static VALUE rb_node_get_type(VALUE self) {
   VALUE symbol;
   const char *s;
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   node_type = cmark_node_get_type(node);
   symbol = Qnil;
@@ -454,7 +471,7 @@ static VALUE rb_node_get_sourcepos(VALUE self) {
   VALUE result;
 
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   start_line = cmark_node_get_start_line(node);
   start_column = cmark_node_get_start_column(node);
@@ -477,7 +494,7 @@ static VALUE rb_node_get_sourcepos(VALUE self) {
  */
 static VALUE rb_node_get_type_string(VALUE self) {
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   return rb_str_new2(cmark_node_get_type_string(node));
 }
@@ -488,7 +505,7 @@ static VALUE rb_node_get_type_string(VALUE self) {
  */
 static VALUE rb_node_unlink(VALUE self) {
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   cmark_node_unlink(node);
 
@@ -503,7 +520,7 @@ static VALUE rb_node_unlink(VALUE self) {
  */
 static VALUE rb_node_first_child(VALUE self) {
   cmark_node *node, *child;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   child = cmark_node_first_child(node);
 
@@ -516,7 +533,7 @@ static VALUE rb_node_first_child(VALUE self) {
  */
 static VALUE rb_node_next(VALUE self) {
   cmark_node *node, *next;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   next = cmark_node_next(node);
 
@@ -533,9 +550,9 @@ static VALUE rb_node_next(VALUE self) {
  */
 static VALUE rb_node_insert_before(VALUE self, VALUE sibling) {
   cmark_node *node1, *node2;
-  Data_Get_Struct(self, cmark_node, node1);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node1);
 
-  Data_Get_Struct(sibling, cmark_node, node2);
+  TypedData_Get_Struct(sibling, cmark_node, &cmark_node_data_type, node2);
 
   if (!cmark_node_insert_before(node1, node2)) {
     rb_raise(rb_eNodeError, "could not insert before");
@@ -563,7 +580,7 @@ static VALUE rb_render_html(VALUE self, VALUE rb_options, VALUE rb_extensions) {
   options = FIX2INT(rb_options);
   extensions_len = RARRAY_LEN(rb_extensions);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   for (i = 0; i < extensions_len; ++i) {
     rb_ext_name = RARRAY_PTR(rb_extensions)[i];
@@ -604,7 +621,7 @@ static VALUE rb_render_xml(VALUE self, VALUE rb_options) {
 
   options = FIX2INT(rb_options);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   char *xml = cmark_render_xml(node, options);
   VALUE ruby_xml = rb_str_new2(xml);
@@ -633,7 +650,7 @@ static VALUE rb_render_commonmark(int argc, VALUE *argv, VALUE self) {
   Check_Type(rb_options, T_FIXNUM);
 
   options = FIX2INT(rb_options);
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   char *cmark = cmark_render_commonmark(node, options, width);
   VALUE ruby_cmark = rb_str_new2(cmark);
@@ -661,7 +678,7 @@ static VALUE rb_render_plaintext(int argc, VALUE *argv, VALUE self) {
   Check_Type(rb_options, T_FIXNUM);
 
   options = FIX2INT(rb_options);
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   char *text = cmark_render_plaintext(node, options, width);
   VALUE ruby_text = rb_str_new2(text);
@@ -680,9 +697,9 @@ static VALUE rb_render_plaintext(int argc, VALUE *argv, VALUE self) {
  */
 static VALUE rb_node_insert_after(VALUE self, VALUE sibling) {
   cmark_node *node1, *node2;
-  Data_Get_Struct(self, cmark_node, node1);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node1);
 
-  Data_Get_Struct(sibling, cmark_node, node2);
+  TypedData_Get_Struct(sibling, cmark_node, &cmark_node_data_type, node2);
 
   if (!cmark_node_insert_after(node1, node2)) {
     rb_raise(rb_eNodeError, "could not insert after");
@@ -703,9 +720,9 @@ static VALUE rb_node_insert_after(VALUE self, VALUE sibling) {
  */
 static VALUE rb_node_prepend_child(VALUE self, VALUE child) {
   cmark_node *node1, *node2;
-  Data_Get_Struct(self, cmark_node, node1);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node1);
 
-  Data_Get_Struct(child, cmark_node, node2);
+  TypedData_Get_Struct(child, cmark_node, &cmark_node_data_type, node2);
 
   if (!cmark_node_prepend_child(node1, node2)) {
     rb_raise(rb_eNodeError, "could not prepend child");
@@ -726,9 +743,9 @@ static VALUE rb_node_prepend_child(VALUE self, VALUE child) {
  */
 static VALUE rb_node_append_child(VALUE self, VALUE child) {
   cmark_node *node1, *node2;
-  Data_Get_Struct(self, cmark_node, node1);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node1);
 
-  Data_Get_Struct(child, cmark_node, node2);
+  TypedData_Get_Struct(child, cmark_node, &cmark_node_data_type, node2);
 
   if (!cmark_node_append_child(node1, node2)) {
     rb_raise(rb_eNodeError, "could not append child");
@@ -745,7 +762,7 @@ static VALUE rb_node_append_child(VALUE self, VALUE child) {
  */
 static VALUE rb_node_last_child(VALUE self) {
   cmark_node *node, *child;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   child = cmark_node_last_child(node);
 
@@ -758,7 +775,7 @@ static VALUE rb_node_last_child(VALUE self) {
  */
 static VALUE rb_node_parent(VALUE self) {
   cmark_node *node, *parent;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   parent = cmark_node_parent(node);
 
@@ -771,7 +788,7 @@ static VALUE rb_node_parent(VALUE self) {
  */
 static VALUE rb_node_previous(VALUE self) {
   cmark_node *node, *previous;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   previous = cmark_node_previous(node);
 
@@ -787,7 +804,7 @@ static VALUE rb_node_previous(VALUE self) {
 static VALUE rb_node_get_url(VALUE self) {
   const char *text;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   text = cmark_node_get_url(node);
   if (text == NULL) {
@@ -809,7 +826,7 @@ static VALUE rb_node_set_url(VALUE self, VALUE url) {
   char *text;
   Check_Type(url, T_STRING);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
   text = StringValueCStr(url);
 
   if (!cmark_node_set_url(node, text)) {
@@ -828,7 +845,7 @@ static VALUE rb_node_set_url(VALUE self, VALUE url) {
 static VALUE rb_node_get_title(VALUE self) {
   const char *text;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   text = cmark_node_get_title(node);
   if (text == NULL) {
@@ -850,7 +867,7 @@ static VALUE rb_node_set_title(VALUE self, VALUE title) {
   cmark_node *node;
   Check_Type(title, T_STRING);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
   text = StringValueCStr(title);
 
   if (!cmark_node_set_title(node, text)) {
@@ -869,7 +886,7 @@ static VALUE rb_node_set_title(VALUE self, VALUE title) {
 static VALUE rb_node_get_header_level(VALUE self) {
   int header_level;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   header_level = cmark_node_get_header_level(node);
 
@@ -892,7 +909,7 @@ static VALUE rb_node_set_header_level(VALUE self, VALUE level) {
   cmark_node *node;
   Check_Type(level, T_FIXNUM);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
   l = FIX2INT(level);
 
   if (!cmark_node_set_header_level(node, l)) {
@@ -912,7 +929,7 @@ static VALUE rb_node_get_list_type(VALUE self) {
   int list_type;
   cmark_node *node;
   VALUE symbol;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   list_type = cmark_node_get_list_type(node);
 
@@ -939,7 +956,7 @@ static VALUE rb_node_set_list_type(VALUE self, VALUE list_type) {
   cmark_node *node;
   Check_Type(list_type, T_SYMBOL);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   if (list_type == sym_bullet_list) {
     type = CMARK_BULLET_LIST;
@@ -965,7 +982,7 @@ static VALUE rb_node_set_list_type(VALUE self, VALUE list_type) {
  */
 static VALUE rb_node_get_list_start(VALUE self) {
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   if (cmark_node_get_type(node) != CMARK_NODE_LIST ||
       cmark_node_get_list_type(node) != CMARK_ORDERED_LIST) {
@@ -989,7 +1006,7 @@ static VALUE rb_node_set_list_start(VALUE self, VALUE start) {
   cmark_node *node;
   Check_Type(start, T_FIXNUM);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
   s = FIX2INT(start);
 
   if (!cmark_node_set_list_start(node, s)) {
@@ -1008,7 +1025,7 @@ static VALUE rb_node_set_list_start(VALUE self, VALUE start) {
 static VALUE rb_node_get_list_tight(VALUE self) {
   int flag;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   if (cmark_node_get_type(node) != CMARK_NODE_LIST) {
     rb_raise(rb_eNodeError, "can't get list_tight for non-list");
@@ -1029,7 +1046,7 @@ static VALUE rb_node_get_list_tight(VALUE self) {
 static VALUE rb_node_set_list_tight(VALUE self, VALUE tight) {
   int t;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
   t = RTEST(tight);
 
   if (!cmark_node_set_list_tight(node, t)) {
@@ -1048,7 +1065,7 @@ static VALUE rb_node_set_list_tight(VALUE self, VALUE tight) {
 static VALUE rb_node_get_fence_info(VALUE self) {
   const char *fence_info;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   fence_info = cmark_node_get_fence_info(node);
 
@@ -1071,7 +1088,7 @@ static VALUE rb_node_set_fence_info(VALUE self, VALUE info) {
   cmark_node *node;
   Check_Type(info, T_STRING);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
   text = StringValueCStr(info);
 
   if (!cmark_node_set_fence_info(node, text)) {
@@ -1084,7 +1101,7 @@ static VALUE rb_node_set_fence_info(VALUE self, VALUE info) {
 static VALUE rb_node_get_tasklist_item_checked(VALUE self) {
   int tasklist_state;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   tasklist_state = cmark_gfm_extensions_get_tasklist_item_checked(node);
 
@@ -1106,7 +1123,7 @@ static VALUE rb_node_get_tasklist_item_checked(VALUE self) {
 static VALUE rb_node_set_tasklist_item_checked(VALUE self, VALUE item_checked) {
   int tasklist_state;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
   tasklist_state = RTEST(item_checked);
 
   if (!cmark_gfm_extensions_set_tasklist_item_checked(node, tasklist_state)) {
@@ -1124,7 +1141,7 @@ static VALUE rb_node_set_tasklist_item_checked(VALUE self, VALUE item_checked) {
 static VALUE rb_node_get_tasklist_state(VALUE self) {
   int tasklist_state;
   cmark_node *node;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   tasklist_state = cmark_gfm_extensions_get_tasklist_item_checked(node);
 
@@ -1140,7 +1157,7 @@ static VALUE rb_node_get_table_alignments(VALUE self) {
   uint8_t *alignments;
   cmark_node *node;
   VALUE ary;
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   column_count = cmark_gfm_extensions_get_table_columns(node);
   alignments = cmark_gfm_extensions_get_table_alignments(node);
@@ -1169,7 +1186,7 @@ static VALUE rb_html_escape_href(VALUE self, VALUE rb_text) {
   cmark_node *node;
   Check_Type(rb_text, T_STRING);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   cmark_mem *mem = cmark_node_mem(node);
   cmark_strbuf buf = CMARK_BUF_INIT(mem);
@@ -1190,7 +1207,7 @@ static VALUE rb_html_escape_html(VALUE self, VALUE rb_text) {
   cmark_node *node;
   Check_Type(rb_text, T_STRING);
 
-  Data_Get_Struct(self, cmark_node, node);
+  TypedData_Get_Struct(self, cmark_node, &cmark_node_data_type, node);
 
   cmark_mem *mem = cmark_node_mem(node);
   cmark_strbuf buf = CMARK_BUF_INIT(mem);
