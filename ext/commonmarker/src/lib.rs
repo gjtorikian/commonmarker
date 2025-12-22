@@ -1,53 +1,33 @@
 extern crate core;
 
 use comrak::{markdown_to_html_with_plugins, parse_document};
-use magnus::{function, scan_args, RHash, Ruby, Value};
+use magnus::{function, scan_args, Module, Ruby, Value};
 use node::CommonmarkerNode;
+use plugins::format_plugins;
 use plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
 
 mod options;
-
 mod plugins;
+mod utils;
 
 use typed_arena::Arena;
 
-use crate::options::{iterate_extension_options, iterate_parse_options, iterate_render_options};
+use crate::options::{default_options_to_hash, format_options};
+use crate::plugins::default_plugins_to_hash;
 
 mod node;
-mod utils;
 
 pub const EMPTY_STR: &str = "";
 
-fn commonmark_parse(args: &[Value]) -> Result<CommonmarkerNode, magnus::Error> {
+fn commonmark_parse(ruby: &Ruby, args: &[Value]) -> Result<CommonmarkerNode, magnus::Error> {
     let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
     let (rb_commonmark,): (String,) = args.required;
 
-    let kwargs = scan_args::get_kwargs::<_, (), (Option<RHash>, Option<RHash>, Option<RHash>), ()>(
-        args.keywords,
-        &[],
-        &["parse", "render", "extension"],
-    )?;
-    let (rb_parse, rb_render, rb_extension) = kwargs.optional;
+    let kwargs =
+        scan_args::get_kwargs::<_, (), (Option<Value>,), ()>(args.keywords, &[], &["options"])?;
+    let (rb_options,) = kwargs.optional;
 
-    let mut comrak_parse_options = comrak::options::Parse::default();
-    let mut comrak_render_options = comrak::options::Render::default();
-    let mut comrak_extension_options = comrak::options::Extension::default();
-
-    if let Some(rb_parse) = rb_parse {
-        iterate_parse_options(&mut comrak_parse_options, rb_parse);
-    }
-    if let Some(rb_render) = rb_render {
-        iterate_render_options(&mut comrak_render_options, rb_render);
-    }
-    if let Some(rb_extension) = rb_extension {
-        iterate_extension_options(&mut comrak_extension_options, rb_extension);
-    }
-
-    let comrak_options = comrak::Options {
-        parse: comrak_parse_options,
-        render: comrak_render_options,
-        extension: comrak_extension_options,
-    };
+    let comrak_options = format_options(ruby, rb_options)?;
 
     let arena = Arena::new();
     let root = parse_document(&arena, &rb_commonmark, &comrak_options);
@@ -59,35 +39,19 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<String, magnus::Err
     let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
     let (rb_commonmark,): (String,) = args.required;
 
-    let kwargs = scan_args::get_kwargs::<
-        _,
-        (),
-        (Option<RHash>, Option<RHash>, Option<RHash>, Option<RHash>),
-        (),
-    >(
+    let kwargs = scan_args::get_kwargs::<_, (), (Option<Value>, Option<Value>), ()>(
         args.keywords,
         &[],
-        &["render", "parse", "extension", "plugins"],
+        &["options", "plugins"],
     )?;
-    let (rb_render, rb_parse, rb_extension, rb_plugins) = kwargs.optional;
+    let (rb_options, rb_plugins) = kwargs.optional;
 
-    let mut comrak_parse_options = comrak::options::Parse::default();
-    let mut comrak_render_options = comrak::options::Render::default();
-    let mut comrak_extension_options = comrak::options::Extension::default();
-
-    if let Some(rb_parse) = rb_parse {
-        iterate_parse_options(&mut comrak_parse_options, rb_parse);
-    }
-    if let Some(rb_render) = rb_render {
-        iterate_render_options(&mut comrak_render_options, rb_render);
-    }
-    if let Some(rb_extension) = rb_extension {
-        iterate_extension_options(&mut comrak_extension_options, rb_extension);
-    }
+    let comrak_options = format_options(ruby, rb_options)?;
 
     let mut comrak_plugins = comrak::options::Plugins::default();
 
-    let syntect_adapter = match construct_syntax_highlighter_from_plugin(ruby, rb_plugins) {
+    let formatted_plugins = format_plugins(ruby, rb_plugins)?;
+    let syntect_adapter = match construct_syntax_highlighter_from_plugin(ruby, formatted_plugins) {
         Ok(Some(adapter)) => Some(adapter),
         Ok(None) => None,
         Err(err) => return Err(err),
@@ -97,12 +61,6 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<String, magnus::Err
         Some(ref adapter) => comrak_plugins.render.codefence_syntax_highlighter = Some(adapter),
         None => comrak_plugins.render.codefence_syntax_highlighter = None,
     }
-
-    let comrak_options = comrak::Options {
-        parse: comrak_parse_options,
-        render: comrak_render_options,
-        extension: comrak_extension_options,
-    };
 
     Ok(markdown_to_html_with_plugins(
         &rb_commonmark,
@@ -114,6 +72,11 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<String, magnus::Err
 #[magnus::init]
 fn init(ruby: &Ruby) -> Result<(), magnus::Error> {
     let m_commonmarker = ruby.define_module("Commonmarker")?;
+
+    // Define Config module to hold constants
+    let m_config = m_commonmarker.define_module("Config")?;
+    m_config.const_set("OPTIONS", default_options_to_hash(ruby)?)?;
+    m_config.const_set("PLUGINS", default_plugins_to_hash(ruby)?)?;
 
     m_commonmarker.define_module_function("commonmark_parse", function!(commonmark_parse, -1))?;
     m_commonmarker

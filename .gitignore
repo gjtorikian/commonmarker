@@ -50,7 +50,7 @@ build/
 
 actual.txt
 test.txt
-test/progit
-test/benchmark/large.md
+benchmark/progit
+benchmark/large.md
 
 *.orig
