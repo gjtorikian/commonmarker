@@ -10,5 +10,5 @@ permissions:
 
 jobs:
   bot-check:
-    uses: yettoapp/actions/.github/workflows/automerge.yml@main
+    uses: gjtorikian/actions/.github/workflows/automerge.yml@main
     secrets: inherit
