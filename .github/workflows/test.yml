@@ -4,32 +4,9 @@ on:
   pull_request:
 
 jobs:
-  ci:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-        ruby-version:
-          - 3.4
-          - ruby-head
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: oxidize-rb/actions/setup-ruby-and-rust@main
-        with:
-          ruby-version: ${{ matrix.ruby-version }}
-          rubygems: latest
-          bundler-cache: true
-          cargo-cache: true
-          cache-version: v1
-
-      - name: Compile comrak
-        run: bundle exec rake compile
-
-      - name: Run Ruby tests
-        run: bundle exec rake test
+  test:
+    uses: gjtorikian/actions/.github/workflows/ruby_rust_test_suite.yml@main
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      include_musl: true
