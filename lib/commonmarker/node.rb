@@ -38,28 +38,22 @@ module Commonmarker
     # plugins - A {Hash} of additional plugins.
     #
     # Returns a {String} of HTML.
-    def to_html(options: Commonmarker::Config::OPTIONS, plugins: Commonmarker::Config::PLUGINS)
+    def to_html(options: {}, plugins: {})
       raise TypeError, "options must be a Hash; got a #{options.class}!" unless options.is_a?(Hash)
 
-      opts = Config.process_options(options)
-      plugins = Config.process_plugins(plugins)
-
-      node_to_html(render: opts[:render], parse: opts[:parse], extension: opts[:extension], plugins: plugins).force_encoding("utf-8")
+      node_to_html(options: options, plugins: plugins)
     end
 
     # Public: Convert the node to a CommonMark string.
     #
-    # options - A {Symbol} or {Array of Symbol}s indicating the render options
+    # options - A {Hash} of render, parse, and extension options.
     # plugins - A {Hash} of additional plugins.
     #
     # Returns a {String}.
-    def to_commonmark(options: Commonmarker::Config::OPTIONS, plugins: Commonmarker::Config::PLUGINS)
+    def to_commonmark(options: {}, plugins: {})
       raise TypeError, "options must be a Hash; got a #{options.class}!" unless options.is_a?(Hash)
 
-      opts = Config.process_options(options)
-      plugins = Config.process_plugins(plugins)
-
-      node_to_commonmark(render: opts[:render], parse: opts[:parse], extension: opts[:extension], plugins: plugins).force_encoding("utf-8")
+      node_to_commonmark(options: options, plugins: plugins)
     end
   end
 end

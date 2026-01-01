@@ -1,8 +1,7 @@
-use magnus::{TryConvert, Value};
+use magnus::value::ReprValue;
+use magnus::Value;
 
-pub fn try_convert_string(value: Value) -> Option<String> {
-    match TryConvert::try_convert(value) {
-        Ok(s) => Some(s),
-        Err(_) => None,
-    }
+/// Safely get the Ruby class name of a value.
+pub(crate) fn get_classname(value: Value) -> String {
+    unsafe { value.classname() }.into_owned()
 }
