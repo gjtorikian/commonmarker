@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
 
   s.executables = ["commonmarker"]
   s.require_paths = ["lib", "ext"]
-  s.required_ruby_version = [">= 2.6", "< 4.0"]
+  s.required_ruby_version = [">= 2.6", "< 5.0"]
 
   s.metadata["rubygems_mfa_required"] = "true"
 
