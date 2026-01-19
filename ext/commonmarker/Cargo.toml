@@ -14,24 +14,7 @@ comrak = { version = "0.49", features = ["shortcodes"] }
 syntect = { version = "5.3", features = ["plist-load"] }
 typed-arena = "2.0"
 rctree = "0.6"
-
-# Pin cc to version that works with jemalloc cross-compilation
-[build-dependencies]
-cc = "=1.2.23"
-
-# Use mimalloc on Windows, jemalloc on Unix
-[target.'cfg(not(target_family = "unix"))'.dependencies]
-mimalloc = { version = "0.1", default-features = false }
-
-# jemalloc background_threads is unsupported on macOS (https://github.com/jemalloc/jemalloc/issues/843)
-[target.'cfg(all(target_family = "unix", not(target_os = "macos")))'.dependencies]
-tikv-jemallocator = { version = "0.6", features = [
-    "disable_initial_exec_tls",
-    "background_threads",
-] }
-
-[target.'cfg(all(target_family = "unix", target_os = "macos"))'.dependencies]
-tikv-jemallocator = { version = "0.6", features = ["disable_initial_exec_tls"] }
+rb-allocator = "0.9"
 
 [lib]
 name = "commonmarker"

@@ -11,6 +11,7 @@ mod options;
 
 mod plugins;
 
+use rb_allocator::ruby_global_allocator;
 use typed_arena::Arena;
 
 use crate::options::{iterate_extension_options, iterate_parse_options, iterate_render_options};
@@ -20,13 +21,8 @@ mod utils;
 
 pub const EMPTY_STR: &str = "";
 
-#[cfg(target_family = "unix")]
-#[global_allocator]
-static ALLOC: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
-
-#[cfg(not(target_family = "unix"))]
-#[global_allocator]
-static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
+// Inform Ruby's GC about memory allocations.
+ruby_global_allocator!();
 
 /// A writer that writes directly to a Ruby String, avoiding intermediate Rust allocations.
 struct RStringWriter(RString);
