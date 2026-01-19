@@ -14,6 +14,7 @@ comrak = { version = "0.49", features = ["shortcodes"] }
 syntect = { version = "5.3", features = ["plist-load"] }
 typed-arena = "2.0"
 rctree = "0.6"
+rb-allocator = "0.9"
 
 [lib]
 name = "commonmarker"
