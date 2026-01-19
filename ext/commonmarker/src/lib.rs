@@ -18,7 +18,13 @@ mod utils;
 
 pub const EMPTY_STR: &str = "";
 
-fn commonmark_parse(args: &[Value]) -> Result<CommonmarkerNode, magnus::Error> {
+#[cfg(not(target_env = "msvc"))]
+use tikv_jemallocator::Jemalloc;
+
+#[cfg(not(target_env = "msvc"))]
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
+
     let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
     let (rb_commonmark,): (String,) = args.required;
 
