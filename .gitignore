@@ -54,3 +54,4 @@ test/progit
 test/benchmark/large.md
 
 *.orig
+benchmark/progit
