@@ -15,6 +15,10 @@ syntect = { version = "5.3", features = ["plist-load"] }
 typed-arena = "2.0"
 rctree = "0.6"
 
+# Pin cc to version that works with jemalloc cross-compilation
+[build-dependencies]
+cc = "=1.2.23"
+
 # Use mimalloc on Windows, jemalloc on Unix
 [target.'cfg(not(target_family = "unix"))'.dependencies]
 mimalloc = { version = "0.1", default-features = false }
