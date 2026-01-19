@@ -20,12 +20,13 @@ mod utils;
 
 pub const EMPTY_STR: &str = "";
 
-#[cfg(not(target_env = "msvc"))]
-use tikv_jemallocator::Jemalloc;
-
-#[cfg(not(target_env = "msvc"))]
+#[cfg(target_family = "unix")]
 #[global_allocator]
-static GLOBAL: Jemalloc = Jemalloc;
+static ALLOC: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+
+#[cfg(not(target_family = "unix"))]
+#[global_allocator]
+static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 /// A writer that writes directly to a Ruby String, avoiding intermediate Rust allocations.
 struct RStringWriter(RString);
