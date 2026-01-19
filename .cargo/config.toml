@@ -1,0 +1,5 @@
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[env]
+CFLAGS_aarch64_apple_darwin = "--sysroot=/opt/osxcross/target/SDK/MacOSX11.1.sdk"
