@@ -1,7 +1,9 @@
 extern crate core;
 
-use comrak::{markdown_to_html_with_plugins, parse_document};
-use magnus::{function, scan_args, RHash, Ruby, Value};
+use std::fmt::{self, Write};
+
+use comrak::parse_document;
+use magnus::{function, scan_args, RHash, RString, Ruby, Value};
 use node::CommonmarkerNode;
 use plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
 
@@ -25,8 +27,29 @@ use tikv_jemallocator::Jemalloc;
 #[global_allocator]
 static GLOBAL: Jemalloc = Jemalloc;
 
+/// A writer that writes directly to a Ruby String, avoiding intermediate Rust allocations.
+struct RStringWriter(RString);
+
+impl Write for RStringWriter {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.0.cat(s);
+        Ok(())
+    }
+}
+
+fn commonmark_parse(ruby: &Ruby, args: &[Value]) -> Result<CommonmarkerNode, magnus::Error> {
     let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
-    let (rb_commonmark,): (String,) = args.required;
+    let (rb_commonmark,): (RString,) = args.required;
+
+    // SAFETY: We hold the GVL and rb_commonmark won't be modified until we return
+    let commonmark_str = unsafe {
+        rb_commonmark.as_str().map_err(|e| {
+            magnus::Error::new(
+                ruby.exception_encoding_error(),
+                format!("invalid UTF-8: {}", e),
+            )
+        })?
+    };
 
     let kwargs = scan_args::get_kwargs::<_, (), (Option<RHash>, Option<RHash>, Option<RHash>), ()>(
         args.keywords,
@@ -56,14 +79,24 @@ static GLOBAL: Jemalloc = Jemalloc;
     };
 
     let arena = Arena::new();
-    let root = parse_document(&arena, &rb_commonmark, &comrak_options);
+    let root = parse_document(&arena, commonmark_str, &comrak_options);
 
     CommonmarkerNode::new_from_comrak_node(root)
 }
 
-fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<String, magnus::Error> {
+fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Error> {
     let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
-    let (rb_commonmark,): (String,) = args.required;
+    let (rb_commonmark,): (RString,) = args.required;
+
+    // SAFETY: We hold the GVL and rb_commonmark won't be modified until we return
+    let commonmark_str = unsafe {
+        rb_commonmark.as_str().map_err(|e| {
+            magnus::Error::new(
+                ruby.exception_encoding_error(),
+                format!("invalid UTF-8: {}", e),
+            )
+        })?
+    };
 
     let kwargs = scan_args::get_kwargs::<
         _,
@@ -110,11 +143,18 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<String, magnus::Err
         extension: comrak_extension_options,
     };
 
-    Ok(markdown_to_html_with_plugins(
-        &rb_commonmark,
-        &comrak_options,
-        &comrak_plugins,
-    ))
+    // Pre-allocate Ruby string with estimated capacity (assume HTML is typically 2x commonmark size)
+    let output = ruby.str_with_capacity(commonmark_str.len() * 2);
+    let mut writer = RStringWriter(output);
+
+    // Parse and render directly to Ruby string, avoiding intermediate Rust String allocation
+    let arena = Arena::new();
+    let root = parse_document(&arena, commonmark_str, &comrak_options);
+
+    comrak::html::format_document_with_plugins(root, &comrak_options, &mut writer, &comrak_plugins)
+        .map_err(|e| magnus::Error::new(ruby.exception_runtime_error(), e.to_string()))?;
+
+    Ok(output)
 }
 
 #[magnus::init]
