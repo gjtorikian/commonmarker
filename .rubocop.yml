@@ -9,4 +9,4 @@ AllCops:
     - "ext/**/*"
     - "vendor/**/*"
     - "tmp/**/*"
-    - "test/progit/**/*"
+    - "benchmark/progit/**/*"
