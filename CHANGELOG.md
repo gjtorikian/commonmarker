@@ -1,8 +1,27 @@
+# [v2.6.2] - 19-01-2026
+## What's Changed
+* Bump rb-sys from 0.9.123 to 0.9.124 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/433
+* Memory management improvements by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/435
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.6.1...v2.6.2
+# [v2.6.1] - 06-01-2026
+## What's Changed
+* Bump rb-sys from 0.9.117 to 0.9.118 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/417
+* Bump rb-sys from 0.9.118 to 0.9.119 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/418
+* Bump comrak from 0.48.0 to 0.49.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/419
+* Bump actions/cache from 4 to 5 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/422
+* Bump rb-sys from 0.9.119 to 0.9.123 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/423
+* Support Ruby 4.0 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/426
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.6.0...v2.6.1
 # [v2.6.0] - 03-12-2025
 ## What's Changed
 * Bump comrak from 0.44.0 to 0.46.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/405
 * Bump comrak from 0.46.0 to 0.47.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/406
 * Bump comrak from 0.47.0 to 0.48.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/409
+* Newline handling has been updated. See [comrak's release notes](https://github.com/kivikakk/comrak/releases/tag/v0.48.0) for more deetails.
 * Remove uses of magnus::Ruby::get* by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/411
 * Add features from comrak v0.48.0 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/412
 * Bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/413

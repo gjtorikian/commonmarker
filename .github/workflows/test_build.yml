@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    uses: yettoapp/actions/.github/workflows/ruby_rust_test_build.yml@main
+    uses: gjtorikian/actions/.github/workflows/ruby_rust_test_build.yml@main
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
     with:

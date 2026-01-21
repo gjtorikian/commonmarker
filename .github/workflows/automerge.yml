@@ -10,5 +10,6 @@ permissions:
 
 jobs:
   bot-check:
-    uses: yettoapp/actions/.github/workflows/automerge.yml@main
-    secrets: inherit
+    uses: gjtorikian/actions/.github/workflows/automerge.yml@main
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
