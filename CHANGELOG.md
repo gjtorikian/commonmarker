@@ -1,3 +1,11 @@
+# [v2.6.3] - 23-01-2026
+## What's Changed
+* Move ignore_setext to parse options by @JunichiIto in https://github.com/gjtorikian/commonmarker/pull/437
+
+## New Contributors
+* @JunichiIto made their first contribution in https://github.com/gjtorikian/commonmarker/pull/437
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.6.2...v2.6.3
 # [v2.6.2] - 19-01-2026
 ## What's Changed
 * Bump rb-sys from 0.9.123 to 0.9.124 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/433
