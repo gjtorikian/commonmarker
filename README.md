@@ -163,6 +163,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `relaxed_tasklist_matching`  | Enables relaxing of the tasklist extension matching, allowing any non-space to be used for the "checked" state instead of only `x` and `X`. | `false` |
 | `relaxed_autolinks`          | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
 | `leave_footnote_definitions` | Allow footnote definitions to remain in their original positions instead of being moved to the document's end (only affects AST)            | `false` |
+| `ignore_setext`              | Ignores setext-style headings.                                                                                                              | `false` |
 
 ### Render options
 
@@ -176,7 +177,6 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `escape`             | Escape raw HTML instead of clobbering it.                                                              | `false` |
 | `sourcepos`          | Include source position attribute in HTML and XML output.                                              | `false` |
 | `escaped_char_spans` | Wrap escaped characters in span tags.                                                                  | `true`  |
-| `ignore_setext`      | Ignores setext-style headings.                                                                         | `false` |
 | `ignore_empty_links` | Ignores empty links, leaving the Markdown text in place.                                               | `false` |
 | `gfm_quirks`         | Outputs HTML with GFM-style quirks; namely, not nesting `<strong>` inlines.                            | `false` |
 | `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                            | `false` |

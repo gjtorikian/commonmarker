@@ -11,6 +11,7 @@ module Commonmarker
         relaxed_tasklist_matching: false,
         relaxed_autolinks: false,
         leave_footnote_definitions: false,
+        ignore_setext: false,
       }.freeze,
       render: {
         hardbreaks: true,
@@ -21,7 +22,6 @@ module Commonmarker
         escape: false,
         sourcepos: false,
         escaped_char_spans: true,
-        ignore_setext: false,
         ignore_empty_links: false,
         gfm_quirks: false,
         prefer_fenced: false,
