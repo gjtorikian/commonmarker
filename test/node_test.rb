@@ -301,6 +301,7 @@ class NodeTest < Minitest::Test
       code_block.fenced = true
 
       assert_predicate(code_block, :fenced?)
+      assert_match(%r{<pre[^>]*><code>.*puts.*wow.*</code></pre>}m, document.to_html)
     end
 
     def test_non_code_block_raises
