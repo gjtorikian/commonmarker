@@ -277,6 +277,40 @@ class NodeTest < Minitest::Test
     end
   end
 
+  class FencedTest < Minitest::Test
+    def test_fenced_code_block
+      document = Commonmarker.parse("```ruby\nputs 'wow'\n```")
+      code_block = document.first_child
+
+      assert_predicate(code_block, :fenced?)
+    end
+
+    def test_indented_code_block
+      document = Commonmarker.parse("    puts 'wow'\n")
+      code_block = document.first_child
+
+      refute_predicate(code_block, :fenced?)
+    end
+
+    def test_can_set_fenced
+      document = Commonmarker.parse("    puts 'wow'\n")
+      code_block = document.first_child
+
+      refute_predicate(code_block, :fenced?)
+
+      code_block.fenced = true
+
+      assert_predicate(code_block, :fenced?)
+    end
+
+    def test_non_code_block_raises
+      document = Commonmarker.parse("hello")
+      paragraph = document.first_child
+
+      assert_raises(TypeError) { paragraph.fenced? }
+    end
+  end
+
   class FenceInfoTest < Minitest::Test
     def setup
       @document = Commonmarker.parse("``` ruby\nputs 'wow'\n```")

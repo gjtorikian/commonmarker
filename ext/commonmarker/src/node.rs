@@ -922,6 +922,37 @@ impl CommonmarkerNode {
         }
     }
 
+    fn get_fenced(ruby: &Ruby, rb_self: &Self) -> Result<bool, magnus::Error> {
+        let node = rb_self.inner.borrow();
+
+        match &node.data.value {
+            ComrakNodeValue::CodeBlock(code_block) => Ok(code_block.fenced),
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not a code block node",
+            )),
+        }
+    }
+
+    fn set_fenced(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_fenced: bool,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
+
+        match node.data.value {
+            ComrakNodeValue::CodeBlock(ref mut code_block) => {
+                code_block.fenced = new_fenced;
+                Ok(true)
+            }
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not a code block node",
+            )),
+        }
+    }
+
     fn get_fence_info(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
         let node = rb_self.inner.borrow();
 
@@ -1227,6 +1258,8 @@ pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method("list_start=", method!(CommonmarkerNode::set_list_start, 1))?;
     c_node.define_method("list_tight", method!(CommonmarkerNode::get_list_tight, 0))?;
     c_node.define_method("list_tight=", method!(CommonmarkerNode::set_list_tight, 1))?;
+    c_node.define_method("fenced?", method!(CommonmarkerNode::get_fenced, 0))?;
+    c_node.define_method("fenced=", method!(CommonmarkerNode::set_fenced, 1))?;
     c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
 
