@@ -4,6 +4,8 @@
 * Bump time from 0.3.45 to 0.3.47 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/441
 * Bump comrak from 0.50.0 to 0.51.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/444
 * Add fenced?/fenced= for code block nodes by @fukayatsu in https://github.com/gjtorikian/commonmarker/pull/443
+* Add `insert` extension for rendering `++text++` as `<ins>text</ins>` by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/446
+* Add `compact_html` render option to suppress newlines in HTML output by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/447
 
 ## New Contributors
 * @fukayatsu made their first contribution in https://github.com/gjtorikian/commonmarker/pull/443
