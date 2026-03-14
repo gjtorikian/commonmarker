@@ -53,6 +53,7 @@ const RENDER_IGNORE_EMPTY_LINKS: &str = "ignore_empty_links";
 const RENDER_GFM_QUIRKS: &str = "gfm_quirks";
 const RENDER_PREFER_FENCED: &str = "prefer_fenced";
 const RENDER_TASKLIST_CLASSES: &str = "tasklist_classes";
+const RENDER_COMPACT_HTML: &str = "compact_html";
 
 pub fn iterate_render_options(comrak_options: &mut comrak::options::Render, options_hash: RHash) {
     options_hash
@@ -93,6 +94,9 @@ pub fn iterate_render_options(comrak_options: &mut comrak::options::Render, opti
                 }
                 Cow::Borrowed(RENDER_TASKLIST_CLASSES) => {
                     comrak_options.tasklist_classes = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(RENDER_COMPACT_HTML) => {
+                    comrak_options.compact_html = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }

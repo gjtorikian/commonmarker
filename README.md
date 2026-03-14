@@ -181,6 +181,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `gfm_quirks`         | Outputs HTML with GFM-style quirks; namely, not nesting `<strong>` inlines.                            | `false` |
 | `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                            | `false` |
 | `tasklist_classes`   | Add CSS classes to the HTML output of the tasklist extension                                           | `false` |
+| `compact_html`       | Suppress newlines in pretty-printed HTML output.                                                       | `false` |
 
 As well, there are several extensions which you can toggle in the same manner:
 

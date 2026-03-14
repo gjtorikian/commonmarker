@@ -26,6 +26,7 @@ module Commonmarker
         gfm_quirks: false,
         prefer_fenced: false,
         tasklist_classes: false,
+        compact_html: false,
       }.freeze,
       extension: {
         strikethrough: true,
