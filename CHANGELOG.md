@@ -1,3 +1,14 @@
+# [v2.7.0] - 14-03-2026
+## What's Changed
+* Bump comrak from 0.49.0 to 0.50.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/440
+* Bump time from 0.3.45 to 0.3.47 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/441
+* Bump comrak from 0.50.0 to 0.51.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/444
+* Add fenced?/fenced= for code block nodes by @fukayatsu in https://github.com/gjtorikian/commonmarker/pull/443
+
+## New Contributors
+* @fukayatsu made their first contribution in https://github.com/gjtorikian/commonmarker/pull/443
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.6.3...v2.7.0
 # [v2.6.3] - 23-01-2026
 ## What's Changed
 * Move ignore_setext to parse options by @JunichiIto in https://github.com/gjtorikian/commonmarker/pull/437
