@@ -53,6 +53,7 @@ module Commonmarker
         alerts: false,
         cjk_friendly_emphasis: false,
         highlight: false,
+        insert: false,
       }.freeze,
       format: [:html].freeze,
     }.freeze

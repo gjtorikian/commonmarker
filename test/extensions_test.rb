@@ -127,4 +127,18 @@ class ExtensionsTest < Minitest::Test
       Commonmarker.to_html("This is ==important!==.", options: options),
     )
   end
+
+  def test_insert_extension
+    assert_equal(
+      "<p>This is ++important!++.</p>\n",
+      Commonmarker.to_html("This is ++important!++."),
+    )
+
+    options = { extension: { insert: true } }
+
+    assert_equal(
+      "<p>This is <ins>important!</ins>.</p>\n",
+      Commonmarker.to_html("This is ++important!++.", options: options),
+    )
+  end
 end
