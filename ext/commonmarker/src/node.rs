@@ -934,11 +934,7 @@ impl CommonmarkerNode {
         }
     }
 
-    fn set_fenced(
-        ruby: &Ruby,
-        rb_self: &Self,
-        new_fenced: bool,
-    ) -> Result<bool, magnus::Error> {
+    fn set_fenced(ruby: &Ruby, rb_self: &Self, new_fenced: bool) -> Result<bool, magnus::Error> {
         let mut node = rb_self.inner.borrow_mut();
 
         match node.data.value {

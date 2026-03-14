@@ -17,8 +17,8 @@ class ConfigTest < Minitest::Test
     }
     processed_config = Commonmarker::Config.process_options(user_config)
 
-    expected_config = [:parse, :render, :extension].each_with_object({}) do |type, hash|
-      hash[type] = Commonmarker::Config::OPTIONS[type].merge(user_config[type] || {})
+    expected_config = [:parse, :render, :extension].to_h do |type|
+      [type, Commonmarker::Config::OPTIONS[type].merge(user_config[type] || {})]
     end
 
     assert_equal(expected_config, processed_config)
@@ -31,8 +31,8 @@ class ConfigTest < Minitest::Test
       },
     }
     processed_config = Commonmarker::Config.process_plugins(user_config)
-    expected_config = [:syntax_highlighter].each_with_object({}) do |type, hash|
-      hash[type] = Commonmarker::Config::PLUGINS[type].merge(user_config[type])
+    expected_config = [:syntax_highlighter].to_h do |type|
+      [type, Commonmarker::Config::PLUGINS[type].merge(user_config[type])]
     end
 
     assert_equal(expected_config, processed_config)
