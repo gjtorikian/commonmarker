@@ -302,6 +302,8 @@ class NodeTest < Minitest::Test
 
       assert_predicate(code_block, :fenced?)
       assert_match(%r{<pre[^>]*><code>.*puts.*wow.*</code></pre>}m, document.to_html)
+      assert_match(/```/, document.to_commonmark(options: { render: { prefer_fenced: true } }))
+      refute_match(/    /, document.to_commonmark(options: { render: { prefer_fenced: true } }))
     end
 
     def test_non_code_block_raises
