@@ -12,6 +12,7 @@ module Commonmarker
         relaxed_autolinks: false,
         leave_footnote_definitions: false,
         ignore_setext: false,
+        sourcepos_chars: false,
       }.freeze,
       render: {
         hardbreaks: true,
@@ -36,6 +37,7 @@ module Commonmarker
         tasklist: true,
         superscript: false,
         header_ids: "",
+        header_id_prefix_in_href: false,
         footnotes: false,
         inline_footnotes: false,
         description_lists: false,
@@ -55,6 +57,7 @@ module Commonmarker
         cjk_friendly_emphasis: false,
         highlight: false,
         insert: false,
+        block_directive: false,
       }.freeze,
       format: [:html].freeze,
     }.freeze
