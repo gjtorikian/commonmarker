@@ -164,6 +164,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `relaxed_autolinks`          | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
 | `leave_footnote_definitions` | Allow footnote definitions to remain in their original positions instead of being moved to the document's end (only affects AST)            | `false` |
 | `ignore_setext`              | Ignores setext-style headings.                                                                                                              | `false` |
+| `sourcepos_chars`            | Use character-based column tracking in source positions instead of byte-based. Relevant for multi-byte UTF-8 documents with `sourcepos`.    | `false` |
 
 ### Render options
 
@@ -203,6 +204,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `tasklist`                    | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
 | `superscript`                 | Enables the superscript Comrak extension.                                                                           | `false` |
 | `header_ids`                  | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
+| `header_id_prefix_in_href`    | Also add the prefix to generated `href` attributes pointing to headers.                                             | `false` |
 | `footnotes`                   | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
 | `inline_footnotes`            | Enables the inline footnotes extension.                                                                             | `false` |
 | `description_lists`           | Enables the description lists extension.                                                                            | `false` |
@@ -221,6 +223,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `cjk_friendly_emphasis`       | Enables the [CJK friendly emphasis](https://github.com/tats-u/markdown-cjk-friendly) extension.                     | `false` |
 | `highlight`                   | Enables highlighting via `==`                                                                                       | `false` |
 | `insert`                      | Enables the insert extension, rendering `++text++` as `<ins>text</ins>`.                                            | `false` |
+| `block_directive`             | Enables the block directive extension.                                                                              | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 

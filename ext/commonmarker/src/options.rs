@@ -10,6 +10,7 @@ const PARSE_DEFAULT_INFO_STRING: &str = "default_info_string";
 const PARSE_RELAXED_TASKLIST_MATCHING: &str = "relaxed_tasklist_matching";
 const PARSE_RELAXED_AUTOLINKS: &str = "relaxed_autolinks";
 const PARSE_LEAVE_FOOTNOTE_DEFINITIONS: &str = "leave_footnote_definitions";
+const PARSE_SOURCEPOS_CHARS: &str = "sourcepos_chars";
 
 pub fn iterate_parse_options(comrak_options: &mut comrak::options::Parse, options_hash: RHash) {
     options_hash
@@ -32,6 +33,9 @@ pub fn iterate_parse_options(comrak_options: &mut comrak::options::Parse, option
                 }
                 Cow::Borrowed(PARSE_LEAVE_FOOTNOTE_DEFINITIONS) => {
                     comrak_options.leave_footnote_definitions = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(PARSE_SOURCEPOS_CHARS) => {
+                    comrak_options.sourcepos_chars = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
@@ -112,6 +116,7 @@ const EXTENSION_AUTOLINK: &str = "autolink";
 const EXTENSION_TASKLIST: &str = "tasklist";
 const EXTENSION_SUPERSCRIPT: &str = "superscript";
 const EXTENSION_HEADER_IDS: &str = "header_ids";
+const EXTENSION_HEADER_ID_PREFIX_IN_HREF: &str = "header_id_prefix_in_href";
 const EXTENSION_FOOTNOTES: &str = "footnotes";
 const EXTENSION_INLINE_FOOTNOTES: &str = "inline_footnotes";
 const EXTENSION_DESCRIPTION_LISTS: &str = "description_lists";
@@ -131,6 +136,7 @@ const EXTENSION_ALERTS: &str = "alerts";
 const EXTENSION_CJK_FRIENDLY_EMPHASIS: &str = "cjk_friendly_emphasis";
 const EXTENSION_HIGHLIGHT: &str = "highlight";
 const EXTENSION_INSERT: &str = "insert";
+const EXTENSION_BLOCK_DIRECTIVE: &str = "block_directive";
 
 pub fn iterate_extension_options(
     comrak_options: &mut comrak::options::Extension,
@@ -158,7 +164,10 @@ pub fn iterate_extension_options(
                     comrak_options.superscript = TryConvert::try_convert(value)?;
                 }
                 Cow::Borrowed(EXTENSION_HEADER_IDS) => {
-                    comrak_options.header_ids = try_convert_string(value);
+                    comrak_options.header_id_prefix = try_convert_string(value);
+                }
+                Cow::Borrowed(EXTENSION_HEADER_ID_PREFIX_IN_HREF) => {
+                    comrak_options.header_id_prefix_in_href = TryConvert::try_convert(value)?;
                 }
                 Cow::Borrowed(EXTENSION_FOOTNOTES) => {
                     comrak_options.footnotes = TryConvert::try_convert(value)?;
@@ -220,6 +229,9 @@ pub fn iterate_extension_options(
                 }
                 Cow::Borrowed(EXTENSION_INSERT) => {
                     comrak_options.insert = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(EXTENSION_BLOCK_DIRECTIVE) => {
+                    comrak_options.block_directive = TryConvert::try_convert(value)?;
                 }
                 _ => {}
             }
