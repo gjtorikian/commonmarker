@@ -1,3 +1,14 @@
+# [v2.8.0] - 12-04-2026
+## What's Changed
+* Fix typo in Cargo.toml comment by @55728 in https://github.com/gjtorikian/commonmarker/pull/449
+* Bump rb-sys from 0.9.124 to 0.9.126 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/451
+* docs: clarify which extensions and plugins are enabled by default by @55728 in https://github.com/gjtorikian/commonmarker/pull/453
+* Bump comrak from 0.51.0 to 0.52.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/450
+
+## New Contributors
+* @55728 made their first contribution in https://github.com/gjtorikian/commonmarker/pull/449
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.7.0...v2.8.0
 # [v2.7.0] - 14-03-2026
 ## What's Changed
 * Bump comrak from 0.49.0 to 0.50.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/440
