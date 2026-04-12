@@ -5,7 +5,7 @@ Ruby wrapper for Rust's [comrak](https://github.com/kivikakk/comrak) crate.
 It passes all of the CommonMark test suite, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
 
 > [!NOTE]
-> By default, several extensions not in any spec have been enabled, for the sake of end user convenience when generating HTML.
+> By default, the following extensions are enabled for end user convenience: `strikethrough`, `tagfilter`, `table`, `autolink`, `tasklist` (all from the [GFM spec](http://github.github.com/gfm/)), and `shortcodes`. The `syntax_highlighter` plugin is also enabled by default, using the `"base16-ocean.dark"` theme.
 >
 > For more information on the available options and extensions, see [the documentation below](#options-and-plugins).
 
@@ -231,6 +231,8 @@ providing further niceties.
 
 #### Syntax Highlighter Plugin
 
+The syntax highlighter plugin is **enabled by default**, using the `"base16-ocean.dark"` theme. It applies syntax highlighting to fenced code blocks that specify a language.
+
 The library comes with [a set of pre-existing themes](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations) for highlighting code:
 
 - `"base16-ocean.dark"`
@@ -260,8 +262,6 @@ puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Inspire
 # </span>
 # </code></pre>
 ````
-
-By default, the plugin uses the `"base16-ocean.dark"` theme to syntax highlight code.
 
 To disable this plugin, set the value to `nil`:
 
