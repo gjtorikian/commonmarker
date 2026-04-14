@@ -1,3 +1,9 @@
+# [v2.8.1] - 14-04-2026
+## What's Changed
+* fix: re-release 2.8.1 due to publishing error by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/456
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.0...v2.8.1
 # [v2.8.0] - 12-04-2026
 ## What's Changed
 * Fix typo in Cargo.toml comment by @55728 in https://github.com/gjtorikian/commonmarker/pull/449
