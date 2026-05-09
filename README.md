@@ -85,6 +85,7 @@ You can also modify the following attributes:
 - `list_start`
 - `list_tight`
 - `fence_info`
+- `alert_type`
 
 #### Example: Walking the AST
 
