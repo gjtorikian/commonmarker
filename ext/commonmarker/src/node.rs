@@ -522,10 +522,11 @@ impl CommonmarkerNode {
                     "tip" => AlertType::Tip,
                     "important" => AlertType::Important,
                     "warning" => AlertType::Warning,
+                    "caution" => AlertType::Caution,
                     _ => {
                         return Err(magnus::Error::new(
                             ruby.exception_arg_error(),
-                            "alert type must be `note`, `tip`, `important`, or `warning`",
+                            "alert type must be `note`, `tip`, `important`, `warning`, or `caution`",
                         ));
                     }
                 };
@@ -980,6 +981,50 @@ impl CommonmarkerNode {
         }
     }
 
+    fn get_alert_type(ruby: &Ruby, rb_self: &Self) -> Result<Symbol, magnus::Error> {
+        let node = rb_self.inner.borrow();
+
+        match &node.data.value {
+            ComrakNodeValue::Alert(alert) => match alert.alert_type {
+                AlertType::Note => Ok(ruby.to_symbol("note")),
+                AlertType::Tip => Ok(ruby.to_symbol("tip")),
+                AlertType::Important => Ok(ruby.to_symbol("important")),
+                AlertType::Warning => Ok(ruby.to_symbol("warning")),
+                AlertType::Caution => Ok(ruby.to_symbol("caution")),
+            },
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not an alert node",
+            )),
+        }
+    }
+
+    fn set_alert_type(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_type: Symbol,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
+
+        match node.data.value {
+            ComrakNodeValue::Alert(ref mut alert) => {
+                match new_type.to_string().as_str() {
+                    "note" => alert.alert_type = AlertType::Note,
+                    "tip" => alert.alert_type = AlertType::Tip,
+                    "important" => alert.alert_type = AlertType::Important,
+                    "warning" => alert.alert_type = AlertType::Warning,
+                    "caution" => alert.alert_type = AlertType::Caution,
+                    _ => return Ok(false),
+                }
+                Ok(true)
+            }
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not an alert node",
+            )),
+        }
+    }
+
     fn to_html(ruby: &Ruby, rb_self: &Self, args: &[Value]) -> Result<String, magnus::Error> {
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
@@ -1258,6 +1303,8 @@ pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method("fenced=", method!(CommonmarkerNode::set_fenced, 1))?;
     c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
+    c_node.define_method("alert_type", method!(CommonmarkerNode::get_alert_type, 0))?;
+    c_node.define_method("alert_type=", method!(CommonmarkerNode::set_alert_type, 1))?;
 
     Ok(())
 }

@@ -333,4 +333,47 @@ class NodeTest < Minitest::Test
       assert_match(/<pre lang=\"perl\"/, @document.to_html)
     end
   end
+
+  class AlertTypeTest < Minitest::Test
+    def test_has_alert_type_for_parsed_alerts
+      [:note, :tip, :important, :warning, :caution].each do |type|
+        document = Commonmarker.parse("> [!#{type.upcase}]\n> Content", options: { extension: { alerts: true } })
+
+        assert_equal(type, document.first_child.alert_type)
+      end
+    end
+
+    def test_has_alert_type_for_created_alerts
+      [:note, :tip, :important, :warning, :caution].each do |type|
+        node = Commonmarker::Node.new(:alert, type: type)
+
+        assert_equal(type, node.alert_type)
+      end
+    end
+
+    def test_can_set_alert_type
+      node = Commonmarker::Node.new(:alert, type: :note)
+
+      node.alert_type = :warning
+
+      assert_equal(:warning, node.alert_type)
+      assert_match(/markdown-alert-warning/, node.to_html)
+    end
+
+    def test_can_prevent_a_malicious_alert_type
+      node = Commonmarker::Node.new(:alert, type: :note)
+
+      node.alert_type = :oopsies
+
+      assert_equal(:note, node.alert_type)
+    end
+
+    def test_non_alert_raises
+      document = Commonmarker.parse("hello")
+      paragraph = document.first_child
+
+      assert_raises(TypeError) { paragraph.alert_type }
+      assert_raises(TypeError) { paragraph.alert_type = :note }
+    end
+  end
 end

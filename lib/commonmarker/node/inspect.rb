@@ -26,6 +26,7 @@ module Commonmarker
             :list_start,
             :list_tight,
             :fence_info,
+            :alert_type,
           ].filter_map do |name|
             [name, __send__(name)]
           rescue StandardError
