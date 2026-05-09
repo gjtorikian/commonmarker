@@ -1,3 +1,11 @@
+# [v2.8.2] - 09-05-2026
+## What's Changed
+* Bump rb-sys from 0.9.126 to 0.9.127 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/459
+* Add alert_type accessors for alert nodes by @fukayatsu in https://github.com/gjtorikian/commonmarker/pull/460
+* release for 2.8.2 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/461
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.1...v2.8.2
 # [v2.8.1] - 14-04-2026
 ## What's Changed
 * fix: re-release 2.8.1 due to publishing error by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/456
