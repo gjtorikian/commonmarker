@@ -10,11 +10,30 @@ magnus = { version = "0.8", features = ["rb-sys"] }
 rb-sys = { version = "*", default-features = false, features = [
     "stable-api-compiled-fallback",
 ] }
-comrak = { version = "0.52", features = ["shortcodes"] }
-syntect = { version = "5.3", features = ["plist-load"] }
 typed-arena = "2.0"
 rctree = "0.6"
 rb-allocator = "0.9"
+
+syntect = { version = "5.3", default-features = false, features = [
+    "default-themes",
+    "plist-load",
+] }
+
+# Everywhere except Windows: Oniguruma, the faster engine.
+[target.'cfg(not(windows))'.dependencies]
+comrak = { version = "0.53", default-features = false, features = [
+    "shortcodes",
+    "syntect-onig",
+] }
+
+# Windows: Ruby's runtime DLL already exports Oniguruma symbols, so statically
+# linking a second copy (onig_sys) collides at link time and segfaults (xref #467).
+# syntect-fancy swaps in the pure-Rust fancy-regex backend instead.
+[target.'cfg(windows)'.dependencies]
+comrak = { version = "0.53", default-features = false, features = [
+    "shortcodes",
+    "syntect-fancy",
+] }
 
 [lib]
 name = "commonmarker"
