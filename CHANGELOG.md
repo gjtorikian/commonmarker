@@ -1,3 +1,11 @@
+# [v2.8.3] - 03-07-2026
+## What's Changed
+* Bump actions/checkout from 6 to 7 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/464
+* Bump actions/cache from 5 to 6 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/466
+* fix: switch Windows builds to a different regex engine by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/468
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.2...v2.8.3
 # [v2.8.2] - 09-05-2026
 ## What's Changed
 * Bump rb-sys from 0.9.126 to 0.9.127 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/459
