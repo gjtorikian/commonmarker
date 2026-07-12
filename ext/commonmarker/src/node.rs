@@ -40,19 +40,31 @@ impl CommonmarkerNode {
             "document" => ComrakNodeValue::Document,
             "block_quote" => ComrakNodeValue::BlockQuote,
             "footnote_definition" => {
-                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<u32>,), ()>(
+                // HACK: For whatever reason, on i686, Ruby's `1` won't scan as
+                // Option<u32>, failing with "RangeError: fixnum too big to convert into `u32`".
+                // (Fixnum should be 31-bit on i686? Is this not fine?)
+                // Scanning as usize (or u64) works, so shrug and move on.
+                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<usize>,), ()>(
                     args.keywords,
                     &["name"],
                     &["total_references"],
                 )?;
                 let (name,) = kwargs.required;
-                let (total_reference,) = kwargs.optional;
+                let (total_references,) = kwargs.optional;
+
+                // HACK: Totally a u32 tho.
+                let Ok(total_references) = u32::try_from(total_references.unwrap_or(1)) else {
+                    return Err(magnus::Error::new(
+                        ruby.exception_range_error(),
+                        "total_references too big to convert into `u32`",
+                    ));
+                };
 
                 ComrakNodeValue::FootnoteDefinition(NodeFootnoteDefinition {
                     // The name of the footnote.
                     name,
                     // Total number of references to this footnote
-                    total_references: total_reference.unwrap_or(1),
+                    total_references,
                 })
             }
             "list" => {
