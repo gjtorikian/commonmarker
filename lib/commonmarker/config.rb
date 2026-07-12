@@ -28,6 +28,7 @@ module Commonmarker
         prefer_fenced: false,
         tasklist_classes: false,
         compact_html: false,
+        alert_style: "specific",
       }.freeze,
       extension: {
         strikethrough: true,
@@ -45,6 +46,7 @@ module Commonmarker
         multiline_block_quotes: false,
         math_dollars: false,
         math_code: false,
+        math_latex: false,
         shortcodes: true,
         wikilinks_title_before_pipe: false,
         wikilinks_title_after_pipe: false,

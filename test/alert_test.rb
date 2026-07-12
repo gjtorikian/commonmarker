@@ -49,6 +49,21 @@ class FrontmatterTest < Minitest::Test
     assert_equal(expected, Commonmarker.to_html(md, options: { extension: { alerts: true } }))
   end
 
+  def test_renders_alert_with_semantic_style
+    md = "> [!note]\n> Something of note"
+
+    expected = <<~HTML
+      <aside class="admonition note">
+      <p class="admonition-title">Note</p>
+      <p>Something of note</p>
+      </aside>
+    HTML
+
+    options = { extension: { alerts: true }, render: { alert_style: "semantic" } }
+
+    assert_equal(expected, Commonmarker.to_html(md, options: options))
+  end
+
   def test_renders_a_complicated_node
     node = Commonmarker::Node.new(:alert, type: :warning, title: "This is bad")
 
