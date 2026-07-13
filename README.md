@@ -184,6 +184,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                            | `false` |
 | `tasklist_classes`   | Add CSS classes to the HTML output of the tasklist extension                                           | `false` |
 | `compact_html`       | Suppress newlines in pretty-printed HTML output.                                                       | `false` |
+| `alert_style`        | The style of alert output: `"specific"` (`<div class="markdown-alert">`) or `"semantic"` (`<aside class="admonition">`). | `"specific"` |
 
 As well, there are several extensions which you can toggle in the same manner:
 
@@ -212,6 +213,7 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `front_matter_delimiter`      | Enables the front matter extension.                                                                                 | `""`    |
 | `multiline_block_quotes`      | Enables the multiline block quotes extension.                                                                       | `false` |
 | `math_dollars`, `math_code`   | Enables the math extension.                                                                                         | `false` |
+| `math_latex`                  | Enables the math extension with LaTeX-style delimiters (`\(inline\)`, `\[display\]`).                               | `false` |
 | `shortcodes`                  | Enables the shortcodes extension.                                                                                   | `true`  |
 | `wikilinks_title_before_pipe` | Enables the wikilinks extension, placing the title before the dividing pipe.                                        | `false` |
 | `wikilinks_title_after_pipe`  | Enables the wikilinks extension, placing the title after the dividing pipe.                                         | `false` |

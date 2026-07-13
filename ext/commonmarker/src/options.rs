@@ -58,6 +58,7 @@ const RENDER_GFM_QUIRKS: &str = "gfm_quirks";
 const RENDER_PREFER_FENCED: &str = "prefer_fenced";
 const RENDER_TASKLIST_CLASSES: &str = "tasklist_classes";
 const RENDER_COMPACT_HTML: &str = "compact_html";
+const RENDER_ALERT_STYLE: &str = "alert_style";
 
 pub fn iterate_render_options(comrak_options: &mut comrak::options::Render, options_hash: RHash) {
     options_hash
@@ -102,6 +103,12 @@ pub fn iterate_render_options(comrak_options: &mut comrak::options::Render, opti
                 Cow::Borrowed(RENDER_COMPACT_HTML) => {
                     comrak_options.compact_html = TryConvert::try_convert(value)?;
                 }
+                Cow::Borrowed(RENDER_ALERT_STYLE) => {
+                    comrak_options.alert_style = match try_convert_string(value).as_deref() {
+                        Some("semantic") => comrak::options::AlertStyleType::Semantic,
+                        _ => comrak::options::AlertStyleType::Specific,
+                    };
+                }
                 _ => {}
             }
             Ok(ForEach::Continue)
@@ -124,6 +131,7 @@ const EXTENSION_FRONT_MATTER_DELIMITER: &str = "front_matter_delimiter";
 const EXTENSION_MULTILINE_BLOCK_QUOTES: &str = "multiline_block_quotes";
 const EXTENSION_MATH_DOLLARS: &str = "math_dollars";
 const EXTENSION_MATH_CODE: &str = "math_code";
+const EXTENSION_MATH_LATEX: &str = "math_latex";
 const EXTENSION_SHORTCODES: &str = "shortcodes";
 const EXTENSION_WIKILINKS_TITLE_AFTER_PIPE: &str = "wikilinks_title_after_pipe";
 const EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE: &str = "wikilinks_title_before_pipe";
@@ -193,6 +201,9 @@ pub fn iterate_extension_options(
                 }
                 Cow::Borrowed(EXTENSION_MATH_CODE) => {
                     comrak_options.math_code = TryConvert::try_convert(value)?;
+                }
+                Cow::Borrowed(EXTENSION_MATH_LATEX) => {
+                    comrak_options.math_latex = TryConvert::try_convert(value)?;
                 }
                 Cow::Borrowed(EXTENSION_SHORTCODES) => {
                     comrak_options.shortcodes = TryConvert::try_convert(value)?;
