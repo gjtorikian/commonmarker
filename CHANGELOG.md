@@ -1,3 +1,10 @@
+# [v2.9.0] - 13-07-2026
+## What's Changed
+* Fix i686 with u32 parsing hack by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/471
+* feat: Upgrade to comrak 0.54 with math_latex + alert_style options, and changed header_ids by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/472
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.3...v2.9.0
 # [v2.8.3] - 03-07-2026
 ## What's Changed
 * Bump actions/checkout from 6 to 7 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/464
