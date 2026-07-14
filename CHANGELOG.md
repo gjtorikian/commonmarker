@@ -6,8 +6,6 @@
 ⚠️ The heading anchor markup changed (from upstream). The `id` now lives on the heading element and the anchor moved to the end with `aria-label` + `data-heading-content`, replacing the leading `aria-hidden` link. CSS/JS targeting the old markup will be affected. See https://github.com/kivikakk/comrak/pull/808 for more information.
 
 
-Heading anchor markup changed upstream: the `id` now lives on the heading element and the anchor moved to the end with `aria-label` + `data-heading-content`, replacing the leading `aria-hidden` link. CSS/JS targeting the old markup will be affected — this warrants a minor version bump (2.9.0) and a prominent changelog entry.
-
 **Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.3...v2.9.0
 # [v2.8.3] - 03-07-2026
 ## What's Changed
