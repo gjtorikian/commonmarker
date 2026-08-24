@@ -376,4 +376,212 @@ class NodeTest < Minitest::Test
       assert_raises(TypeError) { paragraph.alert_type = :note }
     end
   end
+
+  class LiteralTest < Minitest::Test
+    def setup
+      @document = Commonmarker.parse(<<~MARKDOWN, options: { extension: { front_matter_delimiter: "---", math_dollars: true } })
+        ---
+        title: front matter
+        ---
+
+        Some *text* with `code` and <b>html</b> and $math$.
+
+        ```ruby
+        puts 1
+        ```
+
+        <div>a block</div>
+      MARKDOWN
+
+      @nodes = {}
+      @document.walk { |node| @nodes[node.type] ||= node }
+    end
+
+    def test_reads_literal_of_text_like_nodes
+      assert_equal("Some ", @nodes[:text].literal)
+      assert_equal("code", @nodes[:code].literal)
+      assert_equal("puts 1\n", @nodes[:code_block].literal)
+    end
+
+    def test_reads_literal_of_nodes_without_string_content
+      assert_equal("<b>", @nodes[:html_inline].literal)
+      assert_equal("<div>a block</div>\n", @nodes[:html_block].literal)
+      assert_equal("math", @nodes[:math].literal)
+      assert_equal("---\ntitle: front matter\n---\n\n", @nodes[:frontmatter].literal)
+    end
+
+    def test_writes_literal_of_raw_markup_nodes
+      @nodes[:html_inline].literal = "<i>"
+      @nodes[:html_block].literal = "<span>replaced</span>\n"
+
+      html = @document.to_html(options: { render: { unsafe: true } })
+
+      assert_match(%r{<i>html</b>}, html)
+      assert_match(%r{<span>replaced</span>}, html)
+    end
+
+    def test_writes_literal_of_math_nodes
+      @nodes[:math].literal = "y"
+
+      assert_equal("y", @nodes[:math].literal)
+      assert_match(/y/, @document.to_html)
+    end
+
+    def test_literal_and_string_content_agree_where_both_apply
+      [:text, :code, :code_block].each do |type|
+        assert_equal(@nodes[type].string_content, @nodes[type].literal, "#{type} disagrees")
+      end
+
+      @nodes[:text].literal = "rewritten"
+
+      assert_equal("rewritten", @nodes[:text].string_content)
+    end
+
+    def test_raw_node_has_a_literal
+      node = Commonmarker::Node.new(:raw, content: "<hr>")
+
+      assert_equal("<hr>", node.literal)
+
+      node.literal = "<br>"
+
+      assert_equal("<br>", node.literal)
+    end
+
+    def test_node_without_a_literal_raises
+      paragraph = @document.first_child.next_sibling
+
+      assert_raises(TypeError) { paragraph.literal }
+      assert_raises(TypeError) { paragraph.literal = "nope" }
+    end
+  end
+
+  class RespondToTest < Minitest::Test
+    TYPE_DEPENDENT_ACCESSORS = {
+      string_content: "content",
+      literal: "literal",
+      url: "https://example.com",
+      title: "title",
+      header_level: 3,
+      list_type: :bullet,
+      list_start: 1,
+      list_tight: true,
+      fence_info: "ruby",
+      fenced: true,
+      alert_type: :note,
+    }.freeze
+
+    def setup
+      @document = Commonmarker.parse(<<~MARKDOWN, options: { extension: { front_matter_delimiter: "---", math_dollars: true, alerts: true, table: true, tasklist: true, strikethrough: true, autolink: true, footnotes: true } })
+        ---
+        title: front matter
+        ---
+
+        # Heading
+
+        Some *text* with `code`, <b>html</b>, $math$, a [link](https://example.com),
+        an ![image](https://example.com/i.png "Title"), and a footnote[^1].
+
+        - [ ] a task
+        - another item
+
+        1. ordered
+
+        > [!NOTE]
+        > An alert.
+
+        | a | b |
+        |---|---|
+        | c | d |
+
+        ```ruby
+        puts 1
+        ```
+
+            indented code
+
+        <div>a block</div>
+
+        ***
+
+        [^1]: The note.
+      MARKDOWN
+    end
+
+    def test_reports_false_for_accessors_the_node_type_lacks
+      emph = @document.walk.find { |node| node.type == :emph }
+
+      refute_respond_to(emph, :string_content)
+      refute_respond_to(emph, :string_content=)
+      refute_respond_to(emph, :url)
+      refute_respond_to(emph, :header_level)
+    end
+
+    def test_reports_true_for_accessors_the_node_type_has
+      link = @document.walk.find { |node| node.type == :link }
+
+      assert_respond_to(link, :url)
+      assert_respond_to(link, :url=)
+      assert_respond_to(link, :title)
+    end
+
+    def test_reports_true_for_accessors_that_do_not_depend_on_type
+      emph = @document.walk.find { |node| node.type == :emph }
+
+      assert_respond_to(emph, :walk)
+      assert_respond_to(emph, :type)
+      assert_respond_to(emph, :to_html)
+      assert_respond_to(emph, :delete)
+      assert_respond_to(emph, :source_position)
+    end
+
+    def test_reports_false_for_methods_that_do_not_exist
+      refute_respond_to(@document, :nonexistent_method)
+    end
+
+    def test_supports_the_walk_and_filter_idiom_from_the_readme
+      document = Commonmarker.parse("Hi *there*")
+
+      document.walk do |node|
+        node.string_content = "Example" if node.respond_to?(:string_content=)
+      end
+
+      assert_equal("<p>Example<em>Example</em></p>\n", document.to_html)
+    end
+
+    # Guards against the type lists in `value_supports` drifting away from the
+    # match arms in the getters and setters they describe.
+    def test_respond_to_agrees_with_whether_the_accessor_raises
+      checked = Hash.new(0)
+
+      @document.walk do |node|
+        TYPE_DEPENDENT_ACCESSORS.each do |accessor, value|
+          reader = accessor == :fenced ? :fenced? : accessor
+          writer = :"#{accessor}="
+
+          assert_equal(
+            !raises_type_error? { node.public_send(reader) },
+            node.respond_to?(reader),
+            "#{node.type}##{reader} disagrees with respond_to?",
+          )
+
+          assert_equal(
+            !raises_type_error? { node.public_send(writer, value) },
+            node.respond_to?(writer),
+            "#{node.type}##{writer} disagrees with respond_to?",
+          )
+
+          checked[node.type] += 1
+        end
+      end
+    end
+
+    private
+
+    def raises_type_error?
+      yield
+      false
+    rescue TypeError
+      true
+    end
+  end
 end

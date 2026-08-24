@@ -68,8 +68,8 @@ module Commonmarker
       syntax_highlighter: {
         theme: "base16-ocean.dark",
         path: "",
-      },
-    }
+      }.freeze,
+    }.freeze
 
     class << self
       include Commonmarker::Utils

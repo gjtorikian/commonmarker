@@ -8,6 +8,18 @@ module Commonmarker
     include Enumerable
     include Inspect
 
+    # Public: Whether this node responds to the given method.
+    #
+    # name        - A {Symbol} or {String} naming the method.
+    # include_all - A {Boolean} indicating whether to consider private methods.
+    #
+    # Returns a {Boolean}.
+    def respond_to?(name, include_all = false)
+      return false if node_supports?(name.to_sym) == false
+
+      super
+    end
+
     # Public: An iterator that "walks the tree," descending into children recursively.
     #
     # blk - A {Proc} representing the action to take for each child

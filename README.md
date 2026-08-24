@@ -140,6 +140,24 @@ doc.to_commonmark
 # => # The site\n\nGitHub\n
 ```
 
+### Reading and writing node content
+
+`string_content` reads and writes the text of nodes whose content is plain text (like `:text`, `:code`, and `:code_block`).
+
+`literal` reads and writes the raw string a node carries, for every node type that has one (like `:text`, `:code`, `:code_block`, `:html_block`, `:html_inline`, `:raw`, `:math`, and `:frontmatter`).
+
+The two exist separately because they mean different things. Rewriting `string_content` only ever swaps text for text. Rewriting `literal` on an `:html_block`, `:html_inline`, or `:raw` node writes markup that is emitted unescaped:
+
+```ruby
+doc = Commonmarker.parse("A <b>bold</b> claim")
+
+doc.walk do |node|
+  node.literal = "<i>" if node.type == :html_inline && node.literal == "<b>"
+end
+```
+
+Note that a `:frontmatter` node's literal includes its delimiters and trailing newlines, so anything you assign must include them too.
+
 ## Options and plugins
 
 ### Options
@@ -169,21 +187,21 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 
 ### Render options
 
-| Name                 | Description                                                                                            | Default |
-| -------------------- | ------------------------------------------------------------------------------------------------------ | ------- |
-| `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
-| `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
-| `full_info_string`   | Gives info string data after a space in a `data-meta` attribute on code blocks.                        | `false` |
-| `width`              | The wrap column when outputting CommonMark.                                                            | `80`    |
-| `unsafe`             | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
-| `escape`             | Escape raw HTML instead of clobbering it.                                                              | `false` |
-| `sourcepos`          | Include source position attribute in HTML and XML output.                                              | `false` |
-| `escaped_char_spans` | Wrap escaped characters in span tags.                                                                  | `true`  |
-| `ignore_empty_links` | Ignores empty links, leaving the Markdown text in place.                                               | `false` |
-| `gfm_quirks`         | Outputs HTML with GFM-style quirks; namely, not nesting `<strong>` inlines.                            | `false` |
-| `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                            | `false` |
-| `tasklist_classes`   | Add CSS classes to the HTML output of the tasklist extension                                           | `false` |
-| `compact_html`       | Suppress newlines in pretty-printed HTML output.                                                       | `false` |
+| Name                 | Description                                                                                                              | Default      |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks.                   | `true`       |
+| `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                                           | `true`       |
+| `full_info_string`   | Gives info string data after a space in a `data-meta` attribute on code blocks.                                          | `false`      |
+| `width`              | The wrap column when outputting CommonMark.                                                                              | `80`         |
+| `unsafe`             | Allow rendering of raw HTML and potentially dangerous links.                                                             | `false`      |
+| `escape`             | Escape raw HTML instead of clobbering it.                                                                                | `false`      |
+| `sourcepos`          | Include source position attribute in HTML and XML output.                                                                | `false`      |
+| `escaped_char_spans` | Wrap escaped characters in span tags.                                                                                    | `true`       |
+| `ignore_empty_links` | Ignores empty links, leaving the Markdown text in place.                                                                 | `false`      |
+| `gfm_quirks`         | Outputs HTML with GFM-style quirks; namely, not nesting `<strong>` inlines.                                              | `false`      |
+| `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                                              | `false`      |
+| `tasklist_classes`   | Add CSS classes to the HTML output of the tasklist extension                                                             | `false`      |
+| `compact_html`       | Suppress newlines in pretty-printed HTML output.                                                                         | `false`      |
 | `alert_style`        | The style of alert output: `"specific"` (`<div class="markdown-alert">`) or `"semantic"` (`<aside class="admonition">`). | `"specific"` |
 
 As well, there are several extensions which you can toggle in the same manner:
