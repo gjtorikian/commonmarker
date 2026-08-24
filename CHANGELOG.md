@@ -1,3 +1,15 @@
+## [2.10.0](https://github.com/gjtorikian/commonmarker/compare/v2.9.0...v2.10.0) (2026-08-24)
+
+### Features
+
+* **node:** Report accessor support by node type ([#478](https://github.com/gjtorikian/commonmarker/pull/478))
+
+### Miscellaneous Chores
+
+* Run release prep on every push to main ([e63aa0d](https://github.com/gjtorikian/commonmarker/commit/e63aa0d2af56fa5860b260b64bf0a2e6846f3858))
+* Satisfy rubocop cops that only CI enables ([#478](https://github.com/gjtorikian/commonmarker/pull/478))
+
+
 # [v2.9.0] - 13-07-2026
 ## What's Changed
 * Fix i686 with u32 parsing hack by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/471
