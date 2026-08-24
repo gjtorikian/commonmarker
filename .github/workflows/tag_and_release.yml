@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "lib/commonmarker/version.rb"
   pull_request_target:
     types:
       - closed
