@@ -31,6 +31,39 @@ pub struct CommonmarkerNode {
 /// SAFETY: This is safe because we only access this data when the GVL is held.
 unsafe impl Send for CommonmarkerNode {}
 
+/// Reports whether a node value supports a given property, where "property" is
+/// a method name with any trailing `=` or `?` removed.
+///
+/// `None` means the property is not type-dependent at all
+/// (`walk`, `type`, `delete`, ...).
+fn value_supports(value: &ComrakNodeValue, property: &str) -> Option<bool> {
+    let supported = match property {
+        "string_content" => matches!(
+            value,
+            ComrakNodeValue::Text(_) | ComrakNodeValue::Code(_) | ComrakNodeValue::CodeBlock(_)
+        ),
+        "literal" => matches!(
+            value,
+            ComrakNodeValue::Text(_)
+                | ComrakNodeValue::Code(_)
+                | ComrakNodeValue::CodeBlock(_)
+                | ComrakNodeValue::HtmlBlock(_)
+                | ComrakNodeValue::HtmlInline(_)
+                | ComrakNodeValue::Raw(_)
+                | ComrakNodeValue::Math(_)
+                | ComrakNodeValue::FrontMatter(_)
+        ),
+        "url" | "title" => matches!(value, ComrakNodeValue::Link(_) | ComrakNodeValue::Image(_)),
+        "header_level" => matches!(value, ComrakNodeValue::Heading(_)),
+        "list_type" | "list_start" | "list_tight" => matches!(value, ComrakNodeValue::List(_)),
+        "fenced" | "fence_info" => matches!(value, ComrakNodeValue::CodeBlock(_)),
+        "alert_type" => matches!(value, ComrakNodeValue::Alert(_)),
+        _ => return None,
+    };
+
+    Some(supported)
+}
+
 impl CommonmarkerNode {
     pub fn new(ruby: &Ruby, args: &[Value]) -> Result<Self, magnus::Error> {
         let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
@@ -784,6 +817,63 @@ impl CommonmarkerNode {
         }
     }
 
+    /// Returns `true` or `false` if the given method is only available for
+    /// certain node types, and `nil` if its availability does not depend on
+    /// the node's type. Backs `Node#respond_to?`.
+    fn supports_method(rb_self: &Self, name: Symbol) -> Option<bool> {
+        let node = rb_self.inner.borrow();
+        let name = name.to_string();
+        let property = name.trim_end_matches('=').trim_end_matches('?');
+
+        value_supports(&node.data.value, property)
+    }
+
+    fn get_literal(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
+        let node = rb_self.inner.borrow();
+
+        match &node.data.value {
+            ComrakNodeValue::Text(text) => Ok(text.to_string()),
+            ComrakNodeValue::Code(code) => Ok(code.literal.to_string()),
+            ComrakNodeValue::CodeBlock(code_block) => Ok(code_block.literal.to_string()),
+            ComrakNodeValue::HtmlBlock(html_block) => Ok(html_block.literal.to_string()),
+            ComrakNodeValue::HtmlInline(html_inline) => Ok(html_inline.to_string()),
+            ComrakNodeValue::Raw(raw) => Ok(raw.to_string()),
+            ComrakNodeValue::Math(math) => Ok(math.literal.to_string()),
+            ComrakNodeValue::FrontMatter(front_matter) => Ok(front_matter.to_string()),
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node does not have a literal",
+            )),
+        }
+    }
+
+    fn set_literal(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_literal: String,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
+
+        match node.data.value {
+            ComrakNodeValue::Text(ref mut text) => *text = new_literal.into(),
+            ComrakNodeValue::Code(ref mut code) => code.literal = new_literal,
+            ComrakNodeValue::CodeBlock(ref mut code_block) => code_block.literal = new_literal,
+            ComrakNodeValue::HtmlBlock(ref mut html_block) => html_block.literal = new_literal,
+            ComrakNodeValue::HtmlInline(ref mut html_inline) => *html_inline = new_literal,
+            ComrakNodeValue::Raw(ref mut raw) => *raw = new_literal,
+            ComrakNodeValue::Math(ref mut math) => math.literal = new_literal,
+            ComrakNodeValue::FrontMatter(ref mut front_matter) => *front_matter = new_literal,
+            _ => {
+                return Err(magnus::Error::new(
+                    ruby.exception_type_error(),
+                    "node does not have a literal",
+                ))
+            }
+        }
+
+        Ok(true)
+    }
+
     fn get_title(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
         let node = rb_self.inner.borrow();
 
@@ -1290,6 +1380,14 @@ pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method(
         "string_content=",
         method!(CommonmarkerNode::set_string_content, 1),
+    )?;
+
+    c_node.define_method("literal", method!(CommonmarkerNode::get_literal, 0))?;
+    c_node.define_method("literal=", method!(CommonmarkerNode::set_literal, 1))?;
+
+    c_node.define_method(
+        "node_supports?",
+        method!(CommonmarkerNode::supports_method, 1),
     )?;
 
     c_node.define_method("url", method!(CommonmarkerNode::get_url, 0))?;
