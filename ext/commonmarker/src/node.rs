@@ -32,6 +32,39 @@ pub struct CommonmarkerNode {
 /// SAFETY: This is safe because we only access this data when the GVL is held.
 unsafe impl Send for CommonmarkerNode {}
 
+/// Reports whether a node value supports a given property, where "property" is
+/// a method name with any trailing `=` or `?` removed.
+///
+/// `None` means the property is not type-dependent at all
+/// (`walk`, `type`, `delete`, ...).
+fn value_supports(value: &ComrakNodeValue, property: &str) -> Option<bool> {
+    let supported = match property {
+        "string_content" => matches!(
+            value,
+            ComrakNodeValue::Text(_) | ComrakNodeValue::Code(_) | ComrakNodeValue::CodeBlock(_)
+        ),
+        "literal" => matches!(
+            value,
+            ComrakNodeValue::Text(_)
+                | ComrakNodeValue::Code(_)
+                | ComrakNodeValue::CodeBlock(_)
+                | ComrakNodeValue::HtmlBlock(_)
+                | ComrakNodeValue::HtmlInline(_)
+                | ComrakNodeValue::Raw(_)
+                | ComrakNodeValue::Math(_)
+                | ComrakNodeValue::FrontMatter(_)
+        ),
+        "url" | "title" => matches!(value, ComrakNodeValue::Link(_) | ComrakNodeValue::Image(_)),
+        "header_level" => matches!(value, ComrakNodeValue::Heading(_)),
+        "list_type" | "list_start" | "list_tight" => matches!(value, ComrakNodeValue::List(_)),
+        "fenced" | "fence_info" => matches!(value, ComrakNodeValue::CodeBlock(_)),
+        "alert_type" => matches!(value, ComrakNodeValue::Alert(_)),
+        _ => return None,
+    };
+
+    Some(supported)
+}
+
 impl CommonmarkerNode {
     pub fn new(ruby: &Ruby, args: &[Value]) -> Result<Self, magnus::Error> {
         let args = scan_args::scan_args::<_, (), (), (), _, ()>(args)?;
@@ -41,19 +74,31 @@ impl CommonmarkerNode {
             "document" => ComrakNodeValue::Document,
             "block_quote" => ComrakNodeValue::BlockQuote,
             "footnote_definition" => {
-                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<u32>,), ()>(
+                // HACK: For whatever reason, on i686, Ruby's `1` won't scan as
+                // Option<u32>, failing with "RangeError: fixnum too big to convert into `u32`".
+                // (Fixnum should be 31-bit on i686? Is this not fine?)
+                // Scanning as usize (or u64) works, so shrug and move on.
+                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<usize>,), ()>(
                     args.keywords,
                     &["name"],
                     &["total_references"],
                 )?;
                 let (name,) = kwargs.required;
-                let (total_reference,) = kwargs.optional;
+                let (total_references,) = kwargs.optional;
+
+                // HACK: Totally a u32 tho.
+                let Ok(total_references) = u32::try_from(total_references.unwrap_or(1)) else {
+                    return Err(magnus::Error::new(
+                        ruby.exception_range_error(),
+                        "total_references too big to convert into `u32`",
+                    ));
+                };
 
                 ComrakNodeValue::FootnoteDefinition(NodeFootnoteDefinition {
                     // The name of the footnote.
                     name,
                     // Total number of references to this footnote
-                    total_references: total_reference.unwrap_or(1),
+                    total_references,
                 })
             }
             "list" => {
@@ -523,10 +568,11 @@ impl CommonmarkerNode {
                     "tip" => AlertType::Tip,
                     "important" => AlertType::Important,
                     "warning" => AlertType::Warning,
+                    "caution" => AlertType::Caution,
                     _ => {
                         return Err(magnus::Error::new(
                             ruby.exception_arg_error(),
-                            "alert type must be `note`, `tip`, `important`, or `warning`",
+                            "alert type must be `note`, `tip`, `important`, `warning`, or `caution`",
                         ));
                     }
                 };
@@ -772,6 +818,63 @@ impl CommonmarkerNode {
         }
     }
 
+    /// Returns `true` or `false` if the given method is only available for
+    /// certain node types, and `nil` if its availability does not depend on
+    /// the node's type. Backs `Node#respond_to?`.
+    fn supports_method(rb_self: &Self, name: Symbol) -> Option<bool> {
+        let node = rb_self.inner.borrow();
+        let name = name.to_string();
+        let property = name.trim_end_matches('=').trim_end_matches('?');
+
+        value_supports(&node.data.value, property)
+    }
+
+    fn get_literal(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
+        let node = rb_self.inner.borrow();
+
+        match &node.data.value {
+            ComrakNodeValue::Text(text) => Ok(text.to_string()),
+            ComrakNodeValue::Code(code) => Ok(code.literal.to_string()),
+            ComrakNodeValue::CodeBlock(code_block) => Ok(code_block.literal.to_string()),
+            ComrakNodeValue::HtmlBlock(html_block) => Ok(html_block.literal.to_string()),
+            ComrakNodeValue::HtmlInline(html_inline) => Ok(html_inline.to_string()),
+            ComrakNodeValue::Raw(raw) => Ok(raw.to_string()),
+            ComrakNodeValue::Math(math) => Ok(math.literal.to_string()),
+            ComrakNodeValue::FrontMatter(front_matter) => Ok(front_matter.to_string()),
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node does not have a literal",
+            )),
+        }
+    }
+
+    fn set_literal(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_literal: String,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
+
+        match node.data.value {
+            ComrakNodeValue::Text(ref mut text) => *text = new_literal.into(),
+            ComrakNodeValue::Code(ref mut code) => code.literal = new_literal,
+            ComrakNodeValue::CodeBlock(ref mut code_block) => code_block.literal = new_literal,
+            ComrakNodeValue::HtmlBlock(ref mut html_block) => html_block.literal = new_literal,
+            ComrakNodeValue::HtmlInline(ref mut html_inline) => *html_inline = new_literal,
+            ComrakNodeValue::Raw(ref mut raw) => *raw = new_literal,
+            ComrakNodeValue::Math(ref mut math) => math.literal = new_literal,
+            ComrakNodeValue::FrontMatter(ref mut front_matter) => *front_matter = new_literal,
+            _ => {
+                return Err(magnus::Error::new(
+                    ruby.exception_type_error(),
+                    "node does not have a literal",
+                ))
+            }
+        }
+
+        Ok(true)
+    }
+
     fn get_title(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
         let node = rb_self.inner.borrow();
 
@@ -923,6 +1026,33 @@ impl CommonmarkerNode {
         }
     }
 
+    fn get_fenced(ruby: &Ruby, rb_self: &Self) -> Result<bool, magnus::Error> {
+        let node = rb_self.inner.borrow();
+
+        match &node.data.value {
+            ComrakNodeValue::CodeBlock(code_block) => Ok(code_block.fenced),
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not a code block node",
+            )),
+        }
+    }
+
+    fn set_fenced(ruby: &Ruby, rb_self: &Self, new_fenced: bool) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
+
+        match node.data.value {
+            ComrakNodeValue::CodeBlock(ref mut code_block) => {
+                code_block.fenced = new_fenced;
+                Ok(true)
+            }
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not a code block node",
+            )),
+        }
+    }
+
     fn get_fence_info(ruby: &Ruby, rb_self: &Self) -> Result<String, magnus::Error> {
         let node = rb_self.inner.borrow();
 
@@ -950,6 +1080,50 @@ impl CommonmarkerNode {
             _ => Err(magnus::Error::new(
                 ruby.exception_type_error(),
                 "node is not a code block node",
+            )),
+        }
+    }
+
+    fn get_alert_type(ruby: &Ruby, rb_self: &Self) -> Result<Symbol, magnus::Error> {
+        let node = rb_self.inner.borrow();
+
+        match &node.data.value {
+            ComrakNodeValue::Alert(alert) => match alert.alert_type {
+                AlertType::Note => Ok(ruby.to_symbol("note")),
+                AlertType::Tip => Ok(ruby.to_symbol("tip")),
+                AlertType::Important => Ok(ruby.to_symbol("important")),
+                AlertType::Warning => Ok(ruby.to_symbol("warning")),
+                AlertType::Caution => Ok(ruby.to_symbol("caution")),
+            },
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not an alert node",
+            )),
+        }
+    }
+
+    fn set_alert_type(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_type: Symbol,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
+
+        match node.data.value {
+            ComrakNodeValue::Alert(ref mut alert) => {
+                match new_type.to_string().as_str() {
+                    "note" => alert.alert_type = AlertType::Note,
+                    "tip" => alert.alert_type = AlertType::Tip,
+                    "important" => alert.alert_type = AlertType::Important,
+                    "warning" => alert.alert_type = AlertType::Warning,
+                    "caution" => alert.alert_type = AlertType::Caution,
+                    _ => return Ok(false),
+                }
+                Ok(true)
+            }
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not an alert node",
             )),
         }
     }
@@ -1167,6 +1341,14 @@ pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
         method!(CommonmarkerNode::set_string_content, 1),
     )?;
 
+    c_node.define_method("literal", method!(CommonmarkerNode::get_literal, 0))?;
+    c_node.define_method("literal=", method!(CommonmarkerNode::set_literal, 1))?;
+
+    c_node.define_method(
+        "node_supports?",
+        method!(CommonmarkerNode::supports_method, 1),
+    )?;
+
     c_node.define_method("url", method!(CommonmarkerNode::get_url, 0))?;
     c_node.define_method("url=", method!(CommonmarkerNode::set_url, 1))?;
     c_node.define_method("title", method!(CommonmarkerNode::get_title, 0))?;
@@ -1186,8 +1368,12 @@ pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method("list_start=", method!(CommonmarkerNode::set_list_start, 1))?;
     c_node.define_method("list_tight", method!(CommonmarkerNode::get_list_tight, 0))?;
     c_node.define_method("list_tight=", method!(CommonmarkerNode::set_list_tight, 1))?;
+    c_node.define_method("fenced?", method!(CommonmarkerNode::get_fenced, 0))?;
+    c_node.define_method("fenced=", method!(CommonmarkerNode::set_fenced, 1))?;
     c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
+    c_node.define_method("alert_type", method!(CommonmarkerNode::get_alert_type, 0))?;
+    c_node.define_method("alert_type=", method!(CommonmarkerNode::set_alert_type, 1))?;
 
     Ok(())
 }

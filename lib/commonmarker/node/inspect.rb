@@ -26,11 +26,10 @@ module Commonmarker
             :list_start,
             :list_tight,
             :fence_info,
+            :alert_type,
           ].filter_map do |name|
-            [name, __send__(name)]
-          rescue StandardError
-            nil
-          end.compact
+            [name, __send__(name)] if respond_to?(name)
+          end
 
           printer.seplist(attrs) do |name, value|
             printer.text("#{name}=")

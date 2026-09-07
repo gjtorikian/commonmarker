@@ -5,7 +5,7 @@ Ruby wrapper for Rust's [comrak](https://github.com/kivikakk/comrak) crate.
 It passes all of the CommonMark test suite, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
 
 > [!NOTE]
-> By default, several extensions not in any spec have been enabled, for the sake of end user convenience when generating HTML.
+> By default, the following extensions are enabled for end user convenience: `strikethrough`, `tagfilter`, `table`, `autolink`, `tasklist` (all from the [GFM spec](http://github.github.com/gfm/)), and `shortcodes`. The `syntax_highlighter` plugin is also enabled by default, using the `"base16-ocean.dark"` theme.
 >
 > For more information on the available options and extensions, see [the documentation below](#options-and-plugins).
 
@@ -85,6 +85,7 @@ You can also modify the following attributes:
 - `list_start`
 - `list_tight`
 - `fence_info`
+- `alert_type`
 
 #### Example: Walking the AST
 
@@ -139,6 +140,24 @@ doc.to_commonmark
 # => # The site\n\nGitHub\n
 ```
 
+### Reading and writing node content
+
+`string_content` reads and writes the text of nodes whose content is plain text (like `:text`, `:code`, and `:code_block`).
+
+`literal` reads and writes the raw string a node carries, for every node type that has one (like `:text`, `:code`, `:code_block`, `:html_block`, `:html_inline`, `:raw`, `:math`, and `:frontmatter`).
+
+The two exist separately because they mean different things. Rewriting `string_content` only ever swaps text for text. Rewriting `literal` on an `:html_block`, `:html_inline`, or `:raw` node writes markup that is emitted unescaped:
+
+```ruby
+doc = Commonmarker.parse("A <b>bold</b> claim")
+
+doc.walk do |node|
+  node.literal = "<i>" if node.type == :html_inline && node.literal == "<b>"
+end
+```
+
+Note that a `:frontmatter` node's literal includes its delimiters and trailing newlines, so anything you assign must include them too.
+
 ## Options and plugins
 
 ### Options
@@ -163,24 +182,27 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `relaxed_tasklist_matching`  | Enables relaxing of the tasklist extension matching, allowing any non-space to be used for the "checked" state instead of only `x` and `X`. | `false` |
 | `relaxed_autolinks`          | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
 | `leave_footnote_definitions` | Allow footnote definitions to remain in their original positions instead of being moved to the document's end (only affects AST)            | `false` |
+| `ignore_setext`              | Ignores setext-style headings.                                                                                                              | `false` |
+| `sourcepos_chars`            | Use character-based column tracking in source positions instead of byte-based. Relevant for multi-byte UTF-8 documents with `sourcepos`.    | `false` |
 
 ### Render options
 
-| Name                 | Description                                                                                            | Default |
-| -------------------- | ------------------------------------------------------------------------------------------------------ | ------- |
-| `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks. | `true`  |
-| `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                         | `true`  |
-| `full_info_string`   | Gives info string data after a space in a `data-meta` attribute on code blocks.                        | `false` |
-| `width`              | The wrap column when outputting CommonMark.                                                            | `80`    |
-| `unsafe`             | Allow rendering of raw HTML and potentially dangerous links.                                           | `false` |
-| `escape`             | Escape raw HTML instead of clobbering it.                                                              | `false` |
-| `sourcepos`          | Include source position attribute in HTML and XML output.                                              | `false` |
-| `escaped_char_spans` | Wrap escaped characters in span tags.                                                                  | `true`  |
-| `ignore_setext`      | Ignores setext-style headings.                                                                         | `false` |
-| `ignore_empty_links` | Ignores empty links, leaving the Markdown text in place.                                               | `false` |
-| `gfm_quirks`         | Outputs HTML with GFM-style quirks; namely, not nesting `<strong>` inlines.                            | `false` |
-| `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                            | `false` |
-| `tasklist_classes`   | Add CSS classes to the HTML output of the tasklist extension                                           | `false` |
+| Name                 | Description                                                                                                              | Default      |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks.                   | `true`       |
+| `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                                           | `true`       |
+| `full_info_string`   | Gives info string data after a space in a `data-meta` attribute on code blocks.                                          | `false`      |
+| `width`              | The wrap column when outputting CommonMark.                                                                              | `80`         |
+| `unsafe`             | Allow rendering of raw HTML and potentially dangerous links.                                                             | `false`      |
+| `escape`             | Escape raw HTML instead of clobbering it.                                                                                | `false`      |
+| `sourcepos`          | Include source position attribute in HTML and XML output.                                                                | `false`      |
+| `escaped_char_spans` | Wrap escaped characters in span tags.                                                                                    | `true`       |
+| `ignore_empty_links` | Ignores empty links, leaving the Markdown text in place.                                                                 | `false`      |
+| `gfm_quirks`         | Outputs HTML with GFM-style quirks; namely, not nesting `<strong>` inlines.                                              | `false`      |
+| `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                                              | `false`      |
+| `tasklist_classes`   | Add CSS classes to the HTML output of the tasklist extension                                                             | `false`      |
+| `compact_html`       | Suppress newlines in pretty-printed HTML output.                                                                         | `false`      |
+| `alert_style`        | The style of alert output: `"specific"` (`<div class="markdown-alert">`) or `"semantic"` (`<aside class="admonition">`). | `"specific"` |
 
 As well, there are several extensions which you can toggle in the same manner:
 
@@ -202,12 +224,14 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `tasklist`                    | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
 | `superscript`                 | Enables the superscript Comrak extension.                                                                           | `false` |
 | `header_ids`                  | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
+| `header_id_prefix_in_href`    | Also add the prefix to generated `href` attributes pointing to headers.                                             | `false` |
 | `footnotes`                   | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
 | `inline_footnotes`            | Enables the inline footnotes extension.                                                                             | `false` |
 | `description_lists`           | Enables the description lists extension.                                                                            | `false` |
 | `front_matter_delimiter`      | Enables the front matter extension.                                                                                 | `""`    |
 | `multiline_block_quotes`      | Enables the multiline block quotes extension.                                                                       | `false` |
 | `math_dollars`, `math_code`   | Enables the math extension.                                                                                         | `false` |
+| `math_latex`                  | Enables the math extension with LaTeX-style delimiters (`\(inline\)`, `\[display\]`).                               | `false` |
 | `shortcodes`                  | Enables the shortcodes extension.                                                                                   | `true`  |
 | `wikilinks_title_before_pipe` | Enables the wikilinks extension, placing the title before the dividing pipe.                                        | `false` |
 | `wikilinks_title_after_pipe`  | Enables the wikilinks extension, placing the title after the dividing pipe.                                         | `false` |
@@ -219,6 +243,8 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `alerts`                      | Enables the alerts extension.                                                                                       | `false` |
 | `cjk_friendly_emphasis`       | Enables the [CJK friendly emphasis](https://github.com/tats-u/markdown-cjk-friendly) extension.                     | `false` |
 | `highlight`                   | Enables highlighting via `==`                                                                                       | `false` |
+| `insert`                      | Enables the insert extension, rendering `++text++` as `<ins>text</ins>`.                                            | `false` |
+| `block_directive`             | Enables the block directive extension.                                                                              | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 
@@ -228,6 +254,8 @@ In addition to the possibilities provided by generic CommonMark rendering, Commo
 providing further niceties.
 
 #### Syntax Highlighter Plugin
+
+The syntax highlighter plugin is **enabled by default**, using the `"base16-ocean.dark"` theme. It applies syntax highlighting to fenced code blocks that specify a language.
 
 The library comes with [a set of pre-existing themes](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations) for highlighting code:
 
@@ -258,8 +286,6 @@ puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Inspire
 # </span>
 # </code></pre>
 ````
-
-By default, the plugin uses the `"base16-ocean.dark"` theme to syntax highlight code.
 
 To disable this plugin, set the value to `nil`:
 

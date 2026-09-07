@@ -1,7 +1,12 @@
 # This Cargo.toml is here to let externals tools (IDEs, etc.) know that this is
-# a Rust project. Your extensions depedencies should be added to the Cargo.toml
+# a Rust project. Your extensions dependencies should be added to the Cargo.toml
 # in the ext/ directory.
 
 [workspace]
 members = ["ext/commonmarker"]
 resolver = "2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+strip = true

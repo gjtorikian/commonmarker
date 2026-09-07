@@ -15,6 +15,7 @@ pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
     options.parse.relaxed_autolinks = false;
     options.parse.ignore_setext = false;
     options.parse.leave_footnote_definitions = false;
+    options.parse.sourcepos_chars = false;
 
     // Render options
     options.render.hardbreaks = true;
@@ -29,6 +30,8 @@ pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
     options.render.gfm_quirks = false;
     options.render.prefer_fenced = false;
     options.render.tasklist_classes = false;
+    options.render.compact_html = false;
+    options.render.alert_style = comrak::options::AlertStyleType::Specific;
 
     // Extension options
     options.extension.strikethrough = true;
@@ -37,7 +40,8 @@ pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
     options.extension.autolink = true;
     options.extension.tasklist = true;
     options.extension.superscript = false;
-    options.extension.header_ids = Some(String::new());
+    options.extension.header_id_prefix = Some(String::new());
+    options.extension.header_id_prefix_in_href = false;
     options.extension.footnotes = false;
     options.extension.inline_footnotes = false;
     options.extension.description_lists = false;
@@ -45,6 +49,7 @@ pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
     options.extension.multiline_block_quotes = false;
     options.extension.math_dollars = false;
     options.extension.math_code = false;
+    options.extension.math_latex = false;
     options.extension.shortcodes = true;
     options.extension.wikilinks_title_before_pipe = false;
     options.extension.wikilinks_title_after_pipe = false;
@@ -56,6 +61,8 @@ pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
     options.extension.alerts = false;
     options.extension.cjk_friendly_emphasis = false;
     options.extension.highlight = false;
+    options.extension.insert = false;
+    options.extension.block_directive = false;
 
     options
 });
@@ -69,6 +76,8 @@ const PARSE_DEFAULT_INFO_STRING: &str = "default_info_string";
 const PARSE_RELAXED_TASKLIST_MATCHING: &str = "relaxed_tasklist_matching";
 const PARSE_RELAXED_AUTOLINKS: &str = "relaxed_autolinks";
 const PARSE_LEAVE_FOOTNOTE_DEFINITIONS: &str = "leave_footnote_definitions";
+const PARSE_IGNORE_SETEXT: &str = "ignore_setext";
+const PARSE_SOURCEPOS_CHARS: &str = "sourcepos_chars";
 
 const RENDER_HARDBREAKS: &str = "hardbreaks";
 const RENDER_GITHUB_PRE_LANG: &str = "github_pre_lang";
@@ -78,11 +87,12 @@ const RENDER_UNSAFE: &str = "unsafe";
 const RENDER_ESCAPE: &str = "escape";
 const RENDER_SOURCEPOS: &str = "sourcepos";
 const RENDER_ESCAPED_CHAR_SPANS: &str = "escaped_char_spans";
-const RENDER_IGNORE_SETEXT: &str = "ignore_setext";
 const RENDER_IGNORE_EMPTY_LINKS: &str = "ignore_empty_links";
 const RENDER_GFM_QUIRKS: &str = "gfm_quirks";
 const RENDER_PREFER_FENCED: &str = "prefer_fenced";
 const RENDER_TASKLIST_CLASSES: &str = "tasklist_classes";
+const RENDER_COMPACT_HTML: &str = "compact_html";
+const RENDER_ALERT_STYLE: &str = "alert_style";
 
 const EXTENSION_STRIKETHROUGH: &str = "strikethrough";
 const EXTENSION_TAGFILTER: &str = "tagfilter";
@@ -91,6 +101,7 @@ const EXTENSION_AUTOLINK: &str = "autolink";
 const EXTENSION_TASKLIST: &str = "tasklist";
 const EXTENSION_SUPERSCRIPT: &str = "superscript";
 const EXTENSION_HEADER_IDS: &str = "header_ids";
+const EXTENSION_HEADER_ID_PREFIX_IN_HREF: &str = "header_id_prefix_in_href";
 const EXTENSION_FOOTNOTES: &str = "footnotes";
 const EXTENSION_INLINE_FOOTNOTES: &str = "inline_footnotes";
 const EXTENSION_DESCRIPTION_LISTS: &str = "description_lists";
@@ -98,6 +109,7 @@ const EXTENSION_FRONT_MATTER_DELIMITER: &str = "front_matter_delimiter";
 const EXTENSION_MULTILINE_BLOCK_QUOTES: &str = "multiline_block_quotes";
 const EXTENSION_MATH_DOLLARS: &str = "math_dollars";
 const EXTENSION_MATH_CODE: &str = "math_code";
+const EXTENSION_MATH_LATEX: &str = "math_latex";
 const EXTENSION_SHORTCODES: &str = "shortcodes";
 const EXTENSION_WIKILINKS_TITLE_AFTER_PIPE: &str = "wikilinks_title_after_pipe";
 const EXTENSION_WIKILINKS_TITLE_BEFORE_PIPE: &str = "wikilinks_title_before_pipe";
@@ -109,6 +121,8 @@ const EXTENSION_SUBTEXT: &str = "subtext";
 const EXTENSION_ALERTS: &str = "alerts";
 const EXTENSION_CJK_FRIENDLY_EMPHASIS: &str = "cjk_friendly_emphasis";
 const EXTENSION_HIGHLIGHT: &str = "highlight";
+const EXTENSION_INSERT: &str = "insert";
+const EXTENSION_BLOCK_DIRECTIVE: &str = "block_directive";
 
 // Comrak's default options (for when user explicitly sets nil)
 pub static COMRAK_DEFAULTS: LazyLock<comrak::Options> = LazyLock::new(comrak::Options::default);
@@ -346,11 +360,11 @@ fn iterate_parse_options_with_validation(
                         }
                     }
                 }
-                RENDER_IGNORE_SETEXT => {
+                PARSE_IGNORE_SETEXT => {
                     match validate_bool(
                         ruby,
                         value,
-                        RENDER_IGNORE_SETEXT,
+                        PARSE_IGNORE_SETEXT,
                         "parse",
                         defaults.ignore_setext,
                     ) {
@@ -385,6 +399,21 @@ fn iterate_parse_options_with_validation(
                         defaults.leave_footnote_definitions,
                     ) {
                         Ok(v) => comrak_options.leave_footnote_definitions = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                PARSE_SOURCEPOS_CHARS => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        PARSE_SOURCEPOS_CHARS,
+                        "parse",
+                        defaults.sourcepos_chars,
+                    ) {
+                        Ok(v) => comrak_options.sourcepos_chars = v,
                         Err(e) => {
                             error = Some(e);
                             return Ok(ForEach::Stop);
@@ -571,6 +600,36 @@ fn iterate_render_options_with_validation(
                         }
                     }
                 }
+                RENDER_COMPACT_HTML => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        RENDER_COMPACT_HTML,
+                        "render",
+                        defaults.compact_html,
+                    ) {
+                        Ok(v) => comrak_options.compact_html = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                RENDER_ALERT_STYLE => {
+                    match validate_optional_string(ruby, value, RENDER_ALERT_STYLE, "render") {
+                        Ok(v) => {
+                            comrak_options.alert_style = match v.as_deref() {
+                                Some("semantic") => comrak::options::AlertStyleType::Semantic,
+                                Some(_) => comrak::options::AlertStyleType::Specific,
+                                None => defaults.alert_style,
+                            }
+                        }
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
                 _ => {}
             }
             Ok(ForEach::Continue)
@@ -680,7 +739,22 @@ fn iterate_extension_options_with_validation(
                 }
                 EXTENSION_HEADER_IDS => {
                     match validate_optional_string(ruby, value, EXTENSION_HEADER_IDS, "extension") {
-                        Ok(v) => comrak_options.header_ids = v,
+                        Ok(v) => comrak_options.header_id_prefix = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                EXTENSION_HEADER_ID_PREFIX_IN_HREF => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        EXTENSION_HEADER_ID_PREFIX_IN_HREF,
+                        "extension",
+                        defaults.header_id_prefix_in_href,
+                    ) {
+                        Ok(v) => comrak_options.header_id_prefix_in_href = v,
                         Err(e) => {
                             error = Some(e);
                             return Ok(ForEach::Stop);
@@ -785,6 +859,21 @@ fn iterate_extension_options_with_validation(
                         defaults.math_code,
                     ) {
                         Ok(v) => comrak_options.math_code = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                EXTENSION_MATH_LATEX => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        EXTENSION_MATH_LATEX,
+                        "extension",
+                        defaults.math_latex,
+                    ) {
+                        Ok(v) => comrak_options.math_latex = v,
                         Err(e) => {
                             error = Some(e);
                             return Ok(ForEach::Stop);
@@ -951,6 +1040,31 @@ fn iterate_extension_options_with_validation(
                         }
                     }
                 }
+                EXTENSION_INSERT => {
+                    match validate_bool(ruby, value, EXTENSION_INSERT, "extension", defaults.insert)
+                    {
+                        Ok(v) => comrak_options.insert = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                EXTENSION_BLOCK_DIRECTIVE => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        EXTENSION_BLOCK_DIRECTIVE,
+                        "extension",
+                        defaults.block_directive,
+                    ) {
+                        Ok(v) => comrak_options.block_directive = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
                 _ => {}
             }
             Ok(ForEach::Continue)
@@ -990,6 +1104,14 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
         ruby.to_symbol(PARSE_LEAVE_FOOTNOTE_DEFINITIONS),
         DEFAULT_OPTIONS.parse.leave_footnote_definitions,
     )?;
+    parse.aset(
+        ruby.to_symbol(PARSE_IGNORE_SETEXT),
+        DEFAULT_OPTIONS.parse.ignore_setext,
+    )?;
+    parse.aset(
+        ruby.to_symbol(PARSE_SOURCEPOS_CHARS),
+        DEFAULT_OPTIONS.parse.sourcepos_chars,
+    )?;
     options.aset(ruby.to_symbol(PARSE), parse)?;
 
     // Render options
@@ -1021,10 +1143,6 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
         DEFAULT_OPTIONS.render.escaped_char_spans,
     )?;
     render.aset(
-        ruby.to_symbol(RENDER_IGNORE_SETEXT),
-        DEFAULT_OPTIONS.parse.ignore_setext,
-    )?;
-    render.aset(
         ruby.to_symbol(RENDER_IGNORE_EMPTY_LINKS),
         DEFAULT_OPTIONS.render.ignore_empty_links,
     )?;
@@ -1039,6 +1157,17 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     render.aset(
         ruby.to_symbol(RENDER_TASKLIST_CLASSES),
         DEFAULT_OPTIONS.render.tasklist_classes,
+    )?;
+    render.aset(
+        ruby.to_symbol(RENDER_COMPACT_HTML),
+        DEFAULT_OPTIONS.render.compact_html,
+    )?;
+    render.aset(
+        ruby.to_symbol(RENDER_ALERT_STYLE),
+        match DEFAULT_OPTIONS.render.alert_style {
+            comrak::options::AlertStyleType::Semantic => "semantic",
+            _ => "specific",
+        },
     )?;
     options.aset(ruby.to_symbol(RENDER), render)?;
 
@@ -1072,9 +1201,13 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
         ruby.to_symbol(EXTENSION_HEADER_IDS),
         DEFAULT_OPTIONS
             .extension
-            .header_ids
+            .header_id_prefix
             .as_deref()
             .unwrap_or(""),
+    )?;
+    extension.aset(
+        ruby.to_symbol(EXTENSION_HEADER_ID_PREFIX_IN_HREF),
+        DEFAULT_OPTIONS.extension.header_id_prefix_in_href,
     )?;
     extension.aset(
         ruby.to_symbol(EXTENSION_FOOTNOTES),
@@ -1107,6 +1240,10 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     extension.aset(
         ruby.to_symbol(EXTENSION_MATH_CODE),
         DEFAULT_OPTIONS.extension.math_code,
+    )?;
+    extension.aset(
+        ruby.to_symbol(EXTENSION_MATH_LATEX),
+        DEFAULT_OPTIONS.extension.math_latex,
     )?;
     extension.aset(
         ruby.to_symbol(EXTENSION_SHORTCODES),
@@ -1151,6 +1288,14 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     extension.aset(
         ruby.to_symbol(EXTENSION_HIGHLIGHT),
         DEFAULT_OPTIONS.extension.highlight,
+    )?;
+    extension.aset(
+        ruby.to_symbol(EXTENSION_INSERT),
+        DEFAULT_OPTIONS.extension.insert,
+    )?;
+    extension.aset(
+        ruby.to_symbol(EXTENSION_BLOCK_DIRECTIVE),
+        DEFAULT_OPTIONS.extension.block_directive,
     )?;
     options.aset(ruby.to_symbol(EXTENSION), extension)?;
 

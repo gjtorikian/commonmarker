@@ -1,3 +1,78 @@
+## [2.10.0](https://github.com/gjtorikian/commonmarker/compare/v2.9.0...v2.10.0) (2026-08-24)
+
+### Features
+
+* **node:** Report accessor support by node type ([#478](https://github.com/gjtorikian/commonmarker/pull/478))
+
+### Miscellaneous Chores
+
+* Run release prep on every push to main ([e63aa0d](https://github.com/gjtorikian/commonmarker/commit/e63aa0d2af56fa5860b260b64bf0a2e6846f3858))
+* Satisfy rubocop cops that only CI enables ([#478](https://github.com/gjtorikian/commonmarker/pull/478))
+
+
+# [v2.9.0] - 13-07-2026
+## What's Changed
+* Fix i686 with u32 parsing hack by @kivikakk in https://github.com/gjtorikian/commonmarker/pull/471
+* feat: Upgrade to comrak 0.54 with math_latex + alert_style options, and changed header_ids by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/472
+
+⚠️ The heading anchor markup changed (from upstream). The `id` now lives on the heading element and the anchor moved to the end with `aria-label` + `data-heading-content`, replacing the leading `aria-hidden` link. CSS/JS targeting the old markup will be affected. See https://github.com/kivikakk/comrak/pull/808 for more information.
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.3...v2.9.0
+# [v2.8.3] - 03-07-2026
+## What's Changed
+* Bump actions/checkout from 6 to 7 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/464
+* Bump actions/cache from 5 to 6 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/466
+* fix: switch Windows builds to a different regex engine by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/468
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.2...v2.8.3
+# [v2.8.2] - 09-05-2026
+## What's Changed
+* Bump rb-sys from 0.9.126 to 0.9.127 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/459
+* Add alert_type accessors for alert nodes by @fukayatsu in https://github.com/gjtorikian/commonmarker/pull/460
+* release for 2.8.2 by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/461
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.1...v2.8.2
+# [v2.8.1] - 14-04-2026
+## What's Changed
+* fix: re-release 2.8.1 due to publishing error by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/456
+
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.8.0...v2.8.1
+# [v2.8.0] - 12-04-2026
+## What's Changed
+* Fix typo in Cargo.toml comment by @55728 in https://github.com/gjtorikian/commonmarker/pull/449
+* Bump rb-sys from 0.9.124 to 0.9.126 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/451
+* docs: clarify which extensions and plugins are enabled by default by @55728 in https://github.com/gjtorikian/commonmarker/pull/453
+* Bump comrak from 0.51.0 to 0.52.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/450
+
+## New Contributors
+* @55728 made their first contribution in https://github.com/gjtorikian/commonmarker/pull/449
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.7.0...v2.8.0
+# [v2.7.0] - 14-03-2026
+## What's Changed
+* Bump comrak from 0.49.0 to 0.50.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/440
+* Bump time from 0.3.45 to 0.3.47 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/441
+* Bump comrak from 0.50.0 to 0.51.0 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/444
+* Add fenced?/fenced= for code block nodes by @fukayatsu in https://github.com/gjtorikian/commonmarker/pull/443
+* Add `insert` extension for rendering `++text++` as `<ins>text</ins>` by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/446
+* Add `compact_html` render option to suppress newlines in HTML output by @gjtorikian in https://github.com/gjtorikian/commonmarker/pull/447
+
+## New Contributors
+* @fukayatsu made their first contribution in https://github.com/gjtorikian/commonmarker/pull/443
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.6.3...v2.7.0
+# [v2.6.3] - 23-01-2026
+## What's Changed
+* Move ignore_setext to parse options by @JunichiIto in https://github.com/gjtorikian/commonmarker/pull/437
+
+## New Contributors
+* @JunichiIto made their first contribution in https://github.com/gjtorikian/commonmarker/pull/437
+
+**Full Changelog**: https://github.com/gjtorikian/commonmarker/compare/v2.6.2...v2.6.3
 # [v2.6.2] - 19-01-2026
 ## What's Changed
 * Bump rb-sys from 0.9.123 to 0.9.124 by @dependabot[bot] in https://github.com/gjtorikian/commonmarker/pull/433
