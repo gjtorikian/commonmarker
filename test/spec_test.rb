@@ -7,6 +7,8 @@ class SpecTest < Minitest::Test
   spec = load_spec_file("spec.txt")
 
   spec.each do |testcase|
+    next if testcase[:extensions].include?(:tagfilter)
+
     define_method(:"test_to_html_example_#{testcase[:example]}") do
       render_options = Commonmarker::Config::OPTIONS[:render].each_with_object({}) do |(key, _value), hsh|
         hsh[key] = nil

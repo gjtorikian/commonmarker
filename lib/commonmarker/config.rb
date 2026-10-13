@@ -32,7 +32,6 @@ module Commonmarker
       }.freeze,
       extension: {
         strikethrough: true,
-        tagfilter: true,
         table: true,
         autolink: true,
         tasklist: true,

@@ -117,7 +117,6 @@ pub fn iterate_render_options(comrak_options: &mut comrak::options::Render, opti
 }
 
 const EXTENSION_STRIKETHROUGH: &str = "strikethrough";
-const EXTENSION_TAGFILTER: &str = "tagfilter";
 const EXTENSION_TABLE: &str = "table";
 const EXTENSION_AUTOLINK: &str = "autolink";
 const EXTENSION_TASKLIST: &str = "tasklist";
@@ -155,9 +154,6 @@ pub fn iterate_extension_options(
             match key.name()? {
                 Cow::Borrowed(EXTENSION_STRIKETHROUGH) => {
                     comrak_options.strikethrough = TryConvert::try_convert(value)?;
-                }
-                Cow::Borrowed(EXTENSION_TAGFILTER) => {
-                    comrak_options.tagfilter = TryConvert::try_convert(value)?;
                 }
                 Cow::Borrowed(EXTENSION_TABLE) => {
                     comrak_options.table = TryConvert::try_convert(value)?;

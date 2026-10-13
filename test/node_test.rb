@@ -48,21 +48,21 @@ class NodeTest < Minitest::Test
     paragraph = Commonmarker::Node.new(:paragraph)
 
     assert(@document.first_child.insert_after(paragraph))
-    assert_match(%r{strong>many nodes<\/strong>!<\/p>\n<p><\/p>\n}, @document.to_html)
+    assert_match(%r{strong>many nodes</strong>!</p>\n<p></p>\n}, @document.to_html)
   end
 
   def test_can_prepend_child
     code = Commonmarker::Node.new(:code, num_backticks: 1, literal: "")
 
     assert(@document.first_child.prepend_child(code))
-    assert_match(%r{<p><code><\/code>Hi <em>there<\/em>}, @document.to_html)
+    assert_match(%r{<p><code></code>Hi <em>there</em>}, @document.to_html)
   end
 
   def test_can_append_child
     node = Commonmarker::Node.new(:strong)
 
     assert(@document.first_child.append_child(node))
-    assert_match(%r{!<strong><\/strong><\/p>\n}, @document.to_html)
+    assert_match(%r{!<strong></strong></p>\n}, @document.to_html)
   end
 
   def test_can_render_back_to_commonmark
@@ -171,7 +171,7 @@ class NodeTest < Minitest::Test
       @url_node.url = "https://www.google.com"
 
       assert_equal("https://www.google.com", @url_node.url)
-      assert_match(%r{<a href="https://www.google.com">GitHub<\/a>}, @document.to_html)
+      assert_match(%r{<a href="https://www.google.com">GitHub</a>}, @document.to_html)
     end
   end
 
@@ -190,7 +190,7 @@ class NodeTest < Minitest::Test
 
       assert_equal("Google", @title_node.title)
       assert_equal("alt text", @title_node.first_child.string_content)
-      assert_match(%r{<img src="https:\/\/github.com\/favicon.ico" alt="alt text" title="Google" \/>}, @document.to_html)
+      assert_match(%r{<img src="https://github.com/favicon.ico" alt="alt text" title="Google" />}, @document.to_html)
     end
   end
 
@@ -208,7 +208,7 @@ class NodeTest < Minitest::Test
       @header_node.header_level = 6
 
       assert_equal(6, @header_node.header_level)
-      assert_match(%r{<h6 id=\"header-three\">Header Three<a href=\"#header-three\" aria-label=\"Link to heading 'Header Three'\" data-heading-content=\"Header Three\" class=\"anchor\"></a></h6>\n}, @document.to_html)
+      assert_match(%r{<h6 id="header-three">Header Three<a href="#header-three" aria-label="Link to heading 'Header Three'" data-heading-content="Header Three" class="anchor"></a></h6>\n}, @document.to_html)
     end
   end
 
@@ -226,7 +226,7 @@ class NodeTest < Minitest::Test
       @list_node.list_type = :ordered
 
       assert_equal(:ordered, @list_node.list_type)
-      assert_match(%r{<ol>\n<li>Bullet<\/li>\n<li>Bullet<\/li>\n</ol>}, @document.to_html)
+      assert_match(%r{<ol>\n<li>Bullet</li>\n<li>Bullet</li>\n</ol>}, @document.to_html)
     end
 
     def test_can_prevent_a_malicious_list_type
@@ -250,7 +250,7 @@ class NodeTest < Minitest::Test
       @list_node.list_start = 3
 
       assert_equal(3, @list_node.list_start)
-      assert_match(%r{<ol start="3">\n<li>One<\/li>\n<li>Two<\/li>\n</ol>}, @document.to_html)
+      assert_match(%r{<ol start="3">\n<li>One</li>\n<li>Two</li>\n</ol>}, @document.to_html)
     end
   end
 
@@ -272,8 +272,8 @@ class NodeTest < Minitest::Test
       refute(@ul_list.list_tight)
       refute(@ol_list.list_tight)
 
-      assert_match(%r{<ul>\n<li>\n<p>Bullet<\/p>\n</li>\n<li>\n<p>Bullet<\/p>\n</li>\n</ul>}, @ul_list.to_html)
-      assert_match(%r{<ol>\n<li>\n<p>One<\/p>\n</li>\n<li>\n<p>Two<\/p>\n</li>\n</ol>}, @ol_list.to_html)
+      assert_match(%r{<ul>\n<li>\n<p>Bullet</p>\n</li>\n<li>\n<p>Bullet</p>\n</li>\n</ul>}, @ul_list.to_html)
+      assert_match(%r{<ol>\n<li>\n<p>One</p>\n</li>\n<li>\n<p>Two</p>\n</li>\n</ol>}, @ol_list.to_html)
     end
   end
 
@@ -325,12 +325,12 @@ class NodeTest < Minitest::Test
     end
 
     def test_can_set_fence_info
-      assert_match(/<pre lang=\"ruby\"/, @document.to_html)
+      assert_match(/<pre lang="ruby"/, @document.to_html)
 
       @fence_node.fence_info = "perl"
 
       assert_equal("perl", @fence_node.fence_info)
-      assert_match(/<pre lang=\"perl\"/, @document.to_html)
+      assert_match(/<pre lang="perl"/, @document.to_html)
     end
   end
 
