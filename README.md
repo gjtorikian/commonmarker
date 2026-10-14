@@ -184,6 +184,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `leave_footnote_definitions` | Allow footnote definitions to remain in their original positions instead of being moved to the document's end (only affects AST)            | `false` |
 | `ignore_setext`              | Ignores setext-style headings.                                                                                                              | `false` |
 | `sourcepos_chars`            | Use character-based column tracking in source positions instead of byte-based. Relevant for multi-byte UTF-8 documents with `sourcepos`.    | `false` |
+| `max_nesting_depth`          | The deepest a node may nest below the document. Deeper documents raise `Commonmarker::NestingDepthExceededError` instead of being parsed.  | `1000`  |
 
 ### Render options
 

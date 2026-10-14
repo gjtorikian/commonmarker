@@ -13,6 +13,7 @@ module Commonmarker
         leave_footnote_definitions: false,
         ignore_setext: false,
         sourcepos_chars: false,
+        max_nesting_depth: 1000,
       }.freeze,
       render: {
         hardbreaks: true,
