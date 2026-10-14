@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::{Arc, OnceLock};
 
 use comrak::plugins::syntect::{SyntectAdapter, SyntectAdapterBuilder};
 
@@ -11,7 +12,7 @@ use crate::EMPTY_STR;
 pub fn construct_syntax_highlighter_from_plugin(
     ruby: &Ruby,
     rb_plugins: Option<RHash>,
-) -> Result<Option<SyntectAdapter>, magnus::Error> {
+) -> Result<Option<Arc<SyntectAdapter>>, magnus::Error> {
     match rb_plugins {
         None => Ok(None),
         Some(rb_plugins) => {
@@ -34,8 +35,11 @@ pub fn construct_syntax_highlighter_from_plugin(
                 Some(theme) => {
                     if theme.is_empty() {
                         // no theme? uss css classes
-                        adapter = SyntectAdapter::new(None);
-                        Ok(Some(adapter))
+                        // Avoid reloading syntax sets and recompiling regexes for every CSS-mode render.
+                        static CSS_ADAPTER: OnceLock<Arc<SyntectAdapter>> = OnceLock::new();
+                        Ok(Some(Arc::clone(
+                            CSS_ADAPTER.get_or_init(|| Arc::new(SyntectAdapter::new(None))),
+                        )))
                     } else {
                         let path = match rb_plugins
                             .get(ruby.to_symbol(super::SYNTAX_HIGHLIGHTER_PLUGIN))
@@ -80,7 +84,7 @@ pub fn construct_syntax_highlighter_from_plugin(
 
                             adapter = builder.theme_set(ts).theme(&theme).build();
 
-                            Ok(Some(adapter))
+                            Ok(Some(Arc::new(adapter)))
                         } else {
                             // no path? default theme lookup
                             ThemeSet::load_defaults()
@@ -93,7 +97,7 @@ pub fn construct_syntax_highlighter_from_plugin(
                                     )
                                 })?;
                             adapter = SyntectAdapter::new(Some(&theme));
-                            Ok(Some(adapter))
+                            Ok(Some(Arc::new(adapter)))
                         }
                     }
                 }

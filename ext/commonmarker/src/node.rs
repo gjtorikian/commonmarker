@@ -1171,7 +1171,9 @@ impl CommonmarkerNode {
         };
 
         match syntect_adapter {
-            Some(ref adapter) => comrak_plugins.render.codefence_syntax_highlighter = Some(adapter),
+            Some(ref adapter) => {
+                comrak_plugins.render.codefence_syntax_highlighter = Some(adapter.as_ref())
+            }
             None => comrak_plugins.render.codefence_syntax_highlighter = None,
         }
 
@@ -1267,7 +1269,9 @@ impl CommonmarkerNode {
         };
 
         match syntect_adapter {
-            Some(ref adapter) => comrak_plugins.render.codefence_syntax_highlighter = Some(adapter),
+            Some(ref adapter) => {
+                comrak_plugins.render.codefence_syntax_highlighter = Some(adapter.as_ref())
+            }
             None => comrak_plugins.render.codefence_syntax_highlighter = None,
         }
 
