@@ -17,6 +17,7 @@ use typed_arena::Arena;
 use crate::options::{iterate_extension_options, iterate_parse_options, iterate_render_options};
 
 mod node;
+mod rctree;
 mod utils;
 
 pub const EMPTY_STR: &str = "";

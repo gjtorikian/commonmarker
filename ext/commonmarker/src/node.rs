@@ -1,3 +1,4 @@
+use crate::rctree::Node;
 use comrak::arena_tree::Node as ComrakNode;
 use comrak::nodes::{
     AlertType, Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, ListType, NodeAlert,
@@ -8,7 +9,6 @@ use comrak::nodes::{
 };
 use magnus::{function, method, scan_args, Module, Object, RHash, RModule, Symbol, Value};
 use magnus::{RArray, Ruby};
-use rctree::Node;
 use typed_arena::Arena;
 
 use std::cell::RefCell;
