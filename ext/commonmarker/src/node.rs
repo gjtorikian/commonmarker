@@ -599,8 +599,12 @@ impl CommonmarkerNode {
         })
     }
 
+    /// Copies a comrak tree into a Ruby-visible tree, failing if any node sits
+    /// more than `max_nesting_depth` levels below the root.
     pub fn new_from_comrak_node<'a>(
+        ruby: &Ruby,
         comrak_root_node: &'a ComrakAstNode<'a>,
+        max_nesting_depth: usize,
     ) -> Result<CommonmarkerNode, magnus::Error> {
         let commonmarker_root_node = Node::new(CommonmarkerAst {
             data: comrak_root_node.data.borrow().clone(),
@@ -614,6 +618,9 @@ impl CommonmarkerNode {
         let mut stack = vec![(comrak_root_node.children(), commonmarker_root_node.clone())];
 
         loop {
+            // The stack holds one entry per ancestor, so its length is the
+            // depth of the next child produced.
+            let depth = stack.len();
             let Some((children, parent)) = stack.last_mut() else {
                 break;
             };
@@ -621,6 +628,10 @@ impl CommonmarkerNode {
                 stack.pop();
                 continue;
             };
+
+            if depth > max_nesting_depth {
+                return Err(crate::nesting::exceeded_error(ruby, max_nesting_depth));
+            }
 
             let node = Node::new(CommonmarkerAst {
                 data: comrak_child.data.borrow().clone(),
