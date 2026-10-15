@@ -602,39 +602,36 @@ impl CommonmarkerNode {
     pub fn new_from_comrak_node<'a>(
         comrak_root_node: &'a ComrakAstNode<'a>,
     ) -> Result<CommonmarkerNode, magnus::Error> {
-        let comrak_ast = comrak_root_node.data.clone().into_inner();
+        let commonmarker_root_node = Node::new(CommonmarkerAst {
+            data: comrak_root_node.data.borrow().clone(),
+        });
 
-        fn iter_nodes<'a>(comrak_node: &'a ComrakAstNode<'a>) -> CommonmarkerNode {
-            let comrak_node_ast = comrak_node.data.clone().into_inner();
-            let commonmark_node = CommonmarkerNode {
-                inner: Node::new(CommonmarkerAst {
-                    data: comrak_node_ast,
-                }),
+        // Depth-first walk with an explicit stack instead of recursion, so that
+        // deeply nested input (e.g. thousands of nested blockquotes) cannot
+        // overflow the native stack. Each entry pairs an iterator over a comrak
+        // node's remaining children with the copy of that node the children get
+        // appended to.
+        let mut stack = vec![(comrak_root_node.children(), commonmarker_root_node.clone())];
+
+        loop {
+            let Some((children, parent)) = stack.last_mut() else {
+                break;
+            };
+            let Some(comrak_child) = children.next() else {
+                stack.pop();
+                continue;
             };
 
-            for c in comrak_node.children() {
-                match commonmark_node.append_child_node(&iter_nodes(c)) {
-                    Ok(_) => {}
-                    Err(e) => {
-                        panic!("cannot append node: {}", e);
-                    }
-                }
-            }
-
-            commonmark_node
+            let node = Node::new(CommonmarkerAst {
+                data: comrak_child.data.borrow().clone(),
+            });
+            parent.append(node.clone());
+            stack.push((comrak_child.children(), node));
         }
 
-        let commonmarker_root_node = CommonmarkerNode {
-            inner: Node::new(CommonmarkerAst { data: comrak_ast }),
-        };
-
-        for child in comrak_root_node.children() {
-            let new_child = iter_nodes(child);
-
-            commonmarker_root_node.append_child_node(&new_child)?;
-        }
-
-        Ok(commonmarker_root_node)
+        Ok(CommonmarkerNode {
+            inner: commonmarker_root_node,
+        })
     }
 
     fn type_to_symbol(ruby: &Ruby, rb_self: &Self) -> Symbol {
@@ -1127,6 +1124,39 @@ impl CommonmarkerNode {
         }
     }
 
+    /// Copies this node and its descendants into `arena` as a comrak tree so that
+    /// comrak's formatters can render it.
+    ///
+    /// Depth-first walk with an explicit stack instead of recursion, so that
+    /// deeply nested input cannot overflow the native stack. Each entry pairs an
+    /// iterator over a node's remaining children with the copy of that node the
+    /// children get appended to.
+    fn to_comrak_node<'a>(&self, arena: &'a Arena<ComrakAstNode<'a>>) -> &'a ComrakAstNode<'a> {
+        let comrak_root_node: &'a ComrakAstNode<'a> = arena.alloc(ComrakNode::new(RefCell::new(
+            self.inner.borrow().data.clone(),
+        )));
+
+        let mut stack = vec![(self.inner.children(), comrak_root_node)];
+
+        loop {
+            let Some((children, parent)) = stack.last_mut() else {
+                break;
+            };
+            let parent: &'a ComrakAstNode<'a> = parent;
+            let Some(child) = children.next() else {
+                stack.pop();
+                continue;
+            };
+
+            let comrak_node: &'a ComrakAstNode<'a> =
+                arena.alloc(ComrakNode::new(RefCell::new(child.borrow().data.clone())));
+            parent.append(comrak_node);
+            stack.push((child.children(), comrak_node));
+        }
+
+        comrak_root_node
+    }
+
     fn to_html(ruby: &Ruby, rb_self: &Self, args: &[Value]) -> Result<String, magnus::Error> {
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
@@ -1176,37 +1206,11 @@ impl CommonmarkerNode {
         }
 
         let arena: Arena<ComrakAstNode> = Arena::new();
-        fn iter_nodes<'a>(
-            arena: &'a Arena<comrak::arena_tree::Node<'a, RefCell<ComrakAst>>>,
-            node: &CommonmarkerNode,
-        ) -> &'a comrak::arena_tree::Node<'a, std::cell::RefCell<comrak::nodes::Ast>> {
-            let comrak_node: &'a mut ComrakAstNode = arena.alloc(ComrakNode::new(RefCell::new(
-                node.inner.borrow().data.clone(),
-            )));
-
-            for c in node.inner.children() {
-                let child = CommonmarkerNode { inner: c };
-                let child_node = iter_nodes(arena, &child);
-                comrak_node.append(child_node);
-            }
-
-            comrak_node
-        }
-
-        let comrak_root_node: ComrakNode<RefCell<ComrakAst>> =
-            ComrakNode::new(RefCell::new(rb_self.inner.borrow().data.clone()));
-
-        for c in rb_self.inner.children() {
-            let child = CommonmarkerNode { inner: c };
-
-            let new_child = iter_nodes(&arena, &child);
-
-            comrak_root_node.append(new_child);
-        }
+        let comrak_root_node = rb_self.to_comrak_node(&arena);
 
         let mut output = String::new();
         match comrak::format_html_with_plugins(
-            &comrak_root_node,
+            comrak_root_node,
             &comrak_options,
             &mut output,
             &comrak_plugins,
@@ -1272,37 +1276,11 @@ impl CommonmarkerNode {
         }
 
         let arena: Arena<ComrakAstNode> = Arena::new();
-        fn iter_nodes<'a>(
-            arena: &'a Arena<comrak::arena_tree::Node<'a, RefCell<ComrakAst>>>,
-            node: &CommonmarkerNode,
-        ) -> &'a comrak::arena_tree::Node<'a, std::cell::RefCell<comrak::nodes::Ast>> {
-            let comrak_node: &'a mut ComrakAstNode = arena.alloc(ComrakNode::new(RefCell::new(
-                node.inner.borrow().data.clone(),
-            )));
-
-            for c in node.inner.children() {
-                let child = CommonmarkerNode { inner: c };
-                let child_node = iter_nodes(arena, &child);
-                comrak_node.append(child_node);
-            }
-
-            comrak_node
-        }
-
-        let comrak_root_node: ComrakNode<RefCell<ComrakAst>> =
-            ComrakNode::new(RefCell::new(rb_self.inner.borrow().data.clone()));
-
-        for c in rb_self.inner.children() {
-            let child = CommonmarkerNode { inner: c };
-
-            let new_child = iter_nodes(&arena, &child);
-
-            comrak_root_node.append(new_child);
-        }
+        let comrak_root_node = rb_self.to_comrak_node(&arena);
 
         let mut output = String::new();
         match comrak::format_commonmark_with_plugins(
-            &comrak_root_node,
+            comrak_root_node,
             &comrak_options,
             &mut output,
             &comrak_plugins,
@@ -1311,7 +1289,7 @@ impl CommonmarkerNode {
             Err(e) => {
                 return Err(magnus::Error::new(
                     ruby.exception_runtime_error(),
-                    format!("cannot convert into html: {}", e),
+                    format!("cannot convert into commonmark: {}", e),
                 ));
             }
         }
