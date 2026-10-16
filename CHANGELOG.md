@@ -1,3 +1,20 @@
+## [2.10.1](https://github.com/gjtorikian/commonmarker/compare/v2.10.0...v2.10.1) (2026-10-16)
+
+### Bug Fixes
+
+* prevent native stack overflows on deeply nested input (GHSA-c4fj-h48v-9fxp) ([459585e](https://github.com/gjtorikian/commonmarker/commit/459585e428846f6c1521f0a8a29e1e862263da4e))
+
+### Performance Improvements
+
+* Reuse the CSS syntax highlighter across renders ([#485](https://github.com/gjtorikian/commonmarker/pull/485))
+
+### Miscellaneous Chores
+
+* Bump magnus from 0.9.2 to 0.9.3 ([#487](https://github.com/gjtorikian/commonmarker/pull/487))
+* Lint PR titles for Conventional Commits ([65e9e12](https://github.com/gjtorikian/commonmarker/commit/65e9e12bcb85eb6f21bbe791c8fbf764ef9c83e5))
+* Bump rb-sys to 0.9.130 ([0253ccd](https://github.com/gjtorikian/commonmarker/commit/0253ccdfe33b3d46fb93faaaca20922d365e2cb5))
+
+
 ## [2.10.0](https://github.com/gjtorikian/commonmarker/compare/v2.9.0...v2.10.0) (2026-08-24)
 
 ### Features
