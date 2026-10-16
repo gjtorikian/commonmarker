@@ -111,15 +111,18 @@ class MaliciousnessTest < Minitest::Test
 
     collected = Thread.new do # rubocop:disable ThreadSafety/NewThread
       trees = ObjectSpace::WeakMap.new
-      # Built in its own frame so that no stack slot keeps the tree alive.
+      # Ruby scans the native stack conservatively, so a stale stack slot can
+      # pin a tree (usually the most recent one) and keep it from ever being
+      # collected. Build several, each in its own frame, and require only that
+      # at least one is freed, which is enough to exercise the teardown.
       build = -> { trees[Commonmarker.parse(doc, options: options)] = true }
-      build.call
+      3.times { build.call }
       (1..10).any? do
         GC.start
-        trees.size.zero?
+        trees.size < 3
       end
     end.value
 
-    assert(collected, "the tree was never garbage collected, so its teardown was not exercised")
+    assert(collected, "no tree was ever garbage collected, so teardown was not exercised")
   end
 end
