@@ -124,7 +124,6 @@ dependencies = [
  "magnus",
  "rb-allocator",
  "rb-sys",
- "rctree",
  "syntect",
  "typed-arena",
 ]
@@ -563,12 +562,6 @@ name = "rb-sys-env"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cca7ad6a7e21e72151d56fe2495a259b5670e204c3adac41ee7ef676ea08117a"
-
-[[package]]
-name = "rctree"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e03e7866abec1101869ffa8e2c8355c4c2419d0214ece0cc3e428e5b94dea6e9"
 
 [[package]]
 name = "regex"

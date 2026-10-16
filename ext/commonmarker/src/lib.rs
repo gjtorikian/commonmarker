@@ -16,7 +16,9 @@ use typed_arena::Arena;
 
 use crate::options::{iterate_extension_options, iterate_parse_options, iterate_render_options};
 
+mod nesting;
 mod node;
+mod rctree;
 mod utils;
 
 pub const EMPTY_STR: &str = "";
@@ -55,6 +57,8 @@ fn commonmark_parse(ruby: &Ruby, args: &[Value]) -> Result<CommonmarkerNode, mag
     )?;
     let (rb_parse, rb_render, rb_extension) = kwargs.optional;
 
+    let max_nesting_depth = nesting::max_nesting_depth(ruby, rb_parse)?;
+
     let mut comrak_parse_options = comrak::options::Parse::default();
     let mut comrak_render_options = comrak::options::Render::default();
     let mut comrak_extension_options = comrak::options::Extension::default();
@@ -78,7 +82,7 @@ fn commonmark_parse(ruby: &Ruby, args: &[Value]) -> Result<CommonmarkerNode, mag
     let arena = Arena::new();
     let root = parse_document(&arena, commonmark_str, &comrak_options);
 
-    CommonmarkerNode::new_from_comrak_node(root)
+    CommonmarkerNode::new_from_comrak_node(ruby, root, max_nesting_depth)
 }
 
 fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Error> {
@@ -106,6 +110,8 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Er
         &["render", "parse", "extension", "plugins"],
     )?;
     let (rb_render, rb_parse, rb_extension, rb_plugins) = kwargs.optional;
+
+    let max_nesting_depth = nesting::max_nesting_depth(ruby, rb_parse)?;
 
     let mut comrak_parse_options = comrak::options::Parse::default();
     let mut comrak_render_options = comrak::options::Render::default();
@@ -147,6 +153,8 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Er
     // Parse and render directly to Ruby string, avoiding intermediate Rust String allocation
     let arena = Arena::new();
     let root = parse_document(&arena, commonmark_str, &comrak_options);
+
+    nesting::check(ruby, root, max_nesting_depth)?;
 
     comrak::html::format_document_with_plugins(root, &comrak_options, &mut writer, &comrak_plugins)
         .map_err(|e| magnus::Error::new(ruby.exception_runtime_error(), e.to_string()))?;
