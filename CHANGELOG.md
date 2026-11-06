@@ -1,5 +1,9 @@
 ## [2.10.1](https://github.com/gjtorikian/commonmarker/compare/v2.10.0...v2.10.1) (2026-10-16)
 
+### Breaking Changes
+
+* Remove the `tagfilter` plugin as part of bumping comrak to 0.56.0. Apps with untrusted user input should sanitize it in advance. ([#484](https://github.com/gjtorikian/commonmarker/pull/484), [comrak#829](https://github.com/kivikakk/comrak/issues/829), [comrak#830](https://github.com/kivikakk/comrak/pull/830), [comrak#845](https://github.com/kivikakk/comrak/pull/845))
+
 ### Bug Fixes
 
 * prevent native stack overflows on deeply nested input (GHSA-c4fj-h48v-9fxp) ([459585e](https://github.com/gjtorikian/commonmarker/commit/459585e428846f6c1521f0a8a29e1e862263da4e))
