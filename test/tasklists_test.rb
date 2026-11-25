@@ -34,4 +34,29 @@ class TasklistsTest < Minitest::Test
 
     assert_equal(expected, html)
   end
+
+  def test_to_html_with_tasklist_in_table
+    text = <<~MD
+      | val |
+      | - |
+      | [ ] |
+    MD
+    html = Commonmarker.to_html(text, options: { parse: { tasklist_in_table: true } })
+    expected = <<~HTML
+      <table>
+      <thead>
+      <tr>
+      <th>val</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+      <td><input type="checkbox" disabled="" /> </td>
+      </tr>
+      </tbody>
+      </table>
+    HTML
+
+    assert_equal(expected, html)
+  end
 end
