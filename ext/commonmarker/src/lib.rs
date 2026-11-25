@@ -73,11 +73,10 @@ fn commonmark_parse(ruby: &Ruby, args: &[Value]) -> Result<CommonmarkerNode, mag
         iterate_extension_options(&mut comrak_extension_options, rb_extension);
     }
 
-    let comrak_options = comrak::Options {
-        parse: comrak_parse_options,
-        render: comrak_render_options,
-        extension: comrak_extension_options,
-    };
+    let mut comrak_options = comrak::Options::default();
+    comrak_options.parse = comrak_parse_options;
+    comrak_options.render = comrak_render_options;
+    comrak_options.extension = comrak_extension_options;
 
     let arena = Arena::new();
     let root = parse_document(&arena, commonmark_str, &comrak_options);
@@ -142,11 +141,10 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Er
         None => comrak_plugins.render.codefence_syntax_highlighter = None,
     }
 
-    let comrak_options = comrak::Options {
-        parse: comrak_parse_options,
-        render: comrak_render_options,
-        extension: comrak_extension_options,
-    };
+    let mut comrak_options = comrak::Options::default();
+    comrak_options.parse = comrak_parse_options;
+    comrak_options.render = comrak_render_options;
+    comrak_options.extension = comrak_extension_options;
 
     // Pre-allocate Ruby string with estimated capacity (assume HTML is typically 2x commonmark size)
     let output = ruby.str_with_capacity(commonmark_str.len() * 2);

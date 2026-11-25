@@ -106,7 +106,7 @@ class SyntaxHighlightingTest < Minitest::Test
     html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "" } })
 
     result = <<~CODE
-      <pre class="syntax-highlighting"><code><span class="source ruby"><span class="meta function ruby"><span class="keyword control def ruby">def</span></span><span class="meta function ruby"> <span class="entity name function ruby">hello</span></span>
+      <pre class="syntax-highlighting" lang="ruby"><code><span class="source ruby"><span class="meta function ruby"><span class="keyword control def ruby">def</span></span><span class="meta function ruby"> <span class="entity name function ruby">hello</span></span>
         <span class="support function builtin ruby">puts</span> <span class="string quoted double ruby"><span class="punctuation definition string begin ruby">&quot;</span>hello<span class="punctuation definition string end ruby">&quot;</span></span>
       <span class="keyword control ruby">end</span>
       </span></code></pre>
