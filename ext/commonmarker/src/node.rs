@@ -1,11 +1,11 @@
 use crate::rctree::Node;
 use comrak::arena_tree::Node as ComrakNode;
 use comrak::nodes::{
-    AlertType, Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, ListType, NodeAlert,
-    NodeCode, NodeCodeBlock, NodeDescriptionItem, NodeFootnoteDefinition, NodeFootnoteReference,
+    AlertType, Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, NodeAlert, NodeCode,
+    NodeCodeBlock, NodeDescriptionItem, NodeEmph, NodeFootnoteDefinition, NodeFootnoteReference,
     NodeHeading, NodeHtmlBlock, NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote,
-    NodeShortCode, NodeTable, NodeTaskItem, NodeValue as ComrakNodeValue, NodeWikiLink,
-    TableAlignment,
+    NodeShortCode, NodeStrikethrough, NodeStrong, NodeTable, NodeTableRow, NodeTaskItem,
+    NodeThematicBreak, NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
 };
 use magnus::{function, method, scan_args, Module, Object, RHash, RModule, Symbol, Value};
 use magnus::{RArray, Ruby};
@@ -94,12 +94,11 @@ impl CommonmarkerNode {
                     ));
                 };
 
-                ComrakNodeValue::FootnoteDefinition(NodeFootnoteDefinition {
-                    // The name of the footnote.
-                    name,
-                    // Total number of references to this footnote
-                    total_references,
-                })
+                let mut footnote_definition = NodeFootnoteDefinition::new(name);
+                // Total number of references to this footnote
+                footnote_definition.total_references = total_references;
+
+                ComrakNodeValue::FootnoteDefinition(footnote_definition)
             }
             "list" => {
                 let kwargs = scan_args::get_kwargs::<
@@ -142,35 +141,30 @@ impl CommonmarkerNode {
                     ));
                 }
 
-                let comrak_list_type = if commonmark_list_type == "ordered" {
-                    ListType::Ordered
-                } else {
-                    ListType::Bullet
-                };
-
+                // For ordered lists, the delimiter after each number.
                 let comrak_delimiter = match delimiter.unwrap_or("".to_string()).as_str() {
                     ")" => ListDelimType::Paren,
                     _ => ListDelimType::Period,
                 };
 
-                ComrakNodeValue::List(NodeList {
-                    // The kind of list (bullet (unordered) or ordered).
-                    list_type: comrak_list_type,
-                    // Number of spaces before the list marker.
-                    marker_offset: marker_offset.unwrap_or(0),
-                    // Number of characters between the start of the list marker and the item text (including the list marker(s)).
-                    padding: padding.unwrap_or(0),
+                // Whether the list is [tight](https://github.github.com/gfm/#tight), i.e. whether the
+                // paragraphs are wrapped in `<p>` tags when formatted as HTML.
+                let tight = tight.unwrap_or(false);
+
+                let mut list = if commonmark_list_type == "ordered" {
                     // For ordered lists, the ordinal the list starts at.
-                    start: start.unwrap_or(0),
-                    // For ordered lists, the delimiter after each number.
-                    delimiter: comrak_delimiter,
+                    NodeList::ordered(start.unwrap_or(0), comrak_delimiter, tight)
+                } else {
                     // For bullet lists, the character used for each bullet.
-                    bullet_char: bullet_char.unwrap_or(0),
-                    // Whether the list is [tight](https://github.github.com/gfm/#tight), i.e. whether the
-                    // paragraphs are wrapped in `<p>` tags when formatted as HTML.
-                    tight: tight.unwrap_or(false),
-                    is_task_list: task_list.unwrap_or(false),
-                })
+                    NodeList::bullet(bullet_char.unwrap_or(0), tight)
+                };
+                // Number of spaces before the list marker.
+                list.marker_offset = marker_offset.unwrap_or(0);
+                // Number of characters between the start of the list marker and the item text (including the list marker(s)).
+                list.padding = padding.unwrap_or(0);
+                list.is_task_list = task_list.unwrap_or(false);
+
+                ComrakNodeValue::List(list)
             }
             "description_list" => ComrakNodeValue::DescriptionList,
             "description_item" => {
@@ -185,15 +179,15 @@ impl CommonmarkerNode {
 
                 let (marker_offset, padding, tight) = kwargs.optional;
 
-                ComrakNodeValue::DescriptionItem(NodeDescriptionItem {
-                    // Number of spaces before the list marker.
-                    marker_offset: marker_offset.unwrap_or(0),
-                    // Number of characters between the start of the list marker and the item text (including the list marker(s)).
-                    padding: padding.unwrap_or(0),
-                    // Whether the list is [tight](https://github.github.com/gfm/#tight), i.e. whether the
-                    // paragraphs are wrapped in `<p>` tags when formatted as HTML.
-                    tight: tight.unwrap_or(false),
-                })
+                // Whether the list is [tight](https://github.github.com/gfm/#tight), i.e. whether the
+                // paragraphs are wrapped in `<p>` tags when formatted as HTML.
+                let mut description_item = NodeDescriptionItem::new(tight.unwrap_or(false));
+                // Number of spaces before the list marker.
+                description_item.marker_offset = marker_offset.unwrap_or(0);
+                // Number of characters between the start of the list marker and the item text (including the list marker(s)).
+                description_item.padding = padding.unwrap_or(0);
+
+                ComrakNodeValue::DescriptionItem(description_item)
             }
             "description_term" => ComrakNodeValue::DescriptionTerm,
             "description_details" => ComrakNodeValue::DescriptionDetails,
@@ -226,30 +220,30 @@ impl CommonmarkerNode {
                 let (fence_char, fence_length, fence_offset, info, literal, closed) =
                     kwargs.optional;
 
-                ComrakNodeValue::CodeBlock(Box::new(NodeCodeBlock {
-                    // Whether the code block is fenced.
-                    fenced,
-                    // For fenced code blocks, the fence character itself (`` ` `` or `~`).
-                    fence_char: fence_char.unwrap_or(b'`'),
-                    // For fenced code blocks, the length of the fence.
-                    fence_length: fence_length.unwrap_or(0),
-                    // For fenced code blocks, the indentation level of the code within the block.
-                    fence_offset: fence_offset.unwrap_or(0),
+                // The literal contents of the code block.  As the contents are not interpreted as Markdown at
+                // all, they are contained within this structure, rather than inserted into a child inline of
+                // any kind.
+                let literal = literal.unwrap_or_default();
 
+                let mut code_block = if fenced {
                     // For fenced code blocks, the [info string](https://github.github.com/gfm/#info-string) after
                     // the opening fence, if any.
-                    info: info.unwrap_or(String::with_capacity(10)),
+                    NodeCodeBlock::fenced(info.unwrap_or_default(), literal)
+                } else {
+                    NodeCodeBlock::indented(literal)
+                };
+                // For fenced code blocks, the fence character itself (`` ` `` or `~`).
+                code_block.fence_char = fence_char.unwrap_or(b'`');
+                // For fenced code blocks, the length of the fence.
+                code_block.fence_length = fence_length.unwrap_or(0);
+                // For fenced code blocks, the indentation level of the code within the block.
+                code_block.fence_offset = fence_offset.unwrap_or(0);
+                // For fenced code blocks, whether the code block is closed.  (If not, it was terminated by
+                // some other condition, like the end of the document, or the end of the indentation level the
+                // code block was introduced at.)
+                code_block.closed = closed.unwrap_or(true);
 
-                    // The literal contents of the code block.  As the contents are not interpreted as Markdown at
-                    // all, they are contained within this structure, rather than inserted into a child inline of
-                    // any kind.
-                    literal: literal.unwrap_or(String::new()),
-
-                    // For fenced code blocks, whether the code block is closed.  (If not, it was terminated by
-                    // some other condition, like the end of the document, or the end of the indentation level the
-                    // code block was introduced at.)
-                    closed: closed.unwrap_or(true),
-                }))
+                ComrakNodeValue::CodeBlock(Box::new(code_block))
             }
             "html_block" => {
                 let kwargs = scan_args::get_kwargs::<_, (), (Option<u8>, Option<String>), ()>(
@@ -260,12 +254,12 @@ impl CommonmarkerNode {
 
                 let (block_type, literal) = kwargs.optional;
 
-                ComrakNodeValue::HtmlBlock(NodeHtmlBlock {
-                    // Number of spaces before the list marker.
-                    block_type: block_type.unwrap_or(0),
-                    // Number of characters between the start of the list marker and the item text (including the list marker(s)).
-                    literal: literal.unwrap_or(String::new()),
-                })
+                // The literal contents of the HTML block.
+                let mut html_block = NodeHtmlBlock::new(literal.unwrap_or_default());
+                // The HTML block's type.
+                html_block.block_type = block_type.unwrap_or(0);
+
+                ComrakNodeValue::HtmlBlock(html_block)
             }
             "paragraph" => ComrakNodeValue::Paragraph,
             "heading" => {
@@ -278,18 +272,18 @@ impl CommonmarkerNode {
                 let (level,) = kwargs.required;
                 let (setext, closed) = kwargs.optional;
 
-                ComrakNodeValue::Heading(NodeHeading {
-                    // The heading level.  For setext headings, an underline made of "=" characters is level 1, and made of
-                    // "-" is level 2.  For ATX headings, the number of leading "#" characters (from 1 to 6) is its level.
-                    level,
-                    // Whether the heading is setext style (marked by an underline).  If not, it is ATX style (marked by leading,
-                    // and possibly trailing, "#" characters).
-                    setext: setext.unwrap_or(false),
-                    // For ATX headings, whether the the leading "#" are terminated by a sequence of closing "#" characters.
-                    closed: closed.unwrap_or(false),
-                })
+                // The heading level.  For setext headings, an underline made of "=" characters is level 1, and made of
+                // "-" is level 2.  For ATX headings, the number of leading "#" characters (from 1 to 6) is its level.
+                let mut heading = NodeHeading::new(level);
+                // Whether the heading is setext style (marked by an underline).  If not, it is ATX style (marked by leading,
+                // and possibly trailing, "#" characters).
+                heading.setext = setext.unwrap_or(false);
+                // For ATX headings, whether the the leading "#" are terminated by a sequence of closing "#" characters.
+                heading.closed = closed.unwrap_or(false);
+
+                ComrakNodeValue::Heading(heading)
             }
-            "thematic_break" => ComrakNodeValue::ThematicBreak,
+            "thematic_break" => ComrakNodeValue::ThematicBreak(NodeThematicBreak::default()),
             "table" => {
                 let kwargs = scan_args::get_kwargs::<_, (RArray, usize, usize, usize), (), ()>(
                     args.keywords,
@@ -321,19 +315,16 @@ impl CommonmarkerNode {
                             comrak_alignments.push(TableAlignment::None);
                         }
                     });
-                ComrakNodeValue::Table(Box::new(NodeTable {
-                    // The table alignments
-                    alignments: comrak_alignments,
+                // The table alignments
+                let mut table = NodeTable::new(comrak_alignments);
+                // Number of columns of the table
+                table.num_columns = num_columns;
+                // Number of rows of the table
+                table.num_rows = num_rows;
+                // Number of non-empty, non-autocompleted cells
+                table.num_nonempty_cells = num_nonempty_cells;
 
-                    // Number of columns of the table
-                    num_columns,
-
-                    // Number of rows of the table
-                    num_rows,
-
-                    // Number of non-empty, non-autocompleted cells
-                    num_nonempty_cells,
-                }))
+                ComrakNodeValue::Table(Box::new(table))
             }
             "table_row" => {
                 let kwargs =
@@ -341,7 +332,7 @@ impl CommonmarkerNode {
 
                 let (header,) = kwargs.required;
 
-                ComrakNodeValue::TableRow(header)
+                ComrakNodeValue::TableRow(NodeTableRow::new(header))
             }
             "table_cell" => ComrakNodeValue::TableCell,
             "text" => {
@@ -364,10 +355,7 @@ impl CommonmarkerNode {
 
                 let (mark,) = kwargs.optional;
 
-                ComrakNodeValue::TaskItem(NodeTaskItem {
-                    symbol: mark,
-                    symbol_sourcepos: (0, 0, 0, 0).into(),
-                })
+                ComrakNodeValue::TaskItem(NodeTaskItem::new(mark))
             }
             "softbreak" => ComrakNodeValue::SoftBreak,
             "linebreak" => ComrakNodeValue::LineBreak,
@@ -380,15 +368,15 @@ impl CommonmarkerNode {
 
                 let (num_backticks, literal) = kwargs.optional;
 
-                ComrakNodeValue::Code(NodeCode {
-                    // The number of backticks
-                    num_backticks: num_backticks.unwrap_or(1),
-                    // The content of the inline code span.
-                    // As the contents are not interpreted as Markdown at all,
-                    // they are contained within this structure,
-                    // rather than inserted into a child inline of any kind
-                    literal: literal.unwrap_or_default(),
-                })
+                // The content of the inline code span.
+                // As the contents are not interpreted as Markdown at all,
+                // they are contained within this structure,
+                // rather than inserted into a child inline of any kind
+                let mut code = NodeCode::new(literal.unwrap_or_default());
+                // The number of backticks
+                code.num_backticks = num_backticks.unwrap_or(1);
+
+                ComrakNodeValue::Code(code)
             }
             "html_inline" => {
                 let kwargs = scan_args::get_kwargs::<_, (), (Option<String>,), ()>(
@@ -401,9 +389,9 @@ impl CommonmarkerNode {
 
                 ComrakNodeValue::HtmlInline(content.unwrap_or_default())
             }
-            "emph" => ComrakNodeValue::Emph,
-            "strong" => ComrakNodeValue::Strong,
-            "strikethrough" => ComrakNodeValue::Strikethrough,
+            "emph" => ComrakNodeValue::Emph(NodeEmph::default()),
+            "strong" => ComrakNodeValue::Strong(NodeStrong::default()),
+            "strikethrough" => ComrakNodeValue::Strikethrough(NodeStrikethrough::default()),
             "superscript" => ComrakNodeValue::Superscript,
             "subscript" => ComrakNodeValue::Subscript,
             "link" => {
@@ -416,15 +404,8 @@ impl CommonmarkerNode {
                 let (url,) = kwargs.required;
                 let (title,) = kwargs.optional;
 
-                ComrakNodeValue::Link(Box::new(NodeLink {
-                    // The URL for the link destination or image source.
-                    url,
-                    // The title for the link or image.
-                    //
-                    // Note this field is used for the `title` attribute by the HTML formatter even for images;
-                    // `alt` text is supplied in the image inline text.
-                    title: title.unwrap_or_default(),
-                }))
+                // The URL for the link destination, and the title for the link.
+                ComrakNodeValue::Link(Box::new(NodeLink::new(url, title.unwrap_or_default())))
             }
             "image" => {
                 let kwargs = scan_args::get_kwargs::<_, (String,), (Option<String>,), ()>(
@@ -436,15 +417,11 @@ impl CommonmarkerNode {
                 let (url,) = kwargs.required;
                 let (title,) = kwargs.optional;
 
-                ComrakNodeValue::Image(Box::new(NodeLink {
-                    // The URL for the link destination or image source.
-                    url,
-                    // The title for the link or image.
-                    //
-                    // Note this field is used for the `title` attribute by the HTML formatter even for images;
-                    // `alt` text is supplied in the image inline text.
-                    title: title.unwrap_or_default(),
-                }))
+                // The URL for the image source, and the title for the image.
+                //
+                // Note the title is used for the `title` attribute by the HTML formatter even for images;
+                // `alt` text is supplied in the image inline text.
+                ComrakNodeValue::Image(Box::new(NodeLink::new(url, title.unwrap_or_default())))
             }
             "footnote_reference" => {
                 let kwargs = scan_args::get_kwargs::<_, (String,), (Option<u32>, Option<u32>), ()>(
@@ -456,16 +433,14 @@ impl CommonmarkerNode {
                 let (name,) = kwargs.required;
                 let (ref_num, ix) = kwargs.optional;
 
-                ComrakNodeValue::FootnoteReference(Box::new(NodeFootnoteReference {
-                    // The name of the footnote.
-                    name,
-                    // The original text and sourcepos column spans that comprised the footnote ref.
-                    texts: vec![],
-                    // The index of reference to the same footnote
-                    ref_num: ref_num.unwrap_or(0),
-                    // The index of the footnote in the document.
-                    ix: ix.unwrap_or(0),
-                }))
+                // The name of the footnote.
+                let mut footnote_reference = NodeFootnoteReference::new(name);
+                // The index of reference to the same footnote
+                footnote_reference.ref_num = ref_num.unwrap_or(0);
+                // The index of the footnote in the document.
+                footnote_reference.ix = ix.unwrap_or(0);
+
+                ComrakNodeValue::FootnoteReference(Box::new(footnote_reference))
             }
             // #[cfg(feature = "shortcodes")]
             "shortcode" => {
@@ -493,20 +468,18 @@ impl CommonmarkerNode {
 
                 let (dollar_math, display_math, literal) = kwargs.required;
 
-                ComrakNodeValue::Math(NodeMath {
-                    // Whether this is dollar math (`$` or `$$`).
-                    // `false` indicates it is code math
-                    dollar_math,
+                // The literal contents of the math span.
+                // As the contents are not interpreted as Markdown at all,
+                // they are contained within this structure,
+                // rather than inserted into a child inline of any kind.
+                //
+                // Whether this is display math (using `$$`)
+                let mut math = NodeMath::new(literal, display_math);
+                // Whether this is dollar math (`$` or `$$`).
+                // `false` indicates it is code math
+                math.dollar_math = dollar_math;
 
-                    // Whether this is display math (using `$$`)
-                    display_math,
-
-                    // The literal contents of the math span.
-                    // As the contents are not interpreted as Markdown at all,
-                    // they are contained within this structure,
-                    // rather than inserted into a child inline of any kind.
-                    literal,
-                })
+                ComrakNodeValue::Math(math)
             }
             "multiline_block_quote" => {
                 let kwargs = scan_args::get_kwargs::<_, (usize, usize), (), ()>(
@@ -517,23 +490,30 @@ impl CommonmarkerNode {
 
                 let (fence_length, fence_offset) = kwargs.required;
 
-                ComrakNodeValue::MultilineBlockQuote(NodeMultilineBlockQuote {
-                    // The length of the fence.
-                    fence_length,
-                    // The indentation level of the fence marker.
-                    fence_offset,
-                })
+                let mut multiline_block_quote = NodeMultilineBlockQuote::default();
+                // The length of the fence.
+                multiline_block_quote.fence_length = fence_length;
+                // The indentation level of the fence marker.
+                multiline_block_quote.fence_offset = fence_offset;
+
+                ComrakNodeValue::MultilineBlockQuote(multiline_block_quote)
             }
 
             "escaped" => ComrakNodeValue::Escaped,
 
             "wikilink" => {
-                let kwargs =
-                    scan_args::get_kwargs::<_, (String,), (), ()>(args.keywords, &["url"], &[])?;
+                let kwargs = scan_args::get_kwargs::<_, (String,), (Option<bool>,), ()>(
+                    args.keywords,
+                    &["url"],
+                    &["embed"],
+                )?;
 
                 let (url,) = kwargs.required;
+                let (embed,) = kwargs.optional;
 
-                ComrakNodeValue::WikiLink(NodeWikiLink { url })
+                // The URL for the link destination, and whether this is an
+                // embed (`![[embed]]`) rather than a normal link (`[[link]]`).
+                ComrakNodeValue::WikiLink(NodeWikiLink::new(url, embed.unwrap_or(false)))
             }
 
             "raw" => {
@@ -577,17 +557,16 @@ impl CommonmarkerNode {
                     }
                 };
 
-                ComrakNodeValue::Alert(Box::new(NodeAlert {
-                    alert_type,
-                    // Overridden title. If None, then use the default title.
-                    title,
-                    // Originated from a multiline blockquote.
-                    multiline: multiline.unwrap_or(false),
-                    // The length of the fence (multiline only).
-                    fence_length: fence_length.unwrap_or(0),
-                    // The indentation level of the fence marker (multiline only)
-                    fence_offset: fence_offset.unwrap_or(0),
-                }))
+                // Overridden title. If None, then use the default title.
+                let mut alert = NodeAlert::new(alert_type, title);
+                // Originated from a multiline blockquote.
+                alert.multiline = multiline.unwrap_or(false);
+                // The length of the fence (multiline only).
+                alert.fence_length = fence_length.unwrap_or(0);
+                // The indentation level of the fence marker (multiline only)
+                alert.fence_offset = fence_offset.unwrap_or(0);
+
+                ComrakNodeValue::Alert(Box::new(alert))
             }
 
             _ => panic!("unknown node type {}", node_type),
@@ -1102,6 +1081,10 @@ impl CommonmarkerNode {
                 AlertType::Important => Ok(ruby.to_symbol("important")),
                 AlertType::Warning => Ok(ruby.to_symbol("warning")),
                 AlertType::Caution => Ok(ruby.to_symbol("caution")),
+                _ => Err(magnus::Error::new(
+                    ruby.exception_type_error(),
+                    "node has an unknown alert type",
+                )),
             },
             _ => Err(magnus::Error::new(
                 ruby.exception_type_error(),
