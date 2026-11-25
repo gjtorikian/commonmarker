@@ -1,9 +1,10 @@
 use crate::rctree::Node;
 use comrak::arena_tree::Node as ComrakNode;
 use comrak::nodes::{
-    AlertType, Ast as ComrakAst, AstNode as ComrakAstNode, ListDelimType, NodeAlert, NodeCode,
-    NodeCodeBlock, NodeDescriptionItem, NodeEmph, NodeFootnoteDefinition, NodeFootnoteReference,
-    NodeHeading, NodeHtmlBlock, NodeLink, NodeList, NodeMath, NodeMultilineBlockQuote,
+    AlertType, Ast as ComrakAst, AstNode as ComrakAstNode, CalloutFold, ListDelimType, NodeAlert,
+    NodeBlockId, NodeCallout, NodeCode, NodeCodeBlock, NodeComment, NodeCommentBlock,
+    NodeDescriptionItem, NodeEmph, NodeFootnoteDefinition, NodeFootnoteReference, NodeHeading,
+    NodeHtmlBlock, NodeLink, NodeList, NodeMath, NodeMathBlock, NodeMultilineBlockQuote,
     NodeShortCode, NodeStrikethrough, NodeStrong, NodeTable, NodeTableRow, NodeTaskItem,
     NodeThematicBreak, NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
 };
@@ -52,13 +53,17 @@ fn value_supports(value: &ComrakNodeValue, property: &str) -> Option<bool> {
                 | ComrakNodeValue::HtmlInline(_)
                 | ComrakNodeValue::Raw(_)
                 | ComrakNodeValue::Math(_)
+                | ComrakNodeValue::MathBlock(_)
                 | ComrakNodeValue::FrontMatter(_)
+                | ComrakNodeValue::CommentInline(_)
+                | ComrakNodeValue::MultilineComment(_)
         ),
         "url" | "title" => matches!(value, ComrakNodeValue::Link(_) | ComrakNodeValue::Image(_)),
         "header_level" => matches!(value, ComrakNodeValue::Heading(_)),
         "list_type" | "list_start" | "list_tight" => matches!(value, ComrakNodeValue::List(_)),
         "fenced" | "fence_info" => matches!(value, ComrakNodeValue::CodeBlock(_)),
         "alert_type" => matches!(value, ComrakNodeValue::Alert(_)),
+        "callout_type" => matches!(value, ComrakNodeValue::Callout(_)),
         _ => return None,
     };
 
@@ -569,6 +574,96 @@ impl CommonmarkerNode {
                 ComrakNodeValue::Alert(Box::new(alert))
             }
 
+            "math_block" => {
+                let kwargs =
+                    scan_args::get_kwargs::<_, (String,), (Option<usize>, Option<bool>), ()>(
+                        args.keywords,
+                        &["literal"],
+                        &["fence_offset", "closed"],
+                    )?;
+
+                let (literal,) = kwargs.required;
+                let (fence_offset, closed) = kwargs.optional;
+
+                // The literal contents of the math block, excluding the `$$` delimiter lines.
+                let mut math_block = NodeMathBlock::new(literal);
+                // The indentation level of the opening fence marker.
+                math_block.fence_offset = fence_offset.unwrap_or(0);
+                // Whether the math block was explicitly closed by a closing fence.
+                math_block.closed = closed.unwrap_or(true);
+
+                ComrakNodeValue::MathBlock(Box::new(math_block))
+            }
+
+            "callout" => {
+                let kwargs = scan_args::get_kwargs::<
+                    _,
+                    (Symbol,),
+                    (Option<String>, Option<Symbol>),
+                    (),
+                >(args.keywords, &["type"], &["metadata", "fold"])?;
+
+                let (callout_type,) = kwargs.required;
+                let (metadata, fold) = kwargs.optional;
+
+                // The initial fold state: not foldable, or foldable and initially expanded or collapsed.
+                let fold = match fold.map(|fold| fold.to_string()).as_deref() {
+                    None | Some("none") => CalloutFold::None,
+                    Some("expanded") => CalloutFold::Expanded,
+                    Some("collapsed") => CalloutFold::Collapsed,
+                    Some(_) => {
+                        return Err(magnus::Error::new(
+                            ruby.exception_arg_error(),
+                            "callout fold must be `none`, `expanded`, or `collapsed`",
+                        ));
+                    }
+                };
+
+                // The callout type, plus the raw metadata after the `|` separator, if any.
+                ComrakNodeValue::Callout(Box::new(NodeCallout::new(
+                    callout_type.to_string(),
+                    metadata,
+                    fold,
+                )))
+            }
+            "callout_title" => ComrakNodeValue::CalloutTitle,
+
+            "block_id" => {
+                let kwargs =
+                    scan_args::get_kwargs::<_, (String,), (), ()>(args.keywords, &["name"], &[])?;
+
+                let (name,) = kwargs.required;
+
+                // The identifier itself, without the leading `^`.
+                ComrakNodeValue::BlockId(Box::new(NodeBlockId::new(name)))
+            }
+
+            "comment" => {
+                let kwargs = scan_args::get_kwargs::<
+                    _,
+                    (),
+                    (Option<String>, Option<bool>, Option<bool>),
+                    (),
+                >(
+                    args.keywords, &[], &["literal", "multiline", "closed"]
+                )?;
+
+                let (literal, multiline, closed) = kwargs.optional;
+
+                // The literal contents of the comment, without the `%%` markers.
+                let literal = literal.unwrap_or_default();
+
+                if multiline.unwrap_or(false) {
+                    let mut comment = NodeCommentBlock::new(literal);
+                    // Whether the comment block was explicitly closed by a closing `%%`.
+                    comment.closed = closed.unwrap_or(true);
+
+                    ComrakNodeValue::MultilineComment(comment)
+                } else {
+                    ComrakNodeValue::CommentInline(NodeComment::new(literal))
+                }
+            }
+
             _ => panic!("unknown node type {}", node_type),
         };
 
@@ -827,6 +922,9 @@ impl CommonmarkerNode {
             ComrakNodeValue::HtmlInline(html_inline) => Ok(html_inline.to_string()),
             ComrakNodeValue::Raw(raw) => Ok(raw.to_string()),
             ComrakNodeValue::Math(math) => Ok(math.literal.to_string()),
+            ComrakNodeValue::MathBlock(math_block) => Ok(math_block.literal.to_string()),
+            ComrakNodeValue::CommentInline(comment) => Ok(comment.literal.to_string()),
+            ComrakNodeValue::MultilineComment(comment) => Ok(comment.literal.to_string()),
             ComrakNodeValue::FrontMatter(front_matter) => Ok(front_matter.to_string()),
             _ => Err(magnus::Error::new(
                 ruby.exception_type_error(),
@@ -850,6 +948,9 @@ impl CommonmarkerNode {
             ComrakNodeValue::HtmlInline(ref mut html_inline) => *html_inline = new_literal,
             ComrakNodeValue::Raw(ref mut raw) => *raw = new_literal,
             ComrakNodeValue::Math(ref mut math) => math.literal = new_literal,
+            ComrakNodeValue::MathBlock(ref mut math_block) => math_block.literal = new_literal,
+            ComrakNodeValue::CommentInline(ref mut comment) => comment.literal = new_literal,
+            ComrakNodeValue::MultilineComment(ref mut comment) => comment.literal = new_literal,
             ComrakNodeValue::FrontMatter(ref mut front_matter) => *front_matter = new_literal,
             _ => {
                 return Err(magnus::Error::new(
@@ -1119,6 +1220,37 @@ impl CommonmarkerNode {
         }
     }
 
+    fn get_callout_type(ruby: &Ruby, rb_self: &Self) -> Result<Symbol, magnus::Error> {
+        let node = rb_self.inner.borrow();
+
+        match &node.data.value {
+            ComrakNodeValue::Callout(callout) => Ok(ruby.to_symbol(callout.callout_type.as_str())),
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not a callout node",
+            )),
+        }
+    }
+
+    fn set_callout_type(
+        ruby: &Ruby,
+        rb_self: &Self,
+        new_type: Symbol,
+    ) -> Result<bool, magnus::Error> {
+        let mut node = rb_self.inner.borrow_mut();
+
+        match node.data.value {
+            ComrakNodeValue::Callout(ref mut callout) => {
+                callout.callout_type = new_type.to_string();
+                Ok(true)
+            }
+            _ => Err(magnus::Error::new(
+                ruby.exception_type_error(),
+                "node is not a callout node",
+            )),
+        }
+    }
+
     /// Copies this node and its descendants into `arena` as a comrak tree so that
     /// comrak's formatters can render it.
     ///
@@ -1350,6 +1482,14 @@ pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
     c_node.define_method("alert_type", method!(CommonmarkerNode::get_alert_type, 0))?;
     c_node.define_method("alert_type=", method!(CommonmarkerNode::set_alert_type, 1))?;
+    c_node.define_method(
+        "callout_type",
+        method!(CommonmarkerNode::get_callout_type, 0),
+    )?;
+    c_node.define_method(
+        "callout_type=",
+        method!(CommonmarkerNode::set_callout_type, 1),
+    )?;
 
     Ok(())
 }

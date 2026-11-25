@@ -47,6 +47,13 @@ class NodeCreationTest < Minitest::Test
       [:wikilink, url: "www.yetto.app/billy.png"],
       [:raw],
       [:alert, type: :note],
+      [:math_block, literal: "x = y"],
+      [:callout, type: :tip],
+      [:callout, type: :note, metadata: "meta", fold: :collapsed],
+      [:callout_title],
+      [:block_id, name: "abc123"],
+      [:comment, literal: "hidden"],
+      [:comment, literal: "hidden", multiline: true],
     ]
     node_types.each do |type, arguments|
       node = arguments.nil? ? Commonmarker::Node.new(type) : Commonmarker::Node.new(type, **arguments)

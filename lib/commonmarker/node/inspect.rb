@@ -27,6 +27,7 @@ module Commonmarker
             :list_tight,
             :fence_info,
             :alert_type,
+            :callout_type,
           ].filter_map do |name|
             [name, __send__(name)] if respond_to?(name)
           end
