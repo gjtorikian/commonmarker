@@ -3,41 +3,6 @@
 require "test_helper"
 
 class ConfigTest < Minitest::Test
-  def test_process_options
-    user_config = {
-      parse: {
-        smart: true,
-      },
-      render: {
-        unsafe: false,
-      },
-      extension: {
-        autolink: false,
-      },
-    }
-    processed_config = Commonmarker::Config.process_options(user_config)
-
-    expected_config = [:parse, :render, :extension].to_h do |type|
-      [type, Commonmarker::Config::OPTIONS[type].merge(user_config[type] || {})]
-    end
-
-    assert_equal(expected_config, processed_config)
-  end
-
-  def test_process_plugins
-    user_config = {
-      syntax_highlighter: {
-        path: "./themes",
-      },
-    }
-    processed_config = Commonmarker::Config.process_plugins(user_config)
-    expected_config = [:syntax_highlighter].to_h do |type|
-      [type, Commonmarker::Config::PLUGINS[type].merge(user_config[type])]
-    end
-
-    assert_equal(expected_config, processed_config)
-  end
-
   def test_config_merges_directly
     # hardbreaks work, the `\n` in between is rendered
     assert_equal("<p>aaaa<br />\nbbbb</p>\n", Commonmarker.to_html("aaaa\nbbbb"))
@@ -79,5 +44,14 @@ class ConfigTest < Minitest::Test
     doc.to_html(options: user_config)
 
     assert_equal(expected, Commonmarker.to_html(text, options: user_config))
+  end
+
+  def test_exposes_new_comrak_options_with_defaults
+    options = Commonmarker::Config::OPTIONS
+
+    refute(options[:parse][:tasklist_in_table])
+    assert_equal("dash", options[:render][:list_style])
+    assert_equal(0, options[:render][:ol_width])
+    refute(options[:extension][:ofm_callouts])
   end
 end

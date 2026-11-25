@@ -185,6 +185,8 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `ignore_setext`              | Ignores setext-style headings.                                                                                                              | `false` |
 | `sourcepos_chars`            | Use character-based column tracking in source positions instead of byte-based. Relevant for multi-byte UTF-8 documents with `sourcepos`.    | `false` |
 | `max_nesting_depth`          | The deepest a node may nest below the document. Deeper documents raise `Commonmarker::NestingDepthExceededError` instead of being parsed.  | `1000`  |
+| `tasklist_in_table`          | Allows a task list item to be the sole content of a table cell. Needs the `table` and `tasklist` extensions.                                | `false` |
+| `escaped_char_spans`         | Keeps [escaped characters](https://spec.commonmark.org/0.31.2/#backslash-escapes) as `escaped` nodes in the AST. Implied by the render option of the same name. | `false` |
 
 ### Render options
 
@@ -204,6 +206,10 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `tasklist_classes`   | Add CSS classes to the HTML output of the tasklist extension                                                             | `false`      |
 | `compact_html`       | Suppress newlines in pretty-printed HTML output.                                                                         | `false`      |
 | `alert_style`        | The style of alert output: `"specific"` (`<div class="markdown-alert">`) or `"semantic"` (`<aside class="admonition">`). | `"specific"` |
+| `list_style`         | The bullet list marker used when outputting CommonMark: `"dash"` (`-`), `"plus"` (`+`) or `"star"` (`*`).                | `"dash"`     |
+| `figure_with_caption` | Renders an image that has a title as a `<figure>`, with the title as its `<figcaption>`.                                 | `false`      |
+| `ol_width`           | The minimum ordered list marker width when outputting CommonMark. Values below 3 have no effect.                         | `0`          |
+| `experimental_minimize_commonmark` | Drops escapes from CommonMark output when the document still roundtrips without them. Expensive.                         | `false`      |
 
 As well, there are several extensions which you can toggle in the same manner:
 
@@ -245,6 +251,11 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `highlight`                   | Enables highlighting via `==`                                                                                       | `false` |
 | `insert`                      | Enables the insert extension, rendering `++text++` as `<ins>text</ins>`.                                            | `false` |
 | `block_directive`             | Enables the block directive extension.                                                                              | `false` |
+| `math_dollars_block`          | Enables multiline display math blocks delimited by `$$` lines. Requires `math_dollars`.                             | `false` |
+| `wikilinks_ignore_embeds`     | Ignores wikilink-style embeds (`![[url]]`) when a wikilinks extension is enabled.                                   | `false` |
+| `ofm_callouts`                | Enables [Obsidian-style callouts](https://help.obsidian.md/callouts), such as `> [!tip]`.                           | `false` |
+| `ofm_comments`                | Enables Obsidian-style `%%comment%%` comments, which are dropped from the output.                                   | `false` |
+| `ofm_block_ids`               | Enables Obsidian-style block identifiers (`^abc123` at the end of a block).                                         | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 

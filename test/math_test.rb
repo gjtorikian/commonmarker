@@ -35,4 +35,21 @@ class MathTest < Minitest::Test
 
     assert_equal(expected, Commonmarker.to_html(md, options: { extension: { math_latex: true } }))
   end
+
+  def test_math_dollars_block_to_html
+    md = <<~MARKDOWN
+      $$
+      x = y
+      $$
+    MARKDOWN
+    expected = <<~HTML
+      <div data-math-style="display">
+      x = y
+      </div>
+    HTML
+
+    options = { extension: { math_dollars: true, math_dollars_block: true } }
+
+    assert_equal(expected, Commonmarker.to_html(md, options: options))
+  end
 end

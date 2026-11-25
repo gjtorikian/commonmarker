@@ -1,32 +1,12 @@
 use comrak::arena_tree::NodeEdge;
 use comrak::nodes::AstNode;
-use magnus::value::ReprValue;
-use magnus::{ExceptionClass, Module, RHash, Ruby, TryConvert};
+use magnus::{ExceptionClass, Module, Ruby};
 
-/// Default for the `max_nesting_depth` parse option. Mirrors
+/// Default for the `max_nesting_depth` parse option. Exposed to Ruby as
 /// `Commonmarker::Config::OPTIONS[:parse][:max_nesting_depth]`, and also applies
-/// when the option is passed as `nil`, which `Commonmarker::Config` strips.
+/// when the option is passed as `nil`. The option is read alongside comrak's
+/// in `crate::options::format_options`.
 pub const DEFAULT_MAX_NESTING_DEPTH: usize = 1000;
-
-const PARSE_MAX_NESTING_DEPTH: &str = "max_nesting_depth";
-
-/// Reads the `max_nesting_depth` parse option, falling back to the default.
-pub fn max_nesting_depth(ruby: &Ruby, rb_parse: Option<RHash>) -> Result<usize, magnus::Error> {
-    let value = rb_parse.and_then(|options| options.get(ruby.to_symbol(PARSE_MAX_NESTING_DEPTH)));
-
-    match value {
-        Some(value) if !value.is_nil() => {
-            let depth: i64 = TryConvert::try_convert(value)?;
-            usize::try_from(depth).map_err(|_| {
-                magnus::Error::new(
-                    ruby.exception_arg_error(),
-                    format!("parse option `:max_nesting_depth` must be a non-negative Integer; got {depth}"),
-                )
-            })
-        }
-        _ => Ok(DEFAULT_MAX_NESTING_DEPTH),
-    }
-}
 
 /// The error raised when a document nests deeper than `max_nesting_depth`.
 pub fn exceeded_error(ruby: &Ruby, max_nesting_depth: usize) -> magnus::Error {
