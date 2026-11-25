@@ -158,6 +158,28 @@ end
 
 Note that a `:frontmatter` node's literal includes its delimiters and trailing newlines, so anything you assign must include them too.
 
+### Node attributes
+
+With any of the `*_attributes` extensions enabled, comrak parses Pandoc-style attribute blocks such as `{#intro .big data-x=1}` off the end of headings, fenced code blocks, inline code, links and images. `attributes` reads them as a Hash of `id`, `classes` and `pairs`, or `nil` when a node has none; `attributes=` replaces them, and accepts `nil` to clear them:
+
+```ruby
+doc = Commonmarker.parse("## Intro {#intro .big data-x=1}", options: { extension: { header_attributes: true } })
+doc.first_child.attributes
+# => {id: "intro", classes: ["big"], pairs: {"data-x" => "1"}}
+
+doc.first_child.attributes = { classes: ["lede"], pairs: { "data-x" => "2" } }
+```
+
+Attributes only reach the HTML when the `attributes` render option is on **and** `unsafe` is on, because an attribute block can smuggle in event handlers and the like. If you render untrusted Markdown, leave `attributes` off and apply an allowlist of the parsed values yourself:
+
+```ruby
+Commonmarker.to_html("## Intro {#intro .big}", options: {
+  extension: { header_attributes: true, header_ids: nil },
+  render: { attributes: true, unsafe: true },
+})
+# => <h2 id="intro" class="big">Intro</h2>
+```
+
 ## Options and plugins
 
 ### Options
@@ -210,6 +232,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `figure_with_caption` | Renders an image that has a title as a `<figure>`, with the title as its `<figcaption>`.                                 | `false`      |
 | `ol_width`           | The minimum ordered list marker width when outputting CommonMark. Values below 3 have no effect.                         | `0`          |
 | `experimental_minimize_commonmark` | Drops escapes from CommonMark output when the document still roundtrips without them. Expensive.                         | `false`      |
+| `attributes`         | Writes parsed or assigned node attributes into the HTML. Does nothing without `unsafe`, since attributes can carry scripts. | `false`      |
 
 As well, there are several extensions which you can toggle in the same manner:
 
@@ -256,6 +279,10 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | `ofm_callouts`                | Enables [Obsidian-style callouts](https://help.obsidian.md/callouts), such as `> [!tip]`.                           | `false` |
 | `ofm_comments`                | Enables Obsidian-style `%%comment%%` comments, which are dropped from the output.                                   | `false` |
 | `ofm_block_ids`               | Enables Obsidian-style block identifiers (`^abc123` at the end of a block).                                         | `false` |
+| `header_attributes`           | Parses `{#id .class key=value}` attribute blocks at the end of ATX and setext headings.                             | `false` |
+| `fenced_code_attributes`      | Parses attribute blocks in the info string of fenced code blocks.                                                   | `false` |
+| `inline_code_attributes`      | Parses attribute blocks directly after inline code spans.                                                           | `false` |
+| `link_attributes`             | Parses attribute blocks directly after links and images.                                                            | `false` |
 
 For more information on these options, see [the comrak documentation](https://github.com/kivikakk/comrak#usage).
 

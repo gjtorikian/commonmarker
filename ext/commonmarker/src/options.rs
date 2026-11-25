@@ -40,6 +40,7 @@ pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
     options.render.figure_with_caption = false;
     options.render.ol_width = 0;
     options.render.experimental_minimize_commonmark = false;
+    options.render.attributes = false;
 
     // Extension options
     options.extension.strikethrough = true;
@@ -75,6 +76,10 @@ pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
     options.extension.ofm_callouts = false;
     options.extension.ofm_comments = false;
     options.extension.ofm_block_ids = false;
+    options.extension.header_attributes = false;
+    options.extension.fenced_code_attributes = false;
+    options.extension.inline_code_attributes = false;
+    options.extension.link_attributes = false;
 
     options
 });
@@ -112,6 +117,7 @@ const RENDER_LIST_STYLE: &str = "list_style";
 const RENDER_FIGURE_WITH_CAPTION: &str = "figure_with_caption";
 const RENDER_OL_WIDTH: &str = "ol_width";
 const RENDER_EXPERIMENTAL_MINIMIZE_COMMONMARK: &str = "experimental_minimize_commonmark";
+const RENDER_ATTRIBUTES: &str = "attributes";
 
 const EXTENSION_STRIKETHROUGH: &str = "strikethrough";
 const EXTENSION_TABLE: &str = "table";
@@ -146,6 +152,10 @@ const EXTENSION_WIKILINKS_IGNORE_EMBEDS: &str = "wikilinks_ignore_embeds";
 const EXTENSION_OFM_CALLOUTS: &str = "ofm_callouts";
 const EXTENSION_OFM_COMMENTS: &str = "ofm_comments";
 const EXTENSION_OFM_BLOCK_IDS: &str = "ofm_block_ids";
+const EXTENSION_HEADER_ATTRIBUTES: &str = "header_attributes";
+const EXTENSION_FENCED_CODE_ATTRIBUTES: &str = "fenced_code_attributes";
+const EXTENSION_INLINE_CODE_ATTRIBUTES: &str = "inline_code_attributes";
+const EXTENSION_LINK_ATTRIBUTES: &str = "link_attributes";
 
 // Comrak's default options (for when user explicitly sets nil)
 pub static COMRAK_DEFAULTS: LazyLock<comrak::Options> = LazyLock::new(comrak::Options::default);
@@ -785,6 +795,21 @@ fn iterate_render_options_with_validation(
                         }
                     }
                 }
+                RENDER_ATTRIBUTES => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        RENDER_ATTRIBUTES,
+                        "render",
+                        defaults.attributes,
+                    ) {
+                        Ok(v) => comrak_options.attributes = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
                 _ => {}
             }
             Ok(ForEach::Continue)
@@ -1280,6 +1305,66 @@ fn iterate_extension_options_with_validation(
                         }
                     }
                 }
+                EXTENSION_HEADER_ATTRIBUTES => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        EXTENSION_HEADER_ATTRIBUTES,
+                        "extension",
+                        defaults.header_attributes,
+                    ) {
+                        Ok(v) => comrak_options.header_attributes = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                EXTENSION_FENCED_CODE_ATTRIBUTES => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        EXTENSION_FENCED_CODE_ATTRIBUTES,
+                        "extension",
+                        defaults.fenced_code_attributes,
+                    ) {
+                        Ok(v) => comrak_options.fenced_code_attributes = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                EXTENSION_INLINE_CODE_ATTRIBUTES => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        EXTENSION_INLINE_CODE_ATTRIBUTES,
+                        "extension",
+                        defaults.inline_code_attributes,
+                    ) {
+                        Ok(v) => comrak_options.inline_code_attributes = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                EXTENSION_LINK_ATTRIBUTES => {
+                    match validate_bool(
+                        ruby,
+                        value,
+                        EXTENSION_LINK_ATTRIBUTES,
+                        "extension",
+                        defaults.link_attributes,
+                    ) {
+                        Ok(v) => comrak_options.link_attributes = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
                 _ => {}
             }
             Ok(ForEach::Continue)
@@ -1415,6 +1500,10 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     render.aset(
         ruby.to_symbol(RENDER_EXPERIMENTAL_MINIMIZE_COMMONMARK),
         DEFAULT_OPTIONS.render.experimental_minimize_commonmark,
+    )?;
+    render.aset(
+        ruby.to_symbol(RENDER_ATTRIBUTES),
+        DEFAULT_OPTIONS.render.attributes,
     )?;
     options.aset(ruby.to_symbol(RENDER), render)?;
 
@@ -1559,6 +1648,22 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     extension.aset(
         ruby.to_symbol(EXTENSION_OFM_BLOCK_IDS),
         DEFAULT_OPTIONS.extension.ofm_block_ids,
+    )?;
+    extension.aset(
+        ruby.to_symbol(EXTENSION_HEADER_ATTRIBUTES),
+        DEFAULT_OPTIONS.extension.header_attributes,
+    )?;
+    extension.aset(
+        ruby.to_symbol(EXTENSION_FENCED_CODE_ATTRIBUTES),
+        DEFAULT_OPTIONS.extension.fenced_code_attributes,
+    )?;
+    extension.aset(
+        ruby.to_symbol(EXTENSION_INLINE_CODE_ATTRIBUTES),
+        DEFAULT_OPTIONS.extension.inline_code_attributes,
+    )?;
+    extension.aset(
+        ruby.to_symbol(EXTENSION_LINK_ATTRIBUTES),
+        DEFAULT_OPTIONS.extension.link_attributes,
     )?;
     options.aset(ruby.to_symbol(EXTENSION), extension)?;
 
