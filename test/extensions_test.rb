@@ -29,10 +29,10 @@ class ExtensionsTest < Minitest::Test
   end
 
   def test_comments_are_kept_as_expected
-    options = { render: { unsafe: true }, extension: { tagfilter: true } }
+    options = { render: { unsafe: true } }
 
     assert_equal(
-      "<!--hello--> <blah> &lt;xmp>\n",
+      "<!--hello--> <blah> <xmp>\n",
       Commonmarker.to_html("<!--hello--> <blah> <xmp>\n", options: options),
     )
   end

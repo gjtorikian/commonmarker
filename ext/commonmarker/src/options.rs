@@ -4,6 +4,8 @@ use magnus::value::ReprValue;
 use magnus::TryConvert;
 use magnus::{r_hash::ForEach, Error, RHash, Ruby, Symbol, Value};
 
+use crate::nesting::DEFAULT_MAX_NESTING_DEPTH;
+
 // Commonmarker's default options (different from comrak defaults)
 pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
     let mut options = comrak::Options::default();
@@ -35,7 +37,6 @@ pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
 
     // Extension options
     options.extension.strikethrough = true;
-    options.extension.tagfilter = true;
     options.extension.table = true;
     options.extension.autolink = true;
     options.extension.tasklist = true;
@@ -78,6 +79,7 @@ const PARSE_RELAXED_AUTOLINKS: &str = "relaxed_autolinks";
 const PARSE_LEAVE_FOOTNOTE_DEFINITIONS: &str = "leave_footnote_definitions";
 const PARSE_IGNORE_SETEXT: &str = "ignore_setext";
 const PARSE_SOURCEPOS_CHARS: &str = "sourcepos_chars";
+const PARSE_MAX_NESTING_DEPTH: &str = "max_nesting_depth";
 
 const RENDER_HARDBREAKS: &str = "hardbreaks";
 const RENDER_GITHUB_PRE_LANG: &str = "github_pre_lang";
@@ -95,7 +97,6 @@ const RENDER_COMPACT_HTML: &str = "compact_html";
 const RENDER_ALERT_STYLE: &str = "alert_style";
 
 const EXTENSION_STRIKETHROUGH: &str = "strikethrough";
-const EXTENSION_TAGFILTER: &str = "tagfilter";
 const EXTENSION_TABLE: &str = "table";
 const EXTENSION_AUTOLINK: &str = "autolink";
 const EXTENSION_TASKLIST: &str = "tasklist";
@@ -156,8 +157,8 @@ fn validate_bool(
     }
 }
 
-/// Validates an integer option value.
-/// Returns the value if valid, default_for_nil if nil, Err if invalid type.
+/// Validates a non-negative integer option value.
+/// Returns the value if valid, default_for_nil if nil, Err if invalid type or negative.
 fn validate_usize(
     ruby: &Ruby,
     value: Value,
@@ -168,7 +169,7 @@ fn validate_usize(
     if value.is_nil() {
         return Ok(default_for_nil);
     }
-    TryConvert::try_convert(value).map_err(|_| {
+    let n: i64 = TryConvert::try_convert(value).map_err(|_| {
         Error::new(
             ruby.exception_type_error(),
             format!(
@@ -176,6 +177,17 @@ fn validate_usize(
                 category,
                 format_args!(":{}", key),
                 crate::utils::get_classname(value)
+            ),
+        )
+    })?;
+    usize::try_from(n).map_err(|_| {
+        Error::new(
+            ruby.exception_arg_error(),
+            format!(
+                "{} option `{}` must be a non-negative Integer; got {}",
+                category,
+                format_args!(":{}", key),
+                n
             ),
         )
     })
@@ -206,21 +218,35 @@ fn validate_optional_string(
     Ok(Some(s))
 }
 
+/// The options Commonmarker accepts: comrak's own, plus `max_nesting_depth`,
+/// which Commonmarker enforces itself (see `crate::nesting`).
+pub struct Options {
+    pub comrak: comrak::Options<'static>,
+    pub max_nesting_depth: usize,
+}
+
+impl Options {
+    /// Commonmarker's defaults (different from comrak's).
+    fn defaults() -> Self {
+        Options {
+            comrak: DEFAULT_OPTIONS.clone(),
+            max_nesting_depth: DEFAULT_MAX_NESTING_DEPTH,
+        }
+    }
+}
+
 /// Formats and validates options from Ruby, merging with defaults.
-/// Accepts Option<Value> and returns ComrakOptions.
+/// Accepts Option<Value> and returns Options.
 ///
 /// Logic:
 /// - If no options: use DEFAULT_OPTIONS (commonmarker defaults)
 /// - If options provided but category absent: use DEFAULT_OPTIONS for that category
 /// - If category provided: start with commonmarker defaults, apply non-nil values from user
 ///   (nil values mean "keep default for this field")
-pub fn format_options(
-    ruby: &Ruby,
-    rb_options: Option<Value>,
-) -> Result<comrak::Options<'_>, Error> {
+pub fn format_options(ruby: &Ruby, rb_options: Option<Value>) -> Result<Options, Error> {
     let rb_options = match rb_options {
-        None => return Ok(DEFAULT_OPTIONS.clone()),
-        Some(v) if v.is_nil() => return Ok(DEFAULT_OPTIONS.clone()),
+        None => return Ok(Options::defaults()),
+        Some(v) if v.is_nil() => return Ok(Options::defaults()),
         Some(v) => v,
     };
 
@@ -235,11 +261,11 @@ pub fn format_options(
     })?;
 
     if options_hash.is_empty() {
-        return Ok(DEFAULT_OPTIONS.clone());
+        return Ok(Options::defaults());
     }
 
     // Start with commonmarker defaults
-    let mut options = DEFAULT_OPTIONS.clone();
+    let mut options = Options::defaults();
 
     // Process parse options
     match options_hash.get(ruby.to_symbol(PARSE)) {
@@ -260,7 +286,12 @@ pub fn format_options(
                     ),
                 )
             })?;
-            iterate_parse_options_with_validation(ruby, &mut options.parse, parse_hash)?;
+            iterate_parse_options_with_validation(
+                ruby,
+                &mut options.comrak.parse,
+                &mut options.max_nesting_depth,
+                parse_hash,
+            )?;
         }
     }
 
@@ -282,7 +313,7 @@ pub fn format_options(
                     ),
                 )
             })?;
-            iterate_render_options_with_validation(ruby, &mut options.render, render_hash)?;
+            iterate_render_options_with_validation(ruby, &mut options.comrak.render, render_hash)?;
         }
     }
 
@@ -306,7 +337,7 @@ pub fn format_options(
             })?;
             iterate_extension_options_with_validation(
                 ruby,
-                &mut options.extension,
+                &mut options.comrak.extension,
                 extension_hash,
             )?;
         }
@@ -318,6 +349,7 @@ pub fn format_options(
 fn iterate_parse_options_with_validation(
     ruby: &Ruby,
     comrak_options: &mut comrak::options::Parse,
+    max_nesting_depth: &mut usize,
     options_hash: RHash,
 ) -> Result<(), Error> {
     let mut error: Option<Error> = None;
@@ -414,6 +446,21 @@ fn iterate_parse_options_with_validation(
                         defaults.sourcepos_chars,
                     ) {
                         Ok(v) => comrak_options.sourcepos_chars = v,
+                        Err(e) => {
+                            error = Some(e);
+                            return Ok(ForEach::Stop);
+                        }
+                    }
+                }
+                PARSE_MAX_NESTING_DEPTH => {
+                    match validate_usize(
+                        ruby,
+                        value,
+                        PARSE_MAX_NESTING_DEPTH,
+                        "parse",
+                        DEFAULT_MAX_NESTING_DEPTH,
+                    ) {
+                        Ok(v) => *max_nesting_depth = v,
                         Err(e) => {
                             error = Some(e);
                             return Ok(ForEach::Stop);
@@ -662,21 +709,6 @@ fn iterate_extension_options_with_validation(
                         defaults.strikethrough,
                     ) {
                         Ok(v) => comrak_options.strikethrough = v,
-                        Err(e) => {
-                            error = Some(e);
-                            return Ok(ForEach::Stop);
-                        }
-                    }
-                }
-                EXTENSION_TAGFILTER => {
-                    match validate_bool(
-                        ruby,
-                        value,
-                        EXTENSION_TAGFILTER,
-                        "extension",
-                        defaults.tagfilter,
-                    ) {
-                        Ok(v) => comrak_options.tagfilter = v,
                         Err(e) => {
                             error = Some(e);
                             return Ok(ForEach::Stop);
@@ -1112,6 +1144,10 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
         ruby.to_symbol(PARSE_SOURCEPOS_CHARS),
         DEFAULT_OPTIONS.parse.sourcepos_chars,
     )?;
+    parse.aset(
+        ruby.to_symbol(PARSE_MAX_NESTING_DEPTH),
+        DEFAULT_MAX_NESTING_DEPTH,
+    )?;
     options.aset(ruby.to_symbol(PARSE), parse)?;
 
     // Render options
@@ -1176,10 +1212,6 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     extension.aset(
         ruby.to_symbol(EXTENSION_STRIKETHROUGH),
         DEFAULT_OPTIONS.extension.strikethrough,
-    )?;
-    extension.aset(
-        ruby.to_symbol(EXTENSION_TAGFILTER),
-        DEFAULT_OPTIONS.extension.tagfilter,
     )?;
     extension.aset(
         ruby.to_symbol(EXTENSION_TABLE),

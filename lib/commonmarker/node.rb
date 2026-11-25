@@ -20,15 +20,28 @@ module Commonmarker
       super
     end
 
-    # Public: An iterator that "walks the tree," descending into children recursively.
+    # Public: An iterator that "walks the tree," yielding each node and then
+    # its descendants, in document order.
     #
-    # blk - A {Proc} representing the action to take for each child
+    # The walk is iterative rather than recursive, so arbitrarily deep trees
+    # can't exhaust the stack.
+    #
+    # blk - A {Proc} representing the action to take for each node
     def walk(&block)
       return enum_for(:walk) unless block
 
       yield self
-      each do |child|
-        child.walk(&block)
+
+      # Like #each, the next sibling is captured before a node is yielded, so
+      # the block may detach or replace the node it is given. `pending` holds
+      # the sibling to resume at once each ancestor's subtree is done.
+      pending = []
+      node = first_child
+      while node
+        next_node = node.next_sibling
+        yield node
+        pending << next_node if next_node
+        node = node.first_child || pending.pop
       end
     end
 

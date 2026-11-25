@@ -8,8 +8,10 @@ use node::CommonmarkerNode;
 use plugins::format_plugins;
 use plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
 
+mod nesting;
 mod options;
 mod plugins;
+mod rctree;
 mod utils;
 
 use rb_allocator::ruby_global_allocator;
@@ -53,12 +55,12 @@ fn commonmark_parse(ruby: &Ruby, args: &[Value]) -> Result<CommonmarkerNode, mag
         scan_args::get_kwargs::<_, (), (Option<Value>,), ()>(args.keywords, &[], &["options"])?;
     let (rb_options,) = kwargs.optional;
 
-    let comrak_options = format_options(ruby, rb_options)?;
+    let options = format_options(ruby, rb_options)?;
 
     let arena = Arena::new();
-    let root = parse_document(&arena, commonmark_str, &comrak_options);
+    let root = parse_document(&arena, commonmark_str, &options.comrak);
 
-    CommonmarkerNode::new_from_comrak_node(root)
+    CommonmarkerNode::new_from_comrak_node(ruby, root, options.max_nesting_depth)
 }
 
 fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Error> {
@@ -82,7 +84,7 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Er
     )?;
     let (rb_options, rb_plugins) = kwargs.optional;
 
-    let comrak_options = format_options(ruby, rb_options)?;
+    let options = format_options(ruby, rb_options)?;
 
     let mut comrak_plugins = comrak::options::Plugins::default();
 
@@ -94,7 +96,9 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Er
     };
 
     match syntect_adapter {
-        Some(ref adapter) => comrak_plugins.render.codefence_syntax_highlighter = Some(adapter),
+        Some(ref adapter) => {
+            comrak_plugins.render.codefence_syntax_highlighter = Some(adapter.as_ref())
+        }
         None => comrak_plugins.render.codefence_syntax_highlighter = None,
     }
 
@@ -104,9 +108,11 @@ fn commonmark_to_html(ruby: &Ruby, args: &[Value]) -> Result<RString, magnus::Er
 
     // Parse and render directly to Ruby string, avoiding intermediate Rust String allocation
     let arena = Arena::new();
-    let root = parse_document(&arena, commonmark_str, &comrak_options);
+    let root = parse_document(&arena, commonmark_str, &options.comrak);
 
-    comrak::html::format_document_with_plugins(root, &comrak_options, &mut writer, &comrak_plugins)
+    nesting::check(ruby, root, options.max_nesting_depth)?;
+
+    comrak::html::format_document_with_plugins(root, &options.comrak, &mut writer, &comrak_plugins)
         .map_err(|e| magnus::Error::new(ruby.exception_runtime_error(), e.to_string()))?;
 
     Ok(output)

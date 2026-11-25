@@ -5,7 +5,7 @@ Ruby wrapper for Rust's [comrak](https://github.com/kivikakk/comrak) crate.
 It passes all of the CommonMark test suite, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
 
 > [!NOTE]
-> By default, the following extensions are enabled for end user convenience: `strikethrough`, `tagfilter`, `table`, `autolink`, `tasklist` (all from the [GFM spec](http://github.github.com/gfm/)), and `shortcodes`. The `syntax_highlighter` plugin is also enabled by default, using the `"base16-ocean.dark"` theme.
+> By default, the following extensions are enabled for end user convenience: `strikethrough`, `table`, `autolink`, `tasklist` (all from the [GFM spec](http://github.github.com/gfm/)), and `shortcodes`. The `syntax_highlighter` plugin is also enabled by default, using the `"base16-ocean.dark"` theme.
 >
 > For more information on the available options and extensions, see [the documentation below](#options-and-plugins).
 
@@ -184,6 +184,7 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `leave_footnote_definitions` | Allow footnote definitions to remain in their original positions instead of being moved to the document's end (only affects AST)            | `false` |
 | `ignore_setext`              | Ignores setext-style headings.                                                                                                              | `false` |
 | `sourcepos_chars`            | Use character-based column tracking in source positions instead of byte-based. Relevant for multi-byte UTF-8 documents with `sourcepos`.    | `false` |
+| `max_nesting_depth`          | The deepest a node may nest below the document. Deeper documents raise `Commonmarker::NestingDepthExceededError` instead of being parsed.  | `1000`  |
 
 ### Render options
 
@@ -218,7 +219,6 @@ Commonmarker.to_html('"Hi *there*"', options: {
 | Name                          | Description                                                                                                         | Default |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------- |
 | `strikethrough`               | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
-| `tagfilter`                   | Enables the [tagfilter extension](https://github.github.com/gfm/#disallowed-raw-html-extension-) from the GFM spec. | `true`  |
 | `table`                       | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
 | `autolink`                    | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `true`  |
 | `tasklist`                    | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |

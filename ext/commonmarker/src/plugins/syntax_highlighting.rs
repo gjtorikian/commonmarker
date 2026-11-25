@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::{Arc, OnceLock};
 
 use comrak::plugins::syntect::{SyntectAdapter, SyntectAdapterBuilder};
 
@@ -12,7 +13,7 @@ use syntect::highlighting::ThemeSet;
 pub fn construct_syntax_highlighter_from_plugin(
     ruby: &Ruby,
     rb_plugins: Option<RHash>,
-) -> Result<Option<SyntectAdapter>, magnus::Error> {
+) -> Result<Option<Arc<SyntectAdapter>>, magnus::Error> {
     let rb_plugins = match rb_plugins {
         None => return Ok(None),
         Some(p) => p,
@@ -43,7 +44,11 @@ pub fn construct_syntax_highlighter_from_plugin(
 
     // Empty theme means use CSS classes instead of inline styles
     if theme.is_empty() {
-        return Ok(Some(SyntectAdapter::new(None)));
+        // Avoid reloading syntax sets and recompiling regexes for every CSS-mode render.
+        static CSS_ADAPTER: OnceLock<Arc<SyntectAdapter>> = OnceLock::new();
+        return Ok(Some(Arc::clone(
+            CSS_ADAPTER.get_or_init(|| Arc::new(SyntectAdapter::new(None))),
+        )));
     }
 
     let path = PathBuf::from(&path);
@@ -59,7 +64,7 @@ pub fn construct_syntax_highlighter_from_plugin(
                     format!("theme `{}` does not exist", theme),
                 )
             })?;
-        return Ok(Some(SyntectAdapter::new(Some(&theme))));
+        return Ok(Some(Arc::new(SyntectAdapter::new(Some(&theme)))));
     }
 
     // Custom theme path provided
@@ -88,5 +93,5 @@ pub fn construct_syntax_highlighter_from_plugin(
         )
     })?;
 
-    Ok(Some(builder.theme_set(ts).theme(&theme).build()))
+    Ok(Some(Arc::new(builder.theme_set(ts).theme(&theme).build())))
 }

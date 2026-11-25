@@ -2,6 +2,7 @@
 
 require_relative "commonmarker/extension"
 
+require "commonmarker/errors"
 require "commonmarker/node"
 require "commonmarker/renderer"
 require "commonmarker/version"
