@@ -21,6 +21,7 @@ syntect = { version = "5.3", default-features = false, features = [
 # Everywhere except Windows: Oniguruma, the faster engine.
 [target.'cfg(not(windows))'.dependencies]
 comrak = { version = "1.2", default-features = false, features = [
+    "attributes",
     "shortcodes",
     "syntect-onig",
 ] }
@@ -30,6 +31,7 @@ comrak = { version = "1.2", default-features = false, features = [
 # syntect-fancy swaps in the pure-Rust fancy-regex backend instead.
 [target.'cfg(windows)'.dependencies]
 comrak = { version = "1.2", default-features = false, features = [
+    "attributes",
     "shortcodes",
     "syntect-fancy",
 ] }

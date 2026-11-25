@@ -8,7 +8,11 @@ use comrak::nodes::{
     NodeShortCode, NodeStrikethrough, NodeStrong, NodeTable, NodeTableRow, NodeTaskItem,
     NodeThematicBreak, NodeValue as ComrakNodeValue, NodeWikiLink, TableAlignment,
 };
-use magnus::{function, method, scan_args, Module, Object, RHash, RModule, Symbol, Value};
+use magnus::r_hash::ForEach;
+use magnus::value::ReprValue;
+use magnus::{
+    function, method, scan_args, Module, Object, RHash, RModule, Symbol, TryConvert, Value,
+};
 use magnus::{RArray, Ruby};
 use typed_arena::Arena;
 
@@ -1172,6 +1176,112 @@ impl CommonmarkerNode {
         }
     }
 
+    /// The node's parsed attributes (`{#id .class key=value}`), as a Hash of
+    /// `id`, `classes` and `pairs`, or `nil` when the node has none.
+    fn get_attributes(ruby: &Ruby, rb_self: &Self) -> Result<Option<RHash>, magnus::Error> {
+        let node = rb_self.inner.borrow();
+
+        let Some(attrs) = &node.data.attrs else {
+            return Ok(None);
+        };
+
+        let pairs = ruby.hash_new();
+        for (key, value) in &attrs.pairs {
+            pairs.aset(key.as_str(), value.as_str())?;
+        }
+
+        let result = ruby.hash_new();
+        result.aset(ruby.to_symbol("id"), attrs.id.as_deref())?;
+        result.aset(ruby.to_symbol("classes"), attrs.classes.clone())?;
+        result.aset(ruby.to_symbol("pairs"), pairs)?;
+
+        Ok(Some(result))
+    }
+
+    /// Replaces the node's attributes. Accepts `nil` to clear them, or a Hash
+    /// with any of `id` (String), `classes` (Array) and `pairs` (Hash). Strings
+    /// and Symbols are both accepted for names and values.
+    fn set_attributes(ruby: &Ruby, rb_self: &Self, value: Value) -> Result<bool, magnus::Error> {
+        fn as_string(ruby: &Ruby, value: Value, what: &str) -> Result<String, magnus::Error> {
+            if let Some(symbol) = Symbol::from_value(value) {
+                return Ok(symbol.name()?.into_owned());
+            }
+            String::try_convert(value).map_err(|_| {
+                magnus::Error::new(
+                    ruby.exception_type_error(),
+                    format!(
+                        "{} must be a String or Symbol; got {}",
+                        what,
+                        crate::utils::get_classname(value)
+                    ),
+                )
+            })
+        }
+
+        let mut node = rb_self.inner.borrow_mut();
+
+        if value.is_nil() {
+            node.data.attrs = None;
+            return Ok(true);
+        }
+
+        let hash: RHash = TryConvert::try_convert(value).map_err(|_| {
+            magnus::Error::new(
+                ruby.exception_type_error(),
+                format!(
+                    "attributes must be a Hash or nil; got {}",
+                    crate::utils::get_classname(value)
+                ),
+            )
+        })?;
+
+        let mut attrs = comrak::nodes::Attributes::default();
+
+        if let Some(id) = hash.get(ruby.to_symbol("id")).filter(|id| !id.is_nil()) {
+            attrs.id = Some(as_string(ruby, id, "attribute id")?);
+        }
+
+        if let Some(classes) = hash.get(ruby.to_symbol("classes")).filter(|c| !c.is_nil()) {
+            let classes: RArray = TryConvert::try_convert(classes).map_err(|_| {
+                magnus::Error::new(
+                    ruby.exception_type_error(),
+                    format!(
+                        "attribute classes must be an Array; got {}",
+                        crate::utils::get_classname(classes)
+                    ),
+                )
+            })?;
+            for class in classes.into_iter() {
+                attrs
+                    .classes
+                    .push(as_string(ruby, class, "attribute class")?);
+            }
+        }
+
+        if let Some(pairs) = hash.get(ruby.to_symbol("pairs")).filter(|p| !p.is_nil()) {
+            let pairs: RHash = TryConvert::try_convert(pairs).map_err(|_| {
+                magnus::Error::new(
+                    ruby.exception_type_error(),
+                    format!(
+                        "attribute pairs must be a Hash; got {}",
+                        crate::utils::get_classname(pairs)
+                    ),
+                )
+            })?;
+            pairs.foreach(|key: Value, value: Value| {
+                attrs.pairs.push((
+                    as_string(ruby, key, "attribute name")?,
+                    as_string(ruby, value, "attribute value")?,
+                ));
+                Ok(ForEach::Continue)
+            })?;
+        }
+
+        node.data.attrs = Some(Box::new(attrs));
+
+        Ok(true)
+    }
+
     fn get_alert_type(ruby: &Ruby, rb_self: &Self) -> Result<Symbol, magnus::Error> {
         let node = rb_self.inner.borrow();
 
@@ -1480,6 +1590,8 @@ pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
     c_node.define_method("fenced=", method!(CommonmarkerNode::set_fenced, 1))?;
     c_node.define_method("fence_info", method!(CommonmarkerNode::get_fence_info, 0))?;
     c_node.define_method("fence_info=", method!(CommonmarkerNode::set_fence_info, 1))?;
+    c_node.define_method("attributes", method!(CommonmarkerNode::get_attributes, 0))?;
+    c_node.define_method("attributes=", method!(CommonmarkerNode::set_attributes, 1))?;
     c_node.define_method("alert_type", method!(CommonmarkerNode::get_alert_type, 0))?;
     c_node.define_method("alert_type=", method!(CommonmarkerNode::set_alert_type, 1))?;
     c_node.define_method(
