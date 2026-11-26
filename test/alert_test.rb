@@ -8,7 +8,7 @@ class FrontmatterTest < Minitest::Test
 
     expected = <<~HTML
       <blockquote>
-      <p>[!note]<br />
+      <p>[!note]
       Something of note</p>
       </blockquote>
     HTML
@@ -31,7 +31,7 @@ class FrontmatterTest < Minitest::Test
 
     expected = <<~HTML
       <blockquote>
-      <p>[!TIP]<br />
+      <p>[!TIP]
       Something of tip</p>
       </blockquote>
     HTML

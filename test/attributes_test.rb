@@ -28,7 +28,7 @@ class AttributesTest < Minitest::Test
   end
 
   def test_explicit_ids_win_over_generated_header_ids
-    options = { extension: { header_attributes: true }, render: { attributes: true, unsafe: true } }
+    options = { extension: { header_attributes: true, header_ids: "" }, render: { attributes: true, unsafe: true } }
 
     assert_includes(Commonmarker.to_html(HEADING, options: options), "<h2 id=\"custom\" class=\"big\" data-x=\"1\">Intro")
   end
@@ -46,12 +46,12 @@ class AttributesTest < Minitest::Test
       render: { attributes: true, unsafe: true },
     }
     expected = <<~HTML
-      <pre class="wide" id="ex" lang="ruby"><code>puts 1
+      <pre class="wide" id="ex"><code class="language-ruby">puts 1
       </code></pre>
       <p>Some <code class="kw">x</code> and <img src="comrak.png" alt="Comrak" class="logo" width="100" /></p>
     HTML
 
-    assert_equal(expected, Commonmarker.to_html(md, options: options, plugins: { syntax_highlighter: nil }))
+    assert_equal(expected, Commonmarker.to_html(md, options: options))
   end
 
   def test_attributes_can_be_assigned

@@ -62,10 +62,11 @@ class InstanceTest < Minitest::Test
 
   def test_plugins_apply
     highlighted = Commonmarker.new(plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
-    plain = Commonmarker.new(plugins: { syntax_highlighter: nil })
+    plain = Commonmarker.new
 
     assert_match(/background-color:#ffffff;/, highlighted.to_html(CODE))
-    assert_equal("<pre lang=\"ruby\"><code>def hello\nend\n</code></pre>\n", plain.to_html(CODE))
+    assert_equal("<pre><code class=\"language-ruby\">def hello\nend\n</code></pre>\n", plain.to_html(CODE))
+    assert_equal(plain.to_html(CODE), Commonmarker.new(plugins: { syntax_highlighter: nil }).to_html(CODE))
   end
 
   def test_plugins_accept_custom_theme_path
@@ -174,11 +175,12 @@ class InstanceTest < Minitest::Test
   end
 
   def test_to_html_renders_a_node_with_instance_plugins
-    plain = Commonmarker.new(plugins: { syntax_highlighter: nil })
-    doc = plain.parse(CODE)
+    highlighted = Commonmarker.new(plugins: { syntax_highlighter: {} })
+    doc = highlighted.parse(CODE)
 
-    assert_equal("<pre lang=\"ruby\"><code>def hello\nend\n</code></pre>\n", plain.to_html(doc))
-    assert_match(/background-color:#2b303b;/, doc.to_html)
+    assert_match(/background-color:#2b303b;/, highlighted.to_html(doc))
+    # the node's own renderer still defaults to no plugins
+    assert_equal("<pre><code class=\"language-ruby\">def hello\nend\n</code></pre>\n", doc.to_html)
   end
 
   def test_to_commonmark_renders_a_node

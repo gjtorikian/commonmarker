@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.2", "< 5"
   spec.required_rubygems_version = ">= 3.4"
 
-  spec.files = ["LICENSE.txt", "README.md", "Cargo.lock", "Cargo.toml"]
+  spec.files = ["LICENSE.txt", "README.md", "UPGRADING.md", "Cargo.lock", "Cargo.toml"]
   spec.files += Dir.glob("lib/**/*.rb")
   spec.files += Dir.glob("ext/**/*.{rs,toml,lock,rb}")
   spec.bindir = "exe"

@@ -4,7 +4,13 @@ require "test_helper"
 
 class LinebreaksTest < Minitest::Test
   def setup
-    @options = { parse: { hardbreaks: true } }
+    @options = { render: { hardbreaks: true } }
+  end
+
+  def test_softbreaks_by_default
+    html = Commonmarker.to_html("foo\nbaz")
+
+    assert_equal("<p>foo\nbaz</p>\n", html)
   end
 
   def test_hardbreak_no_spaces

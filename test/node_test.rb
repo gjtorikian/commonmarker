@@ -208,7 +208,7 @@ class NodeTest < Minitest::Test
       @header_node.header_level = 6
 
       assert_equal(6, @header_node.header_level)
-      assert_match(%r{<h6 id="header-three">Header Three<a href="#header-three" aria-label="Link to heading 'Header Three'" data-heading-content="Header Three" class="anchor"></a></h6>\n}, @document.to_html)
+      assert_match(%r{<h6>Header Three</h6>\n}, @document.to_html)
     end
   end
 
@@ -325,12 +325,13 @@ class NodeTest < Minitest::Test
     end
 
     def test_can_set_fence_info
-      assert_match(/<pre lang="ruby"/, @document.to_html)
+      assert_match(/<code class="language-ruby">/, @document.to_html)
 
       @fence_node.fence_info = "perl"
 
       assert_equal("perl", @fence_node.fence_info)
-      assert_match(/<pre lang="perl"/, @document.to_html)
+      assert_match(/<code class="language-perl">/, @document.to_html)
+      assert_match(/<pre lang="perl">/, @document.to_html(options: { render: { github_pre_lang: true } }))
     end
   end
 

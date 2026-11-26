@@ -41,7 +41,7 @@ class TasklistsTest < Minitest::Test
       | - |
       | [ ] |
     MD
-    html = Commonmarker.to_html(text, options: { parse: { tasklist_in_table: true } })
+    html = Commonmarker.to_html(text, options: { parse: { tasklist_in_table: true }, extension: { table: true, tasklist: true } })
     expected = <<~HTML
       <table>
       <thead>

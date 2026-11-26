@@ -17,12 +17,7 @@ class IgnoreSetextTest < Minitest::Test
       <h2>This is an H2</h2>
     HTML
 
-    opts = {
-      render: { hardbreaks: false },
-      extension: { header_ids: nil },
-    }
-
-    assert_equal(expected, Commonmarker.to_html(md, options: opts))
+    assert_equal(expected, Commonmarker.to_html(md))
   end
 
   def test_ignore_setext_headers
@@ -35,7 +30,7 @@ class IgnoreSetextTest < Minitest::Test
     MARKDOWN
 
     expected = <<~HTML
-      <p>This is an H1<br />
+      <p>This is an H1
       =============</p>
       <p>This is an H2</p>
       <hr />

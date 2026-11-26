@@ -3,7 +3,14 @@
 require "test_helper"
 
 class SyntaxHighlightingTest < Minitest::Test
-  def test_default_is_to_highlight
+  PLAIN = <<~HTML
+    <pre><code class="language-ruby">def hello
+      puts &quot;hello&quot;
+    end
+    </code></pre>
+  HTML
+
+  def test_default_is_not_to_highlight
     code = <<~CODE
       ```ruby
       def hello
@@ -12,7 +19,20 @@ class SyntaxHighlightingTest < Minitest::Test
       ```
     CODE
 
-    html = Commonmarker.to_html(code)
+    assert_equal(PLAIN, Commonmarker.to_html(code))
+    assert_equal(PLAIN, Commonmarker.to_html(code, plugins: {}))
+  end
+
+  def test_empty_hash_enables_the_default_theme
+    code = <<~CODE
+      ```ruby
+      def hello
+        puts "hello"
+      end
+      ```
+    CODE
+
+    html = Commonmarker.to_html(code, plugins: { syntax_highlighter: {} })
 
     result = <<~HTML
       <span style="color:#b48ead;">def </span><span style="color:#8fa1b3;">hello
@@ -21,14 +41,13 @@ class SyntaxHighlightingTest < Minitest::Test
       </span></code></pre>
     HTML
 
-    lang = %(lang="ruby")
+    lang = %(class="language-ruby")
     background = %(style="background-color:#2b303b;")
 
     assert_match(result, html)
-    # doing this because sometimes comrak returns <pre lang="ruby" style="...">
-    # and other times <pre style="..." lang="ruby" >
     assert_match(lang, html)
     assert_match(background, html)
+    assert_equal(html, Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "base16-ocean.dark" } }))
   end
 
   def test_can_disable_highlighting
@@ -42,14 +61,7 @@ class SyntaxHighlightingTest < Minitest::Test
 
     html = Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 
-    result = <<~CODE
-      <pre lang="ruby"><code>def hello
-        puts &quot;hello&quot;
-      end
-      </code></pre>
-    CODE
-
-    assert_equal(result, html)
+    assert_equal(PLAIN, html)
   end
 
   def test_non_hash_value_is_an_error
@@ -63,20 +75,6 @@ class SyntaxHighlightingTest < Minitest::Test
 
     assert_raises(TypeError) do
       Commonmarker.to_html(code, plugins: { syntax_highlighter: "wow!" })
-    end
-  end
-
-  def test_lack_of_theme_is_an_error
-    code = <<~CODE
-      ```ruby
-      def hello
-        puts "hello"
-      end
-      ```
-    CODE
-
-    assert_raises(TypeError) do
-      Commonmarker.to_html(code, plugins: { syntax_highlighter: {} })
     end
   end
 
@@ -106,7 +104,7 @@ class SyntaxHighlightingTest < Minitest::Test
     html = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "" } })
 
     result = <<~CODE
-      <pre class="syntax-highlighting" lang="ruby"><code><span class="source ruby"><span class="meta function ruby"><span class="keyword control def ruby">def</span></span><span class="meta function ruby"> <span class="entity name function ruby">hello</span></span>
+      <pre class="syntax-highlighting"><code class="language-ruby"><span class="source ruby"><span class="meta function ruby"><span class="keyword control def ruby">def</span></span><span class="meta function ruby"> <span class="entity name function ruby">hello</span></span>
         <span class="support function builtin ruby">puts</span> <span class="string quoted double ruby"><span class="punctuation definition string begin ruby">&quot;</span>hello<span class="punctuation definition string end ruby">&quot;</span></span>
       <span class="keyword control ruby">end</span>
       </span></code></pre>
@@ -132,12 +130,10 @@ class SyntaxHighlightingTest < Minitest::Test
       </span></code></pre>
     HTML
 
-    lang = %(lang="ruby")
+    lang = %(class="language-ruby")
     background = %(style="background-color:#ffffff;")
 
     assert_match(result, html)
-    # doing this because sometimes comrak returns <pre lang="ruby" style="...">
-    # and other times <pre style="..." lang="ruby" >
     assert_match(lang, html)
     assert_match(background, html)
   end
@@ -173,12 +169,10 @@ class SyntaxHighlightingTest < Minitest::Test
       </span></code></pre>
     HTML
 
-    lang = %(lang="ruby")
+    lang = %(class="language-ruby")
     background = %(style="background-color:#323232;")
 
     assert_match(result, html)
-    # doing this because sometimes comrak returns <pre lang="ruby" style="...">
-    # and other times <pre style="..." lang="ruby" >
     assert_match(lang, html)
     assert_match(background, html)
   end
@@ -221,7 +215,7 @@ class SyntaxHighlightingTest < Minitest::Test
     CODE
 
     github = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
-    ocean = Commonmarker.to_html(code)
+    ocean = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "base16-ocean.dark" } })
     monokai = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: FIXTURES_DIR } })
 
     assert_match(/background-color:#ffffff;/, github)
@@ -230,7 +224,7 @@ class SyntaxHighlightingTest < Minitest::Test
 
     # second renders come from the cache and must match the first
     assert_equal(github, Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } }))
-    assert_equal(ocean, Commonmarker.to_html(code))
+    assert_equal(ocean, Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "base16-ocean.dark" } }))
     assert_equal(monokai, Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: FIXTURES_DIR } }))
   end
 

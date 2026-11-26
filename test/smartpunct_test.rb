@@ -6,15 +6,7 @@ class SmartPunctTest < Minitest::Test
   smart_punct = load_spec_file("smart_punct.txt")
 
   smart_punct.each do |testcase|
-    opts = {
-      parse: {
-        smart: true,
-      },
-      render: {
-        hardbreaks: false,
-        escaped_char_spans: false,
-      },
-    }
+    opts = { parse: { smart: true } }
 
     define_method(:"test_smart_punct_example_#{testcase[:example]}") do
       html = Commonmarker.to_html(testcase[:markdown], options: opts).strip

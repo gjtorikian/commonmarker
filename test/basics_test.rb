@@ -15,6 +15,6 @@ class BasicsTest < Minitest::Test
 
     html = Commonmarker.to_html(text, options: Commonmarker::Config::OPTIONS).rstrip
 
-    assert_equal("<p>Hello <strong>world</strong> -- how are <em>you</em> today? I'm <del>fine</del>, <del>yourself</del>?</p>", html)
+    assert_equal("<p>Hello <strong>world</strong> -- how are <em>you</em> today? I'm ~~fine~~, ~yourself~?</p>", html)
   end
 end
