@@ -12,24 +12,17 @@ class RenderOptionsTest < Minitest::Test
     assert_equal("- one\n- two\n", doc.to_commonmark(options: { render: { list_style: :dash } }))
   end
 
-  def test_list_style_accepts_strings_too
-    doc = Commonmarker.parse("- one\n- two\n")
+  def test_list_style_must_be_a_symbol
+    err = assert_raises(TypeError) { Commonmarker.to_html("- one", options: { render: { list_style: "plus" } }) }
+    assert_equal("render option `:list_style` must be Symbol; got String", err.message)
 
-    assert_equal("+ one\n+ two\n", doc.to_commonmark(options: { render: { list_style: "plus" } }))
-    assert_equal("* one\n* two\n", doc.to_commonmark(options: { render: { list_style: "star" } }))
-  end
-
-  def test_list_style_must_be_a_string_or_symbol
     err = assert_raises(TypeError) { Commonmarker.to_html("- one", options: { render: { list_style: 1 } }) }
-    assert_equal("render option `:list_style` must be a String or Symbol; got Integer", err.message)
+    assert_equal("render option `:list_style` must be Symbol; got Integer", err.message)
   end
 
   def test_list_style_rejects_unknown_names
     err = assert_raises(ArgumentError) { Commonmarker.to_html("- one", options: { render: { list_style: :bullet } }) }
-    assert_equal("render option `:list_style` must be one of :dash, :plus, :star; got \"bullet\"", err.message)
-
-    err = assert_raises(ArgumentError) { Commonmarker.to_html("- one", options: { render: { list_style: "bullet" } }) }
-    assert_equal("render option `:list_style` must be one of :dash, :plus, :star; got \"bullet\"", err.message)
+    assert_equal("render option `:list_style` must be one of :dash, :plus, :star; got :bullet", err.message)
   end
 
   def test_list_style_nil_keeps_the_default

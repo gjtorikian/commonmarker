@@ -119,9 +119,9 @@ const RENDER_OL_WIDTH: &str = "ol_width";
 const RENDER_EXPERIMENTAL_MINIMIZE_COMMONMARK: &str = "experimental_minimize_commonmark";
 const RENDER_ATTRIBUTES: &str = "attributes";
 
-/// The names `alert_style` accepts, as Strings or Symbols.
+/// The Symbols `alert_style` accepts.
 const ALERT_STYLES: &[&str] = &["specific", "semantic"];
-/// The names `list_style` accepts, as Strings or Symbols.
+/// The Symbols `list_style` accepts.
 const LIST_STYLES: &[&str] = &["dash", "plus", "star"];
 
 const EXTENSION_STRIKETHROUGH: &str = "strikethrough";
@@ -255,10 +255,10 @@ fn validate_optional_string(
     Ok(Some(s))
 }
 
-/// Validates an option that takes one of a fixed set of names (for enum-like
-/// fields such as `list_style`). Accepts a String or a Symbol; nil means
-/// "keep the default". Returns the matched name, or Err if the value is of
-/// another type or is not one of `allowed`.
+/// Validates an option that takes one of a fixed set of Symbols (for enum-like
+/// fields such as `list_style`). nil means "keep the default". Returns the
+/// matched name, or Err if the value is not a Symbol or is not one of
+/// `allowed`.
 fn validate_enum(
     ruby: &Ruby,
     value: Value,
@@ -269,28 +269,25 @@ fn validate_enum(
     if value.is_nil() {
         return Ok(None);
     }
-    let name: String = if let Some(symbol) = Symbol::from_value(value) {
-        symbol.name()?.into_owned()
-    } else {
-        String::try_convert(value).map_err(|_| {
-            Error::new(
-                ruby.exception_type_error(),
-                format!(
-                    "{} option `{}` must be a String or Symbol; got {}",
-                    category,
-                    format_args!(":{}", key),
-                    crate::utils::get_classname(value)
-                ),
-            )
-        })?
+    let Some(symbol) = Symbol::from_value(value) else {
+        return Err(Error::new(
+            ruby.exception_type_error(),
+            format!(
+                "{} option `{}` must be Symbol; got {}",
+                category,
+                format_args!(":{}", key),
+                crate::utils::get_classname(value)
+            ),
+        ));
     };
+    let name = symbol.name()?.into_owned();
     if allowed.contains(&name.as_str()) {
         return Ok(Some(name));
     }
     Err(Error::new(
         ruby.exception_arg_error(),
         format!(
-            "{} option `{}` must be one of {}; got {:?}",
+            "{} option `{}` must be one of {}; got :{}",
             category,
             format_args!(":{}", key),
             allowed
