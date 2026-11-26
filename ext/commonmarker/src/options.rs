@@ -295,7 +295,7 @@ fn validate_enum(
             format_args!(":{}", key),
             allowed
                 .iter()
-                .map(|a| format!(":{}", a))
+                .map(|a| format!(":{a}"))
                 .collect::<Vec<_>>()
                 .join(", "),
             name
