@@ -12,7 +12,7 @@ class FrontmatterTest < Minitest::Test
       </code></pre>
     HTML
 
-    assert_equal(expected, Commonmarker.to_html(md, plugins: nil))
+    assert_equal(expected, Commonmarker.to_html(md))
   end
 
   def test_frontmatter_custom_delimiter

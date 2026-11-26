@@ -44,8 +44,7 @@ class ExtensionsTest < Minitest::Test
       : Ruby wrapper for comrak (CommonMark parser)
     MARKDOWN
 
-    extensions = { description_lists: true }
-    options = { extension: extensions, render: { hardbreaks: false } }
+    options = { extension: { description_lists: true } }
     output = Commonmarker.to_html(markdown, options: options)
 
     html = <<~HTML
@@ -59,31 +58,33 @@ class ExtensionsTest < Minitest::Test
     assert_equal(output, html)
   end
 
-  def test_emoji_renders_by_default
+  def test_emoji_does_not_render_by_default
     assert_equal(
-      "<p>Happy Friday! 😄</p>\n",
+      "<p>Happy Friday! :smile:</p>\n",
       Commonmarker.to_html("Happy Friday! :smile:"),
     )
   end
 
-  def test_can_disable_emoji_renders
-    options = { extension: { shortcodes: false } }
+  def test_can_enable_emoji_renders
+    options = { extension: { shortcodes: true } }
 
     assert_equal(
-      "<p>Happy Friday! :smile:</p>\n",
+      "<p>Happy Friday! 😄</p>\n",
       Commonmarker.to_html("Happy Friday! :smile:", options: options),
     )
   end
 
   def test_subscript_disabled_by_default
+    options = { extension: { strikethrough: true } }
+
     assert_equal(
       "<p><del>H<del>2</del>O</del></p>\n",
-      Commonmarker.to_html("~~H~2~O~~"),
+      Commonmarker.to_html("~~H~2~O~~", options: options),
     )
   end
 
   def test_can_support_subscript
-    options = { extension: { subscript: true } }
+    options = { extension: { strikethrough: true, subscript: true } }
 
     assert_equal(
       "<p><del>H<sub>2</sub>O</del></p>\n",

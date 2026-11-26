@@ -11,12 +11,16 @@ pub const DEFAULT_THEME: &str = "base16-ocean.dark";
 pub const DEFAULT_PATH: &str = "";
 
 /// Formats and validates plugins from Ruby.
-/// Returns None if syntax highlighting should be disabled (plugins: nil or syntax_highlighter: nil).
-/// Returns Some(RHash) with merged defaults if syntax highlighting should be enabled.
+///
+/// No plugin is enabled by default, as in comrak. Returns None unless the Hash
+/// asks for the syntax highlighter (`syntax_highlighter: {}` enables it with
+/// the default theme), and otherwise Some(RHash) holding
+/// `{ syntax_highlighter: { theme: String, path: String } }` with the defaults
+/// filled in.
 pub fn format_plugins(ruby: &Ruby, rb_plugins: Option<Value>) -> Result<Option<RHash>, Error> {
     let rb_plugins = match rb_plugins {
-        None => return Ok(Some(default_plugins_to_hash(ruby)?)),
-        Some(v) if v.is_nil() => return Ok(None), // plugins: nil disables syntax highlighting
+        None => return Ok(None),
+        Some(v) if v.is_nil() => return Ok(None),
         Some(v) => v,
     };
 
@@ -30,22 +34,12 @@ pub fn format_plugins(ruby: &Ruby, rb_plugins: Option<Value>) -> Result<Option<R
         )
     })?;
 
-    if plugins_hash.is_empty() {
-        return Ok(Some(default_plugins_to_hash(ruby)?));
-    }
-
-    // Check for syntax_highlighter key
+    // The syntax highlighter is the only plugin, and it is off unless asked for.
     let syntax_highlighter_value = plugins_hash.get(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN));
 
     match syntax_highlighter_value {
-        None => {
-            // No syntax_highlighter key, use defaults
-            Ok(Some(default_plugins_to_hash(ruby)?))
-        }
-        Some(v) if v.is_nil() => {
-            // syntax_highlighter: nil disables syntax highlighting
-            Ok(None)
-        }
+        None => Ok(None),
+        Some(v) if v.is_nil() => Ok(None),
         Some(v) => {
             // Validate it's a hash
             let sh_hash: RHash = TryConvert::try_convert(v).map_err(|_| {
@@ -58,14 +52,7 @@ pub fn format_plugins(ruby: &Ruby, rb_plugins: Option<Value>) -> Result<Option<R
                 )
             })?;
 
-            if sh_hash.is_empty() {
-                return Err(Error::new(
-                    ruby.exception_type_error(),
-                    "syntax_highlighter cannot be an empty Hash",
-                ));
-            }
-
-            // Merge with defaults
+            // Merge with the plugin's defaults; `{}` enables it with the default theme.
             let result = ruby.hash_new();
             let merged_sh = ruby.hash_new();
 
@@ -113,19 +100,11 @@ pub fn format_plugins(ruby: &Ruby, rb_plugins: Option<Value>) -> Result<Option<R
     }
 }
 
-/// Returns the default plugins as a Ruby Hash for introspection.
+/// Returns the default plugins as a Ruby Hash for introspection: every known
+/// plugin, each `nil` because none is enabled by default.
 pub fn default_plugins_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     let result = ruby.hash_new();
-    let sh = ruby.hash_new();
-    sh.aset(
-        ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN_THEME_KEY),
-        DEFAULT_THEME,
-    )?;
-    sh.aset(
-        ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN_PATH_KEY),
-        DEFAULT_PATH,
-    )?;
-    result.aset(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN), sh)?;
+    result.aset(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN), ruby.qnil())?;
     Ok(result)
 }
 

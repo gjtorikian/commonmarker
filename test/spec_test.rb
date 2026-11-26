@@ -10,32 +10,18 @@ class SpecTest < Minitest::Test
     next if testcase[:extensions].include?(:tagfilter)
 
     define_method(:"test_to_html_example_#{testcase[:example]}") do
-      render_options = Commonmarker::Config::OPTIONS[:render].each_with_object({}) do |(key, _value), hsh|
-        hsh[key] = nil
-      end
-      render_options[:unsafe] = true
-      render_options[:gfm_quirks] = true
-
-      string_extensions = [:front_matter_delimiter, :header_ids]
-      extensions_options = Commonmarker::Config::OPTIONS[:extension].each_with_object({}) do |(key, _value), hsh|
-        hsh[key] = if string_extensions.include?(key)
-          nil
-        else
-          false
-        end
-      end
-
-      testcase[:extensions].each do |ext, _value|
-        extensions_options[ext] = true
-      end
-
+      # The defaults are the spec's: only the spec's own raw-HTML and GFM
+      # quirk settings are added, plus the extensions each example names.
       options = {
-        render: render_options,
-        extension: extensions_options,
+        render: { unsafe: true, gfm_quirks: true },
+        extension: { tasklist: true },
       }
 
-      options[:extension][:tasklist] = true
-      actual = Commonmarker.to_html(testcase[:markdown], options: options, plugins: nil).rstrip
+      testcase[:extensions].each do |ext|
+        options[:extension][ext] = true
+      end
+
+      actual = Commonmarker.to_html(testcase[:markdown], options: options).rstrip
 
       assert_equal testcase[:html], actual, testcase[:markdown]
     end

@@ -6,83 +6,9 @@ use magnus::{r_hash::ForEach, Error, RHash, Ruby, Symbol, Value};
 
 use crate::nesting::DEFAULT_MAX_NESTING_DEPTH;
 
-// Commonmarker's default options (different from comrak defaults)
-pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(|| {
-    let mut options = comrak::Options::default();
-
-    // Parse options
-    options.parse.smart = false;
-    options.parse.default_info_string = Some(String::new());
-    options.parse.relaxed_tasklist_matching = false;
-    options.parse.relaxed_autolinks = false;
-    options.parse.ignore_setext = false;
-    options.parse.leave_footnote_definitions = false;
-    options.parse.sourcepos_chars = false;
-    options.parse.tasklist_in_table = false;
-    options.parse.escaped_char_spans = false;
-
-    // Render options
-    options.render.hardbreaks = true;
-    options.render.github_pre_lang = true;
-    options.render.full_info_string = false;
-    options.render.width = 80;
-    options.render.r#unsafe = false;
-    options.render.escape = false;
-    options.render.sourcepos = false;
-    options.render.escaped_char_spans = true;
-    options.render.ignore_empty_links = false;
-    options.render.gfm_quirks = false;
-    options.render.prefer_fenced = false;
-    options.render.tasklist_classes = false;
-    options.render.compact_html = false;
-    options.render.alert_style = comrak::options::AlertStyleType::Specific;
-    options.render.list_style = comrak::options::ListStyleType::Dash;
-    options.render.figure_with_caption = false;
-    options.render.ol_width = 0;
-    options.render.experimental_minimize_commonmark = false;
-    options.render.attributes = false;
-
-    // Extension options
-    options.extension.strikethrough = true;
-    options.extension.table = true;
-    options.extension.autolink = true;
-    options.extension.tasklist = true;
-    options.extension.superscript = false;
-    options.extension.header_id_prefix = Some(String::new());
-    options.extension.header_id_prefix_in_href = false;
-    options.extension.footnotes = false;
-    options.extension.inline_footnotes = false;
-    options.extension.description_lists = false;
-    options.extension.front_matter_delimiter = None;
-    options.extension.multiline_block_quotes = false;
-    options.extension.math_dollars = false;
-    options.extension.math_code = false;
-    options.extension.math_latex = false;
-    options.extension.shortcodes = true;
-    options.extension.wikilinks_title_before_pipe = false;
-    options.extension.wikilinks_title_after_pipe = false;
-    options.extension.underline = false;
-    options.extension.spoiler = false;
-    options.extension.greentext = false;
-    options.extension.subscript = false;
-    options.extension.subtext = false;
-    options.extension.alerts = false;
-    options.extension.cjk_friendly_emphasis = false;
-    options.extension.highlight = false;
-    options.extension.insert = false;
-    options.extension.block_directive = false;
-    options.extension.math_dollars_block = false;
-    options.extension.wikilinks_ignore_embeds = false;
-    options.extension.ofm_callouts = false;
-    options.extension.ofm_comments = false;
-    options.extension.ofm_block_ids = false;
-    options.extension.header_attributes = false;
-    options.extension.fenced_code_attributes = false;
-    options.extension.inline_code_attributes = false;
-    options.extension.link_attributes = false;
-
-    options
-});
+/// Commonmarker's defaults are comrak's
+/// A `nil` option value also means "the default", so the two never disagree.
+pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(comrak::Options::default);
 
 const PARSE: &str = "parse";
 const RENDER: &str = "render";
@@ -161,9 +87,6 @@ const EXTENSION_HEADER_ATTRIBUTES: &str = "header_attributes";
 const EXTENSION_FENCED_CODE_ATTRIBUTES: &str = "fenced_code_attributes";
 const EXTENSION_INLINE_CODE_ATTRIBUTES: &str = "inline_code_attributes";
 const EXTENSION_LINK_ATTRIBUTES: &str = "link_attributes";
-
-// Comrak's default options (for when user explicitly sets nil)
-pub static COMRAK_DEFAULTS: LazyLock<comrak::Options> = LazyLock::new(comrak::Options::default);
 
 /// Validates a boolean option value.
 /// Returns the value if valid (true or false), default_for_nil if nil, Err if invalid type.
@@ -308,7 +231,7 @@ pub struct Options {
 }
 
 impl Options {
-    /// Commonmarker's defaults (different from comrak's).
+    /// comrak's defaults, plus Commonmarker's own nesting limit.
     fn defaults() -> Self {
         Options {
             comrak: DEFAULT_OPTIONS.clone(),
@@ -321,9 +244,9 @@ impl Options {
 /// Accepts Option<Value> and returns Options.
 ///
 /// Logic:
-/// - If no options: use DEFAULT_OPTIONS (commonmarker defaults)
+/// - If no options: use DEFAULT_OPTIONS (comrak's defaults)
 /// - If options provided but category absent: use DEFAULT_OPTIONS for that category
-/// - If category provided: start with commonmarker defaults, apply non-nil values from user
+/// - If category provided: start with the defaults, apply non-nil values from user
 ///   (nil values mean "keep default for this field")
 pub fn format_options(ruby: &Ruby, rb_options: Option<Value>) -> Result<Options, Error> {
     let rb_options = match rb_options {
@@ -346,19 +269,19 @@ pub fn format_options(ruby: &Ruby, rb_options: Option<Value>) -> Result<Options,
         return Ok(Options::defaults());
     }
 
-    // Start with commonmarker defaults
+    // Start with the defaults
     let mut options = Options::defaults();
 
     // Process parse options
     match options_hash.get(ruby.to_symbol(PARSE)) {
         None => {
-            // Category not provided, keep commonmarker defaults (already set)
+            // Category not provided, keep the defaults (already set)
         }
         Some(parse_value) if parse_value.is_nil() => {
-            // Category explicitly nil, keep commonmarker defaults (already set)
+            // Category explicitly nil, keep the defaults (already set)
         }
         Some(parse_value) => {
-            // Category provided, apply user values over commonmarker defaults
+            // Category provided, apply user values over the defaults
             let parse_hash: RHash = TryConvert::try_convert(parse_value).map_err(|_| {
                 Error::new(
                     ruby.exception_type_error(),
@@ -380,10 +303,10 @@ pub fn format_options(ruby: &Ruby, rb_options: Option<Value>) -> Result<Options,
     // Process render options
     match options_hash.get(ruby.to_symbol(RENDER)) {
         None => {
-            // Keep commonmarker defaults (already set)
+            // Keep the defaults (already set)
         }
         Some(render_value) if render_value.is_nil() => {
-            // Category explicitly nil, keep commonmarker defaults (already set)
+            // Category explicitly nil, keep the defaults (already set)
         }
         Some(render_value) => {
             let render_hash: RHash = TryConvert::try_convert(render_value).map_err(|_| {
@@ -402,10 +325,10 @@ pub fn format_options(ruby: &Ruby, rb_options: Option<Value>) -> Result<Options,
     // Process extension options
     match options_hash.get(ruby.to_symbol(EXTENSION)) {
         None => {
-            // Keep commonmarker defaults (already set)
+            // Keep the defaults (already set)
         }
         Some(extension_value) if extension_value.is_nil() => {
-            // Category explicitly nil, keep commonmarker defaults (already set)
+            // Category explicitly nil, keep the defaults (already set)
         }
         Some(extension_value) => {
             let extension_hash: RHash = TryConvert::try_convert(extension_value).map_err(|_| {
@@ -435,7 +358,7 @@ fn iterate_parse_options_with_validation(
     options_hash: RHash,
 ) -> Result<(), Error> {
     let mut error: Option<Error> = None;
-    let defaults = &COMRAK_DEFAULTS.parse;
+    let defaults = &DEFAULT_OPTIONS.parse;
 
     options_hash
         .foreach(|key: Symbol, value: Value| {
@@ -597,7 +520,7 @@ fn iterate_render_options_with_validation(
     options_hash: RHash,
 ) -> Result<(), Error> {
     let mut error: Option<Error> = None;
-    let defaults = &COMRAK_DEFAULTS.render;
+    let defaults = &DEFAULT_OPTIONS.render;
 
     options_hash
         .foreach(|key: Symbol, value: Value| {
@@ -878,7 +801,7 @@ fn iterate_extension_options_with_validation(
     options_hash: RHash,
 ) -> Result<(), Error> {
     let mut error: Option<Error> = None;
-    let defaults = &COMRAK_DEFAULTS.extension;
+    let defaults = &DEFAULT_OPTIONS.extension;
 
     options_hash
         .foreach(|key: Symbol, value: Value| {
@@ -1427,7 +1350,9 @@ fn iterate_extension_options_with_validation(
     }
 }
 
-/// Returns the default options as a Ruby Hash for introspection.
+/// Returns the default options as a Ruby Hash for introspection. String
+/// options that are off by default appear as `nil`, which is also how they are
+/// turned off when passed back in.
 pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     let options = ruby.hash_new();
 
@@ -1436,11 +1361,7 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     parse.aset(ruby.to_symbol(PARSE_SMART), DEFAULT_OPTIONS.parse.smart)?;
     parse.aset(
         ruby.to_symbol(PARSE_DEFAULT_INFO_STRING),
-        DEFAULT_OPTIONS
-            .parse
-            .default_info_string
-            .as_deref()
-            .unwrap_or(""),
+        DEFAULT_OPTIONS.parse.default_info_string.as_deref(),
     )?;
     parse.aset(
         ruby.to_symbol(PARSE_RELAXED_TASKLIST_MATCHING),
@@ -1581,11 +1502,7 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     )?;
     extension.aset(
         ruby.to_symbol(EXTENSION_HEADER_IDS),
-        DEFAULT_OPTIONS
-            .extension
-            .header_id_prefix
-            .as_deref()
-            .unwrap_or(""),
+        DEFAULT_OPTIONS.extension.header_id_prefix.as_deref(),
     )?;
     extension.aset(
         ruby.to_symbol(EXTENSION_HEADER_ID_PREFIX_IN_HREF),
@@ -1605,11 +1522,7 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     )?;
     extension.aset(
         ruby.to_symbol(EXTENSION_FRONT_MATTER_DELIMITER),
-        DEFAULT_OPTIONS
-            .extension
-            .front_matter_delimiter
-            .as_deref()
-            .unwrap_or(""),
+        DEFAULT_OPTIONS.extension.front_matter_delimiter.as_deref(),
     )?;
     extension.aset(
         ruby.to_symbol(EXTENSION_MULTILINE_BLOCK_QUOTES),

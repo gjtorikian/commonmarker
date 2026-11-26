@@ -18,6 +18,8 @@ class RelaxedAutolinksTest < Minitest::Test
       <p><a href="rdar://localhost.com/blah">rdar://localhost.com/blah</a></p>
     HTML
 
-    assert_equal(expected, Commonmarker.to_html(md, options: { parse: { relaxed_autolinks: true } }))
+    options = { parse: { relaxed_autolinks: true }, extension: { autolink: true } }
+
+    assert_equal(expected, Commonmarker.to_html(md, options: options))
   end
 end

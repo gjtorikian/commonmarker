@@ -2,12 +2,19 @@
 
 Ruby wrapper for Rust's [comrak](https://github.com/kivikakk/comrak) crate.
 
-It passes all of the CommonMark test suite, and is therefore spec-complete. It also includes extensions to the CommonMark spec as documented in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as support for tables, strikethroughs, and autolinking.
+It uses comrak's defaults out of the box, which comrak documents as compliant with [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/). It also offers comrak's extensions to the spec, including the ones in the [GitHub Flavored Markdown spec](http://github.github.com/gfm/), such as tables, strikethrough, and autolinking.
 
 > [!NOTE]
-> By default, the following extensions are enabled for end user convenience: `strikethrough`, `table`, `autolink`, `tasklist` (all from the [GFM spec](http://github.github.com/gfm/)), and `shortcodes`. The `syntax_highlighter` plugin is also enabled by default, using the `"base16-ocean.dark"` theme.
+> Commonmarker's defaults are comrak's: plain CommonMark, with no extensions and no plugins enabled. For GitHub-style output, turn on the GFM extensions and rendering quirks, which is what comrak's own `--gfm` flag does:
 >
-> For more information on the available options and extensions, see [the documentation below](#options-and-plugins).
+> ```ruby
+> Commonmarker.to_html(text, options: {
+>   extension: { strikethrough: true, table: true, autolink: true, tasklist: true },
+>   render: { github_pre_lang: true, gfm_quirks: true },
+> })
+> ```
+>
+> For more information on the available options and extensions, see [the documentation below](#options-and-plugins). Coming from Commonmarker 2.x? See [UPGRADING.md](UPGRADING.md).
 
 ## Installation
 
@@ -152,7 +159,7 @@ doc.walk do |node|
     node.delete
   end
 end
-# => <h1><a href=\"#the-site\"></a>The site</h1>\n<p>GitHub</p>\n
+# => <h1>The site</h1>\n<p>GitHub</p>\n
 ```
 
 #### Example: Converting a document back into raw CommonMark
@@ -224,20 +231,20 @@ Commonmarker.to_html("## Intro {#intro .big}", options: {
 Commonmarker accepts the same parse, render, and extensions options that comrak does, as a hash dictionary with symbol keys:
 
 ```ruby
-Commonmarker.to_html('"Hi *there*"', options:{
+Commonmarker.to_html('"Hi *there*"', options: {
   parse: { smart: true },
-  render: { hardbreaks: false}
+  render: { hardbreaks: true }
 })
 ```
 
-Note that there is a distinction in comrak for "parse" options and "render" options, which are represented in the tables below. As well, if you wish to disable any-non boolean option, pass in `nil`.
+Note that there is a distinction in comrak for "parse" options and "render" options, which are represented in the tables below. The defaults are comrak's. Passing `nil` for any option means "use the default", which for the string-valued options (`default_info_string`, `header_ids`, and `front_matter_delimiter`) means leaving that feature off.
 
 ### Parse options
 
 | Name                         | Description                                                                                                                                 | Default |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `smart`                      | Punctuation (quotes, full-stops and hyphens) are converted into 'smart' punctuation.                                                        | `false` |
-| `default_info_string`        | The default info string for fenced code blocks.                                                                                             | `""`    |
+| `default_info_string`        | The default info string for fenced code blocks.                                                                                             | `nil`   |
 | `relaxed_tasklist_matching`  | Enables relaxing of the tasklist extension matching, allowing any non-space to be used for the "checked" state instead of only `x` and `X`. | `false` |
 | `relaxed_autolinks`          | Enable relaxing of the autolink extension parsing, allowing links to be recognized when in brackets, as well as permitting any url scheme.  | `false` |
 | `leave_footnote_definitions` | Allow footnote definitions to remain in their original positions instead of being moved to the document's end (only affects AST)            | `false` |
@@ -251,14 +258,14 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 
 | Name                 | Description                                                                                                              | Default      |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------ |
-| `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks.                   | `true`       |
-| `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                                           | `true`       |
+| `hardbreaks`         | [Soft line breaks](http://spec.commonmark.org/0.27/#soft-line-breaks) translate into hard line breaks.                   | `false`      |
+| `github_pre_lang`    | GitHub-style `<pre lang="xyz">` is used for fenced code blocks with info tags.                                           | `false`      |
 | `full_info_string`   | Gives info string data after a space in a `data-meta` attribute on code blocks.                                          | `false`      |
-| `width`              | The wrap column when outputting CommonMark.                                                                              | `80`         |
+| `width`              | The wrap column when outputting CommonMark. `0` means no wrapping.                                                       | `0`          |
 | `unsafe`             | Allow rendering of raw HTML and potentially dangerous links.                                                             | `false`      |
 | `escape`             | Escape raw HTML instead of clobbering it.                                                                                | `false`      |
 | `sourcepos`          | Include source position attribute in HTML and XML output.                                                                | `false`      |
-| `escaped_char_spans` | Wrap escaped characters in span tags.                                                                                    | `true`       |
+| `escaped_char_spans` | Wrap escaped characters in span tags.                                                                                    | `false`      |
 | `ignore_empty_links` | Ignores empty links, leaving the Markdown text in place.                                                                 | `false`      |
 | `gfm_quirks`         | Outputs HTML with GFM-style quirks; namely, not nesting `<strong>` inlines.                                              | `false`      |
 | `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                                              | `false`      |
@@ -275,8 +282,7 @@ As well, there are several extensions which you can toggle in the same manner:
 
 ```ruby
 Commonmarker.to_html('"Hi *there*"', options: {
-    extension: { footnotes: true, description_lists: true },
-    render: { hardbreaks: false }
+    extension: { footnotes: true, description_lists: true }
 })
 ```
 
@@ -284,21 +290,21 @@ Commonmarker.to_html('"Hi *there*"', options: {
 
 | Name                          | Description                                                                                                         | Default |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------- |
-| `strikethrough`               | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `true`  |
-| `table`                       | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `true`  |
-| `autolink`                    | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `true`  |
-| `tasklist`                    | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `true`  |
+| `strikethrough`               | Enables the [strikethrough extension](https://github.github.com/gfm/#strikethrough-extension-) from the GFM spec.   | `false` |
+| `table`                       | Enables the [table extension](https://github.github.com/gfm/#tables-extension-) from the GFM spec.                  | `false` |
+| `autolink`                    | Enables the [autolink extension](https://github.github.com/gfm/#autolinks-extension-) from the GFM spec.            | `false` |
+| `tasklist`                    | Enables the [task list extension](https://github.github.com/gfm/#task-list-items-extension-) from the GFM spec.     | `false` |
 | `superscript`                 | Enables the superscript Comrak extension.                                                                           | `false` |
-| `header_ids`                  | Enables the header IDs Comrak extension. from the GFM spec.                                                         | `""`    |
+| `header_ids`                  | Enables the header IDs Comrak extension; the value is prefixed to every generated ID. Pass `""` for no prefix.       | `nil`   |
 | `header_id_prefix_in_href`    | Also add the prefix to generated `href` attributes pointing to headers.                                             | `false` |
 | `footnotes`                   | Enables the footnotes extension per `cmark-gfm`.                                                                    | `false` |
 | `inline_footnotes`            | Enables the inline footnotes extension.                                                                             | `false` |
 | `description_lists`           | Enables the description lists extension.                                                                            | `false` |
-| `front_matter_delimiter`      | Enables the front matter extension.                                                                                 | `""`    |
+| `front_matter_delimiter`      | Enables the front matter extension; the value is the delimiter line, such as `"---"`.                               | `nil`   |
 | `multiline_block_quotes`      | Enables the multiline block quotes extension.                                                                       | `false` |
 | `math_dollars`, `math_code`   | Enables the math extension.                                                                                         | `false` |
 | `math_latex`                  | Enables the math extension with LaTeX-style delimiters (`\(inline\)`, `\[display\]`).                               | `false` |
-| `shortcodes`                  | Enables the shortcodes extension.                                                                                   | `true`  |
+| `shortcodes`                  | Enables the shortcodes extension, which turns `:smile:` and friends into emoji.                                     | `false` |
 | `wikilinks_title_before_pipe` | Enables the wikilinks extension, placing the title before the dividing pipe.                                        | `false` |
 | `wikilinks_title_after_pipe`  | Enables the wikilinks extension, placing the title after the dividing pipe.                                         | `false` |
 | `underline`                   | Enables the underline extension.                                                                                    | `false` |
@@ -330,7 +336,28 @@ providing further niceties.
 
 #### Syntax Highlighter Plugin
 
-The syntax highlighter plugin is **enabled by default**, using the `"base16-ocean.dark"` theme. It applies syntax highlighting to fenced code blocks that specify a language.
+The syntax highlighter plugin applies syntax highlighting to fenced code blocks that specify a language. Like every plugin, it is **disabled by default**. Pass an empty Hash to enable it with the default `"base16-ocean.dark"` theme, or name a theme:
+
+````ruby
+code = <<~CODE
+  ```ruby
+  def hello
+    puts "hello"
+  end
+  ```
+CODE
+
+# the default theme
+puts Commonmarker.to_html(code, plugins: { syntax_highlighter: {} })
+
+# a theme name from the pre-existing set
+puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
+
+# <pre style="background-color:#ffffff;"><code class="language-ruby"><span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
+# </span><span style="color:#323232;">  </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
+# </span><span style="font-weight:bold;color:#a71d5d;">end
+# </span></code></pre>
+````
 
 The library comes with [a set of pre-existing themes](https://docs.rs/syntect/5.0.0/syntect/highlighting/struct.ThemeSet.html#implementations) for highlighting code:
 
@@ -342,40 +369,13 @@ The library comes with [a set of pre-existing themes](https://docs.rs/syntect/5.
 - `"Solarized (dark)"`
 - `"Solarized (light)"`
 
-````ruby
-code = <<~CODE
-  ```ruby
-  def hello
-    puts "hello"
-  end
-  ```
-CODE
-
-# pass in a theme name from a pre-existing set
-puts Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
-
-# <pre style="background-color:#ffffff;" lang="ruby"><code>
-# <span style="font-weight:bold;color:#a71d5d;">def </span><span style="font-weight:bold;color:#795da3;">hello
-# </span><span style="color:#62a35c;">puts </span><span style="color:#183691;">&quot;hello&quot;
-# </span><span style="font-weight:bold;color:#a71d5d;">end
-# </span>
-# </code></pre>
-````
-
-To disable this plugin, set the value to `nil`:
+Without the plugin, a fenced code block renders as plain CommonMark HTML. Passing `syntax_highlighter: nil` has the same effect, which is handy when the plugins Hash is built elsewhere:
 
 ````ruby
-code = <<~CODE
-  ```ruby
-  def hello
-    puts "hello"
-  end
-  ```
-CODE
-
+Commonmarker.to_html(code)
 Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 
-# <pre lang="ruby"><code>def hello
+# <pre><code class="language-ruby">def hello
 #   puts &quot;hello&quot;
 # end
 # </code></pre>
@@ -384,16 +384,9 @@ Commonmarker.to_html(code, plugins: { syntax_highlighter: nil })
 To output CSS classes instead of `style` attributes, set the `theme` key to `""`:
 
 ````ruby
-code = <<~CODE
-  ```ruby
-  def hello
-    puts "hello"
-  end
-CODE
-
 Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "" } })
 
-# <pre class="syntax-highlighting"><code><span class="source ruby"><span class="meta function ruby"><span class="keyword control def ruby">def</span></span><span class="meta function ruby"> # <span class="entity name function ruby">hello</span></span>
+# <pre class="syntax-highlighting"><code class="language-ruby"><span class="source ruby"><span class="meta function ruby"><span class="keyword control def ruby">def</span></span><span class="meta function ruby"> # <span class="entity name function ruby">hello</span></span>
 #   <span class="support function builtin ruby">puts</span> <span class="string quoted double ruby"><span class="punctuation definition string begin ruby">&quot;</span>hello<span class="punctuation definition string end ruby">&quot;</span></span>
 # <span class="keyword control ruby">end</span>\n</span></code></pre>
 ````
