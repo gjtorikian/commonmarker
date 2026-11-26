@@ -264,8 +264,8 @@ Note that there is a distinction in comrak for "parse" options and "render" opti
 | `prefer_fenced`      | Always output fenced code blocks, even where an indented one could be used.                                              | `false`      |
 | `tasklist_classes`   | Add CSS classes to the HTML output of the tasklist extension                                                             | `false`      |
 | `compact_html`       | Suppress newlines in pretty-printed HTML output.                                                                         | `false`      |
-| `alert_style`        | The style of alert output: `"specific"` (`<div class="markdown-alert">`) or `"semantic"` (`<aside class="admonition">`). | `"specific"` |
-| `list_style`         | The bullet list marker used when outputting CommonMark: `"dash"` (`-`), `"plus"` (`+`) or `"star"` (`*`).                | `"dash"`     |
+| `alert_style`        | The style of alert output: `:specific` (`<div class="markdown-alert">`) or `:semantic` (`<aside class="admonition">`). | `:specific` |
+| `list_style`         | The bullet list marker used when outputting CommonMark: `:dash` (`-`), `:plus` (`+`) or `:star` (`*`).                | `:dash`     |
 | `figure_with_caption` | Renders an image that has a title as a `<figure>`, with the title as its `<figcaption>`.                                 | `false`      |
 | `ol_width`           | The minimum ordered list marker width when outputting CommonMark. Values below 3 have no effect.                         | `0`          |
 | `experimental_minimize_commonmark` | Drops escapes from CommonMark output when the document still roundtrips without them. Expensive.                         | `false`      |

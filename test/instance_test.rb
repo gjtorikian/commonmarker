@@ -194,11 +194,11 @@ class InstanceTest < Minitest::Test
   end
 
   def test_to_commonmark_normalizes_text
-    markdown = Commonmarker.new(options: { render: { list_style: "star" } })
+    markdown = Commonmarker.new(options: { render: { list_style: :star } })
     text = "- one\n- two\n"
 
     assert_equal("* one\n* two\n", markdown.to_commonmark(text))
-    assert_equal(Commonmarker.parse(text).to_commonmark(options: { render: { list_style: "star" } }), markdown.to_commonmark(text))
+    assert_equal(Commonmarker.parse(text).to_commonmark(options: { render: { list_style: :star } }), markdown.to_commonmark(text))
   end
 
   def test_to_commonmark_rejects_other_input

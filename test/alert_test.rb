@@ -59,9 +59,19 @@ class FrontmatterTest < Minitest::Test
       </aside>
     HTML
 
-    options = { extension: { alerts: true }, render: { alert_style: "semantic" } }
+    options = { extension: { alerts: true }, render: { alert_style: :semantic } }
 
     assert_equal(expected, Commonmarker.to_html(md, options: options))
+  end
+
+  def test_alert_style_must_be_a_symbol
+    err = assert_raises(TypeError) { Commonmarker.to_html("x", options: { render: { alert_style: "semantic" } }) }
+    assert_equal("render option `:alert_style` must be Symbol; got String", err.message)
+  end
+
+  def test_alert_style_rejects_unknown_names
+    err = assert_raises(ArgumentError) { Commonmarker.to_html("x", options: { render: { alert_style: :fancy } }) }
+    assert_equal("render option `:alert_style` must be one of :specific, :semantic; got :fancy", err.message)
   end
 
   def test_renders_a_complicated_node
