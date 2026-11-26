@@ -36,6 +36,10 @@ LARGE_FILE = File.read("benchmark/large.md").freeze
       Commonmarker.to_html(input)
     end
 
+    x.report("Commonmarker.to_html (no syntax highlighting)") do
+      Commonmarker.to_html(input, plugins: { syntax_highlighter: nil })
+    end
+
     x.report("Commonmarker#to_html") do
       commonmarker.to_html(input)
     end

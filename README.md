@@ -437,61 +437,71 @@ input size = 3789 bytes
 
 ruby 3.4.0dev (2024-12-25 master f450108330) +PRISM [arm64-darwin24]
 Warming up --------------------------------------
-  Markly.render_html    11.707k i/100ms
-Markly::Node#to_html    11.745k i/100ms
-Commonmarker.to_html    22.706k i/100ms
-Commonmarker#to_html    26.102k i/100ms
+  Markly.render_html    11.518k i/100ms
+Markly::Node#to_html    11.674k i/100ms
+Commonmarker.to_html    21.904k i/100ms
+Commonmarker.to_html (no syntax highlighting)
+                        24.241k i/100ms
+Commonmarker#to_html    23.992k i/100ms
 Commonmarker::Node.to_html
-                        13.203k i/100ms
+                        12.379k i/100ms
 Kramdown::Document#to_html
-                         2.726k i/100ms
+                         2.165k i/100ms
 Calculating -------------------------------------
-  Markly.render_html    116.281k (± 1.4%) i/s    (8.60 μs/i) -    585.350k in   5.034916s
-Markly::Node#to_html    116.830k (± 1.4%) i/s    (8.56 μs/i) -    587.250k in   5.027536s
-Commonmarker.to_html    222.504k (± 1.9%) i/s    (4.49 μs/i) -      1.113M in   5.002179s
-Commonmarker#to_html    260.838k (± 2.3%) i/s    (3.83 μs/i) -      1.305M in   5.006287s
+  Markly.render_html    108.072k (± 2.9%) i/s    (9.25 μs/i) -    541.346k in   5.013402s
+Markly::Node#to_html    110.790k (± 2.2%) i/s    (9.03 μs/i) -    560.352k in   5.060246s
+Commonmarker.to_html    208.564k (± 2.0%) i/s    (4.79 μs/i) -      1.051M in   5.043065s
+Commonmarker.to_html (no syntax highlighting)
+                        232.082k (± 2.3%) i/s    (4.31 μs/i) -      1.164M in   5.016451s
+Commonmarker#to_html    242.197k (± 4.0%) i/s    (4.13 μs/i) -      1.224M in   5.060343s
 Commonmarker::Node.to_html
-                        127.797k (± 1.0%) i/s    (7.82 μs/i) -    646.947k in   5.062869s
+                        115.814k (± 5.9%) i/s    (8.63 μs/i) -    581.813k in   5.041339s
 Kramdown::Document#to_html
-                         26.835k (± 1.0%) i/s   (37.27 μs/i) -    136.300k in   5.079780s
+                         25.364k (± 1.8%) i/s   (39.43 μs/i) -    127.735k in   5.037814s
 
 Comparison:
-Commonmarker#to_html:   260838.0 i/s
-Commonmarker.to_html:   222504.4 i/s - 1.17x  slower
-Commonmarker::Node.to_html:   127796.6 i/s - 2.04x  slower
-Markly::Node#to_html:   116830.1 i/s - 2.23x  slower
-  Markly.render_html:   116280.7 i/s - 2.24x  slower
-Kramdown::Document#to_html:    26834.6 i/s - 9.72x  slower
+Commonmarker#to_html:   242196.7 i/s
+Commonmarker.to_html (no syntax highlighting):   232082.5 i/s - same-ish: difference falls within error
+Commonmarker.to_html:   208563.9 i/s - 1.16x  slower
+Commonmarker::Node.to_html:   115813.7 i/s - 2.09x  slower
+Markly::Node#to_html:   110790.1 i/s - 2.19x  slower
+  Markly.render_html:   108072.0 i/s - 2.24x  slower
+Kramdown::Document#to_html:    25363.6 i/s - 9.55x  slower
 
 input size = 3051 bytes
 
 ruby 3.4.0dev (2024-12-25 master f450108330) +PRISM [arm64-darwin24]
 Warming up --------------------------------------
-  Markly.render_html     3.341k i/100ms
-Markly::Node#to_html     3.398k i/100ms
-Commonmarker.to_html   393.000 i/100ms
-Commonmarker#to_html   404.000 i/100ms
+  Markly.render_html     2.998k i/100ms
+Markly::Node#to_html     3.239k i/100ms
+Commonmarker.to_html   383.000 i/100ms
+Commonmarker.to_html (no syntax highlighting)
+                         2.153k i/100ms
+Commonmarker#to_html   383.000 i/100ms
 Commonmarker::Node.to_html
-                       362.000 i/100ms
+                       339.000 i/100ms
 Kramdown::Document#to_html
-                       520.000 i/100ms
+                       441.000 i/100ms
 Calculating -------------------------------------
-  Markly.render_html     33.857k (± 6.6%) i/s   (29.54 μs/i) -    170.391k in   5.054881s
-Markly::Node#to_html     33.624k (± 5.9%) i/s   (29.74 μs/i) -    169.900k in   5.069790s
-Commonmarker.to_html      3.990k (± 0.8%) i/s  (250.60 μs/i) -     20.043k in   5.023095s
-Commonmarker#to_html      4.007k (± 1.0%) i/s  (249.56 μs/i) -     20.200k in   5.041649s
+  Markly.render_html     31.171k (± 9.6%) i/s   (32.08 μs/i) -    155.896k in   5.046734s
+Markly::Node#to_html     32.142k (± 7.5%) i/s   (31.11 μs/i) -    161.950k in   5.066521s
+Commonmarker.to_html      3.839k (± 1.4%) i/s  (260.46 μs/i) -     19.533k in   5.088637s
+Commonmarker.to_html (no syntax highlighting)
+                         21.034k (± 3.3%) i/s   (47.54 μs/i) -    105.497k in   5.021405s
+Commonmarker#to_html      3.712k (± 4.1%) i/s  (269.37 μs/i) -     18.767k in   5.064171s
 Commonmarker::Node.to_html
-                          3.588k (± 1.6%) i/s  (278.68 μs/i) -     18.100k in   5.045412s
+                          3.476k (± 1.4%) i/s  (287.72 μs/i) -     17.628k in   5.072915s
 Kramdown::Document#to_html
-                          5.180k (± 0.8%) i/s  (193.05 μs/i) -     26.000k in   5.019623s
+                          4.977k (± 2.0%) i/s  (200.93 μs/i) -     25.137k in   5.052836s
 
 Comparison:
-  Markly.render_html:    33857.4 i/s
-Markly::Node#to_html:    33623.9 i/s - same-ish: difference falls within error
-Kramdown::Document#to_html:     5180.0 i/s - 6.54x  slower
-Commonmarker#to_html:     4007.0 i/s - 8.45x  slower
-Commonmarker.to_html:     3990.4 i/s - 8.48x  slower
-Commonmarker::Node.to_html:     3588.3 i/s - 9.44x  slower
+Markly::Node#to_html:    32141.5 i/s
+  Markly.render_html:    31170.9 i/s - same-ish: difference falls within error
+Commonmarker.to_html (no syntax highlighting):    21033.8 i/s - 1.53x  slower
+Kramdown::Document#to_html:     4976.9 i/s - 6.46x  slower
+Commonmarker.to_html:     3839.4 i/s - 8.37x  slower
+Commonmarker#to_html:     3712.3 i/s - 8.66x  slower
+Commonmarker::Node.to_html:     3475.6 i/s - 9.25x  slower
 
 input size = 11064832 bytes
 
@@ -500,26 +510,31 @@ Warming up --------------------------------------
   Markly.render_html     2.000 i/100ms
 Markly::Node#to_html     2.000 i/100ms
 Commonmarker.to_html     1.000 i/100ms
+Commonmarker.to_html (no syntax highlighting)
+                         2.000 i/100ms
 Commonmarker#to_html     1.000 i/100ms
 Commonmarker::Node.to_html
                          1.000 i/100ms
 Kramdown::Document#to_html
                          1.000 i/100ms
 Calculating -------------------------------------
-  Markly.render_html     28.642 (±10.5%) i/s   (34.91 ms/i) -    142.000 in   5.006013s
-Markly::Node#to_html     28.498 (±10.5%) i/s   (35.09 ms/i) -    142.000 in   5.031715s
-Commonmarker.to_html     14.735 (± 0.0%) i/s   (67.87 ms/i) -     74.000 in   5.025193s
-Commonmarker#to_html     14.613 (± 0.0%) i/s   (68.43 ms/i) -     74.000 in   5.067178s
+  Markly.render_html     27.745 (±10.8%) i/s   (36.04 ms/i) -    138.000 in   5.019913s
+Markly::Node#to_html     27.557 (±10.9%) i/s   (36.29 ms/i) -    138.000 in   5.054277s
+Commonmarker.to_html     13.790 (± 7.3%) i/s   (72.51 ms/i) -     69.000 in   5.015908s
+Commonmarker.to_html (no syntax highlighting)
+                         28.994 (± 0.0%) i/s   (34.49 ms/i) -    146.000 in   5.036636s
+Commonmarker#to_html     14.612 (± 0.0%) i/s   (68.44 ms/i) -     74.000 in   5.066866s
 Commonmarker::Node.to_html
-                         11.215 (± 0.0%) i/s   (89.16 ms/i) -     56.000 in   5.000617s
+                         10.840 (± 0.0%) i/s   (92.25 ms/i) -     55.000 in   5.083457s
 Kramdown::Document#to_html
-                          6.989 (± 0.0%) i/s  (143.08 ms/i) -     35.000 in   5.009193s
+                          6.905 (± 0.0%) i/s  (144.83 ms/i) -     35.000 in   5.071293s
 
 Comparison:
-  Markly.render_html:       28.6 i/s
-Markly::Node#to_html:       28.5 i/s - same-ish: difference falls within error
-Commonmarker.to_html:       14.7 i/s - 1.94x  slower
-Commonmarker#to_html:       14.6 i/s - 1.96x  slower
-Commonmarker::Node.to_html:       11.2 i/s - 2.55x  slower
-Kramdown::Document#to_html:        7.0 i/s - 4.10x  slower
+Commonmarker.to_html (no syntax highlighting):       29.0 i/s
+  Markly.render_html:       27.7 i/s - same-ish: difference falls within error
+Markly::Node#to_html:       27.6 i/s - same-ish: difference falls within error
+Commonmarker#to_html:       14.6 i/s - 1.98x  slower
+Commonmarker.to_html:       13.8 i/s - 2.10x  slower
+Commonmarker::Node.to_html:       10.8 i/s - 2.67x  slower
+Kramdown::Document#to_html:        6.9 i/s - 4.20x  slower
 ```
