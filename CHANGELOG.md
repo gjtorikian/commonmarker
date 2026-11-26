@@ -1,3 +1,25 @@
+## [3.0.0](https://github.com/gjtorikian/commonmarker/compare/v2.10.1...v3.0.0) (2026-11-26)
+
+### ⚠ BREAKING CHANGES
+
+* Require Symbols for alert_style and list_style (#500)
+* Add Commonmarker.new and cache syntax highlighters (#499)
+* move all options management to Rust-side (#420)
+
+### Features
+
+* Require Symbols for alert_style and list_style ([#500](https://github.com/gjtorikian/commonmarker/pull/500))
+* Add Commonmarker.new and cache syntax highlighters ([#499](https://github.com/gjtorikian/commonmarker/pull/499))
+* Support comrak's attribute blocks ([#498](https://github.com/gjtorikian/commonmarker/pull/498))
+* Add the comrak 1.x node types to Node ([#497](https://github.com/gjtorikian/commonmarker/pull/497))
+* move all options management to Rust-side ([#420](https://github.com/gjtorikian/commonmarker/pull/420))
+* Upgrade to comrak 1.2.0 ([#495](https://github.com/gjtorikian/commonmarker/pull/495))
+
+### Miscellaneous Chores
+
+* Bump magnus from 0.9.3 to 0.9.4 ([#493](https://github.com/gjtorikian/commonmarker/pull/493))
+
+
 ## [2.10.1](https://github.com/gjtorikian/commonmarker/compare/v2.10.0...v2.10.1) (2026-10-16)
 
 ### Breaking Changes
