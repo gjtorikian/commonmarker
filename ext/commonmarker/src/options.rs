@@ -6,7 +6,7 @@ use magnus::{r_hash::ForEach, Error, RHash, Ruby, Symbol, Value};
 
 use crate::nesting::DEFAULT_MAX_NESTING_DEPTH;
 
-/// Commonmarker's defaults are comrak's: CommonMark 0.31.2 with no extensions.
+/// Commonmarker's defaults are comrak's
 /// A `nil` option value also means "the default", so the two never disagree.
 pub static DEFAULT_OPTIONS: LazyLock<comrak::Options> = LazyLock::new(comrak::Options::default);
 
