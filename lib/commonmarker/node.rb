@@ -3,7 +3,7 @@
 require "commonmarker/node/ast"
 require "commonmarker/node/inspect"
 
-module Commonmarker
+class Commonmarker
   class Node
     include Enumerable
     include Inspect

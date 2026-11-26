@@ -10,8 +10,6 @@ if ENV.fetch("DEBUG", false)
   require "debug"
 end
 
-include Commonmarker
-
 FIXTURES_DIR = File.join(File.dirname(__FILE__), "fixtures")
 
 def fixtures_file(file)

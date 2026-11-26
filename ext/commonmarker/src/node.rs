@@ -11,16 +11,18 @@ use comrak::nodes::{
 use magnus::r_hash::ForEach;
 use magnus::value::ReprValue;
 use magnus::{
-    function, method, scan_args, Module, Object, RHash, RModule, Symbol, TryConvert, Value,
+    function, method, scan_args, Module, Object, RClass, RHash, Symbol, TryConvert, Value,
 };
 use magnus::{RArray, Ruby};
+use std::sync::Arc;
 use typed_arena::Arena;
 
 use std::cell::RefCell;
 
-use crate::options::format_options;
-use crate::plugins::format_plugins;
+use crate::options::{format_options, Options};
 use crate::plugins::syntax_highlighting::construct_syntax_highlighter_from_plugin;
+use crate::plugins::{comrak_plugins, format_plugins};
+use comrak::plugins::syntect::SyntectAdapter;
 
 #[derive(Debug, Clone)]
 #[magnus::wrap(class = "Commonmarker::Node::Ast", size, mark)]
@@ -1394,7 +1396,12 @@ impl CommonmarkerNode {
         comrak_root_node
     }
 
-    fn to_html(ruby: &Ruby, rb_self: &Self, args: &[Value]) -> Result<String, magnus::Error> {
+    /// Reads the `options:` and `plugins:` keyword arguments shared by
+    /// `to_html` and `to_commonmark`.
+    fn render_args(
+        ruby: &Ruby,
+        args: &[Value],
+    ) -> Result<(Options, Option<Arc<SyntectAdapter>>), magnus::Error> {
         let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
 
         let kwargs = scan_args::get_kwargs::<_, (), (Option<Value>, Option<Value>), ()>(
@@ -1405,100 +1412,76 @@ impl CommonmarkerNode {
         let (rb_options, rb_plugins) = kwargs.optional;
 
         let options = format_options(ruby, rb_options)?;
-
-        let mut comrak_plugins = comrak::options::Plugins::default();
-
         let formatted_plugins = format_plugins(ruby, rb_plugins)?;
-        let syntect_adapter =
-            match construct_syntax_highlighter_from_plugin(ruby, formatted_plugins) {
-                Ok(Some(adapter)) => Some(adapter),
-                Ok(None) => None,
-                Err(err) => return Err(err),
-            };
+        let syntect_adapter = construct_syntax_highlighter_from_plugin(ruby, formatted_plugins)?;
 
-        match syntect_adapter {
-            Some(ref adapter) => {
-                comrak_plugins.render.codefence_syntax_highlighter = Some(adapter.as_ref())
-            }
-            None => comrak_plugins.render.codefence_syntax_highlighter = None,
-        }
+        Ok((options, syntect_adapter))
+    }
 
+    /// Renders this node and its descendants as HTML.
+    pub fn render_html(
+        &self,
+        ruby: &Ruby,
+        options: &Options,
+        plugins: &comrak::options::Plugins,
+    ) -> Result<String, magnus::Error> {
         let arena: Arena<ComrakAstNode> = Arena::new();
-        let comrak_root_node = rb_self.to_comrak_node(&arena);
+        let comrak_root_node = self.to_comrak_node(&arena);
 
         let mut output = String::new();
-        match comrak::format_html_with_plugins(
+        comrak::format_html_with_plugins(comrak_root_node, &options.comrak, &mut output, plugins)
+            .map_err(|e| {
+            magnus::Error::new(
+                ruby.exception_runtime_error(),
+                format!("cannot convert into html: {e}"),
+            )
+        })?;
+
+        Ok(output)
+    }
+
+    /// Renders this node and its descendants as CommonMark.
+    pub fn render_commonmark(
+        &self,
+        ruby: &Ruby,
+        options: &Options,
+        plugins: &comrak::options::Plugins,
+    ) -> Result<String, magnus::Error> {
+        let arena: Arena<ComrakAstNode> = Arena::new();
+        let comrak_root_node = self.to_comrak_node(&arena);
+
+        let mut output = String::new();
+        comrak::format_commonmark_with_plugins(
             comrak_root_node,
             &options.comrak,
             &mut output,
-            &comrak_plugins,
-        ) {
-            Ok(_) => {}
-            Err(e) => {
-                return Err(magnus::Error::new(
-                    ruby.exception_runtime_error(),
-                    format!("cannot convert into html: {}", e),
-                ));
-            }
-        }
+            plugins,
+        )
+        .map_err(|e| {
+            magnus::Error::new(
+                ruby.exception_runtime_error(),
+                format!("cannot convert into commonmark: {e}"),
+            )
+        })?;
 
         Ok(output)
+    }
+
+    fn to_html(ruby: &Ruby, rb_self: &Self, args: &[Value]) -> Result<String, magnus::Error> {
+        let (options, syntect_adapter) = Self::render_args(ruby, args)?;
+
+        rb_self.render_html(ruby, &options, &comrak_plugins(syntect_adapter.as_deref()))
     }
 
     fn to_commonmark(ruby: &Ruby, rb_self: &Self, args: &[Value]) -> Result<String, magnus::Error> {
-        let args = scan_args::scan_args::<(), (), (), (), _, ()>(args)?;
+        let (options, syntect_adapter) = Self::render_args(ruby, args)?;
 
-        let kwargs = scan_args::get_kwargs::<_, (), (Option<Value>, Option<Value>), ()>(
-            args.keywords,
-            &[],
-            &["options", "plugins"],
-        )?;
-        let (rb_options, rb_plugins) = kwargs.optional;
-
-        let options = format_options(ruby, rb_options)?;
-
-        let mut comrak_plugins = comrak::options::Plugins::default();
-
-        let formatted_plugins = format_plugins(ruby, rb_plugins)?;
-        let syntect_adapter =
-            match construct_syntax_highlighter_from_plugin(ruby, formatted_plugins) {
-                Ok(Some(adapter)) => Some(adapter),
-                Ok(None) => None,
-                Err(err) => return Err(err),
-            };
-
-        match syntect_adapter {
-            Some(ref adapter) => {
-                comrak_plugins.render.codefence_syntax_highlighter = Some(adapter.as_ref())
-            }
-            None => comrak_plugins.render.codefence_syntax_highlighter = None,
-        }
-
-        let arena: Arena<ComrakAstNode> = Arena::new();
-        let comrak_root_node = rb_self.to_comrak_node(&arena);
-
-        let mut output = String::new();
-        match comrak::format_commonmark_with_plugins(
-            comrak_root_node,
-            &options.comrak,
-            &mut output,
-            &comrak_plugins,
-        ) {
-            Ok(_) => {}
-            Err(e) => {
-                return Err(magnus::Error::new(
-                    ruby.exception_runtime_error(),
-                    format!("cannot convert into commonmark: {}", e),
-                ));
-            }
-        }
-
-        Ok(output)
+        rb_self.render_commonmark(ruby, &options, &comrak_plugins(syntect_adapter.as_deref()))
     }
 }
 
-pub fn init(ruby: &Ruby, m_commonmarker: RModule) -> Result<(), magnus::Error> {
-    let c_node = m_commonmarker
+pub fn init(ruby: &Ruby, c_commonmarker: RClass) -> Result<(), magnus::Error> {
+    let c_node = c_commonmarker
         .define_class("Node", ruby.class_object())
         .expect("cannot define class Commonmarker::Node");
 

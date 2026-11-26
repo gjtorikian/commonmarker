@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Commonmarker
+class Commonmarker
   class Node
     class Ast
     end

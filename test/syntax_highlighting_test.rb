@@ -210,4 +210,38 @@ class SyntaxHighlightingTest < Minitest::Test
       Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai" } })
     end
   end
+
+  def test_cached_highlighters_stay_separate_per_theme
+    code = <<~CODE
+      ```ruby
+      def hello
+        puts "hello"
+      end
+      ```
+    CODE
+
+    github = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
+    ocean = Commonmarker.to_html(code)
+    monokai = Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: FIXTURES_DIR } })
+
+    assert_match(/background-color:#ffffff;/, github)
+    assert_match(/background-color:#2b303b;/, ocean)
+    assert_match(/background-color:#323232;/, monokai)
+
+    # second renders come from the cache and must match the first
+    assert_equal(github, Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } }))
+    assert_equal(ocean, Commonmarker.to_html(code))
+    assert_equal(monokai, Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: FIXTURES_DIR } }))
+  end
+
+  def test_bad_theme_is_not_cached_as_good
+    code = "```ruby\ndef hello\nend\n```\n"
+
+    assert_raises(ArgumentError) do
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "WowieZowie" } })
+    end
+    assert_raises(ArgumentError) do
+      Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "WowieZowie" } })
+    end
+  end
 end
