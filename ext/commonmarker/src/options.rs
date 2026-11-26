@@ -119,6 +119,11 @@ const RENDER_OL_WIDTH: &str = "ol_width";
 const RENDER_EXPERIMENTAL_MINIMIZE_COMMONMARK: &str = "experimental_minimize_commonmark";
 const RENDER_ATTRIBUTES: &str = "attributes";
 
+/// The names `alert_style` accepts, as Strings or Symbols.
+const ALERT_STYLES: &[&str] = &["specific", "semantic"];
+/// The names `list_style` accepts, as Strings or Symbols.
+const LIST_STYLES: &[&str] = &["dash", "plus", "star"];
+
 const EXTENSION_STRIKETHROUGH: &str = "strikethrough";
 const EXTENSION_TABLE: &str = "table";
 const EXTENSION_AUTOLINK: &str = "autolink";
@@ -248,6 +253,54 @@ fn validate_optional_string(
         )
     })?;
     Ok(Some(s))
+}
+
+/// Validates an option that takes one of a fixed set of names (for enum-like
+/// fields such as `list_style`). Accepts a String or a Symbol; nil means
+/// "keep the default". Returns the matched name, or Err if the value is of
+/// another type or is not one of `allowed`.
+fn validate_enum(
+    ruby: &Ruby,
+    value: Value,
+    key: &str,
+    category: &str,
+    allowed: &[&str],
+) -> Result<Option<String>, Error> {
+    if value.is_nil() {
+        return Ok(None);
+    }
+    let name: String = if let Some(symbol) = Symbol::from_value(value) {
+        symbol.name()?.into_owned()
+    } else {
+        String::try_convert(value).map_err(|_| {
+            Error::new(
+                ruby.exception_type_error(),
+                format!(
+                    "{} option `{}` must be a String or Symbol; got {}",
+                    category,
+                    format_args!(":{}", key),
+                    crate::utils::get_classname(value)
+                ),
+            )
+        })?
+    };
+    if allowed.contains(&name.as_str()) {
+        return Ok(Some(name));
+    }
+    Err(Error::new(
+        ruby.exception_arg_error(),
+        format!(
+            "{} option `{}` must be one of {}; got {:?}",
+            category,
+            format_args!(":{}", key),
+            allowed
+                .iter()
+                .map(|a| format!(":{}", a))
+                .collect::<Vec<_>>()
+                .join(", "),
+            name
+        ),
+    ))
 }
 
 /// The options Commonmarker accepts: comrak's own, plus `max_nesting_depth`,
@@ -725,7 +778,7 @@ fn iterate_render_options_with_validation(
                     }
                 }
                 RENDER_ALERT_STYLE => {
-                    match validate_optional_string(ruby, value, RENDER_ALERT_STYLE, "render") {
+                    match validate_enum(ruby, value, RENDER_ALERT_STYLE, "render", ALERT_STYLES) {
                         Ok(v) => {
                             comrak_options.alert_style = match v.as_deref() {
                                 Some("semantic") => comrak::options::AlertStyleType::Semantic,
@@ -740,7 +793,7 @@ fn iterate_render_options_with_validation(
                     }
                 }
                 RENDER_LIST_STYLE => {
-                    match validate_optional_string(ruby, value, RENDER_LIST_STYLE, "render") {
+                    match validate_enum(ruby, value, RENDER_LIST_STYLE, "render", LIST_STYLES) {
                         Ok(v) => {
                             comrak_options.list_style = match v.as_deref() {
                                 Some("plus") => comrak::options::ListStyleType::Plus,
@@ -1476,18 +1529,18 @@ pub fn default_options_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     )?;
     render.aset(
         ruby.to_symbol(RENDER_ALERT_STYLE),
-        match DEFAULT_OPTIONS.render.alert_style {
+        ruby.to_symbol(match DEFAULT_OPTIONS.render.alert_style {
             comrak::options::AlertStyleType::Semantic => "semantic",
             _ => "specific",
-        },
+        }),
     )?;
     render.aset(
         ruby.to_symbol(RENDER_LIST_STYLE),
-        match DEFAULT_OPTIONS.render.list_style {
+        ruby.to_symbol(match DEFAULT_OPTIONS.render.list_style {
             comrak::options::ListStyleType::Plus => "plus",
             comrak::options::ListStyleType::Star => "star",
             _ => "dash",
-        },
+        }),
     )?;
     render.aset(
         ruby.to_symbol(RENDER_FIGURE_WITH_CAPTION),

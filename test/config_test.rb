@@ -50,7 +50,8 @@ class ConfigTest < Minitest::Test
     options = Commonmarker::Config::OPTIONS
 
     refute(options[:parse][:tasklist_in_table])
-    assert_equal("dash", options[:render][:list_style])
+    assert_equal(:dash, options[:render][:list_style])
+    assert_equal(:specific, options[:render][:alert_style])
     assert_equal(0, options[:render][:ol_width])
     refute(options[:extension][:ofm_callouts])
   end

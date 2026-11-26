@@ -59,9 +59,16 @@ class FrontmatterTest < Minitest::Test
       </aside>
     HTML
 
-    options = { extension: { alerts: true }, render: { alert_style: "semantic" } }
+    [:semantic, "semantic"].each do |style|
+      options = { extension: { alerts: true }, render: { alert_style: style } }
 
-    assert_equal(expected, Commonmarker.to_html(md, options: options))
+      assert_equal(expected, Commonmarker.to_html(md, options: options))
+    end
+  end
+
+  def test_alert_style_rejects_unknown_names
+    err = assert_raises(ArgumentError) { Commonmarker.to_html("x", options: { render: { alert_style: :fancy } }) }
+    assert_equal("render option `:alert_style` must be one of :specific, :semantic; got \"fancy\"", err.message)
   end
 
   def test_renders_a_complicated_node
