@@ -3,7 +3,7 @@
 require "set"
 require "stringio"
 
-module Commonmarker
+class Commonmarker
   class Renderer
   end
 end

@@ -2,7 +2,7 @@
 
 require "pp"
 
-module Commonmarker
+class Commonmarker
   class Node
     module Inspect
       PP_INDENT_SIZE = 2

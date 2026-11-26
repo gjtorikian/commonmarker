@@ -14,6 +14,7 @@ LARGE_FILE = File.read("benchmark/large.md").freeze
 
 [SMALL_FILE, SAMPLE_FILE, LARGE_FILE].each do |input|
   kramdown_document = Kramdown::Document.new(input, input: "GFM")
+  commonmarker = Commonmarker.new
 
   printf("input size = %<bytes>d bytes\n\n", { bytes: input.bytesize })
 
@@ -33,6 +34,10 @@ LARGE_FILE = File.read("benchmark/large.md").freeze
 
     x.report("Commonmarker.to_html") do
       Commonmarker.to_html(input)
+    end
+
+    x.report("Commonmarker#to_html") do
+      commonmarker.to_html(input)
     end
 
     x.report("Commonmarker::Node.to_html") do

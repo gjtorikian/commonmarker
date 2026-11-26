@@ -41,6 +41,43 @@ Commonmarker.to_html('"Hi *there*"', options: {
 
 (The second argument is optional--[see below](#options-and-plugins) for more information.)
 
+### Reusing a configuration
+
+`Commonmarker.to_html` and `Commonmarker.parse` process their `options` and `plugins` on every call. When you convert many documents with the same settings, build a `Commonmarker` instance once and call `to_html` or `parse` on it instead:
+
+```ruby
+require 'commonmarker'
+
+markdown = Commonmarker.new(options: { parse: { smart: true } }, plugins: { syntax_highlighter: { theme: "InspiredGitHub" } })
+
+markdown.to_html('"Hi *there*"')
+# => <p>“Hi <em>there</em>”</p>\n
+
+doc = markdown.parse("*Hello* world")
+doc.to_html
+# => <p><em>Hello</em> world</p>\n
+```
+
+The options and plugins are validated and processed when the instance is created, so invalid values raise from `Commonmarker.new` rather than from the first conversion, and changing the hashes afterwards has no effect on the instance. Instances hold no mutable state, so one can live in a constant and be shared across threads. `Commonmarker.to_html(text, options: o, plugins: p)` is the same as `Commonmarker.new(options: o, plugins: p).to_html(text)`.
+
+`to_html` and `to_commonmark` also accept a `Commonmarker::Node`, so a document you parsed and then modified renders with the same settings without passing them again:
+
+```ruby
+doc = markdown.parse("*Hello* [GitHub](https://www.github.com)")
+
+# Transform links to regular text
+doc.walk do |node|
+  node.replace(node.first_child) if node.type == :link
+end
+
+markdown.to_html(doc)
+# => <p><em>Hello</em> GitHub</p>\n
+markdown.to_commonmark(doc)
+# => *Hello* GitHub\n
+```
+
+`Node#to_html` and `Node#to_commonmark` keep their own `options:` and `plugins:` arguments for one-off renders.
+
 ### Generating a document
 
 You can also parse a string to receive a `:document` node. You can then print that node to HTML, iterate over the children, and do other fun node stuff. For example:
@@ -367,6 +404,8 @@ To use a custom theme, you can provide a `path` to a directory containing `.tmth
 Commonmarker.to_html(code, plugins: { syntax_highlighter: { theme: "Monokai", path: "./themes" } })
 ```
 
+Syntax highlighters are expensive to build, so Commonmarker builds one per `theme`/`path` combination and keeps it for the life of the process. Theme files in a custom `path` are read the first time that path is used; restart the process to pick up changes to them.
+
 ## Output formats
 
 Commonmarker can currently only generate output in one format: HTML.
@@ -394,30 +433,93 @@ If there were no errors, you're done! Otherwise, make sure to follow the comrak 
 
 ```
 ❯ bundle exec rake benchmark
+input size = 3789 bytes
+
+ruby 3.4.0dev (2024-12-25 master f450108330) +PRISM [arm64-darwin24]
+Warming up --------------------------------------
+  Markly.render_html    11.707k i/100ms
+Markly::Node#to_html    11.745k i/100ms
+Commonmarker.to_html    22.706k i/100ms
+Commonmarker#to_html    26.102k i/100ms
+Commonmarker::Node.to_html
+                        13.203k i/100ms
+Kramdown::Document#to_html
+                         2.726k i/100ms
+Calculating -------------------------------------
+  Markly.render_html    116.281k (± 1.4%) i/s    (8.60 μs/i) -    585.350k in   5.034916s
+Markly::Node#to_html    116.830k (± 1.4%) i/s    (8.56 μs/i) -    587.250k in   5.027536s
+Commonmarker.to_html    222.504k (± 1.9%) i/s    (4.49 μs/i) -      1.113M in   5.002179s
+Commonmarker#to_html    260.838k (± 2.3%) i/s    (3.83 μs/i) -      1.305M in   5.006287s
+Commonmarker::Node.to_html
+                        127.797k (± 1.0%) i/s    (7.82 μs/i) -    646.947k in   5.062869s
+Kramdown::Document#to_html
+                         26.835k (± 1.0%) i/s   (37.27 μs/i) -    136.300k in   5.079780s
+
+Comparison:
+Commonmarker#to_html:   260838.0 i/s
+Commonmarker.to_html:   222504.4 i/s - 1.17x  slower
+Commonmarker::Node.to_html:   127796.6 i/s - 2.04x  slower
+Markly::Node#to_html:   116830.1 i/s - 2.23x  slower
+  Markly.render_html:   116280.7 i/s - 2.24x  slower
+Kramdown::Document#to_html:    26834.6 i/s - 9.72x  slower
+
+input size = 3051 bytes
+
+ruby 3.4.0dev (2024-12-25 master f450108330) +PRISM [arm64-darwin24]
+Warming up --------------------------------------
+  Markly.render_html     3.341k i/100ms
+Markly::Node#to_html     3.398k i/100ms
+Commonmarker.to_html   393.000 i/100ms
+Commonmarker#to_html   404.000 i/100ms
+Commonmarker::Node.to_html
+                       362.000 i/100ms
+Kramdown::Document#to_html
+                       520.000 i/100ms
+Calculating -------------------------------------
+  Markly.render_html     33.857k (± 6.6%) i/s   (29.54 μs/i) -    170.391k in   5.054881s
+Markly::Node#to_html     33.624k (± 5.9%) i/s   (29.74 μs/i) -    169.900k in   5.069790s
+Commonmarker.to_html      3.990k (± 0.8%) i/s  (250.60 μs/i) -     20.043k in   5.023095s
+Commonmarker#to_html      4.007k (± 1.0%) i/s  (249.56 μs/i) -     20.200k in   5.041649s
+Commonmarker::Node.to_html
+                          3.588k (± 1.6%) i/s  (278.68 μs/i) -     18.100k in   5.045412s
+Kramdown::Document#to_html
+                          5.180k (± 0.8%) i/s  (193.05 μs/i) -     26.000k in   5.019623s
+
+Comparison:
+  Markly.render_html:    33857.4 i/s
+Markly::Node#to_html:    33623.9 i/s - same-ish: difference falls within error
+Kramdown::Document#to_html:     5180.0 i/s - 6.54x  slower
+Commonmarker#to_html:     4007.0 i/s - 8.45x  slower
+Commonmarker.to_html:     3990.4 i/s - 8.48x  slower
+Commonmarker::Node.to_html:     3588.3 i/s - 9.44x  slower
+
 input size = 11064832 bytes
 
-ruby 3.3.0 (2023-12-25 revision 5124f9ac75) [arm64-darwin23]
+ruby 3.4.0dev (2024-12-25 master f450108330) +PRISM [arm64-darwin24]
 Warming up --------------------------------------
-  Markly.render_html     1.000 i/100ms
-Markly::Node#to_html     1.000 i/100ms
+  Markly.render_html     2.000 i/100ms
+Markly::Node#to_html     2.000 i/100ms
 Commonmarker.to_html     1.000 i/100ms
+Commonmarker#to_html     1.000 i/100ms
 Commonmarker::Node.to_html
                          1.000 i/100ms
 Kramdown::Document#to_html
                          1.000 i/100ms
 Calculating -------------------------------------
-  Markly.render_html     15.606 (±25.6%) i/s -     71.000 in   5.047132s
-Markly::Node#to_html     15.692 (±25.5%) i/s -     72.000 in   5.095810s
-Commonmarker.to_html      4.482 (± 0.0%) i/s -     23.000 in   5.137680s
+  Markly.render_html     28.642 (±10.5%) i/s   (34.91 ms/i) -    142.000 in   5.006013s
+Markly::Node#to_html     28.498 (±10.5%) i/s   (35.09 ms/i) -    142.000 in   5.031715s
+Commonmarker.to_html     14.735 (± 0.0%) i/s   (67.87 ms/i) -     74.000 in   5.025193s
+Commonmarker#to_html     14.613 (± 0.0%) i/s   (68.43 ms/i) -     74.000 in   5.067178s
 Commonmarker::Node.to_html
-                          5.092 (±19.6%) i/s -     25.000 in   5.072220s
+                         11.215 (± 0.0%) i/s   (89.16 ms/i) -     56.000 in   5.000617s
 Kramdown::Document#to_html
-                          0.379 (± 0.0%) i/s -      2.000 in   5.277770s
+                          6.989 (± 0.0%) i/s  (143.08 ms/i) -     35.000 in   5.009193s
 
 Comparison:
-Markly::Node#to_html:       15.7 i/s
-  Markly.render_html:       15.6 i/s - same-ish: difference falls within error
-Commonmarker::Node.to_html:        5.1 i/s - 3.08x  slower
-Commonmarker.to_html:        4.5 i/s - 3.50x  slower
-Kramdown::Document#to_html:        0.4 i/s - 41.40x  slower
+  Markly.render_html:       28.6 i/s
+Markly::Node#to_html:       28.5 i/s - same-ish: difference falls within error
+Commonmarker.to_html:       14.7 i/s - 1.94x  slower
+Commonmarker#to_html:       14.6 i/s - 1.96x  slower
+Commonmarker::Node.to_html:       11.2 i/s - 2.55x  slower
+Kramdown::Document#to_html:        7.0 i/s - 4.10x  slower
 ```

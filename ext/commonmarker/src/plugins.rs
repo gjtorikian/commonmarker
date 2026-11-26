@@ -128,3 +128,14 @@ pub fn default_plugins_to_hash(ruby: &Ruby) -> Result<RHash, Error> {
     result.aset(ruby.to_symbol(SYNTAX_HIGHLIGHTER_PLUGIN), sh)?;
     Ok(result)
 }
+
+/// Builds comrak's plugin set around an optional syntax highlighter.
+pub fn comrak_plugins(
+    adapter: Option<&comrak::plugins::syntect::SyntectAdapter>,
+) -> comrak::options::Plugins<'_> {
+    let mut plugins = comrak::options::Plugins::default();
+    if let Some(adapter) = adapter {
+        plugins.render.codefence_syntax_highlighter = Some(adapter);
+    }
+    plugins
+}

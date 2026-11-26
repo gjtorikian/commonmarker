@@ -1,6 +1,6 @@
 use comrak::arena_tree::NodeEdge;
 use comrak::nodes::AstNode;
-use magnus::{ExceptionClass, Module, Ruby};
+use magnus::{ExceptionClass, Module, RClass, Ruby};
 
 /// Default for the `max_nesting_depth` parse option. Exposed to Ruby as
 /// `Commonmarker::Config::OPTIONS[:parse][:max_nesting_depth]`, and also applies
@@ -11,8 +11,9 @@ pub const DEFAULT_MAX_NESTING_DEPTH: usize = 1000;
 /// The error raised when a document nests deeper than `max_nesting_depth`.
 pub fn exceeded_error(ruby: &Ruby, max_nesting_depth: usize) -> magnus::Error {
     let class = ruby
-        .define_module("Commonmarker")
-        .and_then(|module| module.const_get::<_, ExceptionClass>("NestingDepthExceededError"));
+        .class_object()
+        .const_get::<_, RClass>("Commonmarker")
+        .and_then(|class| class.const_get::<_, ExceptionClass>("NestingDepthExceededError"));
 
     match class {
         Ok(class) => magnus::Error::new(
